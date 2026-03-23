@@ -9,11 +9,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Uwierzytelnianie i Role (Authentication & Roles)
 
-- [ ] **AUTH-01**: Pracownik/admin może zalogować się emailem i hasłem
-- [ ] **AUTH-02**: Pracownik może zresetować hasło przez link email
-- [ ] **AUTH-03**: Sesja użytkownika utrzymuje się po odświeżeniu przeglądarki/aplikacji
-- [ ] **AUTH-04**: System rozróżnia role: admin (pełny dostęp), pracownik (aplikacja mobilna + ograniczony web), klient (portal read-only)
-- [ ] **AUTH-05**: Każda mutacja w systemie jest logowana w audit trailu (kto, co, kiedy) — log niezmienny
+- [x] **AUTH-01**: Pracownik/admin może zalogować się emailem i hasłem
+- [x] **AUTH-02**: Pracownik może zresetować hasło przez link email
+- [x] **AUTH-03**: Sesja użytkownika utrzymuje się po odświeżeniu przeglądarki/aplikacji
+- [x] **AUTH-04**: System rozróżnia role: admin (pełny dostęp), pracownik (aplikacja mobilna + ograniczony web), klient (portal read-only)
+- [x] **AUTH-05**: Każda mutacja w systemie jest logowana w audit trailu (kto, co, kiedy) — log niezmienny
 
 ### Flota (Fleet Management)
 
@@ -130,11 +130,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | Phase 1 | Pending |
-| AUTH-02 | Phase 1 | Pending |
-| AUTH-03 | Phase 1 | Pending |
-| AUTH-04 | Phase 1 | Pending |
-| AUTH-05 | Phase 1 | Pending |
+| AUTH-01 | Phase 1 | Complete |
+| AUTH-02 | Phase 1 | Complete |
+| AUTH-03 | Phase 1 | Complete |
+| AUTH-04 | Phase 1 | Complete |
+| AUTH-05 | Phase 1 | Complete |
 | FLEET-01 | Phase 2 | Pending |
 | FLEET-02 | Phase 2 | Pending |
 | FLEET-03 | Phase 2 | Pending |
