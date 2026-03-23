@@ -69,14 +69,15 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. Employee can create a rental linking a vehicle, customer, and date range (with time) -- the system prevents double-booking the same vehicle
   2. Calendar view shows all rentals on an interactive timeline with visual conflict indication
-  3. Rental progresses through states (draft, active, extended, returned, closed) following strict state machine rules -- invalid transitions are rejected
+  3. Rental progresses through states (draft, active, extended, returned) following strict state machine rules -- invalid transitions are rejected
   4. Employee can process a structured vehicle return: record mileage, complete damage checklist, compare against handover state
   5. Admin can extend a rental with automatic date update, cost recalculation, and customer notification trigger
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 03-01: TBD
-- [ ] 03-02: TBD
+- [ ] 03-01-PLAN.md -- Prisma Rental model, shared types/Zod schemas, state machine constants, pricing utility, DTOs, module scaffold, test stubs
+- [ ] 03-02-PLAN.md -- RentalsService CRUD, overlap detection (tstzrange), state machine enforcement, calendar endpoint, controller wiring
+- [ ] 03-03-PLAN.md -- Vehicle return with inspection comparison, admin extension with cost recalculation, admin rollback, full e2e test suite
 
 ### Phase 4: Contract and PDF
 **Goal**: The digital contract flow works end-to-end -- form entry, digital signature, PDF generation from the existing template, and automatic email delivery to the customer
@@ -177,7 +178,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 |-------|----------------|--------|-----------|
 | 1. Foundation and Auth | 7/7 | Complete   | 2026-03-23 |
 | 2. Fleet and Customer Data | 3/3 | Complete   | 2026-03-23 |
-| 3. Rental Lifecycle | 0/? | Not started | - |
+| 3. Rental Lifecycle | 0/3 | Not started | - |
 | 4. Contract and PDF | 0/? | Not started | - |
 | 5. Admin Panel | 0/? | Not started | - |
 | 6. Mobile App | 0/? | Not started | - |
