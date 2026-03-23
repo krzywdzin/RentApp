@@ -12,7 +12,7 @@ RentApp replaces a paper-based car rental workflow with a digital system spannin
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation and Auth** - Project scaffold, database schema, authentication with roles, and immutable audit trail
+- [x] **Phase 1: Foundation and Auth** - Project scaffold, database schema, authentication with roles, and immutable audit trail (completed 2026-03-23)
 - [ ] **Phase 2: Fleet and Customer Data** - Vehicle fleet management and customer database with encrypted PII
 - [ ] **Phase 3: Rental Lifecycle** - Rental state machine, calendar with double-booking prevention, extension and return workflows
 - [ ] **Phase 4: Contract and PDF** - Digital contract creation, signature capture, PDF generation from template, email delivery
@@ -174,7 +174,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation and Auth | 6/7 | In Progress|  |
+| 1. Foundation and Auth | 7/7 | Complete   | 2026-03-23 |
 | 2. Fleet and Customer Data | 0/? | Not started | - |
 | 3. Rental Lifecycle | 0/? | Not started | - |
 | 4. Contract and PDF | 0/? | Not started | - |
