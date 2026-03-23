@@ -1,17 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import * as argon2 from 'argon2';
 import * as crypto from 'crypto';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
+import { MailService } from '../src/mail/mail.service';
+import { AuthService } from '../src/auth/auth.service';
 import { UserRole } from '@rentapp/shared';
+import Redis from 'ioredis';
 
 const ARGON2_OPTIONS = { memoryCost: 32768, timeCost: 3, parallelism: 1 };
 
 describe('Auth (e2e)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
+  let redis: Redis;
   let adminId: string;
   const deviceId = '00000000-0000-4000-a000-000000000001';
   const adminEmail = 'admin@test.com';
@@ -20,13 +24,20 @@ describe('Auth (e2e)', () => {
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(MailService)
+      .useValue({ sendSetupPasswordEmail: jest.fn(), sendResetPasswordEmail: jest.fn() })
+      .compile();
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
     await app.init();
 
     prisma = app.get(PrismaService);
+    redis = new Redis(process.env.REDIS_URL!);
+
+    // Flush all Redis keys from previous runs
+    await redis.flushdb();
 
     // Clean up from previous runs
     await prisma.auditLog.deleteMany({});
@@ -49,6 +60,8 @@ describe('Auth (e2e)', () => {
   afterAll(async () => {
     await prisma.auditLog.deleteMany({});
     await prisma.user.deleteMany({});
+    await redis.flushdb();
+    await redis.quit();
     await app.close();
   });
 
@@ -222,8 +235,9 @@ describe('Auth (e2e)', () => {
 
     expect(res.body).toHaveProperty('accessToken');
     expect(res.body).toHaveProperty('refreshToken');
-    expect(res.body.accessToken).not.toBe(tokens.accessToken);
+    // Refresh token must always be new (crypto random)
     expect(res.body.refreshToken).not.toBe(tokens.refreshToken);
+    // Access token may be identical if issued within the same second (JWT iat has 1s precision)
   });
 
   it('POST /auth/refresh with reused token invalidates all sessions (rotation)', async () => {

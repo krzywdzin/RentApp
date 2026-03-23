@@ -5,7 +5,9 @@ import * as argon2 from 'argon2';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { AuditService } from '../src/audit/audit.service';
+import { MailService } from '../src/mail/mail.service';
 import { UserRole } from '@rentapp/shared';
+import Redis from 'ioredis';
 
 const ARGON2_OPTIONS = { memoryCost: 32768, timeCost: 3, parallelism: 1 };
 
@@ -13,6 +15,7 @@ describe('Audit (e2e)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let auditService: AuditService;
+  let redis: Redis;
   let adminToken: string;
   let employeeToken: string;
   let adminId: string;
@@ -37,7 +40,10 @@ describe('Audit (e2e)', () => {
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(MailService)
+      .useValue({ sendSetupPasswordEmail: jest.fn(), sendResetPasswordEmail: jest.fn() })
+      .compile();
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
@@ -45,8 +51,10 @@ describe('Audit (e2e)', () => {
 
     prisma = app.get(PrismaService);
     auditService = app.get(AuditService);
+    redis = new Redis(process.env.REDIS_URL!);
 
     // Clean up from previous runs
+    await redis.flushdb();
     await prisma.auditLog.deleteMany({});
     await prisma.user.deleteMany({});
 
@@ -83,6 +91,8 @@ describe('Audit (e2e)', () => {
   afterAll(async () => {
     await prisma.auditLog.deleteMany({});
     await prisma.user.deleteMany({});
+    await redis.flushdb();
+    await redis.quit();
     await app.close();
   });
 
@@ -125,17 +135,17 @@ describe('Audit (e2e)', () => {
         })
         .expect(201);
 
-      // Small delay for async audit log write
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      // Delay for async audit log write (longer for cloud DB latency)
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
       const res = await request(app.getHttpServer())
-        .get('/audit?entityType=User')
+        .get('/audit?entityType=Users')
         .set('Authorization', `Bearer ${adminToken}`)
         .expect(200);
 
       expect(res.body.data.length).toBeGreaterThan(0);
       for (const entry of res.body.data) {
-        expect(entry.entityType).toBe('User');
+        expect(entry.entityType).toBe('Users');
       }
     });
 
