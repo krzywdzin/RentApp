@@ -34,11 +34,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. System enforces three distinct roles (admin, employee, customer) with different access levels -- unauthorized actions are rejected
   4. Every data mutation is recorded in an immutable audit log showing who, what, and when
   5. Dev environment runs locally (PostgreSQL, Redis, MinIO) with a single command
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
+- [ ] 01-01-PLAN.md -- Scaffold Turborepo monorepo, Docker Compose, Prisma schema (User + AuditLog), shared types package
+- [ ] 01-02-PLAN.md -- Auth module: login with lockout, JWT access+refresh tokens, password setup/reset, role guards
+- [ ] 01-03-PLAN.md -- Audit trail interceptor, admin query endpoint, AES-256-GCM field encryption utility
 
 ### Phase 2: Fleet and Customer Data
 **Goal**: Admin can manage the vehicle fleet and employees can create and search customer records with sensitive data properly encrypted
@@ -169,7 +170,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation and Auth | 0/? | Not started | - |
+| 1. Foundation and Auth | 0/3 | Planning complete | - |
 | 2. Fleet and Customer Data | 0/? | Not started | - |
 | 3. Rental Lifecycle | 0/? | Not started | - |
 | 4. Contract and PDF | 0/? | Not started | - |
