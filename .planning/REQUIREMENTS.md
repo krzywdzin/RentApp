@@ -25,8 +25,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **CUST-01**: Pracownik może dodać nowego klienta (imię, nazwisko, telefon, adres, email, dowód osobisty, PESEL, prawo jazdy)
 - [x] **CUST-02**: Dane wrażliwe (PESEL, nr dowodu, nr prawa jazdy) są szyfrowane na poziomie pola (AES-256-GCM)
-- [ ] **CUST-03**: Pracownik może wyszukać klienta po nazwisku, telefonie lub PESEL-u — dane auto-uzupełniają się dla powracających klientów
-- [ ] **CUST-04**: System implementuje polityki retencji danych zgodne z RODO (automatyczne usuwanie po okresie retencji)
+- [x] **CUST-03**: Pracownik może wyszukać klienta po nazwisku, telefonie lub PESEL-u — dane auto-uzupełniają się dla powracających klientów
+- [x] **CUST-04**: System implementuje polityki retencji danych zgodne z RODO (automatyczne usuwanie po okresie retencji)
 
 ### Cykl Wynajmu (Rental Lifecycle)
 
@@ -140,8 +140,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FLEET-03 | Phase 2 | Complete |
 | CUST-01 | Phase 2 | Complete |
 | CUST-02 | Phase 2 | Complete |
-| CUST-03 | Phase 2 | Pending |
-| CUST-04 | Phase 2 | Pending |
+| CUST-03 | Phase 2 | Complete |
+| CUST-04 | Phase 2 | Complete |
 | RENT-01 | Phase 3 | Pending |
 | RENT-02 | Phase 3 | Pending |
 | RENT-03 | Phase 3 | Pending |
