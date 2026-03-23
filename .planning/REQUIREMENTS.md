@@ -30,11 +30,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Cykl Wynajmu (Rental Lifecycle)
 
-- [ ] **RENT-01**: Pracownik może utworzyć wynajem (pojazd + klient + daty od-do z godziną)
-- [ ] **RENT-02**: Kalendarz wynajmów z interaktywnym widokiem timeline i zapobieganiem podwójnym rezerwacjom (PostgreSQL exclusion constraints)
-- [ ] **RENT-03**: Wynajem przechodzi przez stany: szkic → aktywny → przedłużony → zwrócony → zamknięty (state machine)
-- [ ] **RENT-04**: Pracownik może przeprowadzić strukturalny zwrot: rejestracja przebiegu, lista kontrolna uszkodzeń, porównanie ze stanem przy wydaniu
-- [ ] **RENT-05**: Admin może przedłużyć wynajem — automatyczna aktualizacja dat, przeliczenie kosztu, powiadomienie SMS do klienta
+- [x] **RENT-01**: Pracownik może utworzyć wynajem (pojazd + klient + daty od-do z godziną)
+- [x] **RENT-02**: Kalendarz wynajmów z interaktywnym widokiem timeline i zapobieganiem podwójnym rezerwacjom (PostgreSQL exclusion constraints)
+- [x] **RENT-03**: Wynajem przechodzi przez stany: szkic → aktywny → przedłużony → zwrócony → zamknięty (state machine)
+- [x] **RENT-04**: Pracownik może przeprowadzić strukturalny zwrot: rejestracja przebiegu, lista kontrolna uszkodzeń, porównanie ze stanem przy wydaniu
+- [x] **RENT-05**: Admin może przedłużyć wynajem — automatyczna aktualizacja dat, przeliczenie kosztu, powiadomienie SMS do klienta
 
 ### Umowa i PDF (Contract & PDF)
 
@@ -142,11 +142,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CUST-02 | Phase 2 | Complete |
 | CUST-03 | Phase 2 | Complete |
 | CUST-04 | Phase 2 | Complete |
-| RENT-01 | Phase 3 | Pending |
-| RENT-02 | Phase 3 | Pending |
-| RENT-03 | Phase 3 | Pending |
-| RENT-04 | Phase 3 | Pending |
-| RENT-05 | Phase 3 | Pending |
+| RENT-01 | Phase 3 | Complete |
+| RENT-02 | Phase 3 | Complete |
+| RENT-03 | Phase 3 | Complete |
+| RENT-04 | Phase 3 | Complete |
+| RENT-05 | Phase 3 | Complete |
 | CONT-01 | Phase 4 | Pending |
 | CONT-02 | Phase 4 | Pending |
 | CONT-03 | Phase 4 | Pending |
