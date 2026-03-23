@@ -55,11 +55,12 @@ Plans:
   3. Admin can import a fleet from a CSV/XLS file and see the vehicles in the system
   4. Employee can create a new customer record with all personal data (name, phone, address, email, ID, PESEL, license)
   5. Sensitive fields (PESEL, ID number, license number) are encrypted at rest (AES-256-GCM) and searchable via HMAC -- raw values never appear in database dumps
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 02-01: TBD
-- [ ] 02-02: TBD
+- [ ] 02-01-PLAN.md -- Prisma schema (Vehicle + Customer), shared types/Zod schemas, StorageModule (MinIO), PESEL/VIN validators
+- [ ] 02-02-PLAN.md -- VehicleModule CRUD, status transitions, document uploads, CSV/XLS fleet import with error reporting
+- [ ] 02-03-PLAN.md -- CustomerModule with encrypted PII (AES-256-GCM), HMAC search, RODO retention cleanup
 
 ### Phase 3: Rental Lifecycle
 **Goal**: The complete rental workflow functions end-to-end -- creation, calendar scheduling, state transitions, extensions, and structured returns
@@ -175,7 +176,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation and Auth | 7/7 | Complete   | 2026-03-23 |
-| 2. Fleet and Customer Data | 0/? | Not started | - |
+| 2. Fleet and Customer Data | 0/3 | Not started | - |
 | 3. Rental Lifecycle | 0/? | Not started | - |
 | 4. Contract and PDF | 0/? | Not started | - |
 | 5. Admin Panel | 0/? | Not started | - |
