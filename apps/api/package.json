@@ -20,6 +20,7 @@
     "@nestjs/platform-express": "^11.0.0",
     "@nestjs/throttler": "^6.0.0",
     "@prisma/client": "^6.0.0",
+    "@rentapp/shared": "workspace:*",
     "argon2": "^0.41.0",
     "bullmq": "^5.0.0",
     "class-transformer": "^0.5.0",
@@ -52,6 +53,7 @@
     "prisma": "^6.0.0",
     "supertest": "^7.0.0",
     "ts-jest": "^29.0.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5.9.0"
   }
 }
