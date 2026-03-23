@@ -6,11 +6,13 @@ import {
   Param,
   Body,
   Query,
+  Res,
   UploadedFile,
   UseInterceptors,
   ParseUUIDPipe,
   BadRequestException,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { UserRole } from '@rentapp/shared';
@@ -39,6 +41,45 @@ export class VehiclesController {
   @Roles(UserRole.ADMIN, UserRole.EMPLOYEE)
   async findAll(@Query('includeArchived') includeArchived?: string) {
     return this.vehiclesService.findAll(includeArchived === 'true');
+  }
+
+  @Post('import')
+  @Roles(UserRole.ADMIN)
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+      limits: { fileSize: 5 * 1024 * 1024 },
+      fileFilter: (_req, file, cb) => {
+        const allowed = [
+          'text/csv',
+          'application/vnd.ms-excel',
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ];
+        cb(
+          null,
+          allowed.includes(file.mimetype) ||
+            /\.(csv|xls|xlsx)$/i.test(file.originalname),
+        );
+      },
+    }),
+  )
+  async importFleet(@UploadedFile() file: Express.Multer.File) {
+    return this.vehiclesService.importFleet(file);
+  }
+
+  @Get('import/template')
+  @Roles(UserRole.ADMIN)
+  async getImportTemplate(@Res() res: Response) {
+    const headers =
+      'registration,vin,make,model,year,color,fuelType,transmission,seatCount,mileage,insuranceCompany,insurancePolicyNumber,insuranceExpiry,insuranceCoverage,inspectionExpiry,notes';
+    const example =
+      'WE12345,WVWZZZ3CZWE123456,Volkswagen,Golf,2022,Silver,PETROL,MANUAL,5,45000,PZU,ABC123456,2026-12-31,OC,2026-06-15,Fleet car';
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=fleet-import-template.csv',
+    );
+    res.send(`${headers}\n${example}\n`);
   }
 
   @Get(':id')
