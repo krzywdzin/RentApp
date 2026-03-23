@@ -7,8 +7,12 @@ import {
   Body,
   Query,
   ParseUUIDPipe,
+  HttpStatus,
+  HttpCode,
+  Res,
 } from '@nestjs/common';
-import { UserRole } from '@rentapp/shared';
+import { Response } from 'express';
+import { UserRole, RentalStatus } from '@rentapp/shared';
 import { Roles } from '../common/decorators/roles.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { RentalsService } from './rentals.service';
@@ -28,23 +32,32 @@ export class RentalsController {
   async create(
     @Body() dto: CreateRentalDto,
     @CurrentUser('id') userId: string,
+    @Res({ passthrough: true }) res: Response,
   ) {
-    const rental = await this.rentalsService.create(dto, userId);
+    const result = await this.rentalsService.create(dto, userId);
+
+    // If overlap detected and no override, return 409 Conflict
+    if (result.conflicts) {
+      res.status(HttpStatus.CONFLICT);
+      return { conflicts: result.conflicts };
+    }
+
+    res.status(HttpStatus.CREATED);
     return {
-      ...rental,
+      ...result,
       __audit: {
         action: 'rental.create',
         entityType: 'Rental',
-        entityId: rental.id,
-        changes: {},
+        entityId: result.id,
+        changes: { status: result.status },
       },
     };
   }
 
   @Get()
   @Roles(UserRole.ADMIN, UserRole.EMPLOYEE)
-  async findAll() {
-    return this.rentalsService.findAll();
+  async findAll(@Query('status') status?: RentalStatus) {
+    return this.rentalsService.findAll(status);
   }
 
   @Get('calendar')
