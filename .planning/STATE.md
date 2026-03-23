@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-01-PLAN.md
-last_updated: "2026-03-23T22:10:12.597Z"
-last_activity: 2026-03-23 -- Completed 03-01 Rental schema, types, state machine, DTOs, and module scaffold
+stopped_at: Completed 03-02-PLAN.md
+last_updated: "2026-03-23T22:16:00.000Z"
+last_activity: 2026-03-23 -- Completed 03-02 Rental CRUD, overlap detection, state machine, calendar
 progress:
   total_phases: 9
   completed_phases: 2
   total_plans: 13
-  completed_plans: 11
-  percent: 100
+  completed_plans: 12
+  percent: 92
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-23)
 
 **Core value:** Pracownik w terenie moze w pelni obsluzyc wynajem -- od wypelnienia umowy, przez zweryfikowanie uprawnien kierowcy, zrobienie zdjec auta, po podpis klienta i wysylke PDF -- bez papieru i bez powrotu do biura.
-**Current focus:** Phase 2: Fleet and Customer Data
+**Current focus:** Phase 3: Rental Lifecycle
 
 ## Current Position
 
 Phase: 3 of 9 (Rental Lifecycle)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In Progress
-Last activity: 2026-03-23 -- Completed 03-01 Rental schema, types, state machine, DTOs, and module scaffold
+Last activity: 2026-03-23 -- Completed 03-02 Rental CRUD, overlap detection, state machine, calendar
 
-Progress: [█████████░] 85%
+Progress: [█████████░] 92%
 
 ## Performance Metrics
 
@@ -61,6 +61,7 @@ Progress: [█████████░] 85%
 | Phase 02 P02 | 6min | 2 tasks | 9 files |
 | Phase 02 P03 | 6min | 2 tasks | 11 files |
 | Phase 03 P01 | 5min | 2 tasks | 23 files |
+| Phase 03 P02 | 4min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -94,6 +95,9 @@ Recent decisions affecting current work:
 - [Phase 03]: Renamed VehicleInspectionSchema to RentalVehicleInspectionSchema to avoid barrel export conflict
 - [Phase 03]: EventEmitterModule.forRoot() in AppModule (global) for cross-module event consumption
 - [Phase 03]: Admin rollback as separate transition map from normal state machine
+- [Phase 03]: checkOverlap returns OverlapConflict[] instead of boolean for richer 409 response
+- [Phase 03]: Calendar groups by vehicle with hasConflict per-rental for admin timeline visualization
+- [Phase 03]: findAll accepts optional RentalStatus filter via query param
 
 ### Pending Todos
 
@@ -107,6 +111,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-23T22:10:12.595Z
-Stopped at: Completed 03-01-PLAN.md
+Last session: 2026-03-23T22:16:00.000Z
+Stopped at: Completed 03-02-PLAN.md
 Resume file: None
