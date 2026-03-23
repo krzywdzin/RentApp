@@ -13,6 +13,33 @@ enum UserRole {
   CUSTOMER
 }
 
+enum VehicleStatus {
+  AVAILABLE
+  RESERVED
+  RENTED
+  SERVICE
+  RETIRED
+}
+
+enum FuelType {
+  PETROL
+  DIESEL
+  LPG
+  HYBRID
+  ELECTRIC
+}
+
+enum TransmissionType {
+  MANUAL
+  AUTOMATIC
+}
+
+enum InsuranceCoverageType {
+  OC
+  AC
+  NNW
+}
+
 model User {
   id               String    @id @default(uuid())
   email            String    @unique
@@ -48,4 +75,105 @@ model AuditLog {
   @@index([actorId])
   @@index([createdAt])
   @@map("audit_logs")
+}
+
+model Vehicle {
+  id              String            @id @default(uuid())
+  registration    String            @unique
+  vin             String            @unique
+  make            String
+  model           String
+  year            Int
+  color           String?
+  fuelType        FuelType
+  transmission    TransmissionType
+  seatCount       Int               @default(5)
+  mileage         Int               @default(0)
+  notes           String?
+  status          VehicleStatus     @default(AVAILABLE)
+  photoKey        String?
+  isArchived      Boolean           @default(false)
+
+  insurance       VehicleInsurance?
+  inspection      VehicleInspection?
+  documents       VehicleDocument[]
+
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([status])
+  @@index([make, model])
+  @@map("vehicles")
+}
+
+model VehicleInsurance {
+  id            String                @id @default(uuid())
+  vehicleId     String                @unique
+  companyName   String
+  policyNumber  String
+  expiryDate    DateTime
+  coverageType  InsuranceCoverageType
+  documentKey   String?
+
+  vehicle       Vehicle               @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@map("vehicle_insurance")
+}
+
+model VehicleInspection {
+  id            String    @id @default(uuid())
+  vehicleId     String    @unique
+  expiryDate    DateTime
+  documentKey   String?
+
+  vehicle       Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@map("vehicle_inspections")
+}
+
+model VehicleDocument {
+  id            String    @id @default(uuid())
+  vehicleId     String
+  label         String
+  fileKey       String
+  fileName      String
+  mimeType      String
+  uploadedAt    DateTime  @default(now())
+
+  vehicle       Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId])
+  @@map("vehicle_documents")
+}
+
+model Customer {
+  id                    String    @id @default(uuid())
+  firstName             String
+  lastName              String
+  phone                 String
+  email                 String?
+  address               String?
+
+  peselEncrypted        Json
+  peselHmac             String
+  idNumberEncrypted     Json
+  idNumberHmac          String
+  licenseNumEncrypted   Json
+  licenseNumHmac        String
+
+  idIssuedBy            String?
+  idIssuedDate          DateTime?
+  licenseCategory       String?
+  licenseIssuedBy       String?
+
+  retentionExpiresAt    DateTime?
+  isArchived            Boolean   @default(false)
+
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([peselHmac])
+  @@index([lastName, firstName])
+  @@index([phone])
+  @@map("customers")
 }
