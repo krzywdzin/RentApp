@@ -12,6 +12,7 @@ import { RolesGuard } from './common/guards/roles.guard';
 import { AuditModule } from './audit/audit.module';
 import { AuditInterceptor } from './audit/audit.interceptor';
 import { Public } from './common/decorators/public.decorator';
+import { StorageModule } from './storage/storage.module';
 
 @Controller()
 class HealthController {
@@ -31,6 +32,7 @@ class HealthController {
     UsersModule,
     MailModule,
     AuditModule,
+    StorageModule,
   ],
   controllers: [HealthController],
   providers: [

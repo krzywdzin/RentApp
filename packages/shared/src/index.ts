@@ -1,2 +1,6 @@
 export * from './types/user.types';
+export * from './types/vehicle.types';
+export * from './types/customer.types';
 export * from './schemas/auth.schemas';
+export * from './schemas/vehicle.schemas';
+export * from './schemas/customer.schemas';
