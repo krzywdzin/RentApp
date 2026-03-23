@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  ConflictException,
 } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Prisma } from '@prisma/client';
@@ -193,19 +194,231 @@ export class RentalsService {
     return updated;
   }
 
-  // TODO: Implement in Plan 03
   async processReturn(id: string, dto: ReturnRentalDto, userId: string): Promise<any> {
-    throw new Error('Not implemented');
+    // 1. Find rental with vehicle
+    const rental = await this.prisma.rental.findUnique({
+      where: { id },
+      include: RENTAL_INCLUDE,
+    });
+    if (!rental) {
+      throw new NotFoundException(`Rental with ID "${id}" not found`);
+    }
+
+    // 2. Validate transition (only ACTIVE and EXTENDED can return)
+    const oldStatus = rental.status;
+    validateTransition(rental.status as RentalStatus, RentalStatus.RETURNED);
+
+    // 3. Transaction: update rental + vehicle
+    await this.prisma.$transaction(async (tx: any) => {
+      await tx.rental.update({
+        where: { id },
+        data: {
+          status: RentalStatus.RETURNED,
+          returnMileage: dto.returnMileage,
+          returnData: dto.returnData ? (dto.returnData as any) : Prisma.JsonNull,
+          ...(dto.notes ? { notes: dto.notes } : {}),
+        },
+      });
+
+      await tx.vehicle.update({
+        where: { id: rental.vehicleId },
+        data: { status: 'AVAILABLE' },
+      });
+    });
+
+    // 4. Re-fetch with includes for full data (handoverData + returnData)
+    const updated = await this.prisma.rental.findUnique({
+      where: { id },
+      include: RENTAL_INCLUDE,
+    });
+
+    // 5. Emit event
+    this.eventEmitter.emit('rental.returned', {
+      rentalId: id,
+      vehicleId: rental.vehicleId,
+      customerId: rental.customerId,
+      returnedBy: userId,
+    });
+
+    // 6. Return with audit metadata
+    return {
+      ...updated,
+      __audit: {
+        action: 'rental.return',
+        entityType: 'Rental',
+        entityId: id,
+        changes: { status: { old: oldStatus, new: RentalStatus.RETURNED } },
+      },
+    };
   }
 
-  // TODO: Implement in Plan 03
   async extend(id: string, dto: ExtendRentalDto, userId: string): Promise<any> {
-    throw new Error('Not implemented');
+    // 1. Find rental
+    const rental = await this.prisma.rental.findUnique({
+      where: { id },
+      include: RENTAL_INCLUDE,
+    });
+    if (!rental) {
+      throw new NotFoundException(`Rental with ID "${id}" not found`);
+    }
+
+    // 2. Validate transition
+    const oldStatus = rental.status;
+    validateTransition(rental.status as RentalStatus, RentalStatus.EXTENDED);
+
+    // 3. Parse and validate newEndDate
+    const newEndDate = new Date(dto.newEndDate);
+    if (newEndDate <= rental.startDate) {
+      throw new BadRequestException('New end date must be after start date');
+    }
+
+    // 4. Check overlaps with new date range
+    const conflicts = await this.checkOverlap(
+      rental.vehicleId,
+      rental.startDate,
+      newEndDate,
+      id,
+    );
+    if (conflicts.length > 0) {
+      throw new ConflictException({
+        message: 'Extension would cause scheduling conflict',
+        conflicts,
+      });
+    }
+
+    // 5. Calculate new pricing
+    const newDays = Math.max(
+      1,
+      Math.ceil(
+        (newEndDate.getTime() - rental.startDate.getTime()) / (1000 * 60 * 60 * 24),
+      ),
+    );
+
+    let totalPriceNet: number;
+    let totalPriceGross: number;
+    let dailyRateNet = rental.dailyRateNet;
+
+    if (dto.totalPriceNet != null) {
+      // Admin override
+      totalPriceNet = dto.totalPriceNet;
+      totalPriceGross = Math.round(totalPriceNet * (1 + rental.vatRate / 100));
+    } else {
+      const pricing = calculatePricing({
+        dailyRateNet: rental.dailyRateNet,
+        days: newDays,
+        vatRate: rental.vatRate,
+      });
+      totalPriceNet = pricing.totalPriceNet;
+      totalPriceGross = pricing.totalPriceGross;
+      dailyRateNet = pricing.dailyRateNet;
+    }
+
+    // 6. Transaction: update rental
+    const updated = await this.prisma.$transaction(async (tx: any) => {
+      return tx.rental.update({
+        where: { id },
+        data: {
+          status: RentalStatus.EXTENDED,
+          endDate: newEndDate,
+          dailyRateNet,
+          totalPriceNet,
+          totalPriceGross,
+          ...(dto.notes ? { notes: dto.notes } : {}),
+        },
+        include: RENTAL_INCLUDE,
+      });
+    });
+
+    // 7. Emit event
+    this.eventEmitter.emit('rental.extended', {
+      rentalId: id,
+      customerId: rental.customerId,
+      newEndDate: newEndDate.toISOString(),
+      extendedBy: userId,
+    });
+
+    // 8. Return with audit metadata
+    return {
+      ...updated,
+      __audit: {
+        action: 'rental.extend',
+        entityType: 'Rental',
+        entityId: id,
+        changes: {
+          status: { old: oldStatus, new: RentalStatus.EXTENDED },
+          endDate: { old: rental.endDate, new: newEndDate },
+        },
+      },
+    };
   }
 
-  // TODO: Implement in Plan 03
   async rollback(id: string, dto: RollbackRentalDto, userId: string): Promise<any> {
-    throw new Error('Not implemented');
+    // 1. Find rental
+    const rental = await this.prisma.rental.findUnique({
+      where: { id },
+      include: RENTAL_INCLUDE,
+    });
+    if (!rental) {
+      throw new NotFoundException(`Rental with ID "${id}" not found`);
+    }
+
+    // 2. Validate admin rollback transition
+    const oldStatus = rental.status as RentalStatus;
+    validateTransition(oldStatus, dto.targetStatus, true);
+
+    // 3. Determine vehicle status side effect
+    const vehicleStatus =
+      dto.targetStatus === RentalStatus.DRAFT ? 'AVAILABLE' : 'RENTED';
+
+    // 4. Determine if we should clear return data
+    const clearReturnData = oldStatus === RentalStatus.RETURNED;
+
+    // 5. Transaction: update rental + vehicle
+    await this.prisma.$transaction(async (tx: any) => {
+      await tx.rental.update({
+        where: { id },
+        data: {
+          status: dto.targetStatus,
+          ...(clearReturnData
+            ? { returnMileage: null, returnData: Prisma.JsonNull }
+            : {}),
+        },
+      });
+
+      await tx.vehicle.update({
+        where: { id: rental.vehicleId },
+        data: { status: vehicleStatus },
+      });
+    });
+
+    // 6. Re-fetch
+    const updated = await this.prisma.rental.findUnique({
+      where: { id },
+      include: RENTAL_INCLUDE,
+    });
+
+    // 7. Emit event
+    this.eventEmitter.emit('rental.rolledBack', {
+      rentalId: id,
+      from: oldStatus,
+      to: dto.targetStatus,
+      reason: dto.reason,
+      rolledBackBy: userId,
+    });
+
+    // 8. Return with audit metadata
+    return {
+      ...updated,
+      __audit: {
+        action: 'rental.rollback',
+        entityType: 'Rental',
+        entityId: id,
+        changes: {
+          status: { old: oldStatus, new: dto.targetStatus },
+          reason: dto.reason,
+        },
+      },
+    };
   }
 
   async getCalendar(query: CalendarQueryDto): Promise<CalendarResponse> {
