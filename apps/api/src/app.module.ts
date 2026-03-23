@@ -13,6 +13,8 @@ import { AuditModule } from './audit/audit.module';
 import { AuditInterceptor } from './audit/audit.interceptor';
 import { Public } from './common/decorators/public.decorator';
 import { StorageModule } from './storage/storage.module';
+import { VehiclesModule } from './vehicles/vehicles.module';
+import { CustomersModule } from './customers/customers.module';
 
 @Controller()
 class HealthController {
@@ -33,6 +35,8 @@ class HealthController {
     MailModule,
     AuditModule,
     StorageModule,
+    VehiclesModule,
+    CustomersModule,
   ],
   controllers: [HealthController],
   providers: [
