@@ -8,7 +8,6 @@ import {
   Query,
   ParseUUIDPipe,
   HttpStatus,
-  HttpCode,
   Res,
 } from '@nestjs/common';
 import { Response } from 'express';
@@ -98,16 +97,7 @@ export class RentalsController {
     @Body() dto: ReturnRentalDto,
     @CurrentUser('id') userId: string,
   ) {
-    const rental = await this.rentalsService.processReturn(id, dto, userId);
-    return {
-      ...rental,
-      __audit: {
-        action: 'rental.return',
-        entityType: 'Rental',
-        entityId: id,
-        changes: { status: { old: rental.status, new: 'RETURNED' } },
-      },
-    };
+    return this.rentalsService.processReturn(id, dto, userId);
   }
 
   @Patch(':id/extend')
@@ -117,16 +107,7 @@ export class RentalsController {
     @Body() dto: ExtendRentalDto,
     @CurrentUser('id') userId: string,
   ) {
-    const rental = await this.rentalsService.extend(id, dto, userId);
-    return {
-      ...rental,
-      __audit: {
-        action: 'rental.extend',
-        entityType: 'Rental',
-        entityId: id,
-        changes: { endDate: { old: null, new: rental.endDate } },
-      },
-    };
+    return this.rentalsService.extend(id, dto, userId);
   }
 
   @Patch(':id/rollback')
@@ -136,15 +117,6 @@ export class RentalsController {
     @Body() dto: RollbackRentalDto,
     @CurrentUser('id') userId: string,
   ) {
-    const rental = await this.rentalsService.rollback(id, dto, userId);
-    return {
-      ...rental,
-      __audit: {
-        action: 'rental.rollback',
-        entityType: 'Rental',
-        entityId: id,
-        changes: { status: { old: null, new: rental.status }, reason: dto.reason },
-      },
-    };
+    return this.rentalsService.rollback(id, dto, userId);
   }
 }

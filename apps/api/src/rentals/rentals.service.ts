@@ -494,11 +494,11 @@ export class RentalsService {
     excludeRentalId?: string,
   ): Promise<OverlapConflict[]> {
     const conflicts = await this.prisma.$queryRaw<OverlapConflict[]>`
-      SELECT id, start_date as "startDate", end_date as "endDate", status
+      SELECT id, "startDate", "endDate", status
       FROM rentals
-      WHERE vehicle_id = ${vehicleId}
+      WHERE "vehicleId" = ${vehicleId}
         AND status NOT IN ('RETURNED')
-        AND tstzrange(start_date, end_date, '[)') && tstzrange(${startDate}::timestamptz, ${endDate}::timestamptz, '[)')
+        AND tstzrange("startDate", "endDate", '[)') && tstzrange(${startDate}::timestamptz, ${endDate}::timestamptz, '[)')
         AND (${excludeRentalId}::text IS NULL OR id::text != ${excludeRentalId}::text)
     `;
 
