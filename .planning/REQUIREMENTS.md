@@ -19,7 +19,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **FLEET-01**: Admin może dodawać/edytować/usuwać pojazdy (rejestracja, VIN, marka/model, przebieg, ubezpieczenie, przegląd)
 - [x] **FLEET-02**: Status pojazdu aktualizuje się automatycznie na podstawie cyklu wynajmu (dostępny, wynajęty, serwis)
-- [ ] **FLEET-03**: Admin może zaimportować flotę z pliku CSV/XLS
+- [x] **FLEET-03**: Admin może zaimportować flotę z pliku CSV/XLS
 
 ### Klienci (Customer Management)
 
@@ -137,7 +137,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-05 | Phase 1 | Complete |
 | FLEET-01 | Phase 2 | Complete |
 | FLEET-02 | Phase 2 | Complete |
-| FLEET-03 | Phase 2 | Pending |
+| FLEET-03 | Phase 2 | Complete |
 | CUST-01 | Phase 2 | Complete |
 | CUST-02 | Phase 2 | Complete |
 | CUST-03 | Phase 2 | Pending |
