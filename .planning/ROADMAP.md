@@ -89,11 +89,11 @@ Plans:
   3. System generates a PDF matching the existing paper template with correct Polish characters and the embedded signature
   4. PDF is automatically emailed to the customer after signing
   5. When a rental is extended, the system creates a contract annex (versioned) linked to the original contract
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 04-01: TBD
-- [ ] 04-02: TBD
+- [ ] 04-01-PLAN.md -- Prisma schema (Contract, ContractSignature, ContractAnnex), shared types/Zod schemas, PdfService (Puppeteer + Handlebars), contract + annex templates, Wave 0 test stubs
+- [ ] 04-02-PLAN.md -- ContractsService (create, sign, PDF generation, email delivery), ContractsController, rental.extended event listener for annexes, e2e tests
 
 ### Phase 5: Admin Panel
 **Goal**: Admin has a complete web interface to manage all system entities, search and filter data, and review the audit trail
@@ -179,7 +179,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 | 1. Foundation and Auth | 7/7 | Complete   | 2026-03-23 |
 | 2. Fleet and Customer Data | 3/3 | Complete   | 2026-03-23 |
 | 3. Rental Lifecycle | 3/3 | Complete    | 2026-03-23 |
-| 4. Contract and PDF | 0/? | Not started | - |
+| 4. Contract and PDF | 0/2 | Not started | - |
 | 5. Admin Panel | 0/? | Not started | - |
 | 6. Mobile App | 0/? | Not started | - |
 | 7. Photo and Damage Documentation | 0/? | Not started | - |
