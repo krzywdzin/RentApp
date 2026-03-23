@@ -130,13 +130,54 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (populated during roadmap creation) | | |
+| AUTH-01 | Phase 1 | Pending |
+| AUTH-02 | Phase 1 | Pending |
+| AUTH-03 | Phase 1 | Pending |
+| AUTH-04 | Phase 1 | Pending |
+| AUTH-05 | Phase 1 | Pending |
+| FLEET-01 | Phase 2 | Pending |
+| FLEET-02 | Phase 2 | Pending |
+| FLEET-03 | Phase 2 | Pending |
+| CUST-01 | Phase 2 | Pending |
+| CUST-02 | Phase 2 | Pending |
+| CUST-03 | Phase 2 | Pending |
+| CUST-04 | Phase 2 | Pending |
+| RENT-01 | Phase 3 | Pending |
+| RENT-02 | Phase 3 | Pending |
+| RENT-03 | Phase 3 | Pending |
+| RENT-04 | Phase 3 | Pending |
+| RENT-05 | Phase 3 | Pending |
+| CONT-01 | Phase 4 | Pending |
+| CONT-02 | Phase 4 | Pending |
+| CONT-03 | Phase 4 | Pending |
+| CONT-04 | Phase 4 | Pending |
+| CONT-05 | Phase 4 | Pending |
+| ADMIN-01 | Phase 5 | Pending |
+| ADMIN-02 | Phase 5 | Pending |
+| ADMIN-03 | Phase 5 | Pending |
+| MOB-01 | Phase 6 | Pending |
+| MOB-02 | Phase 6 | Pending |
+| MOB-03 | Phase 6 | Pending |
+| PHOTO-01 | Phase 7 | Pending |
+| PHOTO-02 | Phase 7 | Pending |
+| PHOTO-03 | Phase 7 | Pending |
+| DMG-01 | Phase 7 | Pending |
+| DMG-02 | Phase 7 | Pending |
+| NOTIF-01 | Phase 8 | Pending |
+| NOTIF-02 | Phase 8 | Pending |
+| NOTIF-03 | Phase 8 | Pending |
+| ALERT-01 | Phase 8 | Pending |
+| ALERT-02 | Phase 8 | Pending |
+| CEPIK-01 | Phase 9 | Pending |
+| CEPIK-02 | Phase 9 | Pending |
+| PORTAL-01 | Phase 9 | Pending |
+| PORTAL-02 | Phase 9 | Pending |
 
 **Coverage:**
-- v1 requirements: 35 total
-- Mapped to phases: 0
-- Unmapped: 35 ⚠️
+- v1 requirements: 42 total
+- Mapped to phases: 42
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-23*
-*Last updated: 2026-03-23 after initial definition*
+*Last updated: 2026-03-23 after roadmap creation*
