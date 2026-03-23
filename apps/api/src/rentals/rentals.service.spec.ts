@@ -1,6 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  NotFoundException,
+  BadRequestException,
+  ConflictException,
+} from '@nestjs/common';
 import { RentalsService } from './rentals.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { RentalStatus } from '@rentapp/shared';
@@ -436,6 +440,457 @@ describe('RentalsService', () => {
 
       expect(result.vehicles).toHaveLength(1);
       expect(result.vehicles[0].rentals).toHaveLength(0);
+    });
+  });
+
+  // --- processReturn ---
+
+  describe('processReturn', () => {
+    it('should return an ACTIVE rental with mileage and set vehicle to AVAILABLE', async () => {
+      const activeRental = baseDraftRental({
+        status: RentalStatus.ACTIVE,
+        vehicle: { ...mockVehicle, status: 'RENTED' },
+      });
+      const returnedRental = baseDraftRental({
+        status: RentalStatus.RETURNED,
+        returnMileage: 55000,
+        returnData: null,
+        vehicle: { ...mockVehicle, status: 'AVAILABLE' },
+        handoverData: { mileage: 50000 },
+      });
+
+      mockPrisma.rental.findUnique
+        .mockResolvedValueOnce(activeRental) // first call: find
+        .mockResolvedValueOnce(returnedRental); // second call: re-fetch
+      mockPrisma.$transaction.mockImplementation(async (fn: any) => fn(mockPrisma));
+      mockPrisma.rental.update.mockResolvedValue(returnedRental);
+      mockPrisma.vehicle.update.mockResolvedValue({ ...mockVehicle, status: 'AVAILABLE' });
+
+      const result = await service.processReturn(
+        RENTAL_ID,
+        { returnMileage: 55000 },
+        USER_ID,
+      );
+
+      expect(result.status).toBe(RentalStatus.RETURNED);
+      expect(result.returnMileage).toBe(55000);
+      expect(mockPrisma.vehicle.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ status: 'AVAILABLE' }),
+        }),
+      );
+      expect(mockEventEmitter.emit).toHaveBeenCalledWith(
+        'rental.returned',
+        expect.objectContaining({ rentalId: RENTAL_ID }),
+      );
+    });
+
+    it('should return an EXTENDED rental and set vehicle to AVAILABLE', async () => {
+      const extendedRental = baseDraftRental({
+        status: RentalStatus.EXTENDED,
+        vehicle: { ...mockVehicle, status: 'RENTED' },
+      });
+      const returnedRental = baseDraftRental({
+        status: RentalStatus.RETURNED,
+        returnMileage: 60000,
+        vehicle: { ...mockVehicle, status: 'AVAILABLE' },
+      });
+
+      mockPrisma.rental.findUnique
+        .mockResolvedValueOnce(extendedRental)
+        .mockResolvedValueOnce(returnedRental);
+      mockPrisma.$transaction.mockImplementation(async (fn: any) => fn(mockPrisma));
+      mockPrisma.rental.update.mockResolvedValue(returnedRental);
+      mockPrisma.vehicle.update.mockResolvedValue({ ...mockVehicle, status: 'AVAILABLE' });
+
+      const result = await service.processReturn(
+        RENTAL_ID,
+        { returnMileage: 60000 },
+        USER_ID,
+      );
+
+      expect(result.status).toBe(RentalStatus.RETURNED);
+    });
+
+    it('should throw BadRequestException when returning a DRAFT rental', async () => {
+      const draftRental = baseDraftRental({ status: RentalStatus.DRAFT });
+      mockPrisma.rental.findUnique.mockResolvedValue(draftRental);
+
+      await expect(
+        service.processReturn(RENTAL_ID, { returnMileage: 55000 }, USER_ID),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('should store returnData and include handoverData in response for comparison', async () => {
+      const inspectionData = {
+        mileage: 55000,
+        areas: [{ area: 'front', condition: 'good' }],
+      };
+      const activeRental = baseDraftRental({
+        status: RentalStatus.ACTIVE,
+        handoverData: { mileage: 50000 },
+        vehicle: { ...mockVehicle, status: 'RENTED' },
+      });
+      const returnedRental = baseDraftRental({
+        status: RentalStatus.RETURNED,
+        returnMileage: 55000,
+        returnData: inspectionData,
+        handoverData: { mileage: 50000 },
+        vehicle: { ...mockVehicle, status: 'AVAILABLE' },
+      });
+
+      mockPrisma.rental.findUnique
+        .mockResolvedValueOnce(activeRental)
+        .mockResolvedValueOnce(returnedRental);
+      mockPrisma.$transaction.mockImplementation(async (fn: any) => fn(mockPrisma));
+      mockPrisma.rental.update.mockResolvedValue(returnedRental);
+      mockPrisma.vehicle.update.mockResolvedValue({ ...mockVehicle, status: 'AVAILABLE' });
+
+      const result = await service.processReturn(
+        RENTAL_ID,
+        { returnMileage: 55000, returnData: inspectionData as any },
+        USER_ID,
+      );
+
+      expect(result.returnData).toEqual(inspectionData);
+      expect(result.handoverData).toEqual({ mileage: 50000 });
+    });
+
+    it('should work without returnData (only mileage required)', async () => {
+      const activeRental = baseDraftRental({
+        status: RentalStatus.ACTIVE,
+        vehicle: { ...mockVehicle, status: 'RENTED' },
+      });
+      const returnedRental = baseDraftRental({
+        status: RentalStatus.RETURNED,
+        returnMileage: 55000,
+        returnData: null,
+        vehicle: { ...mockVehicle, status: 'AVAILABLE' },
+      });
+
+      mockPrisma.rental.findUnique
+        .mockResolvedValueOnce(activeRental)
+        .mockResolvedValueOnce(returnedRental);
+      mockPrisma.$transaction.mockImplementation(async (fn: any) => fn(mockPrisma));
+      mockPrisma.rental.update.mockResolvedValue(returnedRental);
+      mockPrisma.vehicle.update.mockResolvedValue({ ...mockVehicle, status: 'AVAILABLE' });
+
+      const result = await service.processReturn(
+        RENTAL_ID,
+        { returnMileage: 55000 },
+        USER_ID,
+      );
+
+      expect(result.status).toBe(RentalStatus.RETURNED);
+      expect(result.returnMileage).toBe(55000);
+    });
+
+    it('should throw NotFoundException for non-existent rental', async () => {
+      mockPrisma.rental.findUnique.mockResolvedValue(null);
+
+      await expect(
+        service.processReturn('non-existent', { returnMileage: 55000 }, USER_ID),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  // --- extend ---
+
+  describe('extend', () => {
+    it('should extend an ACTIVE rental with recalculated pricing', async () => {
+      const activeRental = baseDraftRental({
+        status: RentalStatus.ACTIVE,
+        dailyRateNet: 10000,
+        startDate: new Date('2026-04-01'),
+        endDate: new Date('2026-04-06'),
+      });
+      const extendedRental = baseDraftRental({
+        status: RentalStatus.EXTENDED,
+        endDate: new Date('2026-04-10'),
+        dailyRateNet: 10000,
+        totalPriceNet: 90000,
+        totalPriceGross: 110700,
+      });
+
+      mockPrisma.rental.findUnique.mockResolvedValue(activeRental);
+      mockPrisma.$queryRaw.mockResolvedValue([]); // no overlaps
+      mockPrisma.$transaction.mockImplementation(async (fn: any) => fn(mockPrisma));
+      mockPrisma.rental.update.mockResolvedValue(extendedRental);
+
+      const result = await service.extend(
+        RENTAL_ID,
+        { newEndDate: '2026-04-10T00:00:00Z' },
+        USER_ID,
+      );
+
+      expect(result.status).toBe(RentalStatus.EXTENDED);
+      expect(mockPrisma.rental.update).toHaveBeenCalled();
+      expect(mockEventEmitter.emit).toHaveBeenCalledWith(
+        'rental.extended',
+        expect.objectContaining({ rentalId: RENTAL_ID }),
+      );
+    });
+
+    it('should extend an EXTENDED rental (stays EXTENDED)', async () => {
+      const extendedRental = baseDraftRental({
+        status: RentalStatus.EXTENDED,
+        dailyRateNet: 10000,
+        startDate: new Date('2026-04-01'),
+        endDate: new Date('2026-04-10'),
+      });
+      const reExtended = baseDraftRental({
+        status: RentalStatus.EXTENDED,
+        endDate: new Date('2026-04-15'),
+        dailyRateNet: 10000,
+        totalPriceNet: 140000,
+      });
+
+      mockPrisma.rental.findUnique.mockResolvedValue(extendedRental);
+      mockPrisma.$queryRaw.mockResolvedValue([]);
+      mockPrisma.$transaction.mockImplementation(async (fn: any) => fn(mockPrisma));
+      mockPrisma.rental.update.mockResolvedValue(reExtended);
+
+      const result = await service.extend(
+        RENTAL_ID,
+        { newEndDate: '2026-04-15T00:00:00Z' },
+        USER_ID,
+      );
+
+      expect(result.status).toBe(RentalStatus.EXTENDED);
+    });
+
+    it('should use totalPriceNet override when provided', async () => {
+      const activeRental = baseDraftRental({
+        status: RentalStatus.ACTIVE,
+        dailyRateNet: 10000,
+        startDate: new Date('2026-04-01'),
+        endDate: new Date('2026-04-06'),
+      });
+      const extendedRental = baseDraftRental({
+        status: RentalStatus.EXTENDED,
+        endDate: new Date('2026-04-10'),
+        totalPriceNet: 75000,
+      });
+
+      mockPrisma.rental.findUnique.mockResolvedValue(activeRental);
+      mockPrisma.$queryRaw.mockResolvedValue([]);
+      mockPrisma.$transaction.mockImplementation(async (fn: any) => fn(mockPrisma));
+      mockPrisma.rental.update.mockResolvedValue(extendedRental);
+
+      await service.extend(
+        RENTAL_ID,
+        { newEndDate: '2026-04-10T00:00:00Z', totalPriceNet: 75000 },
+        USER_ID,
+      );
+
+      expect(mockPrisma.rental.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ totalPriceNet: 75000 }),
+        }),
+      );
+    });
+
+    it('should throw BadRequestException for DRAFT rental', async () => {
+      const draftRental = baseDraftRental({ status: RentalStatus.DRAFT });
+      mockPrisma.rental.findUnique.mockResolvedValue(draftRental);
+
+      await expect(
+        service.extend(RENTAL_ID, { newEndDate: '2026-04-10T00:00:00Z' }, USER_ID),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('should throw ConflictException when extension causes overlap', async () => {
+      const activeRental = baseDraftRental({
+        status: RentalStatus.ACTIVE,
+        dailyRateNet: 10000,
+        startDate: new Date('2026-04-01'),
+        endDate: new Date('2026-04-06'),
+      });
+      const conflicts = [
+        { id: 'other-rental', startDate: new Date('2026-04-08'), endDate: new Date('2026-04-12'), status: 'ACTIVE' },
+      ];
+
+      mockPrisma.rental.findUnique.mockResolvedValue(activeRental);
+      mockPrisma.$queryRaw.mockResolvedValue(conflicts);
+
+      await expect(
+        service.extend(RENTAL_ID, { newEndDate: '2026-04-10T00:00:00Z' }, USER_ID),
+      ).rejects.toThrow(ConflictException);
+    });
+
+    it('should throw NotFoundException for non-existent rental', async () => {
+      mockPrisma.rental.findUnique.mockResolvedValue(null);
+
+      await expect(
+        service.extend('non-existent', { newEndDate: '2026-04-10T00:00:00Z' }, USER_ID),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  // --- rollback ---
+
+  describe('rollback', () => {
+    it('should rollback RETURNED to ACTIVE and set vehicle to RENTED', async () => {
+      const returnedRental = baseDraftRental({
+        status: RentalStatus.RETURNED,
+        returnMileage: 55000,
+        returnData: { mileage: 55000 },
+        vehicle: { ...mockVehicle, status: 'AVAILABLE' },
+      });
+      const rolledBackRental = baseDraftRental({
+        status: RentalStatus.ACTIVE,
+        returnMileage: null,
+        returnData: null,
+        vehicle: { ...mockVehicle, status: 'RENTED' },
+      });
+
+      mockPrisma.rental.findUnique
+        .mockResolvedValueOnce(returnedRental)
+        .mockResolvedValueOnce(rolledBackRental);
+      mockPrisma.$transaction.mockImplementation(async (fn: any) => fn(mockPrisma));
+      mockPrisma.rental.update.mockResolvedValue(rolledBackRental);
+      mockPrisma.vehicle.update.mockResolvedValue({ ...mockVehicle, status: 'RENTED' });
+
+      const result = await service.rollback(
+        RENTAL_ID,
+        { targetStatus: RentalStatus.ACTIVE, reason: 'Wrongly marked as returned' },
+        USER_ID,
+      );
+
+      expect(result.status).toBe(RentalStatus.ACTIVE);
+      expect(mockPrisma.vehicle.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ status: 'RENTED' }),
+        }),
+      );
+      expect(mockEventEmitter.emit).toHaveBeenCalledWith(
+        'rental.rolledBack',
+        expect.objectContaining({
+          rentalId: RENTAL_ID,
+          from: RentalStatus.RETURNED,
+          to: RentalStatus.ACTIVE,
+          reason: 'Wrongly marked as returned',
+        }),
+      );
+    });
+
+    it('should rollback EXTENDED to ACTIVE', async () => {
+      const extendedRental = baseDraftRental({
+        status: RentalStatus.EXTENDED,
+        vehicle: { ...mockVehicle, status: 'RENTED' },
+      });
+      const rolledBackRental = baseDraftRental({
+        status: RentalStatus.ACTIVE,
+        vehicle: { ...mockVehicle, status: 'RENTED' },
+      });
+
+      mockPrisma.rental.findUnique
+        .mockResolvedValueOnce(extendedRental)
+        .mockResolvedValueOnce(rolledBackRental);
+      mockPrisma.$transaction.mockImplementation(async (fn: any) => fn(mockPrisma));
+      mockPrisma.rental.update.mockResolvedValue(rolledBackRental);
+      mockPrisma.vehicle.update.mockResolvedValue({ ...mockVehicle, status: 'RENTED' });
+
+      const result = await service.rollback(
+        RENTAL_ID,
+        { targetStatus: RentalStatus.ACTIVE, reason: 'Extension was a mistake' },
+        USER_ID,
+      );
+
+      expect(result.status).toBe(RentalStatus.ACTIVE);
+    });
+
+    it('should rollback ACTIVE to DRAFT and set vehicle to AVAILABLE', async () => {
+      const activeRental = baseDraftRental({
+        status: RentalStatus.ACTIVE,
+        vehicle: { ...mockVehicle, status: 'RENTED' },
+      });
+      const rolledBackRental = baseDraftRental({
+        status: RentalStatus.DRAFT,
+        vehicle: { ...mockVehicle, status: 'AVAILABLE' },
+      });
+
+      mockPrisma.rental.findUnique
+        .mockResolvedValueOnce(activeRental)
+        .mockResolvedValueOnce(rolledBackRental);
+      mockPrisma.$transaction.mockImplementation(async (fn: any) => fn(mockPrisma));
+      mockPrisma.rental.update.mockResolvedValue(rolledBackRental);
+      mockPrisma.vehicle.update.mockResolvedValue({ ...mockVehicle, status: 'AVAILABLE' });
+
+      const result = await service.rollback(
+        RENTAL_ID,
+        { targetStatus: RentalStatus.DRAFT, reason: 'Created by mistake' },
+        USER_ID,
+      );
+
+      expect(result.status).toBe(RentalStatus.DRAFT);
+      expect(mockPrisma.vehicle.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ status: 'AVAILABLE' }),
+        }),
+      );
+    });
+
+    it('should throw BadRequestException when rolling back from DRAFT', async () => {
+      const draftRental = baseDraftRental({ status: RentalStatus.DRAFT });
+      mockPrisma.rental.findUnique.mockResolvedValue(draftRental);
+
+      await expect(
+        service.rollback(
+          RENTAL_ID,
+          { targetStatus: RentalStatus.ACTIVE, reason: 'Invalid' },
+          USER_ID,
+        ),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('should throw NotFoundException for non-existent rental', async () => {
+      mockPrisma.rental.findUnique.mockResolvedValue(null);
+
+      await expect(
+        service.rollback(
+          'non-existent',
+          { targetStatus: RentalStatus.ACTIVE, reason: 'Test' },
+          USER_ID,
+        ),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should clear returnMileage and returnData when rolling back from RETURNED', async () => {
+      const returnedRental = baseDraftRental({
+        status: RentalStatus.RETURNED,
+        returnMileage: 55000,
+        returnData: { mileage: 55000 },
+        vehicle: { ...mockVehicle, status: 'AVAILABLE' },
+      });
+      const rolledBackRental = baseDraftRental({
+        status: RentalStatus.ACTIVE,
+        returnMileage: null,
+        returnData: null,
+        vehicle: { ...mockVehicle, status: 'RENTED' },
+      });
+
+      mockPrisma.rental.findUnique
+        .mockResolvedValueOnce(returnedRental)
+        .mockResolvedValueOnce(rolledBackRental);
+      mockPrisma.$transaction.mockImplementation(async (fn: any) => fn(mockPrisma));
+      mockPrisma.rental.update.mockResolvedValue(rolledBackRental);
+      mockPrisma.vehicle.update.mockResolvedValue({ ...mockVehicle, status: 'RENTED' });
+
+      await service.rollback(
+        RENTAL_ID,
+        { targetStatus: RentalStatus.ACTIVE, reason: 'Test' },
+        USER_ID,
+      );
+
+      expect(mockPrisma.rental.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            returnMileage: null,
+            returnData: expect.anything(),
+          }),
+        }),
+      );
     });
   });
 });
