@@ -17,14 +17,14 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Flota (Fleet Management)
 
-- [ ] **FLEET-01**: Admin może dodawać/edytować/usuwać pojazdy (rejestracja, VIN, marka/model, przebieg, ubezpieczenie, przegląd)
-- [ ] **FLEET-02**: Status pojazdu aktualizuje się automatycznie na podstawie cyklu wynajmu (dostępny, wynajęty, serwis)
+- [x] **FLEET-01**: Admin może dodawać/edytować/usuwać pojazdy (rejestracja, VIN, marka/model, przebieg, ubezpieczenie, przegląd)
+- [x] **FLEET-02**: Status pojazdu aktualizuje się automatycznie na podstawie cyklu wynajmu (dostępny, wynajęty, serwis)
 - [ ] **FLEET-03**: Admin może zaimportować flotę z pliku CSV/XLS
 
 ### Klienci (Customer Management)
 
-- [ ] **CUST-01**: Pracownik może dodać nowego klienta (imię, nazwisko, telefon, adres, email, dowód osobisty, PESEL, prawo jazdy)
-- [ ] **CUST-02**: Dane wrażliwe (PESEL, nr dowodu, nr prawa jazdy) są szyfrowane na poziomie pola (AES-256-GCM)
+- [x] **CUST-01**: Pracownik może dodać nowego klienta (imię, nazwisko, telefon, adres, email, dowód osobisty, PESEL, prawo jazdy)
+- [x] **CUST-02**: Dane wrażliwe (PESEL, nr dowodu, nr prawa jazdy) są szyfrowane na poziomie pola (AES-256-GCM)
 - [ ] **CUST-03**: Pracownik może wyszukać klienta po nazwisku, telefonie lub PESEL-u — dane auto-uzupełniają się dla powracających klientów
 - [ ] **CUST-04**: System implementuje polityki retencji danych zgodne z RODO (automatyczne usuwanie po okresie retencji)
 
@@ -135,11 +135,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-03 | Phase 1 | Complete |
 | AUTH-04 | Phase 1 | Complete |
 | AUTH-05 | Phase 1 | Complete |
-| FLEET-01 | Phase 2 | Pending |
-| FLEET-02 | Phase 2 | Pending |
+| FLEET-01 | Phase 2 | Complete |
+| FLEET-02 | Phase 2 | Complete |
 | FLEET-03 | Phase 2 | Pending |
-| CUST-01 | Phase 2 | Pending |
-| CUST-02 | Phase 2 | Pending |
+| CUST-01 | Phase 2 | Complete |
+| CUST-02 | Phase 2 | Complete |
 | CUST-03 | Phase 2 | Pending |
 | CUST-04 | Phase 2 | Pending |
 | RENT-01 | Phase 3 | Pending |
