@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-03-PLAN.md
-last_updated: "2026-03-23T16:52:44.534Z"
+stopped_at: Completed 01-04-PLAN.md
+last_updated: "2026-03-23T17:08:47.025Z"
 last_activity: 2026-03-23 -- Completed 01-03 mail service and users module
 progress:
   total_phases: 9
   completed_phases: 0
   total_plans: 6
-  completed_plans: 4
-  percent: 67
+  completed_plans: 5
+  percent: 83
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-23)
 ## Current Position
 
 Phase: 1 of 9 (Foundation and Auth)
-Plan: 4 of 6 in current phase
+Plan: 5 of 6 in current phase
 Status: Executing
-Last activity: 2026-03-23 -- Completed 01-03 mail service and users module
+Last activity: 2026-03-23 -- Completed 01-04 auth module with JWT, lockout, token rotation, and e2e tests
 
-Progress: [███████░░░] 67%
+Progress: [████████░░] 83%
 
 ## Performance Metrics
 
@@ -54,6 +54,7 @@ Progress: [███████░░░] 67%
 | Phase 01 P01 | 5min | 2 tasks | 28 files |
 | Phase 01 P02 | 4min | 2 tasks | 7 files |
 | Phase 01 P03 | 4min | 2 tasks | 10 files |
+| Phase 01 P04 | 1min | 2 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -70,6 +71,8 @@ Recent decisions affecting current work:
 - [Phase 01]: Added @rentapp/shared as workspace dependency to API package for UserRole enum import
 - [Phase 01]: Created Roles/CurrentUser decorators from 01-02 scope as blocking dependency for UsersController
 - [Phase 01]: requestPasswordReset silently returns for non-existent emails to prevent user enumeration
+- [Phase 01]: Refresh tokens stored as argon2 hashes in Redis with 24h TTL, rotation on each use
+- [Phase 01]: Account lockout tracked in Redis (5 failures = 15min lockout) to avoid DB writes
 
 ### Pending Todos
 
@@ -83,6 +86,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-23T16:52:30.409Z
-Stopped at: Completed 01-03-PLAN.md
+Last session: 2026-03-23T17:08:47.023Z
+Stopped at: Completed 01-04-PLAN.md
 Resume file: None
