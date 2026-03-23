@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation and Auth** - Project scaffold, database schema, authentication with roles, and immutable audit trail (completed 2026-03-23)
 - [x] **Phase 2: Fleet and Customer Data** - Vehicle fleet management and customer database with encrypted PII (completed 2026-03-23)
-- [ ] **Phase 3: Rental Lifecycle** - Rental state machine, calendar with double-booking prevention, extension and return workflows
+- [x] **Phase 3: Rental Lifecycle** - Rental state machine, calendar with double-booking prevention, extension and return workflows (completed 2026-03-23)
 - [ ] **Phase 4: Contract and PDF** - Digital contract creation, signature capture, PDF generation from template, email delivery
 - [ ] **Phase 5: Admin Panel** - Web-based admin interface with full CRUD, search/filter, and audit trail viewing
 - [ ] **Phase 6: Mobile App** - Cross-platform field employee app for the complete rental workflow
@@ -178,7 +178,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 |-------|----------------|--------|-----------|
 | 1. Foundation and Auth | 7/7 | Complete   | 2026-03-23 |
 | 2. Fleet and Customer Data | 3/3 | Complete   | 2026-03-23 |
-| 3. Rental Lifecycle | 0/3 | Not started | - |
+| 3. Rental Lifecycle | 3/3 | Complete   | 2026-03-23 |
 | 4. Contract and PDF | 0/? | Not started | - |
 | 5. Admin Panel | 0/? | Not started | - |
 | 6. Mobile App | 0/? | Not started | - |
