@@ -17,7 +17,7 @@ import { SearchCustomerDto } from './dto/search-customer.dto';
 import {
   CustomerDto,
   CustomerSearchResultDto,
-} from '@rentapp/shared/src/types/customer.types';
+} from '@rentapp/shared';
 
 const SENSITIVE_FIELDS = ['pesel', 'idNumber', 'licenseNumber'] as const;
 

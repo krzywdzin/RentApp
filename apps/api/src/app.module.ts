@@ -15,6 +15,7 @@ import { Public } from './common/decorators/public.decorator';
 import { StorageModule } from './storage/storage.module';
 import { VehiclesModule } from './vehicles/vehicles.module';
 import { CustomersModule } from './customers/customers.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Controller()
 class HealthController {
@@ -37,6 +38,7 @@ class HealthController {
     StorageModule,
     VehiclesModule,
     CustomersModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [HealthController],
   providers: [
