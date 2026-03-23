@@ -178,7 +178,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 |-------|----------------|--------|-----------|
 | 1. Foundation and Auth | 7/7 | Complete   | 2026-03-23 |
 | 2. Fleet and Customer Data | 3/3 | Complete   | 2026-03-23 |
-| 3. Rental Lifecycle | 3/3 | Complete   | 2026-03-23 |
+| 3. Rental Lifecycle | 3/3 | Complete    | 2026-03-23 |
 | 4. Contract and PDF | 0/? | Not started | - |
 | 5. Admin Panel | 0/? | Not started | - |
 | 6. Mobile App | 0/? | Not started | - |
