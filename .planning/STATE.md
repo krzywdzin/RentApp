@@ -4,7 +4,7 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Completed 01-03-PLAN.md
-last_updated: "2026-03-23T16:52:34.733Z"
+last_updated: "2026-03-23T16:52:44.534Z"
 last_activity: 2026-03-23 -- Completed 01-03 mail service and users module
 progress:
   total_phases: 9
@@ -68,6 +68,8 @@ Recent decisions affecting current work:
 - [Phase 01]: Used it.todo() stubs as behavioral contracts -- Jest recognizes pending without failure
 - [Phase 01]: Pulled PrismaModule into Task 1 for build unblocking; used ESLint flat config v9+
 - [Phase 01]: Added @rentapp/shared as workspace dependency to API package for UserRole enum import
+- [Phase 01]: Created Roles/CurrentUser decorators from 01-02 scope as blocking dependency for UsersController
+- [Phase 01]: requestPasswordReset silently returns for non-existent emails to prevent user enumeration
 
 ### Pending Todos
 
