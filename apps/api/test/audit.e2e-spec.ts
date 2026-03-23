@@ -1,166 +1,188 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
-import { AuditModule } from '../src/audit/audit.module';
-import { AuditService } from '../src/audit/audit.service';
+import * as argon2 from 'argon2';
+import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
-import { PrismaModule } from '../src/prisma/prisma.module';
+import { AuditService } from '../src/audit/audit.service';
+import { UserRole } from '@rentapp/shared';
 
-/**
- * Audit e2e tests use a mocked PrismaService to avoid DB dependency.
- * These validate the HTTP layer: routing, guards, query validation,
- * and response shape. Full integration tests require a running database.
- */
+const ARGON2_OPTIONS = { memoryCost: 32768, timeCost: 3, parallelism: 1 };
+
 describe('Audit (e2e)', () => {
   let app: INestApplication;
+  let prisma: PrismaService;
   let auditService: AuditService;
-  const mockAuditLogs = [
-    {
-      id: 'audit-1',
-      actorId: 'admin-1',
-      action: 'user.post',
-      entityType: 'User',
-      entityId: 'user-1',
-      changesJson: { body: { old: null, new: { name: 'Test' } } },
-      ipAddress: '::1',
-      createdAt: new Date('2026-01-01'),
-      actor: { id: 'admin-1', name: 'Admin', email: 'admin@test.com' },
-    },
-  ];
+  let adminToken: string;
+  let employeeToken: string;
+  let adminId: string;
 
-  const mockPrisma = {
-    auditLog: {
-      create: jest.fn().mockResolvedValue(undefined),
-      findMany: jest.fn().mockResolvedValue(mockAuditLogs),
-      count: jest.fn().mockResolvedValue(1),
-    },
-    $connect: jest.fn(),
-    $disconnect: jest.fn(),
-  };
+  const adminEmail = 'audit-admin@test.com';
+  const adminPassword = 'AuditAdmin1!';
+  const employeeEmail = 'audit-employee@test.com';
+  const employeePassword = 'AuditEmployee1!';
+  const deviceId = '00000000-0000-4000-a000-000000000002';
+
+  async function loginAs(
+    email: string,
+    password: string,
+  ): Promise<string> {
+    const res = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email, password, deviceId })
+      .expect(201);
+    return res.body.accessToken;
+  }
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule, AuditModule],
-    })
-      .overrideProvider(PrismaService)
-      .useValue(mockPrisma)
-      .compile();
+      imports: [AppModule],
+    }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({ whitelist: true, transform: true }),
-    );
+    app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
     await app.init();
 
-    auditService = moduleFixture.get<AuditService>(AuditService);
+    prisma = app.get(PrismaService);
+    auditService = app.get(AuditService);
+
+    // Clean up from previous runs
+    await prisma.auditLog.deleteMany({});
+    await prisma.user.deleteMany({});
+
+    // Seed admin user
+    const adminHash = await argon2.hash(adminPassword, ARGON2_OPTIONS);
+    const admin = await prisma.user.create({
+      data: {
+        email: adminEmail,
+        name: 'Audit Admin',
+        role: UserRole.ADMIN,
+        passwordHash: adminHash,
+        isActive: true,
+      },
+    });
+    adminId = admin.id;
+
+    // Seed employee user
+    const employeeHash = await argon2.hash(employeePassword, ARGON2_OPTIONS);
+    await prisma.user.create({
+      data: {
+        email: employeeEmail,
+        name: 'Audit Employee',
+        role: UserRole.EMPLOYEE,
+        passwordHash: employeeHash,
+        isActive: true,
+      },
+    });
+
+    // Login both users
+    adminToken = await loginAs(adminEmail, adminPassword);
+    employeeToken = await loginAs(employeeEmail, employeePassword);
   });
 
   afterAll(async () => {
+    await prisma.auditLog.deleteMany({});
+    await prisma.user.deleteMany({});
     await app.close();
   });
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-    mockPrisma.auditLog.findMany.mockResolvedValue(mockAuditLogs);
-    mockPrisma.auditLog.count.mockResolvedValue(1);
-  });
-
   describe('GET /audit', () => {
-    it('returns paginated audit logs', async () => {
+    it('GET /audit as ADMIN returns 200 with paginated structure', async () => {
       const res = await request(app.getHttpServer())
         .get('/audit')
+        .set('Authorization', `Bearer ${adminToken}`)
         .expect(200);
 
       expect(res.body).toHaveProperty('data');
       expect(res.body).toHaveProperty('total');
       expect(res.body).toHaveProperty('limit');
       expect(res.body).toHaveProperty('offset');
-      expect(res.body.data).toHaveLength(1);
-      expect(res.body.data[0].action).toBe('user.post');
+      expect(Array.isArray(res.body.data)).toBe(true);
     });
 
-    it('filters by entityType query param', async () => {
+    it('GET /audit as EMPLOYEE returns 403', async () => {
       await request(app.getHttpServer())
+        .get('/audit')
+        .set('Authorization', `Bearer ${employeeToken}`)
+        .expect(403);
+    });
+
+    it('GET /audit without auth returns 401', async () => {
+      await request(app.getHttpServer())
+        .get('/audit')
+        .expect(401);
+    });
+
+    it('GET /audit filters by entityType', async () => {
+      // Create a user via POST /users to trigger audit interceptor
+      await request(app.getHttpServer())
+        .post('/users')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          email: 'audit-filter-test@test.com',
+          name: 'Filter Test User',
+          role: 'EMPLOYEE',
+        })
+        .expect(201);
+
+      // Small delay for async audit log write
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
+      const res = await request(app.getHttpServer())
         .get('/audit?entityType=User')
+        .set('Authorization', `Bearer ${adminToken}`)
         .expect(200);
 
-      expect(mockPrisma.auditLog.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: expect.objectContaining({ entityType: 'User' }),
-        }),
-      );
+      expect(res.body.data.length).toBeGreaterThan(0);
+      for (const entry of res.body.data) {
+        expect(entry.entityType).toBe('User');
+      }
     });
 
-    it('filters by actorId query param', async () => {
-      await request(app.getHttpServer())
-        .get('/audit?actorId=admin-1')
+    it('GET /audit filters by actorId', async () => {
+      const res = await request(app.getHttpServer())
+        .get(`/audit?actorId=${adminId}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .expect(200);
 
-      expect(mockPrisma.auditLog.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: expect.objectContaining({ actorId: 'admin-1' }),
-        }),
-      );
+      for (const entry of res.body.data) {
+        expect(entry.actorId).toBe(adminId);
+      }
     });
 
-    it('filters by entityId query param', async () => {
-      await request(app.getHttpServer())
-        .get('/audit?entityId=user-1')
+    it('GET /audit respects limit and offset', async () => {
+      const res = await request(app.getHttpServer())
+        .get('/audit?limit=1&offset=0')
+        .set('Authorization', `Bearer ${adminToken}`)
         .expect(200);
 
-      expect(mockPrisma.auditLog.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: expect.objectContaining({ entityId: 'user-1' }),
-        }),
-      );
+      expect(res.body.data.length).toBeLessThanOrEqual(1);
+      expect(res.body.limit).toBe(1);
+      expect(res.body.offset).toBe(0);
     });
 
-    it('respects limit and offset query params', async () => {
+    it('GET /audit does NOT create an audit log entry', async () => {
+      const countBefore = await prisma.auditLog.count();
+
       await request(app.getHttpServer())
-        .get('/audit?limit=10&offset=5')
+        .get('/audit')
+        .set('Authorization', `Bearer ${adminToken}`)
         .expect(200);
 
-      expect(mockPrisma.auditLog.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({ take: 10, skip: 5 }),
-      );
+      // Small delay to ensure any async audit write would have completed
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
+      const countAfter = await prisma.auditLog.count();
+      expect(countAfter).toBe(countBefore);
     });
   });
 
   describe('AuditService contract', () => {
-    it('log() calls prisma.auditLog.create', async () => {
-      await auditService.log({
-        actorId: 'user-1',
-        action: 'test.create',
-        entityType: 'Test',
-        entityId: 'test-1',
-        changes: {},
-        ipAddress: '127.0.0.1',
-      });
-
-      expect(mockPrisma.auditLog.create).toHaveBeenCalledTimes(1);
-    });
-
-    it('audit log entry contains actorId, action, entityType, entityId, changes', async () => {
-      const entry = {
-        actorId: 'actor-1',
-        action: 'user.post',
-        entityType: 'User',
-        entityId: 'user-2',
-        changes: { name: { old: null, new: 'Jane' } },
-        ipAddress: '::1',
-      };
-
-      await auditService.log(entry);
-
-      expect(mockPrisma.auditLog.create).toHaveBeenCalledWith({
-        data: expect.objectContaining({
-          actorId: 'actor-1',
-          action: 'user.post',
-          entityType: 'User',
-          entityId: 'user-2',
-          changesJson: entry.changes,
-        }),
-      });
+    it('AuditLog has no update or delete methods exposed', () => {
+      expect((auditService as any).update).toBeUndefined();
+      expect((auditService as any).delete).toBeUndefined();
+      expect((auditService as any).remove).toBeUndefined();
+      expect((auditService as any).destroy).toBeUndefined();
     });
   });
 });
