@@ -4,3 +4,5 @@ export * from './types/customer.types';
 export * from './schemas/auth.schemas';
 export * from './schemas/vehicle.schemas';
 export * from './schemas/customer.schemas';
+export * from './types/rental.types';
+export * from './schemas/rental.schemas';
