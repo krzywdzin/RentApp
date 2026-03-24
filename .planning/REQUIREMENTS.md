@@ -66,7 +66,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **MOB-01**: Pracownik ma aplikację mobilną cross-platform (Android + iOS) z logowaniem i dostępem do swoich funkcji
 - [ ] **MOB-02**: Pracownik może w aplikacji: wyszukać/dodać klienta, wybrać pojazd, wypełnić umowę, pobrać podpis, zrobić zdjęcia, złożyć wynajem
-- [ ] **MOB-03**: Pracownik może przeprowadzić zwrot pojazdu w aplikacji mobilnej
+- [x] **MOB-03**: Pracownik może przeprowadzić zwrot pojazdu w aplikacji mobilnej
 
 ### CEPiK (Driver Verification)
 
@@ -157,7 +157,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ADMIN-03 | Phase 5 | Complete |
 | MOB-01 | Phase 6 | Complete |
 | MOB-02 | Phase 6 | Pending |
-| MOB-03 | Phase 6 | Pending |
+| MOB-03 | Phase 6 | Complete |
 | PHOTO-01 | Phase 7 | Pending |
 | PHOTO-02 | Phase 7 | Pending |
 | PHOTO-03 | Phase 7 | Pending |
