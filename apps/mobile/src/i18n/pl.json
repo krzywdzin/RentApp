@@ -1,0 +1,115 @@
+{
+  "nav": {
+    "home": "Pulpit",
+    "newRental": "Nowy wynajem",
+    "rentals": "Wynajmy",
+    "profile": "Profil"
+  },
+  "dashboard": {
+    "greeting": "Czesc, {{firstName}}",
+    "activeRentals": "Aktywne wynajmy",
+    "todayPickups": "Dzisiejsze wydania",
+    "todayReturns": "Dzisiejsze zwroty",
+    "newRental": "Nowy wynajem",
+    "quickReturn": "Szybki zwrot",
+    "overdue": "{{count}} przeterminowanych zwrotow",
+    "upcomingReturns": "Nadchodzace zwroty"
+  },
+  "wizard": {
+    "step1": "Wybierz klienta",
+    "step2": "Wybierz pojazd",
+    "step3": "Daty i cena",
+    "step4": "Umowa do podpisu",
+    "step5": "Podpisy",
+    "newCustomer": "Nowy klient",
+    "customerSearch": "Szukaj po nazwisku, telefonie lub PESEL...",
+    "vehicleSearch": "Szukaj po rejestracji lub marce...",
+    "availableOnly": "Tylko dostepne",
+    "dailyRate": "Stawka dzienna netto",
+    "totalGross": "Razem brutto",
+    "rodoConsent": "Wyrazam zgode na przetwarzanie moich danych osobowych zgodnie z RODO",
+    "signCta": "Przejdz do podpisow",
+    "submitRental": "Zarejestruj wynajem",
+    "successHeading": "Umowa podpisana!",
+    "successBody": "PDF umowy zostal wyslany na adres email klienta.",
+    "viewPdf": "Zobacz PDF",
+    "newRentalBtn": "Nowy wynajem",
+    "backToHome": "Powrot do pulpitu"
+  },
+  "signatures": {
+    "customerContract": "Podpis klienta - umowa",
+    "employeeContract": "Podpis pracownika - umowa",
+    "customerConditions": "Podpis klienta - warunki",
+    "employeeConditions": "Podpis pracownika - warunki",
+    "stepCounter": "{{current}} z 4",
+    "instruction": "Prosze zlozyc podpis w wyznaczonym polu",
+    "clear": "Wyczysc podpis",
+    "confirm": "Zatwierdz podpis",
+    "next": "Nastepny podpis"
+  },
+  "returnWizard": {
+    "title": "Zwrot pojazdu",
+    "step1": "Potwierdzenie wynajmu",
+    "step2": "Przebieg",
+    "step3": "Lista kontrolna",
+    "step4": "Uwagi",
+    "step5": "Potwierdzenie zwrotu",
+    "handoverMileage": "Przebieg przy wydaniu",
+    "returnMileage": "Przebieg przy zwrocie",
+    "distanceDriven": "Przejechane",
+    "notesPlaceholder": "Dodaj uwagi dotyczace zwrotu...",
+    "submit": "Zatwierdz zwrot"
+  },
+  "rentals": {
+    "search": "Szukaj wynajmu...",
+    "filterAll": "Wszystkie",
+    "filterActive": "Aktywne",
+    "filterDraft": "Szkic",
+    "filterReturned": "Zwrocone",
+    "startReturn": "Rozpocznij zwrot"
+  },
+  "empty": {
+    "noUpcoming": "Brak nadchodzacych zwrotow",
+    "noUpcomingBody": "Nie masz zaplanowanych zwrotow na najblizsze dni.",
+    "noRentals": "Brak wynajmow",
+    "noRentalsBody": "Nie znaleziono wynajmow. Utworz nowy wynajem aby rozpoczac.",
+    "noCustomer": "Nie znaleziono klienta",
+    "noCustomerBody": "Sprobuj innej frazy lub dodaj nowego klienta.",
+    "noVehicle": "Brak dostepnych pojazdow",
+    "noVehicleBody": "Zaden pojazd nie spelnia kryteriow wyszukiwania."
+  },
+  "errors": {
+    "network": "Blad polaczenia. Sprawdz internet i sprobuj ponownie.",
+    "loginFailed": "Nieprawidlowy email lub haslo. Sprobuj ponownie.",
+    "sessionExpired": "Sesja wygasla. Zaloguj sie ponownie.",
+    "signatureUploadFailed": "Nie udalo sie wyslac podpisu. Sprawdz polaczenie i sprobuj ponownie.",
+    "rentalCreationFailed": "Nie udalo sie utworzyc wynajmu. Sprobuj ponownie.",
+    "returnFailed": "Nie udalo sie zarejestrowac zwrotu. Sprobuj ponownie.",
+    "vehicleUnavailable": "Ten pojazd jest juz zarezerwowany w wybranym terminie.",
+    "accountLocked": "Konto zablokowane. Sprobuj ponownie za 15 minut.",
+    "offline": "Brak polaczenia z internetem. Niektore funkcje sa niedostepne.",
+    "biometricFailed": "Uwierzytelnianie biometryczne nie powiodlo sie. Uzyj hasla."
+  },
+  "confirm": {
+    "discardDraftTitle": "Odrzucic szkic?",
+    "discardDraftBody": "Wszystkie wprowadzone dane zostana utracone.",
+    "discard": "Odrzuc",
+    "continue": "Kontynuuj",
+    "logoutTitle": "Wylogowac?",
+    "logoutBody": "Zostaniesz wylogowany z aplikacji.",
+    "logout": "Wyloguj",
+    "stay": "Pozostan"
+  },
+  "common": {
+    "next": "Dalej",
+    "back": "Wstecz",
+    "cancel": "Anuluj",
+    "save": "Zapisz",
+    "loading": "Ladowanie..."
+  },
+  "toasts": {
+    "rentalCreated": "Wynajem utworzony pomyslnie",
+    "returnSubmitted": "Zwrot zarejestrowany",
+    "draftResumed": "Wznowiono szkic wynajmu"
+  }
+}

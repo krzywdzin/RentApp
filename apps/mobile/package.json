@@ -23,6 +23,7 @@
     "axios": "^1.7.0",
     "expo": "~52.0.49",
     "expo-constants": "~17.0.0",
+    "expo-crypto": "^55.0.10",
     "expo-haptics": "~14.0.0",
     "expo-local-authentication": "~15.0.0",
     "expo-localization": "~16.0.0",
