@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in-progress
-stopped_at: Completed 08-01-PLAN.md
-last_updated: "2026-03-24T19:45:22Z"
-last_activity: 2026-03-24 -- Completed 08-01 Notification infrastructure
+stopped_at: Completed 08-02-PLAN.md
+last_updated: "2026-03-24T20:01:00Z"
+last_activity: 2026-03-24 -- Completed 08-02 Notification flow and tests
 progress:
   total_phases: 9
-  completed_phases: 7
+  completed_phases: 8
   total_plans: 29
-  completed_plans: 28
-  percent: 96
+  completed_plans: 29
+  percent: 100
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-23)
 ## Current Position
 
 Phase: 8 of 9 (Notifications and Alerts)
-Plan: 1 of 2 in current phase
+Plan: 2 of 2 in current phase
 Status: In Progress
-Last activity: 2026-03-24 -- Completed 08-01 Notification infrastructure
+Last activity: 2026-03-24 -- Completed 08-02 Notification flow and tests
 
-Progress: [██████████] 96%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -78,6 +78,7 @@ Progress: [██████████] 96%
 | Phase 07 P02 | 7min | 2 tasks | 4 files |
 | Phase 07 P03 | 10min | 2 tasks | 8 files |
 | Phase 08 P01 | 6min | 2 tasks | 28 files |
+| Phase 08 P02 | 7min | 2 tasks | 16 files |
 
 ## Accumulated Context
 
@@ -157,6 +158,9 @@ Recent decisions affecting current work:
 - [Phase 08]: Added sendRaw method to MailService for generic notification email delivery
 - [Phase 08]: bull package installed as peer dependency for @nestjs/bull v11
 - [Phase 08]: AlertConfig channels stored as JSON string in Prisma Json field
+- [Phase 08]: formatDateWarsaw helper using pl-PL locale with Europe/Warsaw timezone for all notification dates
+- [Phase 08]: Dedup via isDuplicate checking same type+relatedEntityId+scheduledFor date range before creating
+- [Phase 08]: In-app notifications created alongside email for insurance/inspection expiry alerts
 
 ### Pending Todos
 
@@ -170,6 +174,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-24T19:45:22Z
-Stopped at: Completed 08-01-PLAN.md
+Last session: 2026-03-24T20:01:00Z
+Stopped at: Completed 08-02-PLAN.md
 Resume file: None
