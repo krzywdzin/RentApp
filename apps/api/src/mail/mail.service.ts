@@ -43,4 +43,48 @@ export class MailService {
       html: `<p>Czesc ${name},</p><p>Kliknij ponizszy link aby zresetowac haslo:</p><p><a href="${link}">${link}</a></p><p>Link wygasa za 1 godzine.</p>`,
     });
   }
+
+  async sendContractEmail(
+    to: string,
+    customerName: string,
+    vehicleRegistration: string,
+    contractNumber: string,
+    pdfBuffer: Buffer,
+  ): Promise<void> {
+    await this.transporter.sendMail({
+      from: this.config.get('MAIL_FROM'),
+      to,
+      subject: 'RentApp - Umowa najmu pojazdu ' + vehicleRegistration,
+      html: `<p>Szanowny/a ${customerName},</p><p>W zalaczniku przesylamy umowe najmu pojazdu ${vehicleRegistration} (nr ${contractNumber}).</p><p>Prosimy o zachowanie tego dokumentu.</p><p>KITEK - Wynajem Pojazdow</p>`,
+      attachments: [
+        {
+          filename: `umowa-${contractNumber.replace(/\//g, '-')}.pdf`,
+          content: pdfBuffer,
+          contentType: 'application/pdf',
+        },
+      ],
+    });
+  }
+
+  async sendAnnexEmail(
+    to: string,
+    customerName: string,
+    contractNumber: string,
+    annexNumber: number,
+    pdfBuffer: Buffer,
+  ): Promise<void> {
+    await this.transporter.sendMail({
+      from: this.config.get('MAIL_FROM'),
+      to,
+      subject: `RentApp - Aneks nr ${annexNumber} do umowy ${contractNumber}`,
+      html: `<p>Szanowny/a ${customerName},</p><p>W zalaczniku przesylamy aneks nr ${annexNumber} do umowy ${contractNumber}.</p><p>Prosimy o zachowanie tego dokumentu.</p><p>KITEK - Wynajem Pojazdow</p>`,
+      attachments: [
+        {
+          filename: `aneks-${annexNumber}-${contractNumber.replace(/\//g, '-')}.pdf`,
+          content: pdfBuffer,
+          contentType: 'application/pdf',
+        },
+      ],
+    });
+  }
 }
