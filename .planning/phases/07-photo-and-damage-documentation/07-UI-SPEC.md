@@ -55,7 +55,7 @@ Declared values (must be multiples of 4). Shared across both platforms:
 
 Exceptions:
 - Photo thumbnail grid: 8px gap (sm), thumbnails at 96px square (3 per row on 320px minimum)
-- Damage pin touch target: 44px minimum (accessibility, finger-tap precision)
+- Damage pin touch target: 48px minimum (exceeds Apple HIG 44pt minimum, stays on 4px grid)
 - SVG diagram container: full-width with 16px horizontal padding
 - Comparison gutter: 8px between handover and return panels
 - Wizard step indicator height: 48px (progress bar + step number)
@@ -162,7 +162,7 @@ All UI copy in Polish.
 | Wizard title (return) | "Obchod zwrotu pojazdu" |
 | Primary CTA (capture) | "Zrob zdjecie" |
 | Primary CTA (retake) | "Zrob ponownie" |
-| Primary CTA (next step) | "Dalej" |
+| Primary CTA (next step) | "Dalej" -- accepted as standard wizard navigation idiom; contextual meaning is unambiguous within the step-by-step flow |
 | Primary CTA (submit) | "Zatwierdz obchod" |
 | Step labels | "Przod", "Tyl", "Lewa strona", "Prawa strona", "Wnetrze przod", "Wnetrze tyl", "Deska/przebieg", "Bagaznik" |
 | Freeform photo CTA | "Dodaj dodatkowe zdjecie" |
@@ -283,7 +283,7 @@ Two-column layout (50/50 split). Left column: handover data (photos + damage dia
 - **Pin rendering:** Circle (r=16) with number text centered inside. Fill color = severity color. Stroke = white (2px) for contrast.
 - **Pre-existing pins (return):** Fill = zinc-500, dashed stroke, number text, non-interactive.
 - **New pins (return):** Fill = severity color, solid stroke, number text, tappable.
-- **Tap zone:** Pins have a 44px minimum touch target (invisible enlarged hit area around the 32px visual circle).
+- **Tap zone:** Pins have a 48px minimum touch target (invisible enlarged hit area around the 32px visual circle; exceeds Apple HIG 44pt minimum, stays on 4px grid).
 
 ### Comparison View (Both Platforms)
 
