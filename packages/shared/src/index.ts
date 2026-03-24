@@ -11,3 +11,7 @@ export * from './schemas/contract.schemas';
 export * from './types/photo.types';
 export * from './types/notification.types';
 export * from './schemas/notification.schemas';
+export * from './types/cepik.types';
+export * from './schemas/cepik.schemas';
+export * from './types/portal.types';
+export * from './schemas/portal.schemas';

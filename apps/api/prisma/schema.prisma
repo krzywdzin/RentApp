@@ -92,6 +92,8 @@ model User {
   walkthroughsPerformed PhotoWalkthrough[] @relation("WalkthroughPerformedBy")
   photosUploaded        WalkthroughPhoto[] @relation("PhotoUploadedBy")
   inAppNotifications    InAppNotification[]
+  cepikChecks           CepikVerification[] @relation("CepikCheckedBy")
+  cepikOverrides        CepikVerification[] @relation("CepikOverriddenBy")
 
   @@map("users")
 }
@@ -130,6 +132,7 @@ model Vehicle {
   status          VehicleStatus     @default(AVAILABLE)
   photoKey        String?
   isArchived      Boolean           @default(false)
+  requiredLicenseCategory  String   @default("B")
 
   insurance       VehicleInsurance?
   inspection      VehicleInspection?
@@ -207,7 +210,11 @@ model Customer {
   retentionExpiresAt    DateTime?
   isArchived            Boolean   @default(false)
 
+  portalToken           String?
+  portalTokenExpiresAt  DateTime?
+
   rentals               Rental[]
+  cepikVerifications    CepikVerification[]
 
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
@@ -242,6 +249,7 @@ model Rental {
 
   contracts       Contract[]
   walkthroughs    PhotoWalkthrough[]
+  cepikVerifications  CepikVerification[]
 
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
@@ -443,4 +451,26 @@ model AlertConfig {
   updatedAt     DateTime @updatedAt
 
   @@map("alert_configs")
+}
+
+model CepikVerification {
+  id              String    @id @default(uuid())
+  customerId      String
+  rentalId        String?
+  status          String    // PENDING, PASSED, FAILED, OVERRIDDEN, ERROR
+  result          Json?     // Full CEPiK response
+  checkedById     String
+  overrideReason  String?
+  overriddenById  String?
+  overriddenAt    DateTime?
+  createdAt       DateTime  @default(now())
+
+  customer        Customer  @relation(fields: [customerId], references: [id])
+  rental          Rental?   @relation(fields: [rentalId], references: [id])
+  checkedBy       User      @relation("CepikCheckedBy", fields: [checkedById], references: [id])
+  overriddenBy    User?     @relation("CepikOverriddenBy", fields: [overriddenById], references: [id])
+
+  @@index([customerId])
+  @@index([rentalId])
+  @@map("cepik_verifications")
 }
