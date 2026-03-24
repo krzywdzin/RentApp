@@ -134,11 +134,12 @@ Plans:
   2. Photos are linked to the specific rental and viewable in a side-by-side handover vs. return comparison
   3. Employee can mark damage on an interactive SVG vehicle diagram (tap, pin, attach photo)
   4. System shows a side-by-side comparison of damage diagrams from handover and return
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 07-01: TBD
-- [ ] 07-02: TBD
+- [ ] 07-01-PLAN.md -- Prisma schema (PhotoWalkthrough, WalkthroughPhoto, DamageReport), shared types/Zod schemas, DTOs, SVG assets, PhotosModule scaffold, Wave 0 test stubs
+- [ ] 07-02-PLAN.md -- PhotosService (Sharp resize, EXIF/GPS extraction, MinIO upload, walkthrough lifecycle) and DamageService (pin CRUD, no-damage confirmation, comparison), unit tests
+- [ ] 07-03-PLAN.md -- E2e tests for photo and damage endpoints, admin panel comparison pages (side-by-side photos and damage diagrams)
 
 ### Phase 8: Notifications and Alerts
 **Goal**: Automated SMS and email notifications keep customers informed, and a configurable alert system proactively warns about upcoming deadlines and overdue returns
@@ -184,6 +185,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 | 4. Contract and PDF | 0/2 | Complete    | 2026-03-24 |
 | 5. Admin Panel | 4/4 | Complete    | 2026-03-24 |
 | 6. Mobile App | 0/? | Not started | - |
-| 7. Photo and Damage Documentation | 0/? | Not started | - |
+| 7. Photo and Damage Documentation | 0/3 | Not started | - |
 | 8. Notifications and Alerts | 0/2 | Not started | - |
 | 9. Customer Portal and CEPiK | 0/? | Not started | - |
