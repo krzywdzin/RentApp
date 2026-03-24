@@ -103,11 +103,13 @@ Plans:
   1. Admin can perform full CRUD on vehicles, customers, rentals, and contracts through the web panel (desktop-first layout)
   2. Admin can search and filter data by registration number, customer name, date range, and perform bulk operations
   3. Admin can view the audit trail filtered by rental, vehicle, or employee -- seeing a chronological history of all actions
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 05-01: TBD
-- [ ] 05-02: TBD
+- [ ] 05-01-PLAN.md -- Scaffold Next.js app, shadcn/ui dark theme, auth BFF proxy, middleware, admin layout (sidebar + top bar), reusable DataTable, dashboard
+- [ ] 05-02-PLAN.md -- Vehicle and Customer CRUD pages with data tables, filters, bulk operations, Zod-validated forms, detail pages with tabs
+- [ ] 05-03-PLAN.md -- Rental pages (list + calendar Gantt timeline), rental CRUD with state-aware actions, contract list and detail pages
+- [ ] 05-04-PLAN.md -- Global audit trail page with server-side pagination, reusable AuditTrail component, wire Audyt tabs into all entity detail pages
 
 ### Phase 6: Mobile App
 **Goal**: Field employee can complete the entire rental workflow on a mobile device -- from customer lookup through contract signing to rental submission
@@ -180,7 +182,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 | 2. Fleet and Customer Data | 3/3 | Complete   | 2026-03-23 |
 | 3. Rental Lifecycle | 3/3 | Complete    | 2026-03-23 |
 | 4. Contract and PDF | 0/2 | Complete    | 2026-03-24 |
-| 5. Admin Panel | 0/? | Not started | - |
+| 5. Admin Panel | 0/4 | Not started | - |
 | 6. Mobile App | 0/? | Not started | - |
 | 7. Photo and Damage Documentation | 0/? | Not started | - |
 | 8. Notifications and Alerts | 0/? | Not started | - |
