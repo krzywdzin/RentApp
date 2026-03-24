@@ -5,6 +5,7 @@ import { PhotosService } from './photos.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.service';
 import { PHOTO_POSITIONS } from '@rentapp/shared';
+import exifr from 'exifr';
 
 // Mock sharp
 const sharpChain = {
@@ -13,11 +14,16 @@ const sharpChain = {
   jpeg: jest.fn().mockReturnThis(),
   toBuffer: jest.fn().mockResolvedValue(Buffer.from('resized')),
 };
-jest.mock('sharp', () => jest.fn(() => sharpChain));
+jest.mock('sharp', () => ({
+  __esModule: true,
+  default: jest.fn(() => sharpChain),
+}));
 
 // Mock exifr
-const exifr = { gps: jest.fn() };
-jest.mock('exifr', () => exifr);
+jest.mock('exifr', () => ({
+  __esModule: true,
+  default: { gps: jest.fn() },
+}));
 
 // Mock uuid
 jest.mock('uuid', () => ({ v4: () => 'test-uuid-1234' }));
@@ -131,7 +137,7 @@ describe('PhotosService', () => {
   describe('uploadPhoto()', () => {
     beforeEach(() => {
       prisma.photoWalkthrough.findUnique.mockResolvedValue(mockWalkthrough);
-      exifr.gps.mockResolvedValue({ latitude: 50.06, longitude: 19.94 });
+      (exifr.gps as jest.Mock).mockResolvedValue({ latitude: 50.06, longitude: 19.94 });
     });
 
     it('resizes image to max 2048px and generates 400px thumbnail', async () => {
@@ -142,8 +148,8 @@ describe('PhotosService', () => {
         capturedAt: '2026-03-24T12:00:00Z',
       }, 'user-1');
 
-      const sharp = require('sharp');
-      expect(sharp).toHaveBeenCalledWith(mockFile.buffer);
+      const sharpModule = require('sharp');
+      expect(sharpModule.default).toHaveBeenCalledWith(mockFile.buffer);
       expect(sharpChain.rotate).toHaveBeenCalled();
       expect(sharpChain.resize).toHaveBeenCalledWith(2048, 2048, {
         fit: 'inside',
@@ -175,7 +181,7 @@ describe('PhotosService', () => {
     });
 
     it('stores GPS as null when EXIF has no GPS data', async () => {
-      exifr.gps.mockResolvedValue(null);
+      (exifr.gps as jest.Mock).mockResolvedValue(null);
       prisma.walkthroughPhoto.create.mockResolvedValue({ id: 'photo-1' });
 
       await service.uploadPhoto('wt-1', mockFile, {
@@ -452,7 +458,7 @@ describe('PhotosService', () => {
       prisma.photoWalkthrough.findUnique.mockResolvedValue(recentWt);
       prisma.walkthroughPhoto.findUnique.mockResolvedValue(existingPhoto);
       prisma.walkthroughPhoto.update.mockResolvedValue({ ...existingPhoto });
-      exifr.gps.mockResolvedValue(null);
+      (exifr.gps as jest.Mock).mockResolvedValue(null);
 
       await expect(
         service.replacePhoto('wt-1', 'front', mockFile, {
@@ -484,7 +490,7 @@ describe('PhotosService', () => {
       prisma.photoWalkthrough.findUnique.mockResolvedValue(mockWalkthrough);
       prisma.walkthroughPhoto.findUnique.mockResolvedValue(existingPhoto);
       prisma.walkthroughPhoto.update.mockResolvedValue({ ...existingPhoto });
-      exifr.gps.mockResolvedValue(null);
+      (exifr.gps as jest.Mock).mockResolvedValue(null);
 
       await service.replacePhoto('wt-1', 'front', mockFile, {
         position: 'front',
