@@ -29,6 +29,7 @@ import {
 import { getRentalStatusBadge } from '../columns';
 import { formatDateTime, formatCurrency } from '@/lib/format';
 import { Loader2, Play, ArrowLeftRight, CalendarPlus, RotateCcw, Pencil } from 'lucide-react';
+import { AuditTrail } from '@/components/audit/audit-trail';
 
 export default function RentalDetailPage() {
   const params = useParams();
@@ -286,11 +287,7 @@ export default function RentalDetailPage() {
         </TabsContent>
 
         <TabsContent value="audyt">
-          <Card>
-            <CardContent className="py-8 text-center text-muted-foreground">
-              Historia zmian bedzie dostepna w kolejnej aktualizacji.
-            </CardContent>
-          </Card>
+          <AuditTrail entityType="Rental" entityId={id} />
         </TabsContent>
       </Tabs>
 

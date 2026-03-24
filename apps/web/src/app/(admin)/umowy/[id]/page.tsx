@@ -2,6 +2,7 @@
 
 import { useParams } from 'next/navigation';
 import { Download } from 'lucide-react';
+import { AuditTrail } from '@/components/audit/audit-trail';
 import type { ContractSignatureDto, ContractAnnexDto } from '@rentapp/shared';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -340,11 +341,7 @@ export default function ContractDetailPage() {
         </TabsContent>
 
         <TabsContent value="audyt">
-          <Card>
-            <CardContent className="py-8 text-center text-muted-foreground">
-              Historia zmian bedzie dostepna w kolejnej aktualizacji.
-            </CardContent>
-          </Card>
+          <AuditTrail entityType="Contract" entityId={id} />
         </TabsContent>
       </Tabs>
     </div>

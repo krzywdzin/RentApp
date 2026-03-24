@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Pencil } from 'lucide-react';
+import { AuditTrail } from '@/components/audit/audit-trail';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -87,6 +88,7 @@ export default function CustomerDetailPage() {
         <TabsList>
           <TabsTrigger value="dane">Dane</TabsTrigger>
           <TabsTrigger value="wynajmy">Wynajmy</TabsTrigger>
+          <TabsTrigger value="audyt">Audyt</TabsTrigger>
         </TabsList>
 
         <TabsContent value="dane">
@@ -164,6 +166,10 @@ export default function CustomerDetailPage() {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="audyt">
+          <AuditTrail entityType="Customer" entityId={params.id} />
         </TabsContent>
       </Tabs>
 
