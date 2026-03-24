@@ -34,7 +34,11 @@
     "successBody": "PDF umowy zostal wyslany na adres email klienta.",
     "viewPdf": "Zobacz PDF",
     "newRentalBtn": "Nowy wynajem",
-    "backToHome": "Powrot do pulpitu"
+    "backToHome": "Powrot do pulpitu",
+    "draftResumeTitle": "Masz niezakonczony wynajem",
+    "draftResumeBody": "Kontynuowac?",
+    "draftResumeContinue": "Tak",
+    "draftResumeReset": "Zacznij od nowa"
   },
   "signatures": {
     "customerContract": "Podpis klienta - umowa",
