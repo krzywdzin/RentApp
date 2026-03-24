@@ -23,6 +23,8 @@ import { PhotosModule } from './photos/photos.module';
 import { BullModule } from '@nestjs/bull';
 import { NotificationsModule } from './notifications/notifications.module';
 import { AlertConfigModule } from './alert-config/alert-config.module';
+import { CepikModule } from './cepik/cepik.module';
+import { PortalModule } from './portal/portal.module';
 
 @Controller()
 class HealthController {
@@ -58,6 +60,8 @@ class HealthController {
     }),
     NotificationsModule,
     AlertConfigModule,
+    CepikModule,
+    PortalModule,
   ],
   controllers: [HealthController],
   providers: [
