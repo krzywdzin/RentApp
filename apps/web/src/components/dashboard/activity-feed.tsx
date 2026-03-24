@@ -37,7 +37,7 @@ function formatAction(entry: AuditLogEntry): string {
 }
 
 export function ActivityFeed() {
-  const { data, isLoading } = useAudit({ limit: 5 });
+  const { data, isLoading } = useAudit({ limit: 5, offset: 0 });
 
   return (
     <Card>

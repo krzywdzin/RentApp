@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
 
 export interface AuditLogEntry {
@@ -6,7 +6,7 @@ export interface AuditLogEntry {
   action: string;
   entityType: string;
   entityId: string;
-  changesJson: Record<string, { old: unknown; new: unknown }>;
+  changesJson: Record<string, { old: unknown; new: unknown }> | null;
   createdAt: string;
   actor: { id: string; name: string; email: string } | null;
 }
@@ -18,27 +18,32 @@ export interface AuditResponse {
   offset: number;
 }
 
-export const auditKeys = {
-  all: ['audit'] as const,
-  list: (params?: Record<string, unknown>) => [...auditKeys.all, 'list', params] as const,
-};
-
-export function useAudit(params?: {
-  limit?: number;
+export interface AuditFilters {
   entityType?: string;
   entityId?: string;
   actorId?: string;
-}) {
+  limit: number;
+  offset: number;
+}
+
+export const auditKeys = {
+  all: ['audit'] as const,
+  list: (filters?: Record<string, unknown>) => [...auditKeys.all, 'list', filters] as const,
+};
+
+export function useAudit(filters: AuditFilters) {
   const searchParams = new URLSearchParams();
-  if (params?.limit) searchParams.set('limit', String(params.limit));
-  if (params?.entityType) searchParams.set('entityType', params.entityType);
-  if (params?.entityId) searchParams.set('entityId', params.entityId);
-  if (params?.actorId) searchParams.set('actorId', params.actorId);
+  searchParams.set('limit', String(filters.limit));
+  searchParams.set('offset', String(filters.offset));
+  if (filters.entityType) searchParams.set('entityType', filters.entityType);
+  if (filters.entityId) searchParams.set('entityId', filters.entityId);
+  if (filters.actorId) searchParams.set('actorId', filters.actorId);
 
   const qs = searchParams.toString();
 
   return useQuery({
-    queryKey: auditKeys.list(params),
-    queryFn: () => apiClient<AuditResponse>(`/audit${qs ? `?${qs}` : ''}`),
+    queryKey: auditKeys.list(filters as unknown as Record<string, unknown>),
+    queryFn: () => apiClient<AuditResponse>(`/audit?${qs}`),
+    placeholderData: keepPreviousData,
   });
 }
