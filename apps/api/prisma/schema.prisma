@@ -47,6 +47,11 @@ enum RentalStatus {
   RETURNED
 }
 
+enum WalkthroughType {
+  HANDOVER
+  RETURN
+}
+
 enum ContractStatus {
   DRAFT
   PARTIALLY_SIGNED
@@ -71,6 +76,8 @@ model User {
   auditLogs        AuditLog[] @relation("AuditActor")
   rentals          Rental[]   @relation("RentalCreatedBy")
   contractsCreated Contract[] @relation("ContractCreatedBy")
+  walkthroughsPerformed PhotoWalkthrough[] @relation("WalkthroughPerformedBy")
+  photosUploaded        WalkthroughPhoto[] @relation("PhotoUploadedBy")
 
   @@map("users")
 }
@@ -220,6 +227,7 @@ model Rental {
   createdBy       User          @relation("RentalCreatedBy", fields: [createdById], references: [id])
 
   contracts       Contract[]
+  walkthroughs    PhotoWalkthrough[]
 
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
@@ -308,4 +316,58 @@ model ContractAnnex {
   @@unique([contractId, annexNumber])
   @@index([contractId])
   @@map("contract_annexes")
+}
+
+model PhotoWalkthrough {
+  id              String           @id @default(uuid())
+  rentalId        String
+  type            WalkthroughType
+  performedById   String
+  submittedAt     DateTime?
+  noDamage        Boolean          @default(false)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  rental          Rental           @relation(fields: [rentalId], references: [id])
+  performedBy     User             @relation("WalkthroughPerformedBy", fields: [performedById], references: [id])
+  photos          WalkthroughPhoto[]
+  damageReport    DamageReport?
+
+  @@unique([rentalId, type])
+  @@index([rentalId])
+  @@map("photo_walkthroughs")
+}
+
+model WalkthroughPhoto {
+  id              String           @id @default(uuid())
+  walkthroughId   String
+  position        String
+  label           String?
+  photoKey        String
+  thumbnailKey    String
+  gpsLat          Float?
+  gpsLng          Float?
+  capturedAt      DateTime
+  uploadedAt      DateTime         @default(now())
+  uploadedById    String
+
+  walkthrough     PhotoWalkthrough @relation(fields: [walkthroughId], references: [id], onDelete: Cascade)
+  uploadedBy      User             @relation("PhotoUploadedBy", fields: [uploadedById], references: [id])
+
+  @@unique([walkthroughId, position])
+  @@index([walkthroughId])
+  @@map("walkthrough_photos")
+}
+
+model DamageReport {
+  id                  String           @id @default(uuid())
+  walkthroughId       String           @unique
+  pins                Json             @default("[]")
+  noDamageConfirmed   Boolean          @default(false)
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+
+  walkthrough         PhotoWalkthrough @relation(fields: [walkthroughId], references: [id], onDelete: Cascade)
+
+  @@map("damage_reports")
 }

@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" fill="none" stroke="#a1a1aa" stroke-width="3">
+  <!-- Right side profile (mirror of left): doors, windows, wheels -->
+  <!-- Body outline -->
+  <path d="M900 600 L900 500 Q900 480 880 470 L800 450 L700 440 Q650 350 600 300 L550 250 Q500 220 400 220 L300 250 Q250 270 220 300 L170 350 L120 440 L100 470 Q80 480 80 500 L80 600 Q80 620 100 630 L900 630 Q900 620 900 600 Z" />
+  <!-- Roof line -->
+  <path d="M600 300 L550 250 Q500 220 400 220 L300 250 Q250 270 220 300" />
+  <!-- Front windshield -->
+  <line x1="600" y1="300" x2="650" y2="440" />
+  <!-- Rear windshield -->
+  <line x1="220" y1="300" x2="170" y2="440" />
+  <!-- Window divider (B-pillar) -->
+  <line x1="410" y1="260" x2="410" y2="440" />
+  <!-- Front window -->
+  <path d="M600 300 L410 270 L410 440 L640 440 Z" stroke-dasharray="4,2" />
+  <!-- Rear window -->
+  <path d="M410 270 L230 300 L180 440 L410 440 Z" stroke-dasharray="4,2" />
+  <!-- Door line -->
+  <line x1="410" y1="440" x2="410" y2="600" />
+  <!-- Door handle front -->
+  <line x1="440" y1="470" x2="480" y2="470" />
+  <!-- Door handle rear -->
+  <line x1="310" y1="470" x2="350" y2="470" />
+  <!-- Front wheel -->
+  <circle cx="720" cy="630" r="75" />
+  <circle cx="720" cy="630" r="50" />
+  <circle cx="720" cy="630" r="10" />
+  <!-- Rear wheel -->
+  <circle cx="250" cy="630" r="75" />
+  <circle cx="250" cy="630" r="50" />
+  <circle cx="250" cy="630" r="10" />
+  <!-- Wheel arches -->
+  <path d="M820 600 Q720 540 620 600" />
+  <path d="M350 600 Q250 540 150 600" />
+  <!-- Side skirt -->
+  <line x1="620" y1="630" x2="350" y2="630" />
+  <!-- Bumper lines -->
+  <line x1="900" y1="550" x2="820" y2="550" />
+  <line x1="150" y1="550" x2="80" y2="550" />
+</svg>

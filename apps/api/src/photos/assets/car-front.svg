@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" fill="none" stroke="#a1a1aa" stroke-width="3">
+  <!-- Front view: grille, headlights, bumper outline -->
+  <!-- Body outline -->
+  <path d="M200 550 L200 400 Q200 350 250 320 L350 280 Q400 200 500 180 Q600 200 650 280 L750 320 Q800 350 800 400 L800 550 Q800 600 780 650 L780 750 Q780 800 750 800 L250 800 Q220 800 220 750 L220 650 Q200 600 200 550 Z" />
+  <!-- Windshield -->
+  <path d="M350 280 Q500 250 650 280 L620 200 Q500 170 380 200 Z" />
+  <!-- Grille -->
+  <rect x="350" y="500" width="300" height="80" rx="10" />
+  <line x1="400" y1="500" x2="400" y2="580" />
+  <line x1="450" y1="500" x2="450" y2="580" />
+  <line x1="500" y1="500" x2="500" y2="580" />
+  <line x1="550" y1="500" x2="550" y2="580" />
+  <line x1="600" y1="500" x2="600" y2="580" />
+  <!-- Left headlight -->
+  <path d="M220 440 Q240 400 300 400 L300 480 Q240 480 220 440 Z" />
+  <!-- Right headlight -->
+  <path d="M780 440 Q760 400 700 400 L700 480 Q760 480 780 440 Z" />
+  <!-- Front bumper -->
+  <path d="M250 650 L750 650 Q770 650 770 680 L770 750 Q770 780 750 780 L250 780 Q230 780 230 750 L230 680 Q230 650 250 650 Z" />
+  <!-- License plate area -->
+  <rect x="400" y="680" width="200" height="50" rx="5" />
+  <!-- Hood -->
+  <path d="M320 320 Q500 300 680 320 L680 400 Q500 380 320 400 Z" stroke-dasharray="6,3" />
+</svg>

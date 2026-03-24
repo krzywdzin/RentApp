@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" fill="none" stroke="#a1a1aa" stroke-width="3">
+  <!-- Top-down view: roof, hood, trunk outline -->
+  <!-- Body outline -->
+  <path d="M350 100 Q500 80 650 100 L680 150 Q700 200 700 300 L700 700 Q700 800 680 850 L650 900 Q500 920 350 900 L320 850 Q300 800 300 700 L300 300 Q300 200 320 150 Z" />
+  <!-- Windshield -->
+  <path d="M370 250 Q500 230 630 250 L620 320 Q500 310 380 320 Z" />
+  <!-- Rear window -->
+  <path d="M380 680 Q500 690 620 680 L630 750 Q500 770 370 750 Z" />
+  <!-- Hood center line -->
+  <line x1="500" y1="100" x2="500" y2="250" stroke-dasharray="8,4" />
+  <!-- Trunk center line -->
+  <line x1="500" y1="750" x2="500" y2="900" stroke-dasharray="8,4" />
+  <!-- Left mirror -->
+  <ellipse cx="285" cy="310" rx="20" ry="12" />
+  <!-- Right mirror -->
+  <ellipse cx="715" cy="310" rx="20" ry="12" />
+  <!-- Left door lines -->
+  <line x1="300" y1="340" x2="300" y2="500" />
+  <line x1="300" y1="510" x2="300" y2="660" />
+  <!-- Right door lines -->
+  <line x1="700" y1="340" x2="700" y2="500" />
+  <line x1="700" y1="510" x2="700" y2="660" />
+  <!-- Roof panel -->
+  <rect x="380" y="330" width="240" height="340" rx="20" stroke-dasharray="6,3" />
+</svg>
