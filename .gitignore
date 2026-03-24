@@ -7,3 +7,6 @@ dist/
 .DS_Store
 apps/api/prisma/migrations/
 coverage/
+
+# Next.js
+apps/web/.next/
