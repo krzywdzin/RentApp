@@ -192,4 +192,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 | 6. Mobile App | 5/5 | Complete    | 2026-03-24 |
 | 7. Photo and Damage Documentation | 3/3 | Complete    | 2026-03-24 |
 | 8. Notifications and Alerts | 2/2 | Complete    | 2026-03-24 |
-| 9. Customer Portal and CEPiK | 0/4 | Not started | - |
+| 9. Customer Portal and CEPiK | 3/4 | In Progress|  |

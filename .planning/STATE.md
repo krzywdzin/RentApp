@@ -10,8 +10,8 @@ progress:
   total_phases: 9
   completed_phases: 8
   total_plans: 33
-  completed_plans: 31
-  percent: 94
+  completed_plans: 32
+  percent: 97
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-23)
 ## Current Position
 
 Phase: 9 of 9 (Customer Portal and CEPiK)
-Plan: 2 of 4 in current phase
+Plan: 3 of 4 in current phase
 Status: In Progress
-Last activity: 2026-03-24 -- Completed 09-02 CEPiK verification module
+Last activity: 2026-03-24 -- Completed 09-03 Portal API module
 
-Progress: [█████████░] 94%
+Progress: [█████████░] 97%
 
 ## Performance Metrics
 
@@ -80,6 +80,8 @@ Progress: [█████████░] 94%
 | Phase 08 P01 | 6min | 2 tasks | 28 files |
 | Phase 08 P02 | 7min | 2 tasks | 16 files |
 | Phase 09 P01 | 2min | 2 tasks | 9 files |
+| Phase 09 P02 | 7min | 2 tasks | 10 files |
+| Phase 09 P03 | 16min | 2 tasks | 12 files |
 | Phase 09 P02 | 11min | 2 tasks | 9 files |
 
 ## Accumulated Context
@@ -165,6 +167,9 @@ Recent decisions affecting current work:
 - [Phase 08]: In-app notifications created alongside email for insurance/inspection expiry alerts
 - [Phase 09]: Split CEPiK/Portal types into .types.ts and .schemas.ts files following project convention
 - [Phase 09]: Dual User relations on CepikVerification: CepikCheckedBy and CepikOverriddenBy for audit trail
+- [Phase 09]: Portal controller uses @Public + PortalAuthGuard to bypass global JwtAuthGuard while enforcing portal-specific auth
+- [Phase 09]: Portal JWT shares JWT_ACCESS_SECRET with admin but uses type:portal claim for isolation
+- [Phase 09]: PortalService injected into ContractsService for token generation in signing flow
 - [Phase 09]: CepikService.verify() combines stub call + DB persistence in single atomic operation
 - [Phase 09]: __audit metadata consumed by AuditInterceptor, stripped from response -- tests verify behavior not metadata
 
@@ -180,6 +185,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-24T21:31:55Z
-Stopped at: Completed 09-02-PLAN.md
+Last session: 2026-03-24T21:37:00Z
+Stopped at: Completed 09-03-PLAN.md
 Resume file: None
