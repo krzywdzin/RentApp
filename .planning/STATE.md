@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 6 UI-SPEC approved
-last_updated: "2026-03-24T17:45:01.036Z"
-last_activity: 2026-03-24 -- Completed 05-03 Rental and contract pages (list, calendar, CRUD, detail)
+stopped_at: Completed 06-01-PLAN.md
+last_updated: "2026-03-24T18:23:49.588Z"
+last_activity: 2026-03-24 -- Completed 06-01 Expo scaffold with API client, stores, i18n, auth
 progress:
   total_phases: 9
   completed_phases: 5
-  total_plans: 24
-  completed_plans: 19
-  percent: 81
+  total_plans: 29
+  completed_plans: 20
+  percent: 69
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-23)
 
 **Core value:** Pracownik w terenie moze w pelni obsluzyc wynajem -- od wypelnienia umowy, przez zweryfikowanie uprawnien kierowcy, zrobienie zdjec auta, po podpis klienta i wysylke PDF -- bez papieru i bez powrotu do biura.
-**Current focus:** Phase 4: Contract and PDF
+**Current focus:** Phase 6: Mobile App
 
 ## Current Position
 
-Phase: 5 of 9 (Admin Panel)
-Plan: 3 of 4 in current phase
+Phase: 6 of 9 (Mobile App)
+Plan: 1 of 5 in current phase
 Status: In Progress
-Last activity: 2026-03-24 -- Completed 05-03 Rental and contract pages (list, calendar, CRUD, detail)
+Last activity: 2026-03-24 -- Completed 06-01 Expo scaffold with API client, stores, i18n, auth
 
-Progress: [████████████████░░░░] 81%
+Progress: [███████░░░] 69%
 
 ## Performance Metrics
 
@@ -69,6 +69,7 @@ Progress: [████████████████░░░░] 81%
 | Phase 05 P02 | 13min | 2 tasks | 10 files |
 | Phase 05 P03 | 11min | 2 tasks | 36 files |
 | Phase 05 P04 | 5min | 2 tasks | 10 files |
+| Phase 06 P01 | 5min | 2 tasks | 29 files |
 
 ## Accumulated Context
 
@@ -125,6 +126,9 @@ Recent decisions affecting current work:
 - [Phase 05]: Suspense wrapper pattern for pages using nuqs/useSearchParams in Next.js 15
 - [Phase 05]: Client-side filtering for vehicles and customers (small datasets, filter in useMemo)
 - [Phase 05]: Custom expandable table for audit rows instead of DataTable (needs row expansion)
+- [Phase 06]: expo-crypto for UUID generation instead of manual UUID
+- [Phase 06]: GET /users/me endpoint used for token validation (no dedicated /auth/me)
+- [Phase 06]: Refresh endpoint sends expired access token in Authorization header per API contract
 
 ### Pending Todos
 
@@ -138,6 +142,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-24T17:45:01.033Z
-Stopped at: Phase 6 UI-SPEC approved
-Resume file: .planning/phases/06-mobile-app/06-UI-SPEC.md
+Last session: 2026-03-24T18:23:49.587Z
+Stopped at: Completed 06-01-PLAN.md
+Resume file: None

@@ -187,7 +187,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 | 3. Rental Lifecycle | 3/3 | Complete    | 2026-03-23 |
 | 4. Contract and PDF | 0/2 | Complete    | 2026-03-24 |
 | 5. Admin Panel | 4/4 | Complete    | 2026-03-24 |
-| 6. Mobile App | 0/5 | Not started | - |
+| 6. Mobile App | 1/5 | In Progress|  |
 | 7. Photo and Damage Documentation | 0/3 | Not started | - |
 | 8. Notifications and Alerts | 0/2 | Not started | - |
 | 9. Customer Portal and CEPiK | 0/? | Not started | - |

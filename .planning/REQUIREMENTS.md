@@ -64,7 +64,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Aplikacja Mobilna (Mobile App)
 
-- [ ] **MOB-01**: Pracownik ma aplikację mobilną cross-platform (Android + iOS) z logowaniem i dostępem do swoich funkcji
+- [x] **MOB-01**: Pracownik ma aplikację mobilną cross-platform (Android + iOS) z logowaniem i dostępem do swoich funkcji
 - [ ] **MOB-02**: Pracownik może w aplikacji: wyszukać/dodać klienta, wybrać pojazd, wypełnić umowę, pobrać podpis, zrobić zdjęcia, złożyć wynajem
 - [ ] **MOB-03**: Pracownik może przeprowadzić zwrot pojazdu w aplikacji mobilnej
 
@@ -155,7 +155,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ADMIN-01 | Phase 5 | Complete |
 | ADMIN-02 | Phase 5 | Complete |
 | ADMIN-03 | Phase 5 | Complete |
-| MOB-01 | Phase 6 | Pending |
+| MOB-01 | Phase 6 | Complete |
 | MOB-02 | Phase 6 | Pending |
 | MOB-03 | Phase 6 | Pending |
 | PHOTO-01 | Phase 7 | Pending |
