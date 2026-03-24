@@ -1,16 +1,145 @@
-import { useQuery } from '@tanstack/react-query';
-import { apiClient } from '@/lib/api-client';
-import type { RentalDto } from '@rentapp/shared';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { apiClient, ApiError } from '@/lib/api-client';
+import { toast } from 'sonner';
+import type {
+  RentalDto,
+  RentalStatus,
+  CalendarResponse,
+  ExtendRentalInput,
+  ReturnRentalInput,
+  CreateRentalInput,
+} from '@rentapp/shared';
 
 export const rentalKeys = {
   all: ['rentals'] as const,
   list: (filters?: Record<string, unknown>) => [...rentalKeys.all, 'list', filters] as const,
   detail: (id: string) => [...rentalKeys.all, 'detail', id] as const,
+  calendar: (from: string, to: string) => [...rentalKeys.all, 'calendar', from, to] as const,
 };
 
-export function useRentals() {
+export function useRentals(status?: RentalStatus) {
+  const params = status ? `?status=${status}` : '';
   return useQuery({
-    queryKey: rentalKeys.list(),
-    queryFn: () => apiClient<RentalDto[]>('/rentals'),
+    queryKey: rentalKeys.list(status ? { status } : undefined),
+    queryFn: () => apiClient<RentalDto[]>(`/rentals${params}`),
+  });
+}
+
+export function useRental(id: string) {
+  return useQuery({
+    queryKey: rentalKeys.detail(id),
+    queryFn: () => apiClient<RentalDto>(`/rentals/${id}`),
+    enabled: !!id,
+  });
+}
+
+export function useRentalCalendar(from: string, to: string) {
+  return useQuery({
+    queryKey: rentalKeys.calendar(from, to),
+    queryFn: () =>
+      apiClient<CalendarResponse>(
+        `/rentals/calendar?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`,
+      ),
+    enabled: !!from && !!to,
+  });
+}
+
+export function useCreateRental() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: CreateRentalInput) =>
+      apiClient<RentalDto>('/rentals', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: rentalKeys.all });
+      toast.success('Wynajem utworzony');
+    },
+    onError: (error: Error) => {
+      if (error instanceof ApiError && error.status === 409) {
+        toast.error(
+          'Pojazd jest juz zarezerwowany w wybranym terminie. Wybierz inny termin lub pojazd.',
+        );
+      } else {
+        toast.error('Wystapil blad podczas tworzenia wynajmu');
+      }
+    },
+  });
+}
+
+export function useActivateRental(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () =>
+      apiClient<RentalDto>(`/rentals/${id}/activate`, {
+        method: 'PATCH',
+        body: JSON.stringify({}),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: rentalKeys.all });
+      queryClient.invalidateQueries({ queryKey: rentalKeys.detail(id) });
+      toast.success('Wynajem aktywowany');
+    },
+    onError: () => {
+      toast.error('Nie udalo sie aktywowac wynajmu');
+    },
+  });
+}
+
+export function useReturnRental(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: ReturnRentalInput) =>
+      apiClient<RentalDto>(`/rentals/${id}/return`, {
+        method: 'PATCH',
+        body: JSON.stringify(data),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: rentalKeys.all });
+      queryClient.invalidateQueries({ queryKey: rentalKeys.detail(id) });
+      toast.success('Zwrot zarejestrowany');
+    },
+    onError: () => {
+      toast.error('Nie udalo sie zarejestrowac zwrotu');
+    },
+  });
+}
+
+export function useExtendRental(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: ExtendRentalInput) =>
+      apiClient<RentalDto>(`/rentals/${id}/extend`, {
+        method: 'PATCH',
+        body: JSON.stringify(data),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: rentalKeys.all });
+      queryClient.invalidateQueries({ queryKey: rentalKeys.detail(id) });
+      toast.success('Wynajem przedluzony');
+    },
+    onError: () => {
+      toast.error('Nie udalo sie przedluzyc wynajmu');
+    },
+  });
+}
+
+export function useRollbackRental(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () =>
+      apiClient<RentalDto>(`/rentals/${id}/rollback`, {
+        method: 'PATCH',
+        body: JSON.stringify({}),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: rentalKeys.all });
+      queryClient.invalidateQueries({ queryKey: rentalKeys.detail(id) });
+      toast.success('Status cofniety');
+    },
+    onError: () => {
+      toast.error('Nie udalo sie cofnac statusu');
+    },
   });
 }
