@@ -10,8 +10,8 @@ progress:
   total_phases: 9
   completed_phases: 4
   total_plans: 21
-  completed_plans: 15
-  percent: 100
+  completed_plans: 17
+  percent: 81
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-23)
 ## Current Position
 
 Phase: 5 of 9 (Admin Panel)
-Plan: 1 of 4 in current phase
+Plan: 3 of 4 in current phase
 Status: In Progress
-Last activity: 2026-03-24 -- Completed 05-01 Admin panel foundation (scaffold, auth, layout, dashboard)
+Last activity: 2026-03-24 -- Completed 05-03 Rental and contract pages (list, calendar, CRUD, detail)
 
-Progress: [██████████████░░░░░░] 73%
+Progress: [████████████████░░░░] 81%
 
 ## Performance Metrics
 
@@ -66,6 +66,7 @@ Progress: [██████████████░░░░░░] 73%
 | Phase 04 P01 | 6min | 2 tasks | 15 files |
 | Phase 04 P02 | 7min | 2 tasks | 9 files |
 | Phase 05 P01 | 9min | 2 tasks | 37 files |
+| Phase 05 P03 | 11min | 2 tasks | 36 files |
 
 ## Accumulated Context
 
@@ -115,6 +116,9 @@ Recent decisions affecting current work:
 - [Phase 05]: BFF proxy pattern for auth -- Next.js Route Handlers proxy to NestJS API and store tokens in httpOnly cookies
 - [Phase 05]: Client-side dashboard stat computation from full vehicle/rental arrays (fleet is small)
 - [Phase 05]: Device ID stored in httpOnly cookie alongside tokens for refresh/logout flows
+- [Phase 05]: Contract list derived from rentals (no GET /contracts list endpoint)
+- [Phase 05]: Custom Gantt timeline with div positioning over external calendar library
+- [Phase 05]: Client-side rental filtering in useMemo (small fleet dataset)
 
 ### Pending Todos
 
@@ -128,6 +132,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-24T15:38:00.000Z
-Stopped at: Completed 05-01 admin panel foundation
-Resume file: .planning/phases/05-admin-panel/05-02-PLAN.md
+Last session: 2026-03-24T15:52:00.000Z
+Stopped at: Completed 05-03 rental and contract pages
+Resume file: .planning/phases/05-admin-panel/05-04-PLAN.md

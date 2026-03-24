@@ -59,7 +59,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Panel Admina (Admin Panel)
 
 - [x] **ADMIN-01**: Admin ma pełny CRUD na wszystkich encjach (pojazdy, klienci, wynajmy, umowy) przez panel webowy (desktop-first)
-- [ ] **ADMIN-02**: Admin może wyszukiwać i filtrować dane (po rejestracji, nazwisku, zakresie dat) z możliwością bulk operacji
+- [x] **ADMIN-02**: Admin może wyszukiwać i filtrować dane (po rejestracji, nazwisku, zakresie dat) z możliwością bulk operacji
 - [ ] **ADMIN-03**: Admin może przeglądać audit trail per wynajem, pojazd lub pracownik
 
 ### Aplikacja Mobilna (Mobile App)
@@ -153,7 +153,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CONT-04 | Phase 4 | Complete |
 | CONT-05 | Phase 4 | Complete |
 | ADMIN-01 | Phase 5 | Complete |
-| ADMIN-02 | Phase 5 | Pending |
+| ADMIN-02 | Phase 5 | Complete |
 | ADMIN-03 | Phase 5 | Pending |
 | MOB-01 | Phase 6 | Pending |
 | MOB-02 | Phase 6 | Pending |
