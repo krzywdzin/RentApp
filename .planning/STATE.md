@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
-stopped_at: Phase 7 UI-SPEC approved
-last_updated: "2026-03-24T15:36:42.091Z"
-last_activity: 2026-03-24 -- Completed 04-02 Contract business logic, controller, event listener
+status: in-progress
+stopped_at: Completed 05-01 admin panel foundation
+last_updated: "2026-03-24T15:38:00.000Z"
+last_activity: 2026-03-24 -- Completed 05-01 Admin panel foundation
 progress:
   total_phases: 9
   completed_phases: 4
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-03-23)
 
 ## Current Position
 
-Phase: 4 of 9 (Contract and PDF) -- COMPLETE
-Plan: 2 of 2 in current phase
-Status: Phase Complete
-Last activity: 2026-03-24 -- Completed 04-02 Contract business logic, controller, event listener
+Phase: 5 of 9 (Admin Panel)
+Plan: 1 of 4 in current phase
+Status: In Progress
+Last activity: 2026-03-24 -- Completed 05-01 Admin panel foundation (scaffold, auth, layout, dashboard)
 
-Progress: [██████████] 100%
+Progress: [██████████████░░░░░░] 73%
 
 ## Performance Metrics
 
@@ -65,6 +65,7 @@ Progress: [██████████] 100%
 | Phase 03 P03 | 18min | 2 tasks | 4 files |
 | Phase 04 P01 | 6min | 2 tasks | 15 files |
 | Phase 04 P02 | 7min | 2 tasks | 9 files |
+| Phase 05 P01 | 9min | 2 tasks | 37 files |
 
 ## Accumulated Context
 
@@ -111,6 +112,9 @@ Recent decisions affecting current work:
 - [Phase 04]: Signature upsert pattern allows re-signing without duplicate records
 - [Phase 04]: Email failures caught and logged without blocking contract flow
 - [Phase 04]: StorageService.getBuffer added for retrieving uploaded objects as Buffer
+- [Phase 05]: BFF proxy pattern for auth -- Next.js Route Handlers proxy to NestJS API and store tokens in httpOnly cookies
+- [Phase 05]: Client-side dashboard stat computation from full vehicle/rental arrays (fleet is small)
+- [Phase 05]: Device ID stored in httpOnly cookie alongside tokens for refresh/logout flows
 
 ### Pending Todos
 
@@ -124,6 +128,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-24T15:36:42.089Z
-Stopped at: Phase 7 UI-SPEC approved
-Resume file: .planning/phases/07-photo-and-damage-documentation/07-UI-SPEC.md
+Last session: 2026-03-24T15:38:00.000Z
+Stopped at: Completed 05-01 admin panel foundation
+Resume file: .planning/phases/05-admin-panel/05-02-PLAN.md
