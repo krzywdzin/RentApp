@@ -52,6 +52,19 @@ enum WalkthroughType {
   RETURN
 }
 
+enum NotificationChannel {
+  SMS
+  EMAIL
+  IN_APP
+}
+
+enum NotificationStatus {
+  PENDING
+  SENDING
+  SENT
+  FAILED
+}
+
 enum ContractStatus {
   DRAFT
   PARTIALLY_SIGNED
@@ -78,6 +91,7 @@ model User {
   contractsCreated Contract[] @relation("ContractCreatedBy")
   walkthroughsPerformed PhotoWalkthrough[] @relation("WalkthroughPerformedBy")
   photosUploaded        WalkthroughPhoto[] @relation("PhotoUploadedBy")
+  inAppNotifications    InAppNotification[]
 
   @@map("users")
 }
@@ -370,4 +384,63 @@ model DamageReport {
   walkthrough         PhotoWalkthrough @relation(fields: [walkthroughId], references: [id], onDelete: Cascade)
 
   @@map("damage_reports")
+}
+
+model Notification {
+  id                String              @id @default(uuid())
+  type              String
+  channel           NotificationChannel
+  recipientId       String?
+  recipientPhone    String?
+  recipientEmail    String?
+  status            NotificationStatus  @default(PENDING)
+  message           String?
+  errorMessage      String?
+  relatedEntityType String?
+  relatedEntityId   String?
+  scheduledFor      DateTime?
+  sentAt            DateTime?
+  attempts          Int                 @default(0)
+
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  @@index([relatedEntityType, relatedEntityId])
+  @@index([type, relatedEntityId, scheduledFor])
+  @@index([status])
+  @@index([recipientId])
+  @@map("notifications")
+}
+
+model InAppNotification {
+  id          String    @id @default(uuid())
+  userId      String
+  title       String
+  body        String
+  type        String
+  linkUrl     String?
+  isRead      Boolean   @default(false)
+  readAt      DateTime?
+
+  createdAt   DateTime  @default(now())
+
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@index([userId, isRead])
+  @@index([createdAt])
+  @@map("in_app_notifications")
+}
+
+model AlertConfig {
+  id            String   @id @default(uuid())
+  alertType     String   @unique
+  enabled       Boolean  @default(true)
+  leadTimeDays  Int      @default(1)
+  channels      Json     @default("[\"SMS\"]")
+  maxRepeat     Int?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("alert_configs")
 }

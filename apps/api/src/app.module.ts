@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { Controller, Get } from '@nestjs/common';
@@ -20,6 +20,9 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { RentalsModule } from './rentals/rentals.module';
 import { ContractsModule } from './contracts/contracts.module';
 import { PhotosModule } from './photos/photos.module';
+import { BullModule } from '@nestjs/bull';
+import { NotificationsModule } from './notifications/notifications.module';
+import { AlertConfigModule } from './alert-config/alert-config.module';
 
 @Controller()
 class HealthController {
@@ -47,6 +50,14 @@ class HealthController {
     RentalsModule,
     ContractsModule,
     PhotosModule,
+    BullModule.forRootAsync({
+      useFactory: (config: ConfigService) => ({
+        url: config.getOrThrow<string>('REDIS_URL'),
+      }),
+      inject: [ConfigService],
+    }),
+    NotificationsModule,
+    AlertConfigModule,
   ],
   controllers: [HealthController],
   providers: [

@@ -27,6 +27,7 @@
     "@prisma/client": "^6.0.0",
     "@rentapp/shared": "workspace:*",
     "argon2": "^0.41.0",
+    "bull": "^4.16.5",
     "bullmq": "^5.0.0",
     "class-transformer": "^0.5.0",
     "class-validator": "^0.14.0",
@@ -42,6 +43,7 @@
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.0",
     "sharp": "^0.34.5",
+    "smsapi": "^2.1.3",
     "uuid": "^11.0.0",
     "xlsx": "^0.18.5"
   },
@@ -50,6 +52,7 @@
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.0",
     "@rentapp/eslint-config": "workspace:*",
+    "@types/bull": "^4.10.4",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.0.0",
     "@types/multer": "^2.1.0",

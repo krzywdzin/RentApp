@@ -9,3 +9,5 @@ export * from './schemas/rental.schemas';
 export * from './types/contract.types';
 export * from './schemas/contract.schemas';
 export * from './types/photo.types';
+export * from './types/notification.types';
+export * from './schemas/notification.schemas';

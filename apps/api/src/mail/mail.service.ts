@@ -66,6 +66,15 @@ export class MailService {
     });
   }
 
+  async sendRaw(to: string, subject: string, html: string): Promise<void> {
+    await this.transporter.sendMail({
+      from: this.config.get('MAIL_FROM'),
+      to,
+      subject,
+      html,
+    });
+  }
+
   async sendAnnexEmail(
     to: string,
     customerName: string,
