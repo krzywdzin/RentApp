@@ -20,7 +20,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 6: Mobile App** - Cross-platform field employee app for the complete rental workflow (completed 2026-03-24)
 - [x] **Phase 7: Photo and Damage Documentation** - Structured vehicle photo capture with damage marking on SVG diagrams (completed 2026-03-24)
 - [x] **Phase 8: Notifications and Alerts** - SMS via smsapi.pl, email notifications, and configurable multi-channel alert system (completed 2026-03-24)
-- [ ] **Phase 9: Customer Portal and CEPiK** - Customer self-service portal and driver license verification
+- [x] **Phase 9: Customer Portal and CEPiK** - Customer self-service portal and driver license verification (completed 2026-03-24)
 
 ## Phase Details
 
@@ -172,10 +172,10 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 09-01-PLAN.md -- Prisma schema (CepikVerification + Customer portal fields + Vehicle license category), shared types/Zod schemas, Wave 0 test stubs
-- [ ] 09-02-PLAN.md -- CepikModule with stub service, verify and override endpoints, role-based access, unit + e2e tests
-- [ ] 09-03-PLAN.md -- PortalModule API (auth exchange, JWT strategy, rentals/contracts endpoints), magic link in contract signing, mail update, e2e tests
-- [ ] 09-04-PLAN.md -- Portal web UI: (portal) route group, BFF proxy, token exchange, rental list and detail pages, human verification
+- [x] 09-01-PLAN.md -- Prisma schema (CepikVerification + Customer portal fields + Vehicle license category), shared types/Zod schemas, Wave 0 test stubs
+- [x] 09-02-PLAN.md -- CepikModule with stub service, verify and override endpoints, role-based access, unit + e2e tests
+- [x] 09-03-PLAN.md -- PortalModule API (auth exchange, JWT strategy, rentals/contracts endpoints), magic link in contract signing, mail update, e2e tests
+- [x] 09-04-PLAN.md -- Portal web UI: (portal) route group, BFF proxy, token exchange, rental list and detail pages, human verification
 
 ## Progress
 
@@ -192,4 +192,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 | 6. Mobile App | 5/5 | Complete    | 2026-03-24 |
 | 7. Photo and Damage Documentation | 3/3 | Complete    | 2026-03-24 |
 | 8. Notifications and Alerts | 2/2 | Complete    | 2026-03-24 |
-| 9. Customer Portal and CEPiK | 3/4 | In Progress|  |
+| 9. Customer Portal and CEPiK | 4/4 | Complete   | 2026-03-24 |

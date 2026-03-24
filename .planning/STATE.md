@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 09-01-PLAN.md
-last_updated: "2026-03-24T21:19:31.014Z"
-last_activity: 2026-03-24 -- Completed 08-02 Notification flow and tests
+stopped_at: Completed 09-04-PLAN.md
+last_updated: "2026-03-24T21:46:41.827Z"
+last_activity: 2026-03-24 -- Completed 09-03 Portal API module
 progress:
   total_phases: 9
-  completed_phases: 8
+  completed_phases: 9
   total_plans: 33
-  completed_plans: 32
+  completed_plans: 33
   percent: 97
 ---
 
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-23)
 ## Current Position
 
 Phase: 9 of 9 (Customer Portal and CEPiK)
-Plan: 3 of 4 in current phase
-Status: In Progress
-Last activity: 2026-03-24 -- Completed 09-03 Portal API module
+Plan: 4 of 4 in current phase
+Status: Complete
+Last activity: 2026-03-24 -- Completed 09-04 Portal Web UI
 
-Progress: [█████████░] 97%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -83,6 +83,7 @@ Progress: [█████████░] 97%
 | Phase 09 P02 | 7min | 2 tasks | 10 files |
 | Phase 09 P03 | 16min | 2 tasks | 12 files |
 | Phase 09 P02 | 11min | 2 tasks | 9 files |
+| Phase 09 P04 | 20min | 3 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -172,6 +173,9 @@ Recent decisions affecting current work:
 - [Phase 09]: PortalService injected into ContractsService for token generation in signing flow
 - [Phase 09]: CepikService.verify() combines stub call + DB persistence in single atomic operation
 - [Phase 09]: __audit metadata consumed by AuditInterceptor, stripped from response -- tests verify behavior not metadata
+- [Phase 09]: Portal route group (portal) isolates layout from admin (admin) group
+- [Phase 09]: portal_token cookie scoped to /portal path with 24h maxAge matching JWT expiry
+- [Phase 09]: Token stripped from URL via replaceState after exchange for security
 
 ### Pending Todos
 
@@ -185,6 +189,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-24T21:37:00Z
-Stopped at: Completed 09-03-PLAN.md
+Last session: 2026-03-24T21:46:41.825Z
+Stopped at: Completed 09-04-PLAN.md
 Resume file: None
