@@ -46,8 +46,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Dokumentacja Fotograficzna (Photo Documentation)
 
-- [ ] **PHOTO-01**: Pracownik może wykonać strukturalny obchód fotograficzny pojazdu przy wydaniu i zwrocie
-- [ ] **PHOTO-02**: Każde zdjęcie zawiera timestamp i metadane GPS
+- [x] **PHOTO-01**: Pracownik może wykonać strukturalny obchód fotograficzny pojazdu przy wydaniu i zwrocie
+- [x] **PHOTO-02**: Każde zdjęcie zawiera timestamp i metadane GPS
 - [ ] **PHOTO-03**: Zdjęcia są powiązane z konkretnym wynajmem i można porównać stan przy wydaniu vs zwrocie (side-by-side)
 
 ### Powiadomienia (Notifications)
@@ -80,7 +80,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Oznaczanie Uszkodzeń (Damage Marking)
 
-- [ ] **DMG-01**: Pracownik może oznaczyć uszkodzenia na interaktywnym diagramie SVG pojazdu (tap → pin → zdjęcie)
+- [x] **DMG-01**: Pracownik może oznaczyć uszkodzenia na interaktywnym diagramie SVG pojazdu (tap → pin → zdjęcie)
 - [ ] **DMG-02**: System pozwala porównać diagramy uszkodzeń: stan przy wydaniu vs stan przy zwrocie (side-by-side)
 
 ### System Alertów (Alert System)
@@ -158,10 +158,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MOB-01 | Phase 6 | Complete |
 | MOB-02 | Phase 6 | Complete |
 | MOB-03 | Phase 6 | Complete |
-| PHOTO-01 | Phase 7 | Pending |
-| PHOTO-02 | Phase 7 | Pending |
+| PHOTO-01 | Phase 7 | Complete |
+| PHOTO-02 | Phase 7 | Complete |
 | PHOTO-03 | Phase 7 | Pending |
-| DMG-01 | Phase 7 | Pending |
+| DMG-01 | Phase 7 | Complete |
 | DMG-02 | Phase 7 | Pending |
 | NOTIF-01 | Phase 8 | Pending |
 | NOTIF-02 | Phase 8 | Pending |
