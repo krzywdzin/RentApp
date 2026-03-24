@@ -52,9 +52,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Powiadomienia (Notifications)
 
-- [ ] **NOTIF-01**: System wysyła SMS przez smsapi.pl: potwierdzenie wynajmu, przypomnienie o zwrocie (1 dzień przed), alert o przekroczeniu terminu
-- [ ] **NOTIF-02**: System wysyła email z umową PDF i potwierdzeniami wynajmu
-- [ ] **NOTIF-03**: Przy przedłużeniu wynajmu system automatycznie wysyła SMS do klienta z nowym terminem
+- [x] **NOTIF-01**: System wysyła SMS przez smsapi.pl: potwierdzenie wynajmu, przypomnienie o zwrocie (1 dzień przed), alert o przekroczeniu terminu
+- [x] **NOTIF-02**: System wysyła email z umową PDF i potwierdzeniami wynajmu
+- [x] **NOTIF-03**: Przy przedłużeniu wynajmu system automatycznie wysyła SMS do klienta z nowym terminem
 
 ### Panel Admina (Admin Panel)
 
@@ -85,8 +85,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### System Alertów (Alert System)
 
-- [ ] **ALERT-01**: System automatycznie generuje alerty: zbliżający się termin zwrotu, przeterminowany zwrot, wygasające ubezpieczenie, zbliżający się przegląd
-- [ ] **ALERT-02**: Alerty wysyłane wielokanałowo (email + SMS + in-app) z konfigurowalnymi regułami (warunek + kanał + timing)
+- [x] **ALERT-01**: System automatycznie generuje alerty: zbliżający się termin zwrotu, przeterminowany zwrot, wygasające ubezpieczenie, zbliżający się przegląd
+- [x] **ALERT-02**: Alerty wysyłane wielokanałowo (email + SMS + in-app) z konfigurowalnymi regułami (warunek + kanał + timing)
 
 ## v2 Requirements
 
@@ -163,11 +163,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PHOTO-03 | Phase 7 | Complete |
 | DMG-01 | Phase 7 | Complete |
 | DMG-02 | Phase 7 | Complete |
-| NOTIF-01 | Phase 8 | Pending |
-| NOTIF-02 | Phase 8 | Pending |
-| NOTIF-03 | Phase 8 | Pending |
-| ALERT-01 | Phase 8 | Pending |
-| ALERT-02 | Phase 8 | Pending |
+| NOTIF-01 | Phase 8 | Complete |
+| NOTIF-02 | Phase 8 | Complete |
+| NOTIF-03 | Phase 8 | Complete |
+| ALERT-01 | Phase 8 | Complete |
+| ALERT-02 | Phase 8 | Complete |
 | CEPIK-01 | Phase 9 | Pending |
 | CEPIK-02 | Phase 9 | Pending |
 | PORTAL-01 | Phase 9 | Pending |
