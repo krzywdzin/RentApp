@@ -1,0 +1,62 @@
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import type { CreateRentalInput, ReturnRentalInput, ExtendRentalInput } from '@rentapp/shared';
+import { rentalsApi } from '@/api/rentals.api';
+
+export const rentalKeys = {
+  all: ['rentals'] as const,
+  lists: () => [...rentalKeys.all, 'list'] as const,
+  list: (filters?: { status?: string }) =>
+    [...rentalKeys.lists(), filters] as const,
+  details: () => [...rentalKeys.all, 'detail'] as const,
+  detail: (id: string) => [...rentalKeys.details(), id] as const,
+};
+
+export function useRentals(filters?: { status?: string }) {
+  return useQuery({
+    queryKey: rentalKeys.list(filters),
+    queryFn: () => rentalsApi.getRentals(filters),
+  });
+}
+
+export function useRental(id: string) {
+  return useQuery({
+    queryKey: rentalKeys.detail(id),
+    queryFn: () => rentalsApi.getRental(id),
+    enabled: !!id,
+  });
+}
+
+export function useCreateRental() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: CreateRentalInput) => rentalsApi.createRental(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: rentalKeys.all });
+    },
+  });
+}
+
+export function useReturnRental() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: ReturnRentalInput }) =>
+      rentalsApi.returnRental(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: rentalKeys.all });
+    },
+  });
+}
+
+export function useExtendRental() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: ExtendRentalInput }) =>
+      rentalsApi.extendRental(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: rentalKeys.all });
+    },
+  });
+}
