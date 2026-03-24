@@ -51,7 +51,7 @@ Exceptions:
 - Screen horizontal padding: 16px (md) consistently on all screens
 - Bottom tab bar: 64px height (3xl) including safe area padding
 - Wizard progress indicator: 4px height bar with 8px vertical margin
-- Bottom sheet handle: 4px height, 32px width, centered with 12px top padding
+- Bottom sheet handle: 4px height, 32px width, centered with 16px top padding
 
 ---
 
@@ -60,13 +60,14 @@ Exceptions:
 | Role | Size | Weight | Line Height |
 |------|------|--------|-------------|
 | Body | 16px | 400 (regular) | 1.5 |
-| Label | 13px | 500 (medium) | 1.4 |
+| Label | 13px | 400 (regular) | 1.4 |
 | Heading | 20px | 600 (semibold) | 1.2 |
-| Display | 28px | 700 (bold) | 1.1 |
+| Display | 28px | 600 (semibold) | 1.1 |
 
 **Notes:**
+- 2 weights only: 400 (regular) for body and labels, 600 (semibold) for headings and display numbers
 - Body at 16px for readability in outdoor/field conditions (not 14px like admin panel)
-- Label at 13px/500 for form labels, tab bar labels, status badges, list item secondary text
+- Label at 13px for form labels, tab bar labels, status badges, list item secondary text
 - Heading at 20px for screen titles, wizard step titles, section headers
 - Display at 28px for dashboard stat numbers only (active rentals count, today's pickups count)
 - System fonts only -- SF Pro on iOS, Roboto on Android. No custom font loading needed.
@@ -212,7 +213,7 @@ Accent is NOT used for: status badges (use success/warning/overdue), card backgr
 |---------|-------------|
 | Header bar | "Podpis klienta - strona 1" (or appropriate label), step count "1 z 4" |
 | Canvas | Full-width, ~70% height, white background, black pen stroke |
-| Controls | "Wyczysc" (clear, secondary button), "Zatwierdz" (confirm, accent button) |
+| Controls | "Wyczysc podpis" (clear, secondary button), "Zatwierdz podpis" (confirm, accent button) |
 | Instruction | "Prosze zlozyc podpis w wyznaczonym polu" above canvas |
 
 ---
@@ -277,8 +278,8 @@ All UI copy in Polish (i18n keys in translation files).
 | Employee conditions sig | "Podpis pracownika - warunki" |
 | Step counter | "{current} z 4" |
 | Instruction | "Prosze zlozyc podpis w wyznaczonym polu" |
-| Clear button | "Wyczysc" |
-| Confirm button | "Zatwierdz" |
+| Clear button | "Wyczysc podpis" |
+| Confirm button | "Zatwierdz podpis" |
 | Next signature CTA | "Nastepny podpis" |
 
 ### Vehicle Return Wizard
@@ -337,7 +338,7 @@ All UI copy in Polish (i18n keys in translation files).
 | Action | Dialog Title | Dialog Body | Confirm Button | Cancel Button |
 |--------|-------------|-------------|----------------|---------------|
 | Discard wizard draft | "Odrzucic szkic?" | "Wszystkie wprowadzone dane zostana utracone." | "Odrzuc" (destructive) | "Kontynuuj" |
-| Logout | "Wylogowac?" | "Zostaniesz wylogowany z aplikacji." | "Wyloguj" (destructive) | "Anuluj" |
+| Logout | "Wylogowac?" | "Zostaniesz wylogowany z aplikacji." | "Wyloguj" (destructive) | "Pozostan" |
 | Clear signature | N/A -- no confirmation, canvas clears immediately (low cost to redo) | | | |
 
 ---
@@ -345,16 +346,16 @@ All UI copy in Polish (i18n keys in translation files).
 ## Visual Focal Point
 
 ### Dashboard
-The stat cards row is the primary visual anchor. Three cards with large display numbers (28px bold) sit in a horizontal scroll at the top below the greeting. Below them, the two quick-action buttons ("Nowy wynajem" in accent fill, "Szybki zwrot" in outline) draw the eye as the primary calls to action. The upcoming returns list fills the remaining scroll area.
+The stat cards row is the primary visual anchor. Three cards with large display numbers (28px semibold) sit in a horizontal scroll at the top below the greeting. Below them, the two quick-action buttons ("Nowy wynajem" in accent fill, "Szybki zwrot" in outline) draw the eye as the primary calls to action. The upcoming returns list fills the remaining scroll area.
 
 ### Rental Wizard
 The WizardStepper progress bar is the persistent visual anchor at the top of every step. It uses a filled bar (accent color) showing progress fraction, with step dots below. The step content area below is a scrollable form. The primary CTA button is fixed at the bottom of the screen (above safe area), always visible without scrolling.
 
 ### Signature Screen
-The canvas occupies the center of the landscape screen. White background with a subtle bottom border line indicating the signing baseline. The "Zatwierdz" button sits bottom-right, "Wyczysc" bottom-left. The header bar with signature label and step count sits at the top in a compact 48px bar.
+The canvas occupies the center of the landscape screen. White background with a subtle bottom border line indicating the signing baseline. The "Zatwierdz podpis" button sits bottom-right, "Wyczysc podpis" bottom-left. The header bar with signature label and step count sits at the top in a compact 48px bar.
 
 ### Rentals List
-The search bar sits at the top, followed by horizontal filter chips. The rental list items are the focal point -- each card shows the most important info at a glance: customer name (heading weight), vehicle registration (label weight, zinc-500), date range, and a color-coded status badge on the right edge.
+The search bar sits at the top, followed by horizontal filter chips. The rental list items are the focal point -- each card shows the most important info at a glance: customer name (semibold weight), vehicle registration (regular weight, zinc-500), date range, and a color-coded status badge on the right edge.
 
 ---
 
