@@ -169,11 +169,13 @@ Plans:
   2. Customer can view active rentals, rental history, return dates, and download PDF contracts from the portal
   3. System checks driver license status (suspension, validity) via CEPiK 2.0 API before contract signing
   4. CEPiK verification is asynchronous -- rental can proceed without it via manual fallback when the API is unavailable
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 09-01: TBD
-- [ ] 09-02: TBD
+- [ ] 09-01-PLAN.md -- Prisma schema (CepikVerification + Customer portal fields + Vehicle license category), shared types/Zod schemas, Wave 0 test stubs
+- [ ] 09-02-PLAN.md -- CepikModule with stub service, verify and override endpoints, role-based access, unit + e2e tests
+- [ ] 09-03-PLAN.md -- PortalModule API (auth exchange, JWT strategy, rentals/contracts endpoints), magic link in contract signing, mail update, e2e tests
+- [ ] 09-04-PLAN.md -- Portal web UI: (portal) route group, BFF proxy, token exchange, rental list and detail pages, human verification
 
 ## Progress
 
@@ -190,4 +192,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 | 6. Mobile App | 5/5 | Complete    | 2026-03-24 |
 | 7. Photo and Damage Documentation | 3/3 | Complete    | 2026-03-24 |
 | 8. Notifications and Alerts | 2/2 | Complete    | 2026-03-24 |
-| 9. Customer Portal and CEPiK | 0/? | Not started | - |
+| 9. Customer Portal and CEPiK | 0/4 | Not started | - |
