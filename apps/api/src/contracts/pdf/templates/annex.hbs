@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; font-size: 11px; color: rgb(33, 33, 33); }
+
+    .page { width: 210mm; min-height: 297mm; padding: 15mm; }
+
+    .header { text-align: center; margin-bottom: 8mm; }
+    .company-name { font-size: 14px; font-weight: 700; }
+    .company-info { font-size: 10px; color: rgb(100, 100, 100); margin-top: 1mm; }
+    .title { font-size: 16px; font-weight: 700; margin: 8mm 0; text-align: center; }
+
+    .section { margin-bottom: 6mm; }
+    .section-title { font-size: 11px; font-weight: 700; margin-bottom: 2mm; text-transform: uppercase; border-bottom: 1px solid rgb(200, 200, 200); padding-bottom: 1mm; }
+
+    .field-row { display: flex; margin: 2mm 0; }
+    .field-label { font-weight: 600; min-width: 50mm; }
+    .field-value { flex: 1; }
+
+    .note { font-style: italic; margin-top: 6mm; padding: 3mm; border: 1px solid rgb(200, 200, 200); background: rgb(250, 250, 250); }
+
+    .signature-block { display: inline-block; width: 45%; text-align: center; margin-top: 15mm; }
+    .signature-line { border-top: 1px solid rgb(0, 0, 0); margin-top: 2mm; padding-top: 1mm; }
+    .signature-label { font-size: 9px; }
+
+    .date-line { margin-top: 10mm; font-size: 10px; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="header">
+      <div class="company-name">KITEK - Pawel Romanowski</div>
+      <div class="company-info">
+        ul. Sieradzka 18, 87-100 Torun<br>
+        Tel. 535 766 666 / 602 367 100
+      </div>
+    </div>
+
+    <div class="title">ANEKS NR {{annexNumber}} DO UMOWY NAJMU NR {{contractNumber}}</div>
+
+    <div class="section">
+      <div class="field-row">
+        <span class="field-label">Dotyczy umowy z dnia:</span>
+        <span class="field-value">{{formatDate contractDate}}</span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Najemca:</span>
+        <span class="field-value">{{customer.firstName}} {{customer.lastName}}</span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Pojazd:</span>
+        <span class="field-value">{{vehicle.make}} {{vehicle.model}} ({{vehicle.registration}})</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Zmiany</div>
+      {{#if changes.newEndDate}}
+      <div class="field-row">
+        <span class="field-label">Nowa data zakonczenia:</span>
+        <span class="field-value">{{formatDateTime changes.newEndDate}}</span>
+      </div>
+      {{/if}}
+      {{#if changes.newDailyRateNet}}
+      <div class="field-row">
+        <span class="field-label">Nowa stawka za dobe (netto):</span>
+        <span class="field-value">{{formatMoney changes.newDailyRateNet}}</span>
+      </div>
+      {{/if}}
+      {{#if changes.newTotalPriceNet}}
+      <div class="field-row">
+        <span class="field-label">Nowa cena calkowita (netto):</span>
+        <span class="field-value">{{formatMoney changes.newTotalPriceNet}}</span>
+      </div>
+      {{/if}}
+      {{#if changes.newTotalPriceGross}}
+      <div class="field-row">
+        <span class="field-label">Nowa cena calkowita (brutto):</span>
+        <span class="field-value">{{formatMoney changes.newTotalPriceGross}}</span>
+      </div>
+      {{/if}}
+    </div>
+
+    <div class="note">
+      Pozostale warunki umowy pozostaja bez zmian.
+    </div>
+
+    <div class="date-line">
+      Data sporzadzenia aneksu: {{formatDate createdAt}}
+    </div>
+
+    <div class="signature-block">
+      <div class="signature-line">
+        <span class="signature-label">(Podpis Wynajmujacego)</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

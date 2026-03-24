@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; font-size: 11px; color: rgb(33, 33, 33); }
+
+    .page { width: 210mm; min-height: 297mm; padding: 15mm; page-break-after: always; }
+    .page:last-child { page-break-after: avoid; }
+
+    .header { text-align: center; margin-bottom: 8mm; }
+    .company-name { font-size: 14px; font-weight: 700; }
+    .company-info { font-size: 10px; color: rgb(100, 100, 100); margin-top: 1mm; }
+    .title { font-size: 16px; font-weight: 700; margin: 5mm 0; text-align: center; text-transform: uppercase; }
+
+    .section { margin-bottom: 4mm; }
+    .section-title { font-size: 11px; font-weight: 700; margin-bottom: 2mm; text-transform: uppercase; border-bottom: 1px solid rgb(200, 200, 200); padding-bottom: 1mm; }
+
+    .field-row { display: flex; margin: 1.5mm 0; }
+    .field-label { font-weight: 600; min-width: 45mm; }
+    .field-value { flex: 1; }
+
+    .two-columns { display: flex; gap: 5mm; }
+    .two-columns > div { flex: 1; }
+
+    .signatures-row { display: flex; justify-content: space-between; margin-top: 10mm; }
+    .signature-block { display: inline-block; width: 45%; text-align: center; }
+    .signature-img { height: 20mm; max-width: 100%; }
+    .signature-line { border-top: 1px solid rgb(0, 0, 0); margin-top: 2mm; padding-top: 1mm; }
+    .signature-label { font-size: 9px; }
+
+    .conditions { font-size: 10px; }
+    .conditions ol { padding-left: 6mm; }
+    .conditions li { margin-bottom: 2mm; line-height: 1.4; }
+
+    .damage-sketch { text-align: center; margin: 5mm 0; }
+    .damage-sketch img { max-width: 100%; max-height: 80mm; }
+    .damage-sketch-title { font-weight: 700; margin-bottom: 2mm; }
+
+    .rodo-consent { font-size: 9px; margin-top: 5mm; padding: 3mm; border: 1px solid rgb(200, 200, 200); background: rgb(250, 250, 250); }
+
+    .commitments { font-size: 10px; margin-top: 4mm; }
+    .commitments-title { font-weight: 700; margin-bottom: 2mm; }
+
+    .acceptance { font-weight: 700; margin-top: 6mm; font-size: 11px; }
+  </style>
+</head>
+<body>
+  <!-- PAGE 1: Contract Agreement -->
+  <div class="page">
+    <div class="header">
+      <div class="company-name">KITEK - Pawel Romanowski</div>
+      <div class="company-info">
+        ul. Sieradzka 18, 87-100 Torun<br>
+        Tel. 535 766 666 / 602 367 100
+      </div>
+    </div>
+
+    <div class="title">UMOWA NAJMU POJAZDU</div>
+
+    <div class="section">
+      <div class="section-title">Wynajmujacy</div>
+      <div class="field-row">
+        <span class="field-label">Firma:</span>
+        <span class="field-value">{{company.name}}</span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Wlasciciel:</span>
+        <span class="field-value">{{company.owner}}</span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Adres:</span>
+        <span class="field-value">{{company.address}}</span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Telefon:</span>
+        <span class="field-value">{{company.phone}}</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Najemca</div>
+      <div class="field-row">
+        <span class="field-label">Imie i nazwisko:</span>
+        <span class="field-value">{{customer.firstName}} {{customer.lastName}}</span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Adres:</span>
+        <span class="field-value">{{customer.address}}</span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">PESEL:</span>
+        <span class="field-value">{{customer.pesel}}</span>
+      </div>
+      <div class="two-columns">
+        <div>
+          <div class="field-row">
+            <span class="field-label">Dowod osobisty nr:</span>
+            <span class="field-value">{{customer.idNumber}}</span>
+          </div>
+          <div class="field-row">
+            <span class="field-label">Wydany przez:</span>
+            <span class="field-value">{{customer.idIssuedBy}}</span>
+          </div>
+        </div>
+        <div>
+          <div class="field-row">
+            <span class="field-label">Prawo jazdy nr:</span>
+            <span class="field-value">{{customer.licenseNumber}}</span>
+          </div>
+          <div class="field-row">
+            <span class="field-label">Kategoria:</span>
+            <span class="field-value">{{customer.licenseCategory}}</span>
+          </div>
+        </div>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Telefon:</span>
+        <span class="field-value">{{customer.phone}}</span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Email:</span>
+        <span class="field-value">{{customer.email}}</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Pojazd</div>
+      <div class="two-columns">
+        <div>
+          <div class="field-row">
+            <span class="field-label">Marka i model:</span>
+            <span class="field-value">{{vehicle.make}} {{vehicle.model}}</span>
+          </div>
+          <div class="field-row">
+            <span class="field-label">Nr rejestracyjny:</span>
+            <span class="field-value">{{vehicle.registration}}</span>
+          </div>
+        </div>
+        <div>
+          <div class="field-row">
+            <span class="field-label">VIN:</span>
+            <span class="field-value">{{vehicle.vin}}</span>
+          </div>
+          <div class="field-row">
+            <span class="field-label">Rok produkcji:</span>
+            <span class="field-value">{{vehicle.year}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Okres najmu</div>
+      <div class="field-row">
+        <span class="field-label">Od:</span>
+        <span class="field-value">{{formatDateTime rental.startDate}}</span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Do:</span>
+        <span class="field-value">{{formatDateTime rental.endDate}}</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Przebieg przy wydaniu</div>
+      <div class="field-row">
+        <span class="field-label">Stan licznika:</span>
+        <span class="field-value">{{vehicle.mileage}} km</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Warunki finansowe</div>
+      <div class="two-columns">
+        <div>
+          <div class="field-row">
+            <span class="field-label">Stawka za dobe (netto):</span>
+            <span class="field-value">{{formatMoney conditions.dailyRateNet}}</span>
+          </div>
+          <div class="field-row">
+            <span class="field-label">Kaucja:</span>
+            <span class="field-value">{{formatMoney conditions.depositAmount}}</span>
+          </div>
+        </div>
+        <div>
+          <div class="field-row">
+            <span class="field-label">Cena calkowita (netto):</span>
+            <span class="field-value">{{formatMoney rental.totalPriceNet}}</span>
+          </div>
+          <div class="field-row">
+            <span class="field-label">Cena calkowita (brutto):</span>
+            <span class="field-value">{{formatMoney rental.totalPriceGross}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rodo-consent">
+      <strong>Klauzula RODO:</strong> Wyrazam zgode na przetwarzanie moich danych osobowych przez KITEK - Pawel Romanowski w celu realizacji umowy najmu pojazdu, zgodnie z Rozporzadzeniem Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. (RODO). Podanie danych jest dobrowolne, ale niezbedne do zawarcia umowy. Przesluguje mi prawo dostepu do tresci moich danych, ich sprostowania, usuniecia, ograniczenia przetwarzania oraz przenoszenia.
+      {{#if rodoConsent.accepted}}
+      <br><br><strong>Zgoda wyrazona:</strong> {{formatDateTime rodoConsent.timestamp}}
+      {{/if}}
+    </div>
+
+    <div class="signatures-row">
+      <div class="signature-block">
+        {{#if signatures.employeePage1}}
+        <img class="signature-img" src="data:image/png;base64,{{signatures.employeePage1}}" />
+        {{/if}}
+        <div class="signature-line">
+          <span class="signature-label">(Podpis Wynajmujacego)</span>
+        </div>
+      </div>
+      <div class="signature-block">
+        {{#if signatures.customerPage1}}
+        <img class="signature-img" src="data:image/png;base64,{{signatures.customerPage1}}" />
+        {{/if}}
+        <div class="signature-line">
+          <span class="signature-label">(Podpis Klienta - Kierowcy)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 2: Conditions + Damage Sketch + Acceptance -->
+  <div class="page">
+    <div class="title">WARUNKI NAJMU POJAZDU</div>
+
+    <div class="conditions">
+      <ol>
+        <li>Wymagane jest ukonczenie 21 lat oraz posiadanie waznego prawa jazdy odpowiedniej kategorii.</li>
+        <li>Najemca zobowiazuje sie uzytkowa pojazd zgodnie z jego przeznaczeniem, przestrzegajac przepisow ruchu drogowego.</li>
+        <li>Pojazd nie moze byc podnajmowany osobom trzecim bez pisemnej zgody Wynajmujacego.</li>
+        <li>Najemca ponosi pelna odpowiedzialnosc za wszelkie mandaty, kary i oplaty parkingowe naliczone w okresie najmu.</li>
+        <li>Kaucja w wysokosci {{formatMoney conditions.depositAmount}} jest pobierana przy wydaniu pojazdu i zwracana po jego zwrocie w stanie nienaruszonym.</li>
+        <li>Stawka za dobe najmu wynosi {{formatMoney conditions.dailyRateNet}} netto.</li>
+        <li>W przypadku opoznienia w zwrocie pojazdu, naliczana jest oplata w wysokosci {{formatMoney conditions.lateFeeNet}} netto za kazda rozpoczeta dobe opoznienia.</li>
+        <li>Najemca zobowiazuje sie zwrocic pojazd w stanie niepogorszonym, z uwzglednieniem normalnego zuzycia eksploatacyjnego.</li>
+        <li>Paliwo: pojazd wydawany jest z okreslonej ilosci paliwa i powinien byc zwrocony z taka sama iloscia.</li>
+        <li>Zabrania sie palenia tytoniu w pojazdie. W przypadku naruszenia tego zakazu naliczona zostanie oplata za czyszczenie.</li>
+        <li>Zabrania sie przewozenia zwierzat w pojezdzie bez wczesniejszego uzgodnienia z Wynajmujacym.</li>
+        <li>Najemca jest zobowiazany do niezwlocznego powiadomienia Wynajmujacego o wszelkich awariach, uszkodzeniach lub kolizjach.</li>
+        <li>W przypadku kolizji lub wypadku, Najemca jest zobowiazany do wezwania policji i uzyskania protokolu zdarzenia.</li>
+        <li>Wynajmujacy nie ponosi odpowiedzialnosci za rzeczy osobiste pozostawione w pojezdzie.</li>
+        <li>Pojazd jest ubezpieczony w zakresie OC. Najemca odpowiada za szkody nieobjete ubezpieczeniem.</li>
+        <li>W przypadku utraty kluczy lub dokumentow pojazdu, Najemca pokrywa koszty ich odtworzenia.</li>
+        <li>Najemca nie moze dokonywac zadnych zmian, modyfikacji ani napraw pojazdu bez zgody Wynajmujacego.</li>
+        <li>Pojazd nie moze byc uzywany do jazd wyscigowych, treningow ani jazdy w terenie.</li>
+        <li>Wynajmujacy zastrzega sobie prawo do rozwizania umowy ze skutkiem natychmiastowym w przypadku naruszenia warunkow najmu.</li>
+        <li>Wszelkie spory wynikajace z niniejszej umowy beda rozstrzygane przez sad wlasciwy dla siedziby Wynajmujacego.</li>
+        <li>W sprawach nieuregulowanych niniejsza umowa obowiazuja przepisy Kodeksu Cywilnego.</li>
+      </ol>
+    </div>
+
+    <div class="damage-sketch">
+      <div class="damage-sketch-title">Uwagi uszkodzen pojazdu:</div>
+      {{#if damageSketch}}
+      <img src="data:image/png;base64,{{damageSketch}}" />
+      {{else}}
+      <div style="height: 60mm; border: 1px dashed rgb(180, 180, 180); display: flex; align-items: center; justify-content: center; color: rgb(150, 150, 150);">
+        Brak rysunku uszkodzen
+      </div>
+      {{/if}}
+    </div>
+
+    <div class="commitments">
+      <div class="commitments-title">ZOBOWIAZUJE SIE DO:</div>
+      <ul style="padding-left: 5mm; font-size: 10px; line-height: 1.4;">
+        <li>Przestrzegania warunkow niniejszej umowy najmu.</li>
+        <li>Uzytkowania pojazdu zgodnie z przepisami ruchu drogowego.</li>
+        <li>Zwrotu pojazdu w umowionym terminie i stanie.</li>
+        <li>Niezwlocznego informowania Wynajmujacego o wszelkich problemach z pojazdem.</li>
+      </ul>
+    </div>
+
+    <p class="acceptance">Zapoznalem sie z trescia i akceptuje powyzsze warunki.</p>
+
+    <div class="signatures-row">
+      <div class="signature-block">
+        {{#if signatures.employeePage2}}
+        <img class="signature-img" src="data:image/png;base64,{{signatures.employeePage2}}" />
+        {{/if}}
+        <div class="signature-line">
+          <span class="signature-label">(Podpis Wynajmujacego)</span>
+        </div>
+      </div>
+      <div class="signature-block">
+        {{#if signatures.customerPage2}}
+        <img class="signature-img" src="data:image/png;base64,{{signatures.customerPage2}}" />
+        {{/if}}
+        <div class="signature-line">
+          <span class="signature-label">(Podpis Najemcy)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
