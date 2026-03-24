@@ -28,7 +28,7 @@ import {
 } from '@/hooks/queries/use-rentals';
 import { getRentalStatusBadge } from '../columns';
 import { formatDateTime, formatCurrency } from '@/lib/format';
-import { Loader2, Play, ArrowLeftRight, CalendarPlus, RotateCcw, Pencil } from 'lucide-react';
+import { Loader2, Play, ArrowLeftRight, CalendarPlus, RotateCcw, Pencil, Camera } from 'lucide-react';
 import { AuditTrail } from '@/components/audit/audit-trail';
 
 export default function RentalDetailPage() {
@@ -135,6 +135,10 @@ export default function RentalDetailPage() {
           {getRentalStatusBadge(rental)}
         </div>
         <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => router.push(`/wynajmy/${id}/dokumentacja`)}>
+            <Camera className="mr-2 h-4 w-4" />
+            Dokumentacja
+          </Button>
           {canEdit && (
             <Button variant="outline" onClick={() => router.push(`/wynajmy/${id}/edytuj`)}>
               <Pencil className="mr-2 h-4 w-4" />
