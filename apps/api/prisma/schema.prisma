@@ -47,6 +47,13 @@ enum RentalStatus {
   RETURNED
 }
 
+enum ContractStatus {
+  DRAFT
+  PARTIALLY_SIGNED
+  SIGNED
+  VOIDED
+}
+
 model User {
   id               String    @id @default(uuid())
   email            String    @unique
@@ -61,8 +68,9 @@ model User {
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
-  auditLogs AuditLog[] @relation("AuditActor")
-  rentals   Rental[]   @relation("RentalCreatedBy")
+  auditLogs        AuditLog[] @relation("AuditActor")
+  rentals          Rental[]   @relation("RentalCreatedBy")
+  contractsCreated Contract[] @relation("ContractCreatedBy")
 
   @@map("users")
 }
@@ -211,6 +219,8 @@ model Rental {
   customer        Customer      @relation(fields: [customerId], references: [id])
   createdBy       User          @relation("RentalCreatedBy", fields: [createdById], references: [id])
 
+  contracts       Contract[]
+
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 
@@ -219,4 +229,83 @@ model Rental {
   @@index([status])
   @@index([startDate, endDate])
   @@map("rentals")
+}
+
+model Contract {
+  id              String          @id @default(uuid())
+  contractNumber  String          @unique
+  rentalId        String
+  createdById     String
+  status          ContractStatus  @default(DRAFT)
+
+  contractData    Json
+  contentHash     String
+
+  depositAmount   Int?
+  dailyRateNet    Int
+  lateFeeNet      Int?
+
+  rodoConsentAt   DateTime?
+
+  damageSketchKey String?
+
+  pdfKey          String?
+  pdfGeneratedAt  DateTime?
+
+  emailSentAt     DateTime?
+  emailSentTo     String?
+
+  rental          Rental          @relation(fields: [rentalId], references: [id])
+  createdBy       User            @relation("ContractCreatedBy", fields: [createdById], references: [id])
+  signatures      ContractSignature[]
+  annexes         ContractAnnex[]
+
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([rentalId])
+  @@index([status])
+  @@map("contracts")
+}
+
+model ContractSignature {
+  id              String    @id @default(uuid())
+  contractId      String
+  signatureType   String
+  signerRole      String
+  signerId        String?
+
+  signatureKey    String
+
+  contentHash     String
+  deviceInfo      String?
+  ipAddress       String?
+  signedAt        DateTime  @default(now())
+
+  contract        Contract  @relation(fields: [contractId], references: [id])
+
+  @@unique([contractId, signatureType])
+  @@index([contractId])
+  @@map("contract_signatures")
+}
+
+model ContractAnnex {
+  id              String    @id @default(uuid())
+  contractId      String
+  annexNumber     Int
+
+  changes         Json
+
+  pdfKey          String?
+  pdfGeneratedAt  DateTime?
+
+  emailSentAt     DateTime?
+
+  contract        Contract  @relation(fields: [contractId], references: [id])
+
+  createdAt       DateTime  @default(now())
+
+  @@unique([contractId, annexNumber])
+  @@index([contractId])
+  @@map("contract_annexes")
 }

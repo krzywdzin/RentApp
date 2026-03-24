@@ -6,3 +6,5 @@ export * from './schemas/vehicle.schemas';
 export * from './schemas/customer.schemas';
 export * from './types/rental.types';
 export * from './schemas/rental.schemas';
+export * from './types/contract.types';
+export * from './schemas/contract.schemas';
