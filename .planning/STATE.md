@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in-progress
-stopped_at: Completed 05-01 admin panel foundation
-last_updated: "2026-03-24T15:38:00.000Z"
-last_activity: 2026-03-24 -- Completed 05-01 Admin panel foundation
+stopped_at: Completed 05-02 Vehicle and customer CRUD pages
+last_updated: "2026-03-24T15:55:00.000Z"
+last_activity: 2026-03-24 -- Completed 05-02 Vehicle and customer CRUD pages
 progress:
   total_phases: 9
   completed_phases: 4
@@ -66,6 +66,7 @@ Progress: [████████████████░░░░] 81%
 | Phase 04 P01 | 6min | 2 tasks | 15 files |
 | Phase 04 P02 | 7min | 2 tasks | 9 files |
 | Phase 05 P01 | 9min | 2 tasks | 37 files |
+| Phase 05 P02 | 13min | 2 tasks | 10 files |
 | Phase 05 P03 | 11min | 2 tasks | 36 files |
 
 ## Accumulated Context
@@ -119,6 +120,9 @@ Recent decisions affecting current work:
 - [Phase 05]: Contract list derived from rentals (no GET /contracts list endpoint)
 - [Phase 05]: Custom Gantt timeline with div positioning over external calendar library
 - [Phase 05]: Client-side rental filtering in useMemo (small fleet dataset)
+- [Phase 05]: z.input<typeof Schema> for form types when Zod schema uses .default() modifiers
+- [Phase 05]: Suspense wrapper pattern for pages using nuqs/useSearchParams in Next.js 15
+- [Phase 05]: Client-side filtering for vehicles and customers (small datasets, filter in useMemo)
 
 ### Pending Todos
 
@@ -132,6 +136,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-24T15:52:00.000Z
-Stopped at: Completed 05-03 rental and contract pages
-Resume file: .planning/phases/05-admin-panel/05-04-PLAN.md
+Last session: 2026-03-24T15:55:00.000Z
+Stopped at: Completed 05-02 Vehicle and customer CRUD pages
+Resume file: .planning/phases/05-admin-panel/05-03-PLAN.md
