@@ -188,6 +188,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 | 4. Contract and PDF | 0/2 | Complete    | 2026-03-24 |
 | 5. Admin Panel | 4/4 | Complete    | 2026-03-24 |
 | 6. Mobile App | 5/5 | Complete    | 2026-03-24 |
-| 7. Photo and Damage Documentation | 1/3 | In Progress|  |
+| 7. Photo and Damage Documentation | 2/3 | In Progress|  |
 | 8. Notifications and Alerts | 0/2 | Not started | - |
 | 9. Customer Portal and CEPiK | 0/? | Not started | - |
