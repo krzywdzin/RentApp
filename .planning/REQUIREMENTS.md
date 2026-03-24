@@ -41,8 +41,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **CONT-01**: Pracownik może wypełnić cyfrową umowę najmu z danymi klienta, pojazdu i warunków
 - [x] **CONT-02**: Klient podpisuje umowę cyfrowo (rysik/palec) z metadanymi audytowymi (timestamp, urządzenie, hash treści, ID pracownika-świadka)
 - [x] **CONT-03**: System generuje PDF z podpisanej umowy wg istniejącego szablonu (Handlebars + Puppeteer), z pełną obsługą polskich znaków
-- [ ] **CONT-04**: PDF jest automatycznie wysyłany emailem do klienta po podpisaniu
-- [ ] **CONT-05**: System przechowuje wersje umów — aneksy przy przedłużeniach
+- [x] **CONT-04**: PDF jest automatycznie wysyłany emailem do klienta po podpisaniu
+- [x] **CONT-05**: System przechowuje wersje umów — aneksy przy przedłużeniach
 
 ### Dokumentacja Fotograficzna (Photo Documentation)
 
@@ -150,8 +150,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CONT-01 | Phase 4 | Complete |
 | CONT-02 | Phase 4 | Complete |
 | CONT-03 | Phase 4 | Complete |
-| CONT-04 | Phase 4 | Pending |
-| CONT-05 | Phase 4 | Pending |
+| CONT-04 | Phase 4 | Complete |
+| CONT-05 | Phase 4 | Complete |
 | ADMIN-01 | Phase 5 | Pending |
 | ADMIN-02 | Phase 5 | Pending |
 | ADMIN-03 | Phase 5 | Pending |
