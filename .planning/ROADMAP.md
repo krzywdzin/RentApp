@@ -150,11 +150,11 @@ Plans:
   3. When admin extends a rental, the system automatically sends an SMS to the customer with the new return date
   4. System generates alerts for: approaching return date, overdue return, expiring insurance, upcoming vehicle inspection
   5. Alerts are delivered multi-channel (email + SMS + in-app) with configurable rules (condition, channel, timing)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 08-01: TBD
-- [ ] 08-02: TBD
+- [ ] 08-01-PLAN.md -- Prisma schema (Notification, InAppNotification, AlertConfig), shared types/Zod, BullMQ queues, SmsService (smsapi.pl), SMS templates, AlertConfig CRUD, Wave 0 test stubs
+- [ ] 08-02-PLAN.md -- NotificationsService orchestration, event listeners (rental.activated, rental.extended), daily cron scanner, email notifications, in-app API, full test implementation
 
 ### Phase 9: Customer Portal and CEPiK
 **Goal**: Customers can view their rental information through a self-service portal, and the system verifies driver licenses through CEPiK 2.0 before contract signing
@@ -185,5 +185,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 | 5. Admin Panel | 0/4 | Not started | - |
 | 6. Mobile App | 0/? | Not started | - |
 | 7. Photo and Damage Documentation | 0/? | Not started | - |
-| 8. Notifications and Alerts | 0/? | Not started | - |
+| 8. Notifications and Alerts | 0/2 | Not started | - |
 | 9. Customer Portal and CEPiK | 0/? | Not started | - |
