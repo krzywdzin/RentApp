@@ -60,13 +60,13 @@ Exceptions:
 | Role | Size | Weight | Line Height |
 |------|------|--------|-------------|
 | Body | 14px | 400 (regular) | 1.5 |
-| Label | 12px | 500 (medium) | 1.4 |
+| Label | 12px | 400 (regular) | 1.4 |
 | Heading | 20px | 600 (semibold) | 1.2 |
 | Display | 28px | 600 (semibold) | 1.2 |
 
 **Notes:**
 - Body at 14px suits data-dense admin panels (consistent with Linear/Vercel)
-- Label at 12px for table headers, form labels, badges, sidebar items
+- Label at 12px / 400 for table headers, form labels, badges, sidebar items — differentiated from body by size alone, not weight
 - Display at 28px for dashboard stat numbers and page titles
 - All text renders in Inter; Polish characters (accented: a, c, e, l, n, o, s, z, z) fully supported
 
@@ -182,7 +182,7 @@ All UI copy in Polish as specified in CONTEXT.md.
 | Delete vehicle | "Usunac pojazd?" | "Pojazd {registration} zostanie trwale usuniety. Tej operacji nie mozna cofnac." | "Usun pojazd" (destructive) | "Anuluj" |
 | Delete customer | "Usunac klienta?" | "Dane klienta {name} zostana trwale usuniete. Tej operacji nie mozna cofnac." | "Usun klienta" (destructive) | "Anuluj" |
 | Bulk status change | "Zmienic status {count} pojazdow?" | "Status wybranych pojazdow zostanie zmieniony na {status}." | "Zmien status" | "Anuluj" |
-| Rental state rollback | "Cofnac status wynajmu?" | "Wynajem zostanie przywrocony do poprzedniego stanu. Dane zwrotu moga zostac usuniete." | "Cofnij" (destructive) | "Anuluj" |
+| Rental state rollback | "Cofnac status wynajmu?" | "Wynajem zostanie przywrocony do poprzedniego stanu. Dane zwrotu moga zostac usuniete." | "Cofnij status" (destructive) | "Anuluj" |
 
 ### Status Badge Labels
 
@@ -221,6 +221,14 @@ All UI copy in Polish as specified in CONTEXT.md.
 | Available vehicles | "Dostepne pojazdy" | "{count} z {total} w flocie" |
 | Today's returns | "Dzisiejsze zwroty" | "{count} zaplanowanych" |
 | Overdue returns | "Przeterminowane" | "{count} wymaga uwagi" (destructive color if > 0) |
+
+---
+
+## Visual Focal Point
+
+**Primary dashboard screen:** The stat card row is the primary visual anchor. The four cards sit at the top of the content area immediately below the top bar. When the overdue count is greater than 0, the "Przeterminowane" card renders its count in `--destructive` color and gains a subtle `--destructive` left border (3px), drawing first attention to urgent items. When all counts are zero, the row remains visually balanced with equal weight across cards.
+
+**Entity list screens:** The data table is the focal point. The filter bar above it is secondary. The primary CTA button ("Dodaj pojazd", etc.) sits top-right of the page header and uses accent color to draw the eye after the table.
 
 ---
 
