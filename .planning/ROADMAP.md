@@ -119,11 +119,14 @@ Plans:
   1. Employee can install and log into the app on both Android and iOS devices
   2. Employee can search/add a customer, select a vehicle, fill out a contract, capture a signature, and submit a rental -- all from the mobile app
   3. Employee can process a vehicle return in the mobile app (mileage, checklist, state comparison)
-**Plans**: TBD
+**Plans**: 5 plans
 
 Plans:
-- [ ] 06-01: TBD
-- [ ] 06-02: TBD
+- [ ] 06-01-PLAN.md -- Scaffold Expo SDK 52 project, monorepo wiring, NativeWind + i18n config, API client with JWT refresh, Zustand stores, providers, root layout
+- [ ] 06-02-PLAN.md -- Shared UI components (AppButton, AppInput, AppCard, etc.), login screen, tab navigation shell, profile tab with biometric toggle
+- [ ] 06-03-PLAN.md -- API/query hooks for rentals/vehicles/customers, dashboard with stats and upcoming returns, rental list with search/filters, rental detail
+- [ ] 06-04-PLAN.md -- 5-step rental creation wizard (customer, vehicle, dates, contract+RODO, 4-signature capture in landscape), success screen
+- [ ] 06-05-PLAN.md -- 5-step vehicle return wizard (confirm, mileage, checklist, notes, review), end-to-end human verification
 
 ### Phase 7: Photo and Damage Documentation
 **Goal**: Structured vehicle photo documentation with interactive damage marking enables visual comparison between handover and return condition
@@ -184,7 +187,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 | 3. Rental Lifecycle | 3/3 | Complete    | 2026-03-23 |
 | 4. Contract and PDF | 0/2 | Complete    | 2026-03-24 |
 | 5. Admin Panel | 4/4 | Complete    | 2026-03-24 |
-| 6. Mobile App | 0/? | Not started | - |
+| 6. Mobile App | 0/5 | Not started | - |
 | 7. Photo and Damage Documentation | 0/3 | Not started | - |
 | 8. Notifications and Alerts | 0/2 | Not started | - |
 | 9. Customer Portal and CEPiK | 0/? | Not started | - |
