@@ -15,7 +15,10 @@ async function bootstrap() {
   );
 
   app.use(helmet());
-  app.enableCors();
+  app.enableCors({
+    origin: process.env.WEB_URL ?? 'http://localhost:3001',
+    credentials: true,
+  });
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
