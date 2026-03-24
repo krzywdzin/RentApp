@@ -18,6 +18,7 @@ import { CustomersModule } from './customers/customers.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { RentalsModule } from './rentals/rentals.module';
+import { ContractsModule } from './contracts/contracts.module';
 
 @Controller()
 class HealthController {
@@ -43,6 +44,7 @@ class HealthController {
     ScheduleModule.forRoot(),
     EventEmitterModule.forRoot(),
     RentalsModule,
+    ContractsModule,
   ],
   controllers: [HealthController],
   providers: [
