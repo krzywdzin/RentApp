@@ -50,12 +50,16 @@ export class MailService {
     vehicleRegistration: string,
     contractNumber: string,
     pdfBuffer: Buffer,
+    portalUrl?: string,
   ): Promise<void> {
+    const portalSection = portalUrl
+      ? `<p style="margin-top:16px">Twoj portal klienta: <a href="${portalUrl}">Otworz portal</a></p><p style="font-size:12px;color:#666">Link wazny przez 30 dni.</p>`
+      : '';
     await this.transporter.sendMail({
       from: this.config.get('MAIL_FROM'),
       to,
       subject: 'RentApp - Umowa najmu pojazdu ' + vehicleRegistration,
-      html: `<p>Szanowny/a ${customerName},</p><p>W zalaczniku przesylamy umowe najmu pojazdu ${vehicleRegistration} (nr ${contractNumber}).</p><p>Prosimy o zachowanie tego dokumentu.</p><p>KITEK - Wynajem Pojazdow</p>`,
+      html: `<p>Szanowny/a ${customerName},</p><p>W zalaczniku przesylamy umowe najmu pojazdu ${vehicleRegistration} (nr ${contractNumber}).</p>${portalSection}<p>Prosimy o zachowanie tego dokumentu.</p><p>KITEK - Wynajem Pojazdow</p>`,
       attachments: [
         {
           filename: `umowa-${contractNumber.replace(/\//g, '-')}.pdf`,

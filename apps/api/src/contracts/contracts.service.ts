@@ -11,6 +11,7 @@ import { PdfService } from './pdf/pdf.service';
 import { StorageService } from '../storage/storage.service';
 import { MailService } from '../mail/mail.service';
 import { CustomersService } from '../customers/customers.service';
+import { PortalService } from '../portal/portal.service';
 import { CreateContractDto } from './dto/create-contract.dto';
 import { SignContractDto } from './dto/sign-contract.dto';
 import type {
@@ -41,6 +42,7 @@ export class ContractsService {
     private mailService: MailService,
     private customersService: CustomersService,
     private config: ConfigService,
+    private portalService: PortalService,
   ) {}
 
   private async generateContractNumber(): Promise<string> {
@@ -327,9 +329,27 @@ export class ContractsService {
         pdfGeneratedAt: new Date(),
       };
 
-      // f. Email PDF to customer
+      // f. Email PDF to customer (with portal magic link)
       const customerEmail = frozenData.customer?.email;
       if (customerEmail) {
+        // Generate portal magic link for customer
+        let portalUrl: string | undefined;
+        try {
+          const rental = await this.prisma.rental.findUnique({
+            where: { id: contract.rentalId },
+            select: { customerId: true },
+          });
+          if (rental) {
+            portalUrl = await this.portalService.generatePortalToken(
+              rental.customerId,
+            );
+          }
+        } catch (error: any) {
+          this.logger.error(
+            `Failed to generate portal token: ${error.message}`,
+          );
+        }
+
         try {
           const customerName = `${frozenData.customer.firstName} ${frozenData.customer.lastName}`;
           const vehicleReg = frozenData.vehicle.registration;
@@ -339,6 +359,7 @@ export class ContractsService {
             vehicleReg,
             contract.contractNumber,
             pdfBuffer,
+            portalUrl,
           );
           updateData.emailSentAt = new Date();
           updateData.emailSentTo = customerEmail;
