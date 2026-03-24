@@ -70,13 +70,13 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### CEPiK (Driver Verification)
 
-- [ ] **CEPIK-01**: System weryfikuje uprawnienia kierowcy przez CEPiK 2.0 API (status zawieszenia, ważność prawa jazdy) przed podpisaniem umowy
-- [ ] **CEPIK-02**: Weryfikacja CEPiK jest asynchroniczna z ręcznym fallbackiem — wynajem może być realizowany bez niej
+- [x] **CEPIK-01**: System weryfikuje uprawnienia kierowcy przez CEPiK 2.0 API (status zawieszenia, ważność prawa jazdy) przed podpisaniem umowy
+- [x] **CEPIK-02**: Weryfikacja CEPiK jest asynchroniczna z ręcznym fallbackiem — wynajem może być realizowany bez niej
 
 ### Portal Klienta (Customer Portal)
 
-- [ ] **PORTAL-01**: Klient może zalogować się do prostego portalu web przez magic link (link w emailu z umową)
-- [ ] **PORTAL-02**: Klient widzi swoje aktywne wynajmy, historię, terminy zwrotu i może pobrać PDF umowy
+- [x] **PORTAL-01**: Klient może zalogować się do prostego portalu web przez magic link (link w emailu z umową)
+- [x] **PORTAL-02**: Klient widzi swoje aktywne wynajmy, historię, terminy zwrotu i może pobrać PDF umowy
 
 ### Oznaczanie Uszkodzeń (Damage Marking)
 
@@ -168,10 +168,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | NOTIF-03 | Phase 8 | Complete |
 | ALERT-01 | Phase 8 | Complete |
 | ALERT-02 | Phase 8 | Complete |
-| CEPIK-01 | Phase 9 | Pending |
-| CEPIK-02 | Phase 9 | Pending |
-| PORTAL-01 | Phase 9 | Pending |
-| PORTAL-02 | Phase 9 | Pending |
+| CEPIK-01 | Phase 9 | Complete |
+| CEPIK-02 | Phase 9 | Complete |
+| PORTAL-01 | Phase 9 | Complete |
+| PORTAL-02 | Phase 9 | Complete |
 
 **Coverage:**
 - v1 requirements: 42 total
