@@ -35,16 +35,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-secure-store',
     'expo-local-authentication',
     'expo-screen-orientation',
-    [
-      '@sentry/react-native/expo',
-      {
-        organization: 'kitek',
-        project: 'mobile',
-      },
-    ],
+    '@react-native-community/datetimepicker',
+    '@sentry/react-native',
+    'expo-localization',
   ],
   extra: {
-    apiUrl: process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000',
+    apiUrl: process.env.EXPO_PUBLIC_API_URL ?? 'http://192.168.0.26:3000',
     eas: {
       projectId: 'kitek-rental',
     },

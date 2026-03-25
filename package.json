@@ -13,7 +13,11 @@
     "overrides": {
       "@types/react": "^19.1.0",
       "@types/react-dom": "^19.1.0"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "argon2", "sharp", "prisma", "@prisma/client", "@prisma/engines",
+      "puppeteer", "@sentry/cli", "@nestjs/core", "msgpackr-extract"
+    ]
   },
   "devDependencies": {
     "@rentapp/eslint-config": "workspace:*",
