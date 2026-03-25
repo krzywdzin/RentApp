@@ -1,7 +1,8 @@
-import { Controller, Post, Get, Body, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Param, Body } from '@nestjs/common';
 import { UserRole } from '@rentapp/shared';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { Roles } from '../common/decorators/roles.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 
@@ -21,5 +22,27 @@ export class UsersController {
   @Get('me')
   getMe(@CurrentUser() user: any) {
     return user;
+  }
+
+  @Get()
+  @Roles(UserRole.ADMIN)
+  async findAll() {
+    return this.usersService.findAll();
+  }
+
+  @Patch(':id')
+  @Roles(UserRole.ADMIN)
+  async update(
+    @Param('id') id: string,
+    @Body() dto: UpdateUserDto,
+  ) {
+    return this.usersService.updateUser(id, dto);
+  }
+
+  @Post(':id/reset-password')
+  @Roles(UserRole.ADMIN)
+  async resetPassword(@Param('id') id: string) {
+    await this.usersService.resetPasswordByAdmin(id);
+    return { success: true };
   }
 }
