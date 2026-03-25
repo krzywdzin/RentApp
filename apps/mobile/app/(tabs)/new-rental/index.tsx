@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -29,7 +29,7 @@ export default function CustomerStep() {
   const [showDraftResume, setShowDraftResume] = useState(false);
   const [showNewCustomer, setShowNewCustomer] = useState(false);
 
-  const { data: customers, isLoading } = useCustomerSearch(searchQuery);
+  const { data: customers, isLoading, isFetching } = useCustomerSearch(searchQuery);
   const createCustomer = useCreateCustomer();
 
   const {
@@ -131,6 +131,16 @@ export default function CustomerStep() {
           placeholder={t('wizard.customerSearch')}
         />
       </View>
+
+      {searchQuery.length < 2 && (
+        <Text style={s.searchHint}>Wpisz minimum 2 znaki aby wyszukac</Text>
+      )}
+      {isFetching && searchQuery.length >= 2 && (
+        <View style={s.spinnerRow}>
+          <ActivityIndicator size="small" color="#2563EB" />
+          <Text style={s.spinnerText}>Szukanie...</Text>
+        </View>
+      )}
 
       <FlatList
         style={s.list}
@@ -348,4 +358,7 @@ const s = StyleSheet.create({
   modalClose: { color: '#3B82F6', fontSize: 16 },
   modalScroll: { padding: 16, paddingBottom: 40 },
   modalHeading: { marginBottom: 16, fontSize: 20, fontWeight: '600', color: '#18181B' },
+  searchHint: { paddingHorizontal: 16, marginTop: 8, fontSize: 13, color: '#A1A1AA' },
+  spinnerRow: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, marginTop: 8, gap: 8 },
+  spinnerText: { fontSize: 13, color: '#71717A' },
 });

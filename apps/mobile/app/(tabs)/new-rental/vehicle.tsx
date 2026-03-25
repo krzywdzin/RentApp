@@ -11,6 +11,7 @@ import { SearchBar } from '@/components/SearchBar';
 import { AppCard } from '@/components/AppCard';
 import { StatusBadge } from '@/components/StatusBadge';
 import { EmptyState } from '@/components/EmptyState';
+import { LoadingSkeleton } from '@/components/LoadingSkeleton';
 import { useRentalDraftStore } from '@/stores/rental-draft.store';
 import { useVehicles } from '@/hooks/use-vehicles';
 
@@ -24,6 +25,18 @@ export default function VehicleStep() {
   const [availableOnly, setAvailableOnly] = useState(true);
 
   const { data: vehicles, isLoading } = useVehicles();
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={s.safeArea} edges={['top']}>
+        <WizardStepper currentStep={2} totalSteps={5} labels={WIZARD_LABELS} />
+        <Text style={s.stepTitle}>{t('wizard.step2')}</Text>
+        <View style={s.loadingWrap}>
+          <LoadingSkeleton variant="list-item" count={6} />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   const filteredVehicles = useMemo(() => {
     if (!vehicles) return [];
@@ -142,4 +155,5 @@ const s = StyleSheet.create({
   vehReg: { fontSize: 16, fontWeight: '600', color: '#18181B' },
   vehSub: { marginTop: 4, fontSize: 13, color: '#71717A' },
   dimmed: { opacity: 0.5 },
+  loadingWrap: { paddingHorizontal: 16, paddingTop: 24 },
 });
