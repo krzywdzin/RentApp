@@ -61,11 +61,11 @@ export default function VehicleDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const { data: vehicle, isLoading } = useVehicle(params.id);
-  const { data: rentals, isLoading: rentalsLoading } = useRentals();
+  const { data: rentals, isLoading: rentalsLoading } = useRentals({ vehicleId: params.id });
   const archiveVehicle = useArchiveVehicle();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-  const vehicleRentals = rentals?.filter((r) => r.vehicleId === params.id) ?? [];
+  const vehicleRentals = rentals ?? [];
 
   if (isLoading) {
     return (

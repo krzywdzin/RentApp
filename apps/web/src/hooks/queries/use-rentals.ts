@@ -17,11 +17,21 @@ export const rentalKeys = {
   calendar: (from: string, to: string) => [...rentalKeys.all, 'calendar', from, to] as const,
 };
 
-export function useRentals(status?: RentalStatus) {
-  const params = status ? `?status=${status}` : '';
+interface RentalFilters {
+  status?: RentalStatus;
+  customerId?: string;
+  vehicleId?: string;
+}
+
+export function useRentals(filters?: RentalFilters) {
+  const params = new URLSearchParams();
+  if (filters?.status) params.set('status', filters.status);
+  if (filters?.customerId) params.set('customerId', filters.customerId);
+  if (filters?.vehicleId) params.set('vehicleId', filters.vehicleId);
+  const query = params.toString();
   return useQuery({
-    queryKey: rentalKeys.list(status ? { status } : undefined),
-    queryFn: () => apiClient<RentalDto[]>(`/rentals${params}`),
+    queryKey: rentalKeys.list(filters as Record<string, unknown> | undefined),
+    queryFn: () => apiClient<RentalDto[]>(`/rentals${query ? `?${query}` : ''}`),
   });
 }
 

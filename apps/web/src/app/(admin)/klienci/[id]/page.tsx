@@ -36,11 +36,11 @@ export default function CustomerDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const { data: customer, isLoading } = useCustomer(params.id);
-  const { data: rentals, isLoading: rentalsLoading } = useRentals();
+  const { data: rentals, isLoading: rentalsLoading } = useRentals({ customerId: params.id });
   const archiveCustomer = useArchiveCustomer();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-  const customerRentals = rentals?.filter((r) => r.customerId === params.id) ?? [];
+  const customerRentals = rentals ?? [];
 
   if (isLoading) {
     return (

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
-import type { ContractDto, RentalDto } from '@rentapp/shared';
+import type { ContractDto } from '@rentapp/shared';
 
 export const contractKeys = {
   all: ['contracts'] as const,
@@ -9,26 +9,10 @@ export const contractKeys = {
   byRental: (rentalId: string) => [...contractKeys.all, 'byRental', rentalId] as const,
 };
 
-// Since there is no GET /contracts list endpoint, we derive contracts
-// from rentals by fetching each rental's contract.
-// This uses the rental list + per-rental contract lookup.
 export function useContracts() {
   return useQuery({
     queryKey: contractKeys.list(),
-    queryFn: async () => {
-      const rentals = await apiClient<RentalDto[]>('/rentals');
-      const contracts: ContractDto[] = [];
-      // Fetch contracts for each rental in parallel
-      const results = await Promise.allSettled(
-        rentals.map((r) => apiClient<ContractDto>(`/contracts/rental/${r.id}`)),
-      );
-      for (const result of results) {
-        if (result.status === 'fulfilled' && result.value) {
-          contracts.push(result.value);
-        }
-      }
-      return contracts;
-    },
+    queryFn: () => apiClient<ContractDto[]>('/contracts'),
   });
 }
 
