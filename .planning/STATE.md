@@ -87,6 +87,10 @@ Progress: [██████████] 100%
 
 ## Accumulated Context
 
+### Roadmap Evolution
+
+- Phase 09.1 inserted after Phase 9: Mobile and Admin Bug Fixes (URGENT) — 7 reported bugs from user testing
+
 ### Decisions
 
 Decisions are logged in PROJECT.md Key Decisions table.

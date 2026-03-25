@@ -193,3 +193,13 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 | 7. Photo and Damage Documentation | 3/3 | Complete    | 2026-03-24 |
 | 8. Notifications and Alerts | 2/2 | Complete    | 2026-03-24 |
 | 9. Customer Portal and CEPiK | 4/4 | Complete    | 2026-03-24 |
+
+### Phase 09.1: Mobile and Admin Bug Fixes (INSERTED)
+
+**Goal:** [Urgent work - to be planned]
+**Requirements**: TBD
+**Depends on:** Phase 9
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 09.1 to break down)
