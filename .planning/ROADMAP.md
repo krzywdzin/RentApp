@@ -258,7 +258,12 @@ Plans:
   3. Portal controller uses a typed PortalRequest interface with customer context instead of `req: any`
   4. Web admin mutation hooks (create/update vehicle, customer, rental) use specific input types instead of `Record<string, unknown>`
   5. Shared portal types define a typed return data DTO replacing `returnData: any | null`
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 12-01-PLAN.md -- Type rentals.service.ts and contracts.service.ts with Prisma utility types and shared DTOs
+- [ ] 12-02-PLAN.md -- Type damage.service.ts, photos.service.ts, vehicles.service.ts, and portal.controller.ts
+- [ ] 12-03-PLAN.md -- Type web mutation hooks with shared input types and fix portal returnData typing
 
 ### Phase 13: Dependencies & Performance
 **Goal**: Expo SDK 54 dependency tree is clean with no version conflicts, and server-side queries avoid N+1 patterns -- contract list and entity detail pages load in a single round-trip
@@ -301,6 +306,6 @@ v1.1: 10 -> 11 -> 12 -> 13 -> 14
 | 9.1 Mobile and Admin Bug Fixes | v1.0 | 4/4 | Complete | 2026-03-25 |
 | 10. Mobile UX Polish | v1.1 | 3/3 | Complete | 2026-03-25 |
 | 11. Web Admin Panel Polish | 3/3 | Complete    | 2026-03-25 | 2026-03-25 |
-| 12. TypeScript Strictness | v1.1 | 0/? | Not started | - |
+| 12. TypeScript Strictness | v1.1 | 0/3 | Not started | - |
 | 13. Dependencies & Performance | v1.1 | 0/? | Not started | - |
 | 14. Test Coverage | v1.1 | 0/? | Not started | - |
