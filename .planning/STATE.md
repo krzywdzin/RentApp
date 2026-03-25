@@ -4,7 +4,7 @@ milestone: v1.1
 milestone_name: Quality, Polish & UX Improvements
 status: completed
 stopped_at: Completed 12-03-PLAN.md
-last_updated: "2026-03-25T03:36:53.287Z"
+last_updated: "2026-03-25T03:40:25.345Z"
 last_activity: 2026-03-25 -- Completed 12-03-PLAN.md (typed portal returnData, typed mutation hooks, removed as-any casts)
 progress:
   total_phases: 5
