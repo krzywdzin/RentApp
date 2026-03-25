@@ -10,9 +10,18 @@ import {
   SEVERITY_LEVELS,
   type DamagePin,
   type DamageComparisonResult,
+  type DamageType,
+  type SeverityLevel,
+  type SvgView,
 } from '@rentapp/shared';
+import { Prisma } from '@prisma/client';
 import { CreateDamageReportDto } from './dto/create-damage-report.dto';
 import { CreateDamagePinDto } from './dto/create-damage-pin.dto';
+
+function parseDamagePins(json: Prisma.JsonValue): DamagePin[] {
+  if (!json || !Array.isArray(json)) return [];
+  return json as unknown as DamagePin[];
+}
 
 @Injectable()
 export class DamageService {
@@ -32,11 +41,11 @@ export class DamageService {
       where: { walkthroughId: dto.walkthroughId },
       create: {
         walkthroughId: dto.walkthroughId,
-        pins: pins as any,
+        pins: pins as unknown as Prisma.InputJsonValue,
         noDamageConfirmed: dto.noDamageConfirmed ?? false,
       },
       update: {
-        pins: pins as any,
+        pins: pins as unknown as Prisma.InputJsonValue,
         noDamageConfirmed: dto.noDamageConfirmed ?? false,
       },
     });
@@ -65,8 +74,8 @@ export class DamageService {
       include: { damageReport: true },
     });
 
-    const handoverPins = ((handoverWt?.damageReport?.pins as any) ?? []) as DamagePin[];
-    const returnPins = ((returnWt?.damageReport?.pins as any) ?? []) as DamagePin[];
+    const handoverPins = parseDamagePins(handoverWt?.damageReport?.pins ?? null);
+    const returnPins = parseDamagePins(returnWt?.damageReport?.pins ?? null);
 
     const newPins = returnPins.filter((pin) => !pin.isPreExisting);
 
@@ -88,7 +97,7 @@ export class DamageService {
       throw new NotFoundException('Damage report not found');
     }
 
-    const existingPins = (report.pins as any as DamagePin[]) ?? [];
+    const existingPins = parseDamagePins(report.pins);
     const nextPinNumber =
       existingPins.length > 0
         ? Math.max(...existingPins.map((p) => p.pinNumber)) + 1
@@ -96,11 +105,11 @@ export class DamageService {
 
     const newPin: DamagePin = {
       pinNumber: nextPinNumber,
-      svgView: pinDto.svgView as any,
+      svgView: pinDto.svgView as SvgView,
       x: pinDto.x,
       y: pinDto.y,
-      damageType: pinDto.damageType as any,
-      severity: pinDto.severity as any,
+      damageType: pinDto.damageType as DamageType,
+      severity: pinDto.severity as SeverityLevel,
       note: pinDto.note,
       photoKey: pinDto.photoKey,
       isPreExisting: pinDto.isPreExisting,
@@ -110,7 +119,7 @@ export class DamageService {
 
     return this.prisma.damageReport.update({
       where: { walkthroughId },
-      data: { pins: updatedPins as any },
+      data: { pins: updatedPins as unknown as Prisma.InputJsonValue },
     });
   }
 
@@ -123,7 +132,7 @@ export class DamageService {
       throw new NotFoundException('Damage report not found');
     }
 
-    const pins = (report.pins as any as DamagePin[]) ?? [];
+    const pins = parseDamagePins(report.pins);
     const pinExists = pins.some((p) => p.pinNumber === pinNumber);
 
     if (!pinExists) {
@@ -139,7 +148,7 @@ export class DamageService {
 
     return this.prisma.damageReport.update({
       where: { walkthroughId },
-      data: { pins: remaining as any },
+      data: { pins: remaining as unknown as Prisma.InputJsonValue },
     });
   }
 
@@ -152,7 +161,7 @@ export class DamageService {
       throw new NotFoundException('Damage report not found');
     }
 
-    const pins = (report.pins as any as DamagePin[]) ?? [];
+    const pins = parseDamagePins(report.pins);
 
     if (pins.length > 0) {
       throw new BadRequestException(

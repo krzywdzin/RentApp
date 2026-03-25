@@ -12,6 +12,7 @@ import sharp from 'sharp';
 import exifr from 'exifr';
 import { v4 as uuidv4 } from 'uuid';
 import { PHOTO_POSITIONS, type PhotoComparisonPair } from '@rentapp/shared';
+import { WalkthroughPhoto } from '@prisma/client';
 import { CreateWalkthroughDto } from './dto/create-walkthrough.dto';
 import { UploadPhotoDto } from './dto/upload-photo.dto';
 
@@ -123,7 +124,7 @@ export class PhotosService {
       where: { walkthroughId },
     });
 
-    const coveredPositions = new Set(photos.map((p: any) => p.position));
+    const coveredPositions = new Set(photos.map((p: WalkthroughPhoto) => p.position));
     const missingPositions = PHOTO_POSITIONS.filter(
       (pos) => !coveredPositions.has(pos),
     );
@@ -167,20 +168,20 @@ export class PhotosService {
     // Collect all positions from both walkthroughs
     const allPositions = new Set<string>();
     if (handoverWt?.photos) {
-      handoverWt.photos.forEach((p: any) => allPositions.add(p.position));
+      handoverWt.photos.forEach((p: WalkthroughPhoto) => allPositions.add(p.position));
     }
     if (returnWt?.photos) {
-      returnWt.photos.forEach((p: any) => allPositions.add(p.position));
+      returnWt.photos.forEach((p: WalkthroughPhoto) => allPositions.add(p.position));
     }
 
     const pairs: PhotoComparisonPair[] = [];
 
     for (const position of allPositions) {
       const handoverPhoto = handoverWt?.photos?.find(
-        (p: any) => p.position === position,
+        (p: WalkthroughPhoto) => p.position === position,
       );
       const returnPhoto = returnWt?.photos?.find(
-        (p: any) => p.position === position,
+        (p: WalkthroughPhoto) => p.position === position,
       );
 
       let handover: PhotoComparisonPair['handover'] = null;
