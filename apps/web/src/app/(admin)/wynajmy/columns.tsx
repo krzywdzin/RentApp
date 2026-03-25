@@ -49,17 +49,29 @@ export const rentalColumns: ColumnDef<RentalDto, unknown>[] = [
   {
     accessorKey: 'vehicleId',
     header: ({ column }) => <DataTableColumnHeader column={column} title="Pojazd" />,
-    cell: ({ row }) => (
-      <span className="font-mono text-xs">{row.original.vehicleId.slice(0, 8)}</span>
-    ),
+    cell: ({ row }) => {
+      const vehicle = (row.original as any).vehicle;
+      return (
+        <span className="text-sm">
+          {vehicle?.registration || row.original.vehicleId.slice(0, 8)}
+        </span>
+      );
+    },
     enableSorting: false,
   },
   {
     accessorKey: 'customerId',
     header: ({ column }) => <DataTableColumnHeader column={column} title="Klient" />,
-    cell: ({ row }) => (
-      <span className="font-mono text-xs">{row.original.customerId.slice(0, 8)}</span>
-    ),
+    cell: ({ row }) => {
+      const customer = (row.original as any).customer;
+      return (
+        <span className="text-sm">
+          {customer
+            ? `${customer.firstName} ${customer.lastName}`
+            : row.original.customerId.slice(0, 8)}
+        </span>
+      );
+    },
     enableSorting: false,
   },
   {

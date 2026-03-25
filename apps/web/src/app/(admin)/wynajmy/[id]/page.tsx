@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { RentalStatus } from '@rentapp/shared';
+import { RentalStatus, ContractStatus } from '@rentapp/shared';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -26,6 +26,7 @@ import {
   useExtendRental,
   useRollbackRental,
 } from '@/hooks/queries/use-rentals';
+import { useContractByRental } from '@/hooks/queries/use-contracts';
 import { getRentalStatusBadge } from '../columns';
 import { formatDateTime, formatCurrency } from '@/lib/format';
 import {
@@ -38,6 +39,18 @@ import {
   Camera,
 } from 'lucide-react';
 import { AuditTrail } from '@/components/audit/audit-trail';
+import Link from 'next/link';
+
+const contractStatusLabels: Record<ContractStatus, string> = {
+  [ContractStatus.DRAFT]: 'Szkic',
+  [ContractStatus.PARTIALLY_SIGNED]: 'Czesciowo podpisana',
+  [ContractStatus.SIGNED]: 'Podpisana',
+  [ContractStatus.VOIDED]: 'Uniewazniona',
+};
+
+function contractStatusLabel(status: ContractStatus): string {
+  return contractStatusLabels[status] || status;
+}
 
 export default function RentalDetailPage() {
   const params = useParams();
@@ -49,6 +62,8 @@ export default function RentalDetailPage() {
   const returnRental = useReturnRental(id);
   const extendRental = useExtendRental(id);
   const rollbackRental = useRollbackRental(id);
+
+  const { data: contract, isLoading: contractLoading, isError: contractError } = useContractByRental(id);
 
   const [extendOpen, setExtendOpen] = useState(false);
   const [returnOpen, setReturnOpen] = useState(false);
@@ -206,11 +221,15 @@ export default function RentalDetailPage() {
               <dl className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <dt className="text-sm text-muted-foreground">Pojazd</dt>
-                  <dd className="font-mono text-sm">{rental.vehicleId}</dd>
+                  <dd className="text-sm">{(rental as any).vehicle?.registration || rental.vehicleId}</dd>
                 </div>
                 <div>
                   <dt className="text-sm text-muted-foreground">Klient</dt>
-                  <dd className="font-mono text-sm">{rental.customerId}</dd>
+                  <dd className="text-sm">
+                    {(rental as any).customer
+                      ? `${(rental as any).customer.firstName} ${(rental as any).customer.lastName}`
+                      : rental.customerId}
+                  </dd>
                 </div>
                 <div>
                   <dt className="text-sm text-muted-foreground">Data od</dt>
@@ -263,9 +282,54 @@ export default function RentalDetailPage() {
 
         <TabsContent value="umowa">
           <Card>
-            <CardContent className="py-8 text-center text-muted-foreground">
-              Brak umowy powiazanej z tym wynajmem.
-            </CardContent>
+            {contractLoading ? (
+              <CardContent className="py-8 space-y-3">
+                <Skeleton className="h-4 w-48" />
+                <Skeleton className="h-4 w-64" />
+                <Skeleton className="h-4 w-32" />
+              </CardContent>
+            ) : contractError || !contract ? (
+              <CardContent className="py-8 text-center text-muted-foreground">
+                Brak umowy powiazanej z tym wynajmem.
+              </CardContent>
+            ) : (
+              <>
+                <CardHeader>
+                  <CardTitle>Umowa {contract.contractNumber}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <dl className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <dt className="text-sm text-muted-foreground">Status</dt>
+                      <dd className="text-sm font-medium">{contractStatusLabel(contract.status)}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-sm text-muted-foreground">Data utworzenia</dt>
+                      <dd className="text-sm">{formatDateTime(contract.createdAt)}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-sm text-muted-foreground">Stawka dzienna netto</dt>
+                      <dd className="text-sm">{formatCurrency(contract.dailyRateNet)}</dd>
+                    </div>
+                    {contract.depositAmount != null && (
+                      <div>
+                        <dt className="text-sm text-muted-foreground">Kaucja</dt>
+                        <dd className="text-sm">{formatCurrency(contract.depositAmount)}</dd>
+                      </div>
+                    )}
+                    <div>
+                      <dt className="text-sm text-muted-foreground">Podpisy</dt>
+                      <dd className="text-sm">{contract.signatures?.length || 0} z 4</dd>
+                    </div>
+                    <div className="col-span-full">
+                      <Button variant="outline" size="sm" asChild>
+                        <Link href={`/umowy/${contract.id}`}>Zobacz pelna umowe</Link>
+                      </Button>
+                    </div>
+                  </dl>
+                </CardContent>
+              </>
+            )}
           </Card>
         </TabsContent>
 
