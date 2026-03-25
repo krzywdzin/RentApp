@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -86,30 +86,26 @@ export default function ReturnConfirmScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <View className="px-4 pt-2">
+    <SafeAreaView style={s.safeArea}>
+      <View style={s.padWrap}>
         <WizardStepper currentStep={5} totalSteps={5} />
       </View>
 
       <ScrollView
-        className="flex-1"
-        contentContainerClassName="px-4 pt-4 pb-32"
+        style={s.flex1}
+        contentContainerStyle={s.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <Text className="mb-4 text-xl font-semibold text-zinc-900">
-          {t('returnWizard.step5')}
-        </Text>
+        <Text style={s.stepTitle}>{t('returnWizard.step5')}</Text>
 
         {/* Rental info */}
         {rental && (
-          <AppCard className="mb-3">
-            <Text className="mb-2 text-[13px] font-medium text-zinc-500">
-              Wynajem
-            </Text>
-            <Text className="text-base font-semibold text-zinc-900">
+          <AppCard cardStyle={s.mb12}>
+            <Text style={s.sectionLabel}>Wynajem</Text>
+            <Text style={s.mainText}>
               {rental.customer.firstName} {rental.customer.lastName}
             </Text>
-            <Text className="mt-1 text-[13px] text-zinc-500">
+            <Text style={s.subText}>
               {rental.vehicle.registration} - {rental.vehicle.make}{' '}
               {rental.vehicle.model}
             </Text>
@@ -117,54 +113,38 @@ export default function ReturnConfirmScreen() {
         )}
 
         {/* Mileage summary */}
-        <AppCard className="mb-3">
-          <Text className="mb-2 text-[13px] font-medium text-zinc-500">
-            {t('returnWizard.step2')}
-          </Text>
-          <View className="flex-row justify-between">
+        <AppCard cardStyle={s.mb12}>
+          <Text style={s.sectionLabel}>{t('returnWizard.step2')}</Text>
+          <View style={s.mileageRow}>
             <View>
-              <Text className="text-[13px] text-zinc-500">
-                {t('returnWizard.handoverMileage')}
-              </Text>
-              <Text className="text-base text-zinc-900">
-                {formatMileage(handoverMileage)}
-              </Text>
+              <Text style={s.smallLabel}>{t('returnWizard.handoverMileage')}</Text>
+              <Text style={s.valueText}>{formatMileage(handoverMileage)}</Text>
             </View>
             <View>
-              <Text className="text-[13px] text-zinc-500">
-                {t('returnWizard.returnMileage')}
-              </Text>
-              <Text className="text-base text-zinc-900">
+              <Text style={s.smallLabel}>{t('returnWizard.returnMileage')}</Text>
+              <Text style={s.valueText}>
                 {returnMileage != null ? formatMileage(returnMileage) : '-'}
               </Text>
             </View>
           </View>
-          <View className="mt-2 border-t border-zinc-100 pt-2">
-            <Text className="text-[13px] text-zinc-500">
-              {t('returnWizard.distanceDriven')}
-            </Text>
-            <Text className="text-base font-semibold text-blue-600">
-              {formatMileage(distanceDriven)}
-            </Text>
+          <View style={s.distanceWrap}>
+            <Text style={s.smallLabel}>{t('returnWizard.distanceDriven')}</Text>
+            <Text style={s.distanceValue}>{formatMileage(distanceDriven)}</Text>
           </View>
         </AppCard>
 
         {/* Checklist summary */}
-        <AppCard className="mb-3">
-          <Text className="mb-2 text-[13px] font-medium text-zinc-500">
-            {t('returnWizard.step3')}
-          </Text>
+        <AppCard cardStyle={s.mb12}>
+          <Text style={s.sectionLabel}>{t('returnWizard.step3')}</Text>
 
           {/* Items with damage */}
           {damagedItems.map((item) => (
-            <View key={item.key} className="mb-2 flex-row items-start">
-              <View className="mr-2 mt-1 h-3 w-3 rounded-full bg-red-500" />
-              <View className="flex-1">
-                <Text className="text-base text-zinc-900">{item.label}</Text>
+            <View key={item.key} style={s.damageRow}>
+              <View style={s.redDot} />
+              <View style={s.flex1}>
+                <Text style={s.checkItemLabel}>{item.label}</Text>
                 {checklist[item.key]?.notes ? (
-                  <Text className="mt-0.5 text-[13px] text-zinc-500">
-                    {checklist[item.key].notes}
-                  </Text>
+                  <Text style={s.checkItemNotes}>{checklist[item.key].notes}</Text>
                 ) : null}
               </View>
             </View>
@@ -172,26 +152,22 @@ export default function ReturnConfirmScreen() {
 
           {/* Items without damage */}
           {okItems.map((item) => (
-            <View key={item.key} className="mb-1 flex-row items-center">
-              <View className="mr-2 h-3 w-3 rounded-full bg-green-500" />
-              <Text className="text-base text-zinc-900">{item.label}</Text>
+            <View key={item.key} style={s.okRow}>
+              <View style={s.greenDot} />
+              <Text style={s.checkItemLabel}>{item.label}</Text>
             </View>
           ))}
         </AppCard>
 
         {/* Notes */}
-        <AppCard className="mb-3">
-          <Text className="mb-2 text-[13px] font-medium text-zinc-500">
-            {t('returnWizard.step4')}
-          </Text>
-          <Text className="text-base text-zinc-900">
-            {notes || 'Brak uwag'}
-          </Text>
+        <AppCard cardStyle={s.mb12}>
+          <Text style={s.sectionLabel}>{t('returnWizard.step4')}</Text>
+          <Text style={s.valueText}>{notes || 'Brak uwag'}</Text>
         </AppCard>
       </ScrollView>
 
       {/* Submit button */}
-      <View className="absolute bottom-0 left-0 right-0 border-t border-zinc-200 bg-white px-4 pb-8 pt-4">
+      <View style={s.bottomBar}>
         <AppButton
           title={t('returnWizard.submit')}
           fullWidth
@@ -202,3 +178,38 @@ export default function ReturnConfirmScreen() {
     </SafeAreaView>
   );
 }
+
+const s = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  flex1: { flex: 1 },
+  padWrap: { paddingHorizontal: 16, paddingTop: 8 },
+  scrollContent: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 128 },
+  stepTitle: { marginBottom: 16, fontSize: 20, fontWeight: '600', color: '#18181B' },
+  mb12: { marginBottom: 12 },
+  sectionLabel: { marginBottom: 8, fontSize: 13, fontWeight: '500', color: '#71717A' },
+  mainText: { fontSize: 16, fontWeight: '600', color: '#18181B' },
+  subText: { marginTop: 4, fontSize: 13, color: '#71717A' },
+  smallLabel: { fontSize: 13, color: '#71717A' },
+  valueText: { fontSize: 16, color: '#18181B' },
+  mileageRow: { flexDirection: 'row', justifyContent: 'space-between' },
+  distanceWrap: { marginTop: 8, borderTopWidth: 1, borderTopColor: '#F4F4F5', paddingTop: 8 },
+  distanceValue: { fontSize: 16, fontWeight: '600', color: '#3B82F6' },
+  damageRow: { marginBottom: 8, flexDirection: 'row', alignItems: 'flex-start' },
+  redDot: { marginRight: 8, marginTop: 6, height: 12, width: 12, borderRadius: 6, backgroundColor: '#EF4444' },
+  greenDot: { marginRight: 8, height: 12, width: 12, borderRadius: 6, backgroundColor: '#22C55E' },
+  okRow: { marginBottom: 4, flexDirection: 'row', alignItems: 'center' },
+  checkItemLabel: { fontSize: 16, color: '#18181B' },
+  checkItemNotes: { marginTop: 2, fontSize: 13, color: '#71717A' },
+  bottomBar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    borderTopWidth: 1,
+    borderTopColor: '#E4E4E7',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 16,
+    paddingBottom: 32,
+    paddingTop: 16,
+  },
+});

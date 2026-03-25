@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
@@ -20,7 +20,7 @@ export default function RentalDetailScreen() {
     return (
       <>
         <Stack.Screen options={{ title: '' }} />
-        <View className="flex-1 bg-white px-4 pt-4">
+        <View style={s.loadingWrap}>
           <LoadingSkeleton variant="card" count={4} />
         </View>
       </>
@@ -48,117 +48,87 @@ export default function RentalDetailScreen() {
           headerBackTitle: t('common.back'),
         }}
       />
-      <View className="flex-1 bg-white">
+      <View style={s.root}>
         <ScrollView
-          className="flex-1"
-          contentContainerClassName="px-4 pt-4 pb-32"
+          style={s.flex1}
+          contentContainerStyle={s.scrollContent}
           showsVerticalScrollIndicator={false}
         >
           {/* Status */}
-          <View className="mb-4 flex-row items-center justify-between">
-            <Text className="text-[20px] font-semibold text-zinc-900">
-              {rental.vehicle.registration}
-            </Text>
+          <View style={s.statusRow}>
+            <Text style={s.regTitle}>{rental.vehicle.registration}</Text>
             <StatusBadge status={rental.status} />
           </View>
 
           {/* Customer */}
-          <AppCard className="mb-3">
-            <Text className="mb-2 text-[13px] font-medium text-zinc-500">
-              Klient
-            </Text>
-            <Text className="text-base font-semibold text-zinc-900">
+          <AppCard cardStyle={s.mb12}>
+            <Text style={s.sectionLabel}>Klient</Text>
+            <Text style={s.mainText}>
               {rental.customer.firstName} {rental.customer.lastName}
             </Text>
             {rental.customer.phone && (
-              <Text className="mt-1 text-[13px] text-zinc-500">
-                {rental.customer.phone}
-              </Text>
+              <Text style={s.subText}>{rental.customer.phone}</Text>
             )}
             {rental.customer.email && (
-              <Text className="mt-1 text-[13px] text-zinc-500">
-                {rental.customer.email}
-              </Text>
+              <Text style={s.subText}>{rental.customer.email}</Text>
             )}
           </AppCard>
 
           {/* Vehicle */}
-          <AppCard className="mb-3">
-            <Text className="mb-2 text-[13px] font-medium text-zinc-500">
-              Pojazd
-            </Text>
-            <Text className="text-base font-semibold text-zinc-900">
-              {rental.vehicle.registration}
-            </Text>
-            <Text className="mt-1 text-[13px] text-zinc-500">
+          <AppCard cardStyle={s.mb12}>
+            <Text style={s.sectionLabel}>Pojazd</Text>
+            <Text style={s.mainText}>{rental.vehicle.registration}</Text>
+            <Text style={s.subText}>
               {rental.vehicle.make} {rental.vehicle.model} ({rental.vehicle.year})
             </Text>
-            <Text className="mt-1 text-[13px] text-zinc-500">
+            <Text style={s.subText}>
               Przebieg: {formatMileage(rental.vehicle.mileage)}
             </Text>
           </AppCard>
 
           {/* Dates */}
-          <AppCard className="mb-3">
-            <Text className="mb-2 text-[13px] font-medium text-zinc-500">
-              Terminy
-            </Text>
-            <View className="flex-row justify-between">
+          <AppCard cardStyle={s.mb12}>
+            <Text style={s.sectionLabel}>Terminy</Text>
+            <View style={s.datesRow}>
               <View>
-                <Text className="text-[13px] text-zinc-500">Od</Text>
-                <Text className="text-base text-zinc-900">
-                  {formatDateTime(rental.startDate)}
-                </Text>
+                <Text style={s.smallLabel}>Od</Text>
+                <Text style={s.dateText}>{formatDateTime(rental.startDate)}</Text>
               </View>
               <View>
-                <Text className="text-[13px] text-zinc-500">Do</Text>
-                <Text className="text-base text-zinc-900">
-                  {formatDateTime(rental.endDate)}
-                </Text>
+                <Text style={s.smallLabel}>Do</Text>
+                <Text style={s.dateText}>{formatDateTime(rental.endDate)}</Text>
               </View>
             </View>
-            <Text className="mt-2 text-[13px] text-zinc-500">
+            <Text style={s.durationText}>
               Czas trwania: {durationDays}{' '}
               {durationDays === 1 ? 'dzien' : 'dni'}
             </Text>
           </AppCard>
 
           {/* Pricing */}
-          <AppCard className="mb-3">
-            <Text className="mb-2 text-[13px] font-medium text-zinc-500">
-              Ceny
-            </Text>
-            <View className="flex-row justify-between">
-              <Text className="text-[13px] text-zinc-500">
-                Stawka dzienna netto
-              </Text>
-              <Text className="text-base text-zinc-900">
-                {formatCurrency(rental.dailyRateNet)}
-              </Text>
+          <AppCard cardStyle={s.mb12}>
+            <Text style={s.sectionLabel}>Ceny</Text>
+            <View style={s.priceRow}>
+              <Text style={s.smallLabel}>Stawka dzienna netto</Text>
+              <Text style={s.dateText}>{formatCurrency(rental.dailyRateNet)}</Text>
             </View>
-            <View className="mt-2 flex-row justify-between">
-              <Text className="text-base font-semibold text-zinc-900">
-                Razem brutto
-              </Text>
-              <Text className="text-base font-semibold text-zinc-900">
-                {formatCurrency(rental.totalPriceGross)}
-              </Text>
+            <View style={s.priceTotalRow}>
+              <Text style={s.mainText}>Razem brutto</Text>
+              <Text style={s.mainText}>{formatCurrency(rental.totalPriceGross)}</Text>
             </View>
           </AppCard>
 
           {/* Return data (if returned) */}
           {isReturned && rental.returnData && (
-            <AppCard className="mb-3">
-              <Text className="mb-2 text-[13px] font-medium text-zinc-500">
-                Dane zwrotu
-              </Text>
+            <AppCard cardStyle={s.mb12}>
+              <Text style={s.sectionLabel}>Dane zwrotu</Text>
               {rental.returnMileage != null && (
-                <Text className="text-base text-zinc-900">
+                <Text style={s.dateText}>
                   Przebieg zwrotu: {formatMileage(rental.returnMileage)}
                 </Text>
               )}
               {rental.returnData.generalNotes && (
-                <Text className="mt-2 text-[13px] text-zinc-500">
+                <Text style={[s.subText, { marginTop: 8 }]}>
                   {rental.returnData.generalNotes}
                 </Text>
               )}
@@ -167,18 +137,16 @@ export default function RentalDetailScreen() {
 
           {/* Notes */}
           {rental.notes && (
-            <AppCard className="mb-3">
-              <Text className="mb-2 text-[13px] font-medium text-zinc-500">
-                Uwagi
-              </Text>
-              <Text className="text-base text-zinc-900">{rental.notes}</Text>
+            <AppCard cardStyle={s.mb12}>
+              <Text style={s.sectionLabel}>Uwagi</Text>
+              <Text style={s.dateText}>{rental.notes}</Text>
             </AppCard>
           )}
         </ScrollView>
 
         {/* Action Buttons */}
         {isActiveOrExtended && (
-          <View className="absolute bottom-0 left-0 right-0 border-t border-zinc-200 bg-white px-4 pb-8 pt-4">
+          <View style={s.bottomBar}>
             <AppButton
               title={t('rentals.startReturn')}
               fullWidth
@@ -190,3 +158,34 @@ export default function RentalDetailScreen() {
     </>
   );
 }
+
+const s = StyleSheet.create({
+  root: { flex: 1, backgroundColor: '#FFFFFF' },
+  flex1: { flex: 1 },
+  loadingWrap: { flex: 1, backgroundColor: '#FFFFFF', paddingHorizontal: 16, paddingTop: 16 },
+  scrollContent: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 128 },
+  statusRow: { marginBottom: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  regTitle: { fontSize: 20, fontWeight: '600', color: '#18181B' },
+  mb12: { marginBottom: 12 },
+  sectionLabel: { marginBottom: 8, fontSize: 13, fontWeight: '500', color: '#71717A' },
+  mainText: { fontSize: 16, fontWeight: '600', color: '#18181B' },
+  subText: { marginTop: 4, fontSize: 13, color: '#71717A' },
+  smallLabel: { fontSize: 13, color: '#71717A' },
+  dateText: { fontSize: 16, color: '#18181B' },
+  datesRow: { flexDirection: 'row', justifyContent: 'space-between' },
+  durationText: { marginTop: 8, fontSize: 13, color: '#71717A' },
+  priceRow: { flexDirection: 'row', justifyContent: 'space-between' },
+  priceTotalRow: { marginTop: 8, flexDirection: 'row', justifyContent: 'space-between' },
+  bottomBar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    borderTopWidth: 1,
+    borderTopColor: '#E4E4E7',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 16,
+    paddingBottom: 32,
+    paddingTop: 16,
+  },
+});

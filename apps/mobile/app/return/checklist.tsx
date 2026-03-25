@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, Switch, Text, TextInput, View } from 'react-native';
+import { ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -68,29 +68,24 @@ export default function ReturnChecklistScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <View className="px-4 pt-2">
+    <SafeAreaView style={s.safeArea}>
+      <View style={s.padWrap}>
         <WizardStepper currentStep={3} totalSteps={5} />
       </View>
 
       <ScrollView
-        className="flex-1"
-        contentContainerClassName="px-4 pt-4 pb-32"
+        style={s.flex1}
+        contentContainerStyle={s.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <Text className="mb-4 text-xl font-semibold text-zinc-900">
-          {t('returnWizard.step3')}
-        </Text>
+        <Text style={s.stepTitle}>{t('returnWizard.step3')}</Text>
 
         {CHECKLIST_ITEMS.map((item) => {
           const state = checklist[item.key];
           return (
-            <View
-              key={item.key}
-              className="mb-3 rounded-xl border border-zinc-200 bg-white p-4"
-            >
-              <View className="flex-row items-center justify-between">
-                <Text className="text-base text-zinc-900">{item.label}</Text>
+            <View key={item.key} style={s.checkItem}>
+              <View style={s.checkRow}>
+                <Text style={s.checkLabel}>{item.label}</Text>
                 <Switch
                   value={state.damaged}
                   onValueChange={() => toggleItem(item.key)}
@@ -101,7 +96,7 @@ export default function ReturnChecklistScreen() {
 
               {state.damaged && (
                 <TextInput
-                  className="mt-3 rounded-lg border border-zinc-200 p-3 text-base text-zinc-900"
+                  style={s.notesInput}
                   placeholder="Opisz uszkodzenie..."
                   placeholderTextColor="#A1A1AA"
                   value={state.notes}
@@ -117,9 +112,48 @@ export default function ReturnChecklistScreen() {
       </ScrollView>
 
       {/* Bottom button */}
-      <View className="absolute bottom-0 left-0 right-0 border-t border-zinc-200 bg-white px-4 pb-8 pt-4">
+      <View style={s.bottomBar}>
         <AppButton title={t('common.next')} fullWidth onPress={handleNext} />
       </View>
     </SafeAreaView>
   );
 }
+
+const s = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  flex1: { flex: 1 },
+  padWrap: { paddingHorizontal: 16, paddingTop: 8 },
+  scrollContent: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 128 },
+  stepTitle: { marginBottom: 16, fontSize: 20, fontWeight: '600', color: '#18181B' },
+  checkItem: {
+    marginBottom: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E4E4E7',
+    backgroundColor: '#FFFFFF',
+    padding: 16,
+  },
+  checkRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  checkLabel: { fontSize: 16, color: '#18181B' },
+  notesInput: {
+    marginTop: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E4E4E7',
+    padding: 12,
+    fontSize: 16,
+    color: '#18181B',
+  },
+  bottomBar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    borderTopWidth: 1,
+    borderTopColor: '#E4E4E7',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 16,
+    paddingBottom: 32,
+    paddingTop: 16,
+  },
+});

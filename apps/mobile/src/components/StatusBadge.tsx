@@ -1,62 +1,46 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { StyleSheet, Text, View, type ViewStyle, type TextStyle } from 'react-native';
 
 interface StatusBadgeProps {
   status: string;
 }
 
 interface BadgeStyle {
-  container: string;
-  text: string;
+  bg: string;
+  fg: string;
   label: string;
 }
 
 const STATUS_MAP: Record<string, BadgeStyle> = {
-  ACTIVE: {
-    container: 'bg-green-100',
-    text: 'text-green-700',
-    label: 'Aktywny',
-  },
-  RENTED: {
-    container: 'bg-green-100',
-    text: 'text-green-700',
-    label: 'Aktywny',
-  },
-  DRAFT: {
-    container: 'bg-zinc-100',
-    text: 'text-zinc-600',
-    label: 'Szkic',
-  },
-  EXTENDED: {
-    container: 'bg-amber-100',
-    text: 'text-amber-700',
-    label: 'Przedluzony',
-  },
-  RETURNED: {
-    container: 'bg-zinc-200',
-    text: 'text-zinc-600',
-    label: 'Zwrocony',
-  },
-  OVERDUE: {
-    container: 'bg-red-100',
-    text: 'text-red-700',
-    label: 'Przeterminowany',
-  },
+  ACTIVE: { bg: '#DCFCE7', fg: '#15803D', label: 'Aktywny' },
+  RENTED: { bg: '#DCFCE7', fg: '#15803D', label: 'Aktywny' },
+  DRAFT: { bg: '#F4F4F5', fg: '#52525B', label: 'Szkic' },
+  EXTENDED: { bg: '#FEF3C7', fg: '#B45309', label: 'Przedluzony' },
+  RETURNED: { bg: '#E4E4E7', fg: '#52525B', label: 'Zwrocony' },
+  OVERDUE: { bg: '#FEE2E2', fg: '#B91C1C', label: 'Przeterminowany' },
 };
 
-const DEFAULT_STYLE: BadgeStyle = {
-  container: 'bg-zinc-100',
-  text: 'text-zinc-600',
-  label: '',
-};
+const DEFAULT_STYLE: BadgeStyle = { bg: '#F4F4F5', fg: '#52525B', label: '' };
 
 export function StatusBadge({ status }: StatusBadgeProps) {
-  const style = STATUS_MAP[status] ?? DEFAULT_STYLE;
-  const label = style.label || status;
+  const badgeStyle = STATUS_MAP[status] ?? DEFAULT_STYLE;
+  const label = badgeStyle.label || status;
 
   return (
-    <View className={`rounded-full px-3 py-1 ${style.container}`}>
-      <Text className={`text-[13px] font-medium ${style.text}`}>{label}</Text>
+    <View style={[styles.container, { backgroundColor: badgeStyle.bg }]}>
+      <Text style={[styles.text, { color: badgeStyle.fg }]}>{label}</Text>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    borderRadius: 9999,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+  },
+  text: {
+    fontSize: 13,
+    fontWeight: '500',
+  },
+});

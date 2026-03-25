@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { Check } from 'lucide-react-native';
 
 interface WizardStepperProps {
@@ -16,51 +16,46 @@ export function WizardStepper({
   const progress = totalSteps > 0 ? (currentStep / totalSteps) * 100 : 0;
 
   return (
-    <View className="my-2 px-4">
+    <View style={styles.wrapper}>
       {/* Progress bar */}
-      <View className="h-1 rounded-full bg-zinc-200">
-        <View
-          className="h-1 rounded-full bg-blue-600"
-          style={{ width: `${progress}%` }}
-        />
+      <View style={styles.track}>
+        <View style={[styles.fill, { width: `${progress}%` as any }]} />
       </View>
 
       {/* Step dots */}
-      <View className="mt-3 flex-row items-center justify-between">
+      <View style={styles.dotsRow}>
         {Array.from({ length: totalSteps }, (_, i) => {
           const stepNum = i + 1;
           const isCompleted = stepNum < currentStep;
           const isActive = stepNum === currentStep;
 
           return (
-            <View key={stepNum} className="items-center">
+            <View key={stepNum} style={styles.stepCol}>
               <View
-                className={[
-                  'h-8 w-8 items-center justify-center rounded-full',
+                style={[
+                  styles.dot,
                   isCompleted
-                    ? 'bg-green-600'
+                    ? styles.dotCompleted
                     : isActive
-                      ? 'bg-blue-600'
-                      : 'bg-zinc-200',
-                ].join(' ')}
+                      ? styles.dotActive
+                      : styles.dotDefault,
+                ]}
               >
                 {isCompleted ? (
                   <Check size={16} color="#FFFFFF" />
                 ) : (
                   <Text
-                    className={[
-                      'text-sm font-semibold',
-                      isActive ? 'text-white' : 'text-zinc-500',
-                    ].join(' ')}
+                    style={[
+                      styles.dotText,
+                      isActive ? styles.dotTextActive : styles.dotTextDefault,
+                    ]}
                   >
                     {stepNum}
                   </Text>
                 )}
               </View>
               {labels?.[i] && (
-                <Text className="mt-1 text-[11px] text-zinc-500">
-                  {labels[i]}
-                </Text>
+                <Text style={styles.stepLabel}>{labels[i]}</Text>
               )}
             </View>
           );
@@ -69,3 +64,60 @@ export function WizardStepper({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  wrapper: {
+    marginVertical: 8,
+    paddingHorizontal: 16,
+  },
+  track: {
+    height: 4,
+    borderRadius: 9999,
+    backgroundColor: '#E4E4E7',
+  },
+  fill: {
+    height: 4,
+    borderRadius: 9999,
+    backgroundColor: '#3B82F6',
+  },
+  dotsRow: {
+    marginTop: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  stepCol: {
+    alignItems: 'center',
+  },
+  dot: {
+    height: 32,
+    width: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 16,
+  },
+  dotCompleted: {
+    backgroundColor: '#16A34A',
+  },
+  dotActive: {
+    backgroundColor: '#3B82F6',
+  },
+  dotDefault: {
+    backgroundColor: '#E4E4E7',
+  },
+  dotText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  dotTextActive: {
+    color: '#FFFFFF',
+  },
+  dotTextDefault: {
+    color: '#71717A',
+  },
+  stepLabel: {
+    marginTop: 4,
+    fontSize: 11,
+    color: '#71717A',
+  },
+});

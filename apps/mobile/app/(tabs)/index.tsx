@@ -4,6 +4,7 @@ import {
   Pressable,
   RefreshControl,
   ScrollView,
+  StyleSheet,
   Text,
   View,
 } from 'react-native';
@@ -97,16 +98,16 @@ export default function DashboardScreen() {
 
   const renderUpcomingItem = useCallback(
     ({ item }: { item: RentalWithRelations }) => (
-      <AppCard className="mx-4 mb-3" onPress={() => handleRentalPress(item.id)}>
-        <View className="flex-row items-center justify-between">
-          <View className="flex-1">
-            <Text className="text-base font-semibold text-zinc-900">
+      <AppCard cardStyle={s.upcomingCard} onPress={() => handleRentalPress(item.id)}>
+        <View style={s.cardRow}>
+          <View style={s.flex1}>
+            <Text style={s.cardName}>
               {item.customer.firstName} {item.customer.lastName}
             </Text>
-            <Text className="mt-1 text-[13px] text-zinc-500">
+            <Text style={s.cardSub}>
               {item.vehicle.registration} {item.vehicle.make} {item.vehicle.model}
             </Text>
-            <Text className="mt-1 text-[13px] text-zinc-500">
+            <Text style={s.cardSub}>
               {formatDate(item.endDate)}
             </Text>
           </View>
@@ -119,13 +120,13 @@ export default function DashboardScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-white" edges={['top']}>
-        <View className="flex-1 px-4 pt-4">
+      <SafeAreaView style={s.safeArea} edges={['top']}>
+        <View style={s.loadingWrap}>
           <LoadingSkeleton variant="text" count={2} />
-          <View className="mt-6 flex-row gap-3">
+          <View style={s.statsRowLoading}>
             <LoadingSkeleton variant="stat" count={3} />
           </View>
-          <View className="mt-6">
+          <View style={s.mt24}>
             <LoadingSkeleton variant="list-item" count={4} />
           </View>
         </View>
@@ -134,9 +135,9 @@ export default function DashboardScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
+    <SafeAreaView style={s.safeArea} edges={['top']}>
       <ScrollView
-        className="flex-1"
+        style={s.flex1}
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
@@ -146,23 +147,23 @@ export default function DashboardScreen() {
         }
         showsVerticalScrollIndicator={false}
       >
-        <View className="px-4 pt-4">
+        <View style={s.padH16pt16}>
           {/* Greeting */}
-          <Text className="text-[20px] font-semibold text-zinc-900">
+          <Text style={s.greeting}>
             {t('dashboard.greeting', { firstName })}
           </Text>
-          <Text className="mt-1 text-base text-zinc-500">{today}</Text>
+          <Text style={s.todayText}>{today}</Text>
 
           {/* Overdue Alert */}
           {stats.overdue > 0 && (
             <Pressable
               onPress={() => router.push('/rentals')}
-              className="mt-4"
+              style={s.mt16}
             >
-              <AppCard className="border-red-600">
-                <View className="flex-row items-center">
+              <AppCard cardStyle={s.overdueCard}>
+                <View style={s.overdueRow}>
                   <AlertTriangle size={20} color="#DC2626" />
-                  <Text className="ml-2 flex-1 text-base font-semibold text-red-600">
+                  <Text style={s.overdueText}>
                     {t('dashboard.overdue', { count: stats.overdue })}
                   </Text>
                 </View>
@@ -174,37 +175,31 @@ export default function DashboardScreen() {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            className="mt-6"
-            contentContainerClassName="gap-3"
+            style={s.mt24}
+            contentContainerStyle={s.statsContent}
           >
-            <AppCard className="w-32">
-              <Text className="text-[13px] text-zinc-500">
+            <AppCard cardStyle={s.statCard}>
+              <Text style={s.statLabel}>
                 {t('dashboard.activeRentals')}
               </Text>
-              <Text className="mt-1 text-[28px] font-semibold text-zinc-900">
-                {stats.active}
-              </Text>
+              <Text style={s.statValue}>{stats.active}</Text>
             </AppCard>
-            <AppCard className="w-32">
-              <Text className="text-[13px] text-zinc-500">
+            <AppCard cardStyle={s.statCard}>
+              <Text style={s.statLabel}>
                 {t('dashboard.todayPickups')}
               </Text>
-              <Text className="mt-1 text-[28px] font-semibold text-zinc-900">
-                {stats.pickups}
-              </Text>
+              <Text style={s.statValue}>{stats.pickups}</Text>
             </AppCard>
-            <AppCard className="w-32">
-              <Text className="text-[13px] text-zinc-500">
+            <AppCard cardStyle={s.statCard}>
+              <Text style={s.statLabel}>
                 {t('dashboard.todayReturns')}
               </Text>
-              <Text className="mt-1 text-[28px] font-semibold text-zinc-900">
-                {stats.returns}
-              </Text>
+              <Text style={s.statValue}>{stats.returns}</Text>
             </AppCard>
           </ScrollView>
 
           {/* Quick Actions */}
-          <View className="mt-6 gap-3">
+          <View style={s.actionsWrap}>
             <AppButton
               title={t('dashboard.newRental')}
               fullWidth
@@ -215,24 +210,25 @@ export default function DashboardScreen() {
               variant="secondary"
               fullWidth
               onPress={() => router.push('/rentals')}
+              containerStyle={s.mt12}
             />
           </View>
 
           {/* Upcoming Returns */}
-          <Text className="mt-8 text-[20px] font-semibold text-zinc-900">
+          <Text style={s.sectionHeading}>
             {t('dashboard.upcomingReturns')}
           </Text>
         </View>
 
         {upcomingReturns.length === 0 ? (
-          <View className="mt-4 px-4">
+          <View style={s.emptyWrap}>
             <EmptyState
               heading={t('empty.noUpcoming')}
               body={t('empty.noUpcomingBody')}
             />
           </View>
         ) : (
-          <View className="mt-4 pb-8">
+          <View style={s.upcomingList}>
             {upcomingReturns.map((rental) => (
               <View key={rental.id}>
                 {renderUpcomingItem({ item: rental })}
@@ -244,3 +240,31 @@ export default function DashboardScreen() {
     </SafeAreaView>
   );
 }
+
+const s = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  flex1: { flex: 1 },
+  loadingWrap: { flex: 1, paddingHorizontal: 16, paddingTop: 16 },
+  statsRowLoading: { marginTop: 24, flexDirection: 'row', gap: 12 },
+  mt24: { marginTop: 24 },
+  mt16: { marginTop: 16 },
+  mt12: { marginTop: 12 },
+  padH16pt16: { paddingHorizontal: 16, paddingTop: 16 },
+  greeting: { fontSize: 20, fontWeight: '600', color: '#18181B' },
+  todayText: { marginTop: 4, fontSize: 16, color: '#71717A' },
+  overdueCard: { borderColor: '#DC2626' },
+  overdueRow: { flexDirection: 'row', alignItems: 'center' },
+  overdueText: { marginLeft: 8, flex: 1, fontSize: 16, fontWeight: '600', color: '#DC2626' },
+  statsContent: { gap: 12 },
+  statCard: { width: 128 },
+  statLabel: { fontSize: 13, color: '#71717A' },
+  statValue: { marginTop: 4, fontSize: 28, fontWeight: '600', color: '#18181B' },
+  actionsWrap: { marginTop: 24 },
+  sectionHeading: { marginTop: 32, fontSize: 20, fontWeight: '600', color: '#18181B' },
+  emptyWrap: { marginTop: 16, paddingHorizontal: 16 },
+  upcomingList: { marginTop: 16, paddingBottom: 32 },
+  upcomingCard: { marginHorizontal: 16, marginBottom: 12 },
+  cardRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  cardName: { fontSize: 16, fontWeight: '600', color: '#18181B' },
+  cardSub: { marginTop: 4, fontSize: 13, color: '#71717A' },
+});

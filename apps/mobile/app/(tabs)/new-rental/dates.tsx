@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -123,32 +123,28 @@ export default function DatesStep() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
+    <SafeAreaView style={s.safeArea} edges={['top']}>
       <WizardStepper
         currentStep={3}
         totalSteps={5}
         labels={WIZARD_LABELS}
       />
 
-      <Text className="mt-4 px-4 text-xl font-semibold text-zinc-900">
+      <Text style={s.stepTitle}>
         {t('wizard.step3')}
       </Text>
 
       <ScrollView
-        className="flex-1 px-4 pt-4"
+        style={s.scrollBody}
         contentContainerStyle={{ paddingBottom: 120 }}
       >
         {/* Start Date */}
-        <Text className="mb-1 text-[13px] text-zinc-500">
-          Data rozpoczecia
-        </Text>
+        <Text style={s.fieldLabel}>Data rozpoczecia</Text>
         <Pressable
-          className="mb-4 h-12 flex-row items-center rounded-xl border border-zinc-200 px-4"
+          style={s.dateField}
           onPress={() => setShowStartPicker(true)}
         >
-          <Text className="flex-1 text-base text-zinc-900">
-            {formatDateTime(startDate)}
-          </Text>
+          <Text style={s.dateFieldText}>{formatDateTime(startDate)}</Text>
         </Pressable>
 
         {showStartPicker && (
@@ -162,16 +158,12 @@ export default function DatesStep() {
         )}
 
         {/* End Date */}
-        <Text className="mb-1 text-[13px] text-zinc-500">
-          Data zakonczenia
-        </Text>
+        <Text style={s.fieldLabel}>Data zakonczenia</Text>
         <Pressable
-          className="mb-4 h-12 flex-row items-center rounded-xl border border-zinc-200 px-4"
+          style={s.dateField}
           onPress={() => setShowEndPicker(true)}
         >
-          <Text className="flex-1 text-base text-zinc-900">
-            {formatDateTime(endDate)}
-          </Text>
+          <Text style={s.dateFieldText}>{formatDateTime(endDate)}</Text>
         </Pressable>
 
         {showEndPicker && (
@@ -196,49 +188,37 @@ export default function DatesStep() {
               onBlur={onBlur}
               keyboardType="decimal-pad"
               placeholder="0.00"
-              className="mb-4"
+              containerStyle={s.mb16}
             />
           )}
         />
 
         {/* Pricing Summary */}
-        <View className="rounded-xl border border-zinc-200 bg-zinc-50 p-4">
-          <View className="flex-row items-center justify-between">
-            <Text className="text-[13px] text-zinc-500">Liczba dni</Text>
-            <Text className="text-base font-semibold text-zinc-900">
-              {pricing.days}
-            </Text>
+        <View style={s.summaryBox}>
+          <View style={s.summaryRow}>
+            <Text style={s.summaryLabel}>Liczba dni</Text>
+            <Text style={s.summaryValue}>{pricing.days}</Text>
           </View>
 
-          <View className="mt-2 flex-row items-center justify-between">
-            <Text className="text-[13px] text-zinc-500">
-              {t('wizard.dailyRate')}
-            </Text>
-            <Text className="text-base text-zinc-900">
-              {formatCurrency(pricing.rateGrosze)}
-            </Text>
+          <View style={s.summaryRowMt}>
+            <Text style={s.summaryLabel}>{t('wizard.dailyRate')}</Text>
+            <Text style={s.summaryValueNormal}>{formatCurrency(pricing.rateGrosze)}</Text>
           </View>
 
-          <View className="mt-2 flex-row items-center justify-between">
-            <Text className="text-[13px] text-zinc-500">Razem netto</Text>
-            <Text className="text-base text-zinc-900">
-              {formatCurrency(pricing.totalNetGrosze)}
-            </Text>
+          <View style={s.summaryRowMt}>
+            <Text style={s.summaryLabel}>Razem netto</Text>
+            <Text style={s.summaryValueNormal}>{formatCurrency(pricing.totalNetGrosze)}</Text>
           </View>
 
-          <View className="mt-3 border-t border-zinc-200 pt-3 flex-row items-center justify-between">
-            <Text className="text-base font-semibold text-zinc-900">
-              {t('wizard.totalGross')}
-            </Text>
-            <Text className="text-lg font-semibold text-zinc-900">
-              {formatCurrency(pricing.totalGrossGrosze)}
-            </Text>
+          <View style={s.totalRow}>
+            <Text style={s.totalLabel}>{t('wizard.totalGross')}</Text>
+            <Text style={s.totalValue}>{formatCurrency(pricing.totalGrossGrosze)}</Text>
           </View>
         </View>
       </ScrollView>
 
       {/* Bottom CTA */}
-      <View className="absolute bottom-0 left-0 right-0 border-t border-zinc-100 bg-white px-4 pb-8 pt-3">
+      <View style={s.bottomBar}>
         <AppButton
           title={t('common.next')}
           onPress={handleSubmit(handleNext)}
@@ -248,3 +228,57 @@ export default function DatesStep() {
     </SafeAreaView>
   );
 }
+
+const s = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  stepTitle: { marginTop: 16, paddingHorizontal: 16, fontSize: 20, fontWeight: '600', color: '#18181B' },
+  scrollBody: { flex: 1, paddingHorizontal: 16, paddingTop: 16 },
+  fieldLabel: { marginBottom: 4, fontSize: 13, color: '#71717A' },
+  dateField: {
+    marginBottom: 16,
+    height: 48,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E4E4E7',
+    paddingHorizontal: 16,
+  },
+  dateFieldText: { flex: 1, fontSize: 16, color: '#18181B' },
+  mb16: { marginBottom: 16 },
+  summaryBox: {
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E4E4E7',
+    backgroundColor: '#FAFAFA',
+    padding: 16,
+  },
+  summaryRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  summaryRowMt: { marginTop: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  summaryLabel: { fontSize: 13, color: '#71717A' },
+  summaryValue: { fontSize: 16, fontWeight: '600', color: '#18181B' },
+  summaryValueNormal: { fontSize: 16, color: '#18181B' },
+  totalRow: {
+    marginTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#E4E4E7',
+    paddingTop: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  totalLabel: { fontSize: 16, fontWeight: '600', color: '#18181B' },
+  totalValue: { fontSize: 18, fontWeight: '600', color: '#18181B' },
+  bottomBar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    borderTopWidth: 1,
+    borderTopColor: '#F4F4F5',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 16,
+    paddingBottom: 32,
+    paddingTop: 12,
+  },
+});

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Tabs } from 'expo-router';
 import { Home, PlusCircle, List, User } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -10,7 +10,7 @@ export default function TabLayout() {
   const { t } = useTranslation();
 
   return (
-    <View className="flex-1">
+    <View style={styles.root}>
       <OfflineBanner />
       <Tabs
         screenOptions={{
@@ -66,3 +66,9 @@ export default function TabLayout() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
+});

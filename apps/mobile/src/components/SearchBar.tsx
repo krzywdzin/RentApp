@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { Pressable, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { Search, X } from 'lucide-react-native';
 
 interface SearchBarProps {
@@ -36,10 +36,10 @@ export function SearchBar({ value, onChangeText, placeholder }: SearchBarProps) 
   }, [onChangeText]);
 
   return (
-    <View className="mx-4 h-12 flex-row items-center rounded-xl bg-zinc-100 px-4">
+    <View style={styles.container}>
       <Search size={20} color="#A1A1AA" />
       <TextInput
-        className="ml-2 flex-1 text-base text-zinc-900"
+        style={styles.input}
         value={localValue}
         onChangeText={handleChange}
         placeholder={placeholder}
@@ -54,3 +54,21 @@ export function SearchBar({ value, onChangeText, placeholder }: SearchBarProps) 
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    marginHorizontal: 16,
+    height: 48,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 12,
+    backgroundColor: '#F4F4F5',
+    paddingHorizontal: 16,
+  },
+  input: {
+    marginLeft: 8,
+    flex: 1,
+    fontSize: 16,
+    color: '#18181B',
+  },
+});

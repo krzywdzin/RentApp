@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, Text, TextInput, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -22,22 +22,20 @@ export default function ReturnNotesScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <View className="px-4 pt-2">
+    <SafeAreaView style={s.safeArea}>
+      <View style={s.padWrap}>
         <WizardStepper currentStep={4} totalSteps={5} />
       </View>
 
       <ScrollView
-        className="flex-1"
-        contentContainerClassName="px-4 pt-4 pb-32"
+        style={s.flex1}
+        contentContainerStyle={s.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <Text className="mb-4 text-xl font-semibold text-zinc-900">
-          {t('returnWizard.step4')}
-        </Text>
+        <Text style={s.stepTitle}>{t('returnWizard.step4')}</Text>
 
         <TextInput
-          className="min-h-[160px] rounded-xl border border-zinc-200 p-4 text-base text-zinc-900"
+          style={s.textArea}
           placeholder={t('returnWizard.notesPlaceholder')}
           placeholderTextColor="#A1A1AA"
           value={notes}
@@ -49,9 +47,38 @@ export default function ReturnNotesScreen() {
       </ScrollView>
 
       {/* Bottom button */}
-      <View className="absolute bottom-0 left-0 right-0 border-t border-zinc-200 bg-white px-4 pb-8 pt-4">
+      <View style={s.bottomBar}>
         <AppButton title={t('common.next')} fullWidth onPress={handleNext} />
       </View>
     </SafeAreaView>
   );
 }
+
+const s = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  flex1: { flex: 1 },
+  padWrap: { paddingHorizontal: 16, paddingTop: 8 },
+  scrollContent: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 128 },
+  stepTitle: { marginBottom: 16, fontSize: 20, fontWeight: '600', color: '#18181B' },
+  textArea: {
+    minHeight: 160,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E4E4E7',
+    padding: 16,
+    fontSize: 16,
+    color: '#18181B',
+  },
+  bottomBar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    borderTopWidth: 1,
+    borderTopColor: '#E4E4E7',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 16,
+    paddingBottom: 32,
+    paddingTop: 16,
+  },
+});

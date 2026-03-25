@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Linking, Text, View } from 'react-native';
+import { Linking, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -36,41 +36,34 @@ export default function SuccessScreen() {
   }, [draft, router]);
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top', 'bottom']}>
-      <View className="flex-1 items-center justify-center px-8">
+    <SafeAreaView style={s.safeArea} edges={['top', 'bottom']}>
+      <View style={s.center}>
         {/* Checkmark icon */}
-        <View className="h-16 w-16 items-center justify-center rounded-full bg-green-600">
+        <View style={s.checkCircle}>
           <Check size={32} color="#FFFFFF" strokeWidth={3} />
         </View>
 
         {/* Heading */}
-        <Text className="mt-6 text-xl font-semibold text-zinc-900">
-          {t('wizard.successHeading')}
-        </Text>
+        <Text style={s.heading}>{t('wizard.successHeading')}</Text>
 
         {/* Body */}
-        <Text className="mt-2 text-center text-base text-zinc-500">
-          {t('wizard.successBody')}
-        </Text>
+        <Text style={s.body}>{t('wizard.successBody')}</Text>
 
         {/* View PDF link */}
         {contractId && (
-          <Text
-            className="mt-4 text-base font-semibold text-blue-600"
-            onPress={handleViewPdf}
-          >
+          <Text style={s.pdfLink} onPress={handleViewPdf}>
             {t('wizard.viewPdf')}
           </Text>
         )}
       </View>
 
       {/* Bottom buttons */}
-      <View className="px-4 pb-4">
+      <View style={s.bottomWrap}>
         <AppButton
           title={t('wizard.newRentalBtn')}
           onPress={handleNewRental}
           fullWidth
-          className="mb-3"
+          containerStyle={s.mb12}
         />
         <AppButton
           title={t('wizard.backToHome')}
@@ -82,3 +75,21 @@ export default function SuccessScreen() {
     </SafeAreaView>
   );
 }
+
+const s = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32 },
+  checkCircle: {
+    height: 64,
+    width: 64,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 32,
+    backgroundColor: '#16A34A',
+  },
+  heading: { marginTop: 24, fontSize: 20, fontWeight: '600', color: '#18181B' },
+  body: { marginTop: 8, textAlign: 'center', fontSize: 16, color: '#71717A' },
+  pdfLink: { marginTop: 16, fontSize: 16, fontWeight: '600', color: '#3B82F6' },
+  bottomWrap: { paddingHorizontal: 16, paddingBottom: 16 },
+  mb12: { marginBottom: 12 },
+});

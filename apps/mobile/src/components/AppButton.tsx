@@ -2,8 +2,10 @@ import React from 'react';
 import {
   ActivityIndicator,
   Pressable,
+  StyleSheet,
   Text,
   type PressableProps,
+  type ViewStyle,
 } from 'react-native';
 
 type ButtonVariant = 'primary' | 'secondary' | 'destructive';
@@ -14,19 +16,19 @@ interface AppButtonProps extends Omit<PressableProps, 'children'> {
   disabled?: boolean;
   loading?: boolean;
   fullWidth?: boolean;
-  className?: string;
+  containerStyle?: ViewStyle;
 }
 
-const variantStyles: Record<ButtonVariant, string> = {
-  primary: 'bg-blue-600',
-  secondary: 'border border-zinc-200 bg-white',
-  destructive: 'bg-red-600',
+const variantBg: Record<ButtonVariant, ViewStyle> = {
+  primary: { backgroundColor: '#3B82F6' },
+  secondary: { backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E4E4E7' },
+  destructive: { backgroundColor: '#DC2626' },
 };
 
-const variantTextStyles: Record<ButtonVariant, string> = {
-  primary: 'text-white',
-  secondary: 'text-zinc-900',
-  destructive: 'text-white',
+const variantText: Record<ButtonVariant, { color: string }> = {
+  primary: { color: '#FFFFFF' },
+  secondary: { color: '#18181B' },
+  destructive: { color: '#FFFFFF' },
 };
 
 export function AppButton({
@@ -35,28 +37,19 @@ export function AppButton({
   disabled = false,
   loading = false,
   fullWidth = false,
-  className = '',
+  containerStyle,
   ...rest
 }: AppButtonProps) {
   const isDisabled = disabled || loading;
 
-  const containerClass = [
-    'min-h-[48px] items-center justify-center rounded-xl px-6',
-    isDisabled ? 'bg-zinc-100' : variantStyles[variant],
-    fullWidth ? 'w-full' : '',
-    className,
-  ]
-    .filter(Boolean)
-    .join(' ');
-
-  const textClass = [
-    'text-base font-semibold',
-    isDisabled ? 'text-zinc-400' : variantTextStyles[variant],
-  ].join(' ');
-
   return (
     <Pressable
-      className={containerClass}
+      style={[
+        styles.container,
+        isDisabled ? styles.disabledBg : variantBg[variant],
+        fullWidth ? styles.fullWidth : undefined,
+        containerStyle,
+      ]}
       disabled={isDisabled}
       accessibilityRole="button"
       accessibilityState={{ disabled: isDisabled }}
@@ -68,8 +61,38 @@ export function AppButton({
           size="small"
         />
       ) : (
-        <Text className={textClass}>{title}</Text>
+        <Text
+          style={[
+            styles.text,
+            isDisabled ? styles.disabledText : variantText[variant],
+          ]}
+        >
+          {title}
+        </Text>
       )}
     </Pressable>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    minHeight: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 12,
+    paddingHorizontal: 24,
+  },
+  fullWidth: {
+    width: '100%',
+  },
+  disabledBg: {
+    backgroundColor: '#F4F4F5',
+  },
+  text: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  disabledText: {
+    color: '#A1A1AA',
+  },
+});

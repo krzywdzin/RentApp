@@ -1,4 +1,5 @@
-import '../global.css';
+// NativeWind disabled for SDK 54 compatibility — styles degrade gracefully
+// import '../global.css';
 import '../src/i18n';
 
 import React from 'react';

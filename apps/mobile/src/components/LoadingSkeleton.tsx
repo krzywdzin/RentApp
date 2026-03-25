@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, View } from 'react-native';
+import { Animated, StyleSheet, View, type ViewStyle } from 'react-native';
 
 type SkeletonVariant = 'card' | 'list-item' | 'stat' | 'text';
 
@@ -8,11 +8,11 @@ interface LoadingSkeletonProps {
   count?: number;
 }
 
-const variantStyles: Record<SkeletonVariant, string> = {
-  card: 'h-24 w-full rounded-xl bg-zinc-200',
-  'list-item': 'h-16 w-full rounded-lg bg-zinc-200',
-  stat: 'h-20 w-28 rounded-xl bg-zinc-200',
-  text: 'h-4 w-full rounded bg-zinc-200',
+const variantStyles: Record<SkeletonVariant, ViewStyle> = {
+  card: { height: 96, width: '100%', borderRadius: 12, backgroundColor: '#E4E4E7' },
+  'list-item': { height: 64, width: '100%', borderRadius: 8, backgroundColor: '#E4E4E7' },
+  stat: { height: 80, width: 112, borderRadius: 12, backgroundColor: '#E4E4E7' },
+  text: { height: 16, width: '100%', borderRadius: 4, backgroundColor: '#E4E4E7' },
 };
 
 function PulsingBlock({ variant }: { variant: SkeletonVariant }) {
@@ -39,18 +39,23 @@ function PulsingBlock({ variant }: { variant: SkeletonVariant }) {
 
   return (
     <Animated.View
-      className={variantStyles[variant]}
-      style={{ opacity }}
+      style={[variantStyles[variant], { opacity }]}
     />
   );
 }
 
 export function LoadingSkeleton({ variant, count = 1 }: LoadingSkeletonProps) {
   return (
-    <View className="gap-3">
+    <View style={styles.container}>
       {Array.from({ length: count }, (_, i) => (
         <PulsingBlock key={i} variant={variant} />
       ))}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    gap: 12,
+  },
+});

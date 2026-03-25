@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -28,8 +28,8 @@ export default function ReturnConfirmRentalScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-white">
-        <View className="px-4 pt-4">
+      <SafeAreaView style={s.safeArea}>
+        <View style={s.padWrap}>
           <WizardStepper currentStep={1} totalSteps={5} />
           <LoadingSkeleton variant="card" count={3} />
         </View>
@@ -42,9 +42,9 @@ export default function ReturnConfirmRentalScreen() {
 
   if (!rental || !isValidStatus) {
     return (
-      <SafeAreaView className="flex-1 bg-white">
-        <View className="flex-1 items-center justify-center px-4">
-          <Text className="text-center text-base text-zinc-500">
+      <SafeAreaView style={s.safeArea}>
+        <View style={s.errorCenter}>
+          <Text style={s.errorText}>
             {!rental
               ? 'Nie znaleziono wynajmu'
               : 'Wynajem nie moze byc zwrocony (status: ' +
@@ -54,7 +54,7 @@ export default function ReturnConfirmRentalScreen() {
           <AppButton
             title={t('common.back')}
             variant="secondary"
-            className="mt-4"
+            containerStyle={s.mt16}
             onPress={() => router.back()}
           />
         </View>
@@ -63,85 +63,67 @@ export default function ReturnConfirmRentalScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <View className="px-4 pt-2">
+    <SafeAreaView style={s.safeArea}>
+      <View style={s.padWrapSmall}>
         <WizardStepper currentStep={1} totalSteps={5} />
       </View>
 
       <ScrollView
-        className="flex-1"
-        contentContainerClassName="px-4 pt-4 pb-32"
+        style={s.flex1}
+        contentContainerStyle={s.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <Text className="mb-4 text-xl font-semibold text-zinc-900">
-          {t('returnWizard.step1')}
-        </Text>
+        <Text style={s.stepTitle}>{t('returnWizard.step1')}</Text>
 
         {/* Customer */}
-        <AppCard className="mb-3">
-          <Text className="mb-2 text-[13px] font-medium text-zinc-500">
-            Klient
-          </Text>
-          <Text className="text-base font-semibold text-zinc-900">
+        <AppCard cardStyle={s.mb12}>
+          <Text style={s.sectionLabel}>Klient</Text>
+          <Text style={s.mainText}>
             {rental.customer.firstName} {rental.customer.lastName}
           </Text>
           {rental.customer.phone && (
-            <Text className="mt-1 text-[13px] text-zinc-500">
-              {rental.customer.phone}
-            </Text>
+            <Text style={s.subText}>{rental.customer.phone}</Text>
           )}
         </AppCard>
 
         {/* Vehicle */}
-        <AppCard className="mb-3">
-          <Text className="mb-2 text-[13px] font-medium text-zinc-500">
-            Pojazd
-          </Text>
-          <Text className="text-base font-semibold text-zinc-900">
-            {rental.vehicle.registration}
-          </Text>
-          <Text className="mt-1 text-[13px] text-zinc-500">
+        <AppCard cardStyle={s.mb12}>
+          <Text style={s.sectionLabel}>Pojazd</Text>
+          <Text style={s.mainText}>{rental.vehicle.registration}</Text>
+          <Text style={s.subText}>
             {rental.vehicle.make} {rental.vehicle.model} ({rental.vehicle.year})
           </Text>
-          <Text className="mt-1 text-[13px] text-zinc-500">
+          <Text style={s.subText}>
             Przebieg: {formatMileage(rental.vehicle.mileage)}
           </Text>
         </AppCard>
 
         {/* Dates */}
-        <AppCard className="mb-3">
-          <Text className="mb-2 text-[13px] font-medium text-zinc-500">
-            Terminy
-          </Text>
-          <View className="flex-row justify-between">
+        <AppCard cardStyle={s.mb12}>
+          <Text style={s.sectionLabel}>Terminy</Text>
+          <View style={s.datesRow}>
             <View>
-              <Text className="text-[13px] text-zinc-500">Od</Text>
-              <Text className="text-base text-zinc-900">
-                {formatDate(rental.startDate)}
-              </Text>
+              <Text style={s.smallLabel}>Od</Text>
+              <Text style={s.dateText}>{formatDate(rental.startDate)}</Text>
             </View>
             <View>
-              <Text className="text-[13px] text-zinc-500">Do</Text>
-              <Text className="text-base text-zinc-900">
-                {formatDate(rental.endDate)}
-              </Text>
+              <Text style={s.smallLabel}>Do</Text>
+              <Text style={s.dateText}>{formatDate(rental.endDate)}</Text>
             </View>
           </View>
         </AppCard>
 
         {/* Status */}
-        <AppCard className="mb-3">
-          <View className="flex-row items-center justify-between">
-            <Text className="text-[13px] font-medium text-zinc-500">
-              Status
-            </Text>
+        <AppCard cardStyle={s.mb12}>
+          <View style={s.statusRow}>
+            <Text style={s.sectionLabelInline}>Status</Text>
             <StatusBadge status={rental.status} />
           </View>
         </AppCard>
       </ScrollView>
 
       {/* Bottom button */}
-      <View className="absolute bottom-0 left-0 right-0 border-t border-zinc-200 bg-white px-4 pb-8 pt-4">
+      <View style={s.bottomBar}>
         <AppButton
           title={t('common.next')}
           fullWidth
@@ -151,3 +133,36 @@ export default function ReturnConfirmRentalScreen() {
     </SafeAreaView>
   );
 }
+
+const s = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  flex1: { flex: 1 },
+  padWrap: { paddingHorizontal: 16, paddingTop: 16 },
+  padWrapSmall: { paddingHorizontal: 16, paddingTop: 8 },
+  scrollContent: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 128 },
+  errorCenter: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 16 },
+  errorText: { textAlign: 'center', fontSize: 16, color: '#71717A' },
+  mt16: { marginTop: 16 },
+  mb12: { marginBottom: 12 },
+  stepTitle: { marginBottom: 16, fontSize: 20, fontWeight: '600', color: '#18181B' },
+  sectionLabel: { marginBottom: 8, fontSize: 13, fontWeight: '500', color: '#71717A' },
+  sectionLabelInline: { fontSize: 13, fontWeight: '500', color: '#71717A' },
+  mainText: { fontSize: 16, fontWeight: '600', color: '#18181B' },
+  subText: { marginTop: 4, fontSize: 13, color: '#71717A' },
+  smallLabel: { fontSize: 13, color: '#71717A' },
+  dateText: { fontSize: 16, color: '#18181B' },
+  datesRow: { flexDirection: 'row', justifyContent: 'space-between' },
+  statusRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  bottomBar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    borderTopWidth: 1,
+    borderTopColor: '#E4E4E7',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 16,
+    paddingBottom: 32,
+    paddingTop: 16,
+  },
+});

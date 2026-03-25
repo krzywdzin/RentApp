@@ -77,7 +77,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
   // Show loading spinner while initializing
   if (isLoading || !isReady) {
     return (
-      <View className="flex-1 items-center justify-center bg-white">
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFFFFF' }}>
         <ActivityIndicator size="large" color="#2563EB" />
       </View>
     );

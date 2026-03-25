@@ -3,6 +3,7 @@ import {
   FlatList,
   Pressable,
   RefreshControl,
+  StyleSheet,
   Text,
   View,
 } from 'react-native';
@@ -70,19 +71,19 @@ export default function RentalsListScreen() {
   const renderItem = useCallback(
     ({ item }: { item: RentalWithRelations }) => (
       <AppCard
-        className="mx-4 mb-3"
+        cardStyle={s.itemCard}
         onPress={() => router.push(`/rentals/${item.id}`)}
       >
-        <View className="flex-row items-center justify-between">
-          <View className="flex-1">
-            <Text className="text-base font-semibold text-zinc-900">
+        <View style={s.itemRow}>
+          <View style={s.flex1}>
+            <Text style={s.itemName}>
               {item.customer.firstName} {item.customer.lastName}
             </Text>
-            <Text className="mt-1 text-[13px] text-zinc-500">
+            <Text style={s.itemSub}>
               {item.vehicle.registration} {item.vehicle.make}{' '}
               {item.vehicle.model}
             </Text>
-            <Text className="mt-1 text-[13px] text-zinc-500">
+            <Text style={s.itemSub}>
               {formatDate(item.startDate)} - {formatDate(item.endDate)}
             </Text>
           </View>
@@ -95,8 +96,8 @@ export default function RentalsListScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-white" edges={['top']}>
-        <View className="flex-1 px-4 pt-4">
+      <SafeAreaView style={s.safeArea} edges={['top']}>
+        <View style={s.loadingWrap}>
           <LoadingSkeleton variant="list-item" count={5} />
         </View>
       </SafeAreaView>
@@ -104,9 +105,9 @@ export default function RentalsListScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
+    <SafeAreaView style={s.safeArea} edges={['top']}>
       {/* Search */}
-      <View className="pt-4">
+      <View style={s.searchWrap}>
         <SearchBar
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -115,22 +116,24 @@ export default function RentalsListScreen() {
       </View>
 
       {/* Filter Chips */}
-      <View className="px-4 pt-3 pb-2">
-        <View className="flex-row gap-2">
+      <View style={s.filterWrap}>
+        <View style={s.filterRow}>
           {FILTERS.map((filter) => {
             const isActive = activeFilter === filter.key;
             return (
               <Pressable
                 key={filter.key}
-                className={`rounded-full px-4 py-2 ${
-                  isActive ? 'bg-blue-600' : 'bg-zinc-100'
-                }`}
+                style={[
+                  s.chip,
+                  isActive ? s.chipActive : s.chipInactive,
+                ]}
                 onPress={() => setActiveFilter(filter.key)}
               >
                 <Text
-                  className={`text-[13px] font-medium ${
-                    isActive ? 'text-white' : 'text-zinc-900'
-                  }`}
+                  style={[
+                    s.chipText,
+                    isActive ? s.chipTextActive : s.chipTextInactive,
+                  ]}
                 >
                   {t(filter.labelKey)}
                 </Text>
@@ -151,7 +154,7 @@ export default function RentalsListScreen() {
           data={filteredRentals}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
-          contentContainerClassName="pt-2 pb-8"
+          contentContainerStyle={s.listContent}
           refreshControl={
             <RefreshControl
               refreshing={isRefetching}
@@ -164,3 +167,23 @@ export default function RentalsListScreen() {
     </SafeAreaView>
   );
 }
+
+const s = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  flex1: { flex: 1 },
+  loadingWrap: { flex: 1, paddingHorizontal: 16, paddingTop: 16 },
+  searchWrap: { paddingTop: 16 },
+  filterWrap: { paddingHorizontal: 16, paddingTop: 12, paddingBottom: 8 },
+  filterRow: { flexDirection: 'row', gap: 8 },
+  chip: { borderRadius: 9999, paddingHorizontal: 16, paddingVertical: 8 },
+  chipActive: { backgroundColor: '#3B82F6' },
+  chipInactive: { backgroundColor: '#F4F4F5' },
+  chipText: { fontSize: 13, fontWeight: '500' },
+  chipTextActive: { color: '#FFFFFF' },
+  chipTextInactive: { color: '#18181B' },
+  listContent: { paddingTop: 8, paddingBottom: 32 },
+  itemCard: { marginHorizontal: 16, marginBottom: 12 },
+  itemRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  itemName: { fontSize: 16, fontWeight: '600', color: '#18181B' },
+  itemSub: { marginTop: 4, fontSize: 13, color: '#71717A' },
+});

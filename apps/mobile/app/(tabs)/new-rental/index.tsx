@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, Text, View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { Modal, ScrollView, TouchableOpacity } from 'react-native';
 import { CreateCustomerSchema, type CreateCustomerInput } from '@rentapp/shared';
 import Toast from 'react-native-toast-message';
 
@@ -27,7 +27,7 @@ export default function CustomerStep() {
   const draft = useRentalDraftStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [showDraftResume, setShowDraftResume] = useState(false);
-  const bottomSheetRef = useRef<BottomSheet>(null);
+  const [showNewCustomer, setShowNewCustomer] = useState(false);
 
   const { data: customers, isLoading } = useCustomerSearch(searchQuery);
   const createCustomer = useCreateCustomer();
@@ -66,7 +66,7 @@ export default function CustomerStep() {
   );
 
   const handleNewCustomer = useCallback(() => {
-    bottomSheetRef.current?.expand();
+    setShowNewCustomer(true);
   }, []);
 
   const handleCreateCustomer = useCallback(
@@ -74,7 +74,7 @@ export default function CustomerStep() {
       try {
         const customer = await createCustomer.mutateAsync(data);
         const name = `${customer.firstName} ${customer.lastName}`;
-        bottomSheetRef.current?.close();
+        setShowNewCustomer(false);
         reset();
         handleSelectCustomer(customer.id, name);
       } catch {
@@ -110,21 +110,21 @@ export default function CustomerStep() {
     draft.clearDraft();
   }, [draft]);
 
-  const snapPoints = useMemo(() => ['85%'], []);
+  // snapPoints removed - using Modal instead of BottomSheet
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
+    <SafeAreaView style={s.safeArea} edges={['top']}>
       <WizardStepper
         currentStep={1}
         totalSteps={5}
         labels={WIZARD_LABELS}
       />
 
-      <Text className="mt-4 px-4 text-xl font-semibold text-zinc-900">
+      <Text style={s.stepTitle}>
         {t('wizard.step1')}
       </Text>
 
-      <View className="mt-4">
+      <View style={s.mt16}>
         <SearchBar
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -133,13 +133,13 @@ export default function CustomerStep() {
       </View>
 
       <FlatList
-        className="mt-4 flex-1"
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100 }}
+        style={s.list}
+        contentContainerStyle={s.listContent}
         data={customers ?? []}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <AppCard
-            className="mb-3"
+            cardStyle={s.mb12}
             onPress={() =>
               handleSelectCustomer(
                 item.id,
@@ -147,14 +147,12 @@ export default function CustomerStep() {
               )
             }
           >
-            <Text className="text-base font-semibold text-zinc-900">
+            <Text style={s.custName}>
               {item.firstName} {item.lastName}
             </Text>
-            <Text className="mt-1 text-[13px] text-zinc-500">
-              {item.phone}
-            </Text>
+            <Text style={s.custSub}>{item.phone}</Text>
             {item.email && (
-              <Text className="text-[13px] text-zinc-500">{item.email}</Text>
+              <Text style={s.custSub}>{item.email}</Text>
             )}
           </AppCard>
         )}
@@ -167,7 +165,7 @@ export default function CustomerStep() {
           ) : null
         }
         ListFooterComponent={
-          <View className="mt-2">
+          <View style={s.mt8}>
             <AppButton
               title={t('wizard.newCustomer')}
               variant="secondary"
@@ -178,18 +176,23 @@ export default function CustomerStep() {
         }
       />
 
-      <BottomSheet
-        ref={bottomSheetRef}
-        index={-1}
-        snapPoints={snapPoints}
-        enablePanDownToClose
-        backgroundStyle={{ backgroundColor: '#FFFFFF' }}
-        handleIndicatorStyle={{ backgroundColor: '#D4D4D8' }}
+      <Modal
+        visible={showNewCustomer}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowNewCustomer(false)}
       >
-        <BottomSheetScrollView
-          contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
-        >
-          <Text className="mb-4 text-xl font-semibold text-zinc-900">
+        <View style={s.modalRoot}>
+          <View style={s.modalHeader}>
+            <Text style={s.modalTitle}>Nowy klient</Text>
+            <TouchableOpacity onPress={() => setShowNewCustomer(false)}>
+              <Text style={s.modalClose}>Zamknij</Text>
+            </TouchableOpacity>
+          </View>
+          <ScrollView
+            contentContainerStyle={s.modalScroll}
+          >
+          <Text style={s.modalHeading}>
             {t('wizard.newCustomer')}
           </Text>
 
@@ -203,7 +206,7 @@ export default function CustomerStep() {
                 onChangeText={onChange}
                 onBlur={onBlur}
                 error={errors.firstName?.message}
-                className="mb-3"
+                containerStyle={s.mb12}
               />
             )}
           />
@@ -218,7 +221,7 @@ export default function CustomerStep() {
                 onChangeText={onChange}
                 onBlur={onBlur}
                 error={errors.lastName?.message}
-                className="mb-3"
+                containerStyle={s.mb12}
               />
             )}
           />
@@ -234,7 +237,7 @@ export default function CustomerStep() {
                 onBlur={onBlur}
                 keyboardType="phone-pad"
                 error={errors.phone?.message}
-                className="mb-3"
+                containerStyle={s.mb12}
               />
             )}
           />
@@ -251,7 +254,7 @@ export default function CustomerStep() {
                 keyboardType="email-address"
                 autoCapitalize="none"
                 error={errors.email?.message}
-                className="mb-3"
+                containerStyle={s.mb12}
               />
             )}
           />
@@ -268,7 +271,7 @@ export default function CustomerStep() {
                 keyboardType="numeric"
                 maxLength={11}
                 error={errors.pesel?.message}
-                className="mb-3"
+                containerStyle={s.mb12}
               />
             )}
           />
@@ -284,7 +287,7 @@ export default function CustomerStep() {
                 onBlur={onBlur}
                 autoCapitalize="characters"
                 error={errors.idNumber?.message}
-                className="mb-3"
+                containerStyle={s.mb12}
               />
             )}
           />
@@ -300,7 +303,7 @@ export default function CustomerStep() {
                 onBlur={onBlur}
                 autoCapitalize="characters"
                 error={errors.licenseNumber?.message}
-                className="mb-3"
+                containerStyle={s.mb12}
               />
             )}
           />
@@ -310,10 +313,11 @@ export default function CustomerStep() {
             onPress={handleSubmit(handleCreateCustomer)}
             loading={createCustomer.isPending}
             fullWidth
-            className="mt-2"
+            containerStyle={s.mt8}
           />
-        </BottomSheetScrollView>
-      </BottomSheet>
+          </ScrollView>
+        </View>
+      </Modal>
 
       <ConfirmationDialog
         visible={showDraftResume}
@@ -327,3 +331,21 @@ export default function CustomerStep() {
     </SafeAreaView>
   );
 }
+
+const s = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  stepTitle: { marginTop: 16, paddingHorizontal: 16, fontSize: 20, fontWeight: '600', color: '#18181B' },
+  mt16: { marginTop: 16 },
+  mt8: { marginTop: 8 },
+  mb12: { marginBottom: 12 },
+  list: { marginTop: 16, flex: 1 },
+  listContent: { paddingHorizontal: 16, paddingBottom: 100 },
+  custName: { fontSize: 16, fontWeight: '600', color: '#18181B' },
+  custSub: { marginTop: 4, fontSize: 13, color: '#71717A' },
+  modalRoot: { flex: 1, backgroundColor: '#FFFFFF' },
+  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, borderBottomWidth: 1, borderBottomColor: '#E4E4E7' },
+  modalTitle: { fontSize: 18, fontWeight: '600', color: '#18181B' },
+  modalClose: { color: '#3B82F6', fontSize: 16 },
+  modalScroll: { padding: 16, paddingBottom: 40 },
+  modalHeading: { marginBottom: 16, fontSize: 20, fontWeight: '600', color: '#18181B' },
+});

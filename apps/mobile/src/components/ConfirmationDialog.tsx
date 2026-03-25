@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, Text, View } from 'react-native';
+import { Modal, StyleSheet, Text, View } from 'react-native';
 import { AppButton } from './AppButton';
 
 interface ConfirmationDialogProps {
@@ -31,13 +31,13 @@ export function ConfirmationDialog({
       statusBarTranslucent
       onRequestClose={onCancel}
     >
-      <View className="flex-1 items-center justify-center bg-black/50 px-6">
-        <View className="w-full rounded-2xl bg-white p-6">
-          <Text className="text-lg font-semibold text-zinc-900">{title}</Text>
-          <Text className="mt-2 text-base text-zinc-500">{body}</Text>
+      <View style={styles.overlay}>
+        <View style={styles.dialog}>
+          <Text style={styles.title}>{title}</Text>
+          <Text style={styles.body}>{body}</Text>
 
-          <View className="mt-6 flex-row gap-3">
-            <View className="flex-1">
+          <View style={styles.buttonRow}>
+            <View style={styles.buttonCol}>
               <AppButton
                 title={cancelLabel}
                 variant="secondary"
@@ -45,7 +45,7 @@ export function ConfirmationDialog({
                 fullWidth
               />
             </View>
-            <View className="flex-1">
+            <View style={styles.buttonCol}>
               <AppButton
                 title={confirmLabel}
                 variant={variant === 'destructive' ? 'destructive' : 'primary'}
@@ -59,3 +59,37 @@ export function ConfirmationDialog({
     </Modal>
   );
 }
+
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    paddingHorizontal: 24,
+  },
+  dialog: {
+    width: '100%',
+    borderRadius: 16,
+    backgroundColor: '#FFFFFF',
+    padding: 24,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#18181B',
+  },
+  body: {
+    marginTop: 8,
+    fontSize: 16,
+    color: '#71717A',
+  },
+  buttonRow: {
+    marginTop: 24,
+    flexDirection: 'row',
+    gap: 12,
+  },
+  buttonCol: {
+    flex: 1,
+  },
+});

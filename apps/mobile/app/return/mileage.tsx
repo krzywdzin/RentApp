@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -56,28 +56,22 @@ export default function ReturnMileageScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <View className="px-4 pt-2">
+    <SafeAreaView style={s.safeArea}>
+      <View style={s.padWrap}>
         <WizardStepper currentStep={2} totalSteps={5} />
       </View>
 
       <ScrollView
-        className="flex-1"
-        contentContainerClassName="px-4 pt-4 pb-32"
+        style={s.flex1}
+        contentContainerStyle={s.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <Text className="mb-4 text-xl font-semibold text-zinc-900">
-          {t('returnWizard.step2')}
-        </Text>
+        <Text style={s.stepTitle}>{t('returnWizard.step2')}</Text>
 
         {/* Handover mileage display */}
-        <AppCard className="mb-4">
-          <Text className="text-[13px] text-zinc-500">
-            {t('returnWizard.handoverMileage')}
-          </Text>
-          <Text className="mt-1 text-lg font-semibold text-zinc-900">
-            {formatMileage(handoverMileage)}
-          </Text>
+        <AppCard cardStyle={s.mb16}>
+          <Text style={s.cardLabel}>{t('returnWizard.handoverMileage')}</Text>
+          <Text style={s.cardValue}>{formatMileage(handoverMileage)}</Text>
         </AppCard>
 
         {/* Return mileage input */}
@@ -91,26 +85,46 @@ export default function ReturnMileageScreen() {
           keyboardType="numeric"
           placeholder="0"
           error={error}
-          className="mb-4"
+          containerStyle={s.mb16}
         />
 
         {/* Distance driven calculation */}
         {distanceDriven != null && distanceDriven >= 0 && (
-          <AppCard className="mb-4">
-            <Text className="text-[13px] text-zinc-500">
-              {t('returnWizard.distanceDriven')}
-            </Text>
-            <Text className="mt-1 text-lg font-semibold text-blue-600">
-              {formatMileage(distanceDriven)}
-            </Text>
+          <AppCard cardStyle={s.mb16}>
+            <Text style={s.cardLabel}>{t('returnWizard.distanceDriven')}</Text>
+            <Text style={s.distanceValue}>{formatMileage(distanceDriven)}</Text>
           </AppCard>
         )}
       </ScrollView>
 
       {/* Bottom button */}
-      <View className="absolute bottom-0 left-0 right-0 border-t border-zinc-200 bg-white px-4 pb-8 pt-4">
+      <View style={s.bottomBar}>
         <AppButton title={t('common.next')} fullWidth onPress={handleNext} />
       </View>
     </SafeAreaView>
   );
 }
+
+const s = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  flex1: { flex: 1 },
+  padWrap: { paddingHorizontal: 16, paddingTop: 8 },
+  scrollContent: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 128 },
+  stepTitle: { marginBottom: 16, fontSize: 20, fontWeight: '600', color: '#18181B' },
+  mb16: { marginBottom: 16 },
+  cardLabel: { fontSize: 13, color: '#71717A' },
+  cardValue: { marginTop: 4, fontSize: 18, fontWeight: '600', color: '#18181B' },
+  distanceValue: { marginTop: 4, fontSize: 18, fontWeight: '600', color: '#3B82F6' },
+  bottomBar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    borderTopWidth: 1,
+    borderTopColor: '#E4E4E7',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 16,
+    paddingBottom: 32,
+    paddingTop: 16,
+  },
+});

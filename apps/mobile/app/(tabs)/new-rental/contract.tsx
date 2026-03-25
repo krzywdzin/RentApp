@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -47,110 +47,86 @@ export default function ContractStep() {
   }, [draft, router]);
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
+    <SafeAreaView style={s.safeArea} edges={['top']}>
       <WizardStepper
         currentStep={4}
         totalSteps={5}
         labels={WIZARD_LABELS}
       />
 
-      <Text className="mt-4 px-4 text-xl font-semibold text-zinc-900">
+      <Text style={s.stepTitle}>
         {t('wizard.step4')}
       </Text>
 
       <ScrollView
-        className="flex-1 px-4 pt-4"
+        style={s.scrollBody}
         contentContainerStyle={{ paddingBottom: 140 }}
       >
         {/* Contract Preview */}
-        <View className="rounded-xl border border-zinc-200 bg-zinc-50 p-4">
+        <View style={s.previewBox}>
           {/* Customer section */}
-          <Text className="text-[13px] font-semibold uppercase tracking-wider text-zinc-400">
-            Klient
-          </Text>
-          <Text className="mt-1 text-base text-zinc-900">
-            {draft.customerName ?? '-'}
-          </Text>
+          <Text style={s.sectionHeader}>Klient</Text>
+          <Text style={s.sectionValue}>{draft.customerName ?? '-'}</Text>
 
           {/* Vehicle section */}
-          <Text className="mt-4 text-[13px] font-semibold uppercase tracking-wider text-zinc-400">
-            Pojazd
-          </Text>
-          <Text className="mt-1 text-base text-zinc-900">
-            {draft.vehicleLabel ?? '-'}
-          </Text>
+          <Text style={[s.sectionHeader, s.mt16]}>Pojazd</Text>
+          <Text style={s.sectionValue}>{draft.vehicleLabel ?? '-'}</Text>
 
           {/* Dates section */}
-          <Text className="mt-4 text-[13px] font-semibold uppercase tracking-wider text-zinc-400">
-            Okres wynajmu
-          </Text>
-          <View className="mt-1 flex-row items-center gap-2">
-            <Text className="text-base text-zinc-900">
+          <Text style={[s.sectionHeader, s.mt16]}>Okres wynajmu</Text>
+          <View style={s.datesRow}>
+            <Text style={s.sectionValue}>
               {draft.startDate ? formatDateTime(draft.startDate) : '-'}
             </Text>
-            <Text className="text-zinc-400">-</Text>
-            <Text className="text-base text-zinc-900">
+            <Text style={s.dash}>-</Text>
+            <Text style={s.sectionValue}>
               {draft.endDate ? formatDateTime(draft.endDate) : '-'}
             </Text>
           </View>
-          <Text className="mt-1 text-[13px] text-zinc-500">
+          <Text style={s.daysText}>
             {days} {days === 1 ? 'dzien' : 'dni'}
           </Text>
 
           {/* Pricing section */}
-          <Text className="mt-4 text-[13px] font-semibold uppercase tracking-wider text-zinc-400">
-            Cennik
-          </Text>
-          <View className="mt-1">
-            <View className="flex-row items-center justify-between">
-              <Text className="text-[13px] text-zinc-500">
-                {t('wizard.dailyRate')}
-              </Text>
-              <Text className="text-base text-zinc-900">
-                {formatCurrency(draft.dailyRateNet ?? 0)}
-              </Text>
+          <Text style={[s.sectionHeader, s.mt16]}>Cennik</Text>
+          <View style={s.mt4}>
+            <View style={s.priceRow}>
+              <Text style={s.priceLabel}>{t('wizard.dailyRate')}</Text>
+              <Text style={s.priceValue}>{formatCurrency(draft.dailyRateNet ?? 0)}</Text>
             </View>
-            <View className="mt-1 flex-row items-center justify-between">
-              <Text className="text-[13px] text-zinc-500">Razem netto</Text>
-              <Text className="text-base text-zinc-900">
-                {formatCurrency(totalNetGrosze)}
-              </Text>
+            <View style={s.priceRowMt}>
+              <Text style={s.priceLabel}>Razem netto</Text>
+              <Text style={s.priceValue}>{formatCurrency(totalNetGrosze)}</Text>
             </View>
-            <View className="mt-2 border-t border-zinc-200 pt-2 flex-row items-center justify-between">
-              <Text className="text-base font-semibold text-zinc-900">
-                {t('wizard.totalGross')}
-              </Text>
-              <Text className="text-lg font-semibold text-zinc-900">
-                {formatCurrency(totalGrossGrosze)}
-              </Text>
+            <View style={s.totalRow}>
+              <Text style={s.totalLabel}>{t('wizard.totalGross')}</Text>
+              <Text style={s.totalValue}>{formatCurrency(totalGrossGrosze)}</Text>
             </View>
           </View>
         </View>
 
         {/* RODO Consent */}
         <Pressable
-          className="mt-6 flex-row items-start gap-3"
+          style={s.rodoRow}
           onPress={handleToggleRodo}
           accessibilityRole="checkbox"
           accessibilityState={{ checked: draft.rodoConsent }}
         >
           {draft.rodoConsent ? (
-            <View className="mt-0.5 h-6 w-6 items-center justify-center rounded bg-blue-600">
+            <View style={s.checkboxChecked}>
               <Check size={16} color="#FFFFFF" />
             </View>
           ) : (
-            <View className="mt-0.5">
+            <View style={s.checkboxUnchecked}>
               <Square size={24} color="#D4D4D8" />
             </View>
           )}
-          <Text className="flex-1 text-base leading-6 text-zinc-700">
-            {t('wizard.rodoConsent')}
-          </Text>
+          <Text style={s.rodoText}>{t('wizard.rodoConsent')}</Text>
         </Pressable>
       </ScrollView>
 
       {/* Bottom CTA */}
-      <View className="absolute bottom-0 left-0 right-0 border-t border-zinc-100 bg-white px-4 pb-8 pt-3">
+      <View style={s.bottomBar}>
         <AppButton
           title={t('wizard.signCta')}
           onPress={handleNext}
@@ -161,3 +137,62 @@ export default function ContractStep() {
     </SafeAreaView>
   );
 }
+
+const s = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  stepTitle: { marginTop: 16, paddingHorizontal: 16, fontSize: 20, fontWeight: '600', color: '#18181B' },
+  scrollBody: { flex: 1, paddingHorizontal: 16, paddingTop: 16 },
+  previewBox: {
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E4E4E7',
+    backgroundColor: '#FAFAFA',
+    padding: 16,
+  },
+  sectionHeader: { fontSize: 13, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 1, color: '#A1A1AA' },
+  sectionValue: { marginTop: 4, fontSize: 16, color: '#18181B' },
+  mt16: { marginTop: 16 },
+  mt4: { marginTop: 4 },
+  datesRow: { marginTop: 4, flexDirection: 'row', alignItems: 'center', gap: 8 },
+  dash: { color: '#A1A1AA' },
+  daysText: { marginTop: 4, fontSize: 13, color: '#71717A' },
+  priceRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  priceRowMt: { marginTop: 4, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  priceLabel: { fontSize: 13, color: '#71717A' },
+  priceValue: { fontSize: 16, color: '#18181B' },
+  totalRow: {
+    marginTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#E4E4E7',
+    paddingTop: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  totalLabel: { fontSize: 16, fontWeight: '600', color: '#18181B' },
+  totalValue: { fontSize: 18, fontWeight: '600', color: '#18181B' },
+  rodoRow: { marginTop: 24, flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
+  checkboxChecked: {
+    marginTop: 2,
+    height: 24,
+    width: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 4,
+    backgroundColor: '#3B82F6',
+  },
+  checkboxUnchecked: { marginTop: 2 },
+  rodoText: { flex: 1, fontSize: 16, lineHeight: 24, color: '#3F3F46' },
+  bottomBar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    borderTopWidth: 1,
+    borderTopColor: '#F4F4F5',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 16,
+    paddingBottom: 32,
+    paddingTop: 12,
+  },
+});

@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { FlatList, Switch, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Switch, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -58,18 +58,18 @@ export default function VehicleStep() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
+    <SafeAreaView style={s.safeArea} edges={['top']}>
       <WizardStepper
         currentStep={2}
         totalSteps={5}
         labels={WIZARD_LABELS}
       />
 
-      <Text className="mt-4 px-4 text-xl font-semibold text-zinc-900">
+      <Text style={s.stepTitle}>
         {t('wizard.step2')}
       </Text>
 
-      <View className="mt-4">
+      <View style={s.mt16}>
         <SearchBar
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -77,8 +77,8 @@ export default function VehicleStep() {
         />
       </View>
 
-      <View className="mx-4 mt-3 flex-row items-center justify-between">
-        <Text className="text-base text-zinc-900">
+      <View style={s.switchRow}>
+        <Text style={s.switchLabel}>
           {t('wizard.availableOnly')}
         </Text>
         <Switch
@@ -90,8 +90,8 @@ export default function VehicleStep() {
       </View>
 
       <FlatList
-        className="mt-3 flex-1"
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 32 }}
+        style={s.list}
+        contentContainerStyle={s.listContent}
         data={filteredVehicles}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => {
@@ -100,15 +100,13 @@ export default function VehicleStep() {
 
           return (
             <AppCard
-              className={`mb-3 ${!isSelectable ? 'opacity-50' : ''}`}
+              cardStyle={[s.mb12, !isSelectable ? s.dimmed : undefined]}
               onPress={isSelectable ? () => handleSelectVehicle(item) : undefined}
             >
-              <View className="flex-row items-center justify-between">
-                <View className="flex-1">
-                  <Text className="text-base font-semibold text-zinc-900">
-                    {item.registration}
-                  </Text>
-                  <Text className="mt-1 text-[13px] text-zinc-500">
+              <View style={s.itemRow}>
+                <View style={s.flex1}>
+                  <Text style={s.vehReg}>{item.registration}</Text>
+                  <Text style={s.vehSub}>
                     {item.make} {item.model}, {item.year}
                   </Text>
                 </View>
@@ -129,3 +127,19 @@ export default function VehicleStep() {
     </SafeAreaView>
   );
 }
+
+const s = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  stepTitle: { marginTop: 16, paddingHorizontal: 16, fontSize: 20, fontWeight: '600', color: '#18181B' },
+  mt16: { marginTop: 16 },
+  mb12: { marginBottom: 12 },
+  switchRow: { marginHorizontal: 16, marginTop: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  switchLabel: { fontSize: 16, color: '#18181B' },
+  list: { marginTop: 12, flex: 1 },
+  listContent: { paddingHorizontal: 16, paddingBottom: 32 },
+  flex1: { flex: 1 },
+  itemRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  vehReg: { fontSize: 16, fontWeight: '600', color: '#18181B' },
+  vehSub: { marginTop: 4, fontSize: 13, color: '#71717A' },
+  dimmed: { opacity: 0.5 },
+});

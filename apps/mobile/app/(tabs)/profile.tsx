@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, Switch, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { useTranslation } from 'react-i18next';
@@ -44,32 +44,24 @@ export default function ProfileScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
-      <ScrollView className="flex-1 px-4 pt-4">
+    <SafeAreaView style={s.safeArea} edges={['top']}>
+      <ScrollView style={s.scroll}>
         {/* Header */}
-        <Text className="mb-4 text-[20px] font-semibold text-zinc-900">
-          {t('nav.profile')}
-        </Text>
+        <Text style={s.pageTitle}>{t('nav.profile')}</Text>
 
         {/* User Info */}
-        <AppCard className="mb-4">
-          <Text className="text-lg font-semibold text-zinc-900">
-            {user?.name ?? ''}
-          </Text>
-          <Text className="mt-1 text-base text-zinc-500">
-            {user?.email ?? ''}
-          </Text>
-          <View className="mt-2">
+        <AppCard cardStyle={s.mb16}>
+          <Text style={s.userName}>{user?.name ?? ''}</Text>
+          <Text style={s.userEmail}>{user?.email ?? ''}</Text>
+          <View style={s.mt8}>
             <StatusBadge status={user?.role ?? 'EMPLOYEE'} />
           </View>
         </AppCard>
 
         {/* Biometric Toggle */}
-        <AppCard className="mb-4">
-          <View className="flex-row items-center justify-between">
-            <Text className="text-base text-zinc-900">
-              Logowanie biometryczne
-            </Text>
+        <AppCard cardStyle={s.mb16}>
+          <View style={s.settingsRow}>
+            <Text style={s.settingsLabel}>Logowanie biometryczne</Text>
             <Switch
               value={biometricEnabled}
               onValueChange={handleBiometricToggle}
@@ -80,15 +72,15 @@ export default function ProfileScreen() {
         </AppCard>
 
         {/* App Version */}
-        <AppCard className="mb-4">
-          <View className="flex-row items-center justify-between">
-            <Text className="text-base text-zinc-900">Wersja aplikacji</Text>
-            <Text className="text-base text-zinc-500">{APP_VERSION}</Text>
+        <AppCard cardStyle={s.mb16}>
+          <View style={s.settingsRow}>
+            <Text style={s.settingsLabel}>Wersja aplikacji</Text>
+            <Text style={s.versionText}>{APP_VERSION}</Text>
           </View>
         </AppCard>
 
         {/* Logout */}
-        <View className="mt-4 mb-8">
+        <View style={s.logoutWrap}>
           <AppButton
             title={t('confirm.logout')}
             variant="destructive"
@@ -112,3 +104,17 @@ export default function ProfileScreen() {
     </SafeAreaView>
   );
 }
+
+const s = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  scroll: { flex: 1, paddingHorizontal: 16, paddingTop: 16 },
+  pageTitle: { marginBottom: 16, fontSize: 20, fontWeight: '600', color: '#18181B' },
+  mb16: { marginBottom: 16 },
+  mt8: { marginTop: 8 },
+  userName: { fontSize: 18, fontWeight: '600', color: '#18181B' },
+  userEmail: { marginTop: 4, fontSize: 16, color: '#71717A' },
+  settingsRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  settingsLabel: { fontSize: 16, color: '#18181B' },
+  versionText: { fontSize: 16, color: '#71717A' },
+  logoutWrap: { marginTop: 16, marginBottom: 32 },
+});

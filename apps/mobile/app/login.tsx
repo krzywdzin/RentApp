@@ -3,6 +3,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  StyleSheet,
   Text,
   View,
 } from 'react-native';
@@ -65,23 +66,23 @@ export default function LoginScreen() {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-white"
+      style={styles.root}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
-        contentContainerClassName="flex-1 justify-center px-6"
+        contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
         {/* Branding */}
-        <View className="mb-12 items-center">
-          <Text className="text-4xl font-bold text-blue-600">KITEK</Text>
-          <Text className="mt-2 text-base text-zinc-500">
+        <View style={styles.branding}>
+          <Text style={styles.brandTitle}>KITEK</Text>
+          <Text style={styles.brandSub}>
             System wynajmu pojazdow
           </Text>
         </View>
 
         {/* Form */}
-        <View className="gap-4">
+        <View style={styles.form}>
           <Controller
             control={control}
             name="email"
@@ -112,11 +113,12 @@ export default function LoginScreen() {
                 onChangeText={onChange}
                 onBlur={onBlur}
                 error={errors.password?.message}
+                containerStyle={{ marginTop: 16 }}
               />
             )}
           />
 
-          <View className="mt-4">
+          <View style={styles.submitWrap}>
             <AppButton
               title="Zaloguj"
               onPress={handleSubmit(onSubmit)}
@@ -129,3 +131,33 @@ export default function LoginScreen() {
     </KeyboardAvoidingView>
   );
 }
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  scrollContent: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+  },
+  branding: {
+    marginBottom: 48,
+    alignItems: 'center',
+  },
+  brandTitle: {
+    fontSize: 36,
+    fontWeight: '700',
+    color: '#3B82F6',
+  },
+  brandSub: {
+    marginTop: 8,
+    fontSize: 16,
+    color: '#71717A',
+  },
+  form: {},
+  submitWrap: {
+    marginTop: 24,
+  },
+});

@@ -1,37 +1,35 @@
 import React, { useState } from 'react';
-import { Text, TextInput, View, type TextInputProps } from 'react-native';
+import { StyleSheet, Text, TextInput, View, type TextInputProps, type ViewStyle } from 'react-native';
 
-interface AppInputProps extends Omit<TextInputProps, 'className'> {
+interface AppInputProps extends Omit<TextInputProps, 'style'> {
   label: string;
   error?: string;
   leftIcon?: React.ReactNode;
-  className?: string;
+  containerStyle?: ViewStyle;
 }
 
 export function AppInput({
   label,
   error,
   leftIcon,
-  className = '',
+  containerStyle,
   ...rest
 }: AppInputProps) {
   const [isFocused, setIsFocused] = useState(false);
 
-  const borderClass = error
-    ? 'border-red-600'
+  const borderColor = error
+    ? '#DC2626'
     : isFocused
-      ? 'border-blue-600'
-      : 'border-zinc-200';
+      ? '#3B82F6'
+      : '#E4E4E7';
 
   return (
-    <View className={className}>
-      <Text className="mb-1 text-[13px] text-zinc-500">{label}</Text>
-      <View
-        className={`h-12 flex-row items-center rounded-xl border px-4 ${borderClass}`}
-      >
-        {leftIcon && <View className="mr-2">{leftIcon}</View>}
+    <View style={containerStyle}>
+      <Text style={styles.label}>{label}</Text>
+      <View style={[styles.inputRow, { borderColor }]}>
+        {leftIcon && <View style={styles.iconWrap}>{leftIcon}</View>}
         <TextInput
-          className="flex-1 text-base text-zinc-900"
+          style={styles.input}
           placeholderTextColor="#A1A1AA"
           onFocus={(e) => {
             setIsFocused(true);
@@ -44,9 +42,36 @@ export function AppInput({
           {...rest}
         />
       </View>
-      {error && (
-        <Text className="mt-1 text-[13px] text-red-600">{error}</Text>
-      )}
+      {error && <Text style={styles.error}>{error}</Text>}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  label: {
+    marginBottom: 4,
+    fontSize: 13,
+    color: '#71717A',
+  },
+  inputRow: {
+    height: 48,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 12,
+    borderWidth: 1,
+    paddingHorizontal: 16,
+  },
+  iconWrap: {
+    marginRight: 8,
+  },
+  input: {
+    flex: 1,
+    fontSize: 16,
+    color: '#18181B',
+  },
+  error: {
+    marginTop: 4,
+    fontSize: 13,
+    color: '#DC2626',
+  },
+});

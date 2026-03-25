@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef } from 'react';
-import { ActivityIndicator, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import * as Haptics from 'expo-haptics';
 import SignatureCanvas, { type SignatureViewRef } from 'react-native-signature-canvas';
@@ -65,22 +65,20 @@ export function SignatureScreen({
   }, []);
 
   return (
-    <View className="flex-1 bg-white">
+    <View style={styles.root}>
       {/* Header bar */}
-      <View className="h-12 flex-row items-center justify-between bg-zinc-50 px-4">
-        <Text className="text-base font-semibold text-zinc-900">{title}</Text>
-        <Text className="text-[13px] text-zinc-500">{stepLabel}</Text>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>{title}</Text>
+        <Text style={styles.headerStep}>{stepLabel}</Text>
       </View>
 
       {/* Instruction */}
       {instruction && (
-        <Text className="px-4 py-2 text-[13px] text-zinc-500">
-          {instruction}
-        </Text>
+        <Text style={styles.instruction}>{instruction}</Text>
       )}
 
       {/* Canvas */}
-      <View className="mx-4 flex-1 overflow-hidden rounded-xl border border-zinc-200">
+      <View style={styles.canvas}>
         <SignatureCanvas
           ref={signatureRef}
           onOK={handleOK}
@@ -95,14 +93,14 @@ export function SignatureScreen({
 
         {/* Loading overlay */}
         {loading && (
-          <View className="absolute inset-0 items-center justify-center bg-white/80">
+          <View style={styles.loadingOverlay}>
             <ActivityIndicator size="large" color="#2563EB" />
           </View>
         )}
       </View>
 
       {/* Bottom controls */}
-      <View className="flex-row items-center justify-between px-4 pb-4 pt-3">
+      <View style={styles.controls}>
         <AppButton
           title="Wyczysc podpis"
           variant="secondary"
@@ -118,3 +116,55 @@ export function SignatureScreen({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  header: {
+    height: 48,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#FAFAFA',
+    paddingHorizontal: 16,
+  },
+  headerTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#18181B',
+  },
+  headerStep: {
+    fontSize: 13,
+    color: '#71717A',
+  },
+  instruction: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    fontSize: 13,
+    color: '#71717A',
+  },
+  canvas: {
+    marginHorizontal: 16,
+    flex: 1,
+    overflow: 'hidden',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E4E4E7',
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.8)',
+  },
+  controls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    paddingTop: 12,
+  },
+});
