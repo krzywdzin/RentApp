@@ -21,6 +21,7 @@ import {
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import { useVehicle, useArchiveVehicle } from '@/hooks/queries/use-vehicles';
 import { useRentals } from '@/hooks/queries/use-rentals';
+import { getRentalStatusBadge } from '../../wynajmy/columns';
 import { formatDate } from '@/lib/format';
 
 const statusConfig: Record<
@@ -60,7 +61,7 @@ export default function VehicleDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const { data: vehicle, isLoading } = useVehicle(params.id);
-  const { data: rentals } = useRentals();
+  const { data: rentals, isLoading: rentalsLoading } = useRentals();
   const archiveVehicle = useArchiveVehicle();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
@@ -190,7 +191,13 @@ export default function VehicleDetailPage() {
               <CardTitle>Historia wynajmow</CardTitle>
             </CardHeader>
             <CardContent>
-              {vehicleRentals.length === 0 ? (
+              {rentalsLoading ? (
+                <div className="space-y-3 py-4">
+                  <Skeleton className="h-12 w-full" />
+                  <Skeleton className="h-12 w-full" />
+                  <Skeleton className="h-12 w-full" />
+                </div>
+              ) : vehicleRentals.length === 0 ? (
                 <p className="text-sm text-muted-foreground py-8 text-center">
                   Brak wynajmow dla tego pojazdu.
                 </p>
@@ -207,7 +214,7 @@ export default function VehicleDetailPage() {
                           {formatDate(rental.startDate)} - {formatDate(rental.endDate)}
                         </span>
                       </div>
-                      <Badge variant="secondary">{rental.status}</Badge>
+                      {getRentalStatusBadge(rental)}
                     </div>
                   ))}
                 </div>

@@ -21,6 +21,7 @@ import {
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import { useCustomer, useArchiveCustomer } from '@/hooks/queries/use-customers';
 import { useRentals } from '@/hooks/queries/use-rentals';
+import { getRentalStatusBadge } from '../../wynajmy/columns';
 import { formatDate } from '@/lib/format';
 
 function InfoRow({ label, value }: { label: string; value: string | null | undefined }) {
@@ -36,7 +37,7 @@ export default function CustomerDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const { data: customer, isLoading } = useCustomer(params.id);
-  const { data: rentals } = useRentals();
+  const { data: rentals, isLoading: rentalsLoading } = useRentals();
   const archiveCustomer = useArchiveCustomer();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
@@ -142,7 +143,13 @@ export default function CustomerDetailPage() {
               <CardTitle>Historia wynajmow</CardTitle>
             </CardHeader>
             <CardContent>
-              {customerRentals.length === 0 ? (
+              {rentalsLoading ? (
+                <div className="space-y-3 py-4">
+                  <Skeleton className="h-12 w-full" />
+                  <Skeleton className="h-12 w-full" />
+                  <Skeleton className="h-12 w-full" />
+                </div>
+              ) : customerRentals.length === 0 ? (
                 <p className="text-sm text-muted-foreground py-8 text-center">
                   Brak wynajmow dla tego klienta.
                 </p>
@@ -159,7 +166,7 @@ export default function CustomerDetailPage() {
                           {formatDate(rental.startDate)} - {formatDate(rental.endDate)}
                         </span>
                       </div>
-                      <Badge variant="secondary">{rental.status}</Badge>
+                      {getRentalStatusBadge(rental)}
                     </div>
                   ))}
                 </div>

@@ -3,6 +3,8 @@
 import { useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { RentalStatus } from '@rentapp/shared';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import { Button } from '@/components/ui/button';
@@ -18,13 +20,28 @@ import { useQueryClient } from '@tanstack/react-query';
 import { rentalKeys } from '@/hooks/queries/use-rentals';
 import { Loader2 } from 'lucide-react';
 
-interface EditFormValues {
-  startDate: string;
-  endDate: string;
-  dailyRateNet: number;
-  vatRate: number;
-  notes: string;
-}
+const editRentalSchema = z.object({
+  startDate: z.string().min(1, 'Data poczatkowa jest wymagana'),
+  endDate: z.string().min(1, 'Data koncowa jest wymagana'),
+  dailyRateNet: z
+    .number({ invalid_type_error: 'Podaj stawke' })
+    .positive('Stawka musi byc wieksza od 0'),
+  vatRate: z
+    .number({ invalid_type_error: 'Podaj stawke VAT' })
+    .min(0, 'VAT musi byc >= 0')
+    .max(100, 'VAT musi byc miedzy 0 a 100'),
+  notes: z.string().default(''),
+}).superRefine((data, ctx) => {
+  if (data.startDate && data.endDate && new Date(data.endDate) <= new Date(data.startDate)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Data koncowa musi byc pozniejsza niz poczatkowa',
+      path: ['endDate'],
+    });
+  }
+});
+
+type EditFormValues = z.input<typeof editRentalSchema>;
 
 export default function EditRentalPage() {
   const params = useParams();
@@ -37,8 +54,10 @@ export default function EditRentalPage() {
     register,
     handleSubmit,
     reset,
-    formState: { isSubmitting },
-  } = useForm<EditFormValues>();
+    formState: { isSubmitting, errors },
+  } = useForm<EditFormValues>({
+    resolver: zodResolver(editRentalSchema),
+  });
 
   // Redirect if not DRAFT
   useEffect(() => {
@@ -114,18 +133,30 @@ export default function EditRentalPage() {
             <div className="space-y-2">
               <Label>Data od</Label>
               <Input type="datetime-local" {...register('startDate')} />
+              {errors.startDate && (
+                <p className="text-sm text-destructive">{errors.startDate.message}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label>Data do</Label>
               <Input type="datetime-local" {...register('endDate')} />
+              {errors.endDate && (
+                <p className="text-sm text-destructive">{errors.endDate.message}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label>Stawka dzienna netto (grosze)</Label>
               <Input type="number" {...register('dailyRateNet', { valueAsNumber: true })} />
+              {errors.dailyRateNet && (
+                <p className="text-sm text-destructive">{errors.dailyRateNet.message}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label>Stawka VAT (%)</Label>
               <Input type="number" {...register('vatRate', { valueAsNumber: true })} />
+              {errors.vatRate && (
+                <p className="text-sm text-destructive">{errors.vatRate.message}</p>
+              )}
             </div>
             <div className="col-span-full space-y-2">
               <Label>Notatki</Label>
