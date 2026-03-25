@@ -9,7 +9,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.service';
 import { CreateVehicleDto } from './dto/create-vehicle.dto';
 import { UpdateVehicleDto } from './dto/update-vehicle.dto';
-import { VehicleStatus } from '@rentapp/shared';
+import { VehicleStatus, FuelType, TransmissionType, InsuranceCoverageType } from '@rentapp/shared';
+import { Prisma, VehicleDocument } from '@prisma/client';
 
 const VEHICLE_INCLUDE = {
   insurance: true,
@@ -283,9 +284,9 @@ export class VehiclesService {
                   expiryDate: normalized.insuranceExpiry
                     ? new Date(String(normalized.insuranceExpiry))
                     : new Date('2099-12-31'),
-                  coverageType: (String(
+                  coverageType: String(
                     normalized.insuranceCoverage || 'OC',
-                  ) as any),
+                  ) as InsuranceCoverageType,
                 },
               }
             : undefined;
@@ -306,8 +307,8 @@ export class VehiclesService {
             model: String(normalized.model),
             year: Number(normalized.year),
             color: normalized.color ? String(normalized.color) : undefined,
-            fuelType: String(normalized.fuelType) as any,
-            transmission: String(normalized.transmission) as any,
+            fuelType: String(normalized.fuelType) as FuelType,
+            transmission: String(normalized.transmission) as TransmissionType,
             seatCount: normalized.seatCount
               ? Number(normalized.seatCount)
               : undefined,
@@ -332,13 +333,13 @@ export class VehiclesService {
     return { imported, skipped, errors };
   }
 
-  async toDto(vehicle: any) {
+  async toDto(vehicle: Prisma.VehicleGetPayload<{ include: typeof VEHICLE_INCLUDE }>) {
     const photoUrl = vehicle.photoKey
       ? await this.storage.getPresignedDownloadUrl(vehicle.photoKey)
       : null;
 
     const documents = await Promise.all(
-      (vehicle.documents || []).map(async (doc: any) => ({
+      (vehicle.documents || []).map(async (doc: VehicleDocument) => ({
         id: doc.id,
         label: doc.label,
         fileName: doc.fileName,
