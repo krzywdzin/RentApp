@@ -76,6 +76,12 @@ export class ContractsController {
     };
   }
 
+  @Get()
+  @Roles(UserRole.ADMIN, UserRole.EMPLOYEE)
+  async findAll() {
+    return this.contractsService.findAll();
+  }
+
   @Get(':id')
   @Roles(UserRole.ADMIN, UserRole.EMPLOYEE)
   async findOne(@Param('id', ParseUUIDPipe) id: string) {

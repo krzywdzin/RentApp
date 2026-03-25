@@ -141,10 +141,16 @@ export class RentalsService {
     return rental;
   }
 
-  async findAll(status?: RentalStatus): Promise<RentalWithRelations[]> {
+  async findAll(status?: RentalStatus, customerId?: string, vehicleId?: string): Promise<RentalWithRelations[]> {
     const where: Prisma.RentalWhereInput = {};
     if (status) {
       where.status = status;
+    }
+    if (customerId) {
+      where.customerId = customerId;
+    }
+    if (vehicleId) {
+      where.vehicleId = vehicleId;
     }
 
     return this.prisma.rental.findMany({

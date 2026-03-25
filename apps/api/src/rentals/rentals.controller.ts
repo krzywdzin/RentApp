@@ -56,8 +56,12 @@ export class RentalsController {
 
   @Get()
   @Roles(UserRole.ADMIN, UserRole.EMPLOYEE)
-  async findAll(@Query('status') status?: RentalStatus) {
-    return this.rentalsService.findAll(status);
+  async findAll(
+    @Query('status') status?: RentalStatus,
+    @Query('customerId') customerId?: string,
+    @Query('vehicleId') vehicleId?: string,
+  ) {
+    return this.rentalsService.findAll(status, customerId, vehicleId);
   }
 
   @Get('calendar')

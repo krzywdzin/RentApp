@@ -424,6 +424,14 @@ export class ContractsService {
     return this.toDto(updated!);
   }
 
+  async findAll(): Promise<ContractDto[]> {
+    const contracts = await this.prisma.contract.findMany({
+      include: CONTRACT_INCLUDE,
+      orderBy: { createdAt: 'desc' },
+    });
+    return contracts.map((c) => this.toDto(c));
+  }
+
   async findOne(id: string): Promise<ContractDto> {
     const contract = await this.prisma.contract.findUnique({
       where: { id },
