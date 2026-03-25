@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Quality, Polish & UX Improvements
 status: executing
-stopped_at: Completed 12-02-PLAN.md
-last_updated: "2026-03-25T03:32:45.984Z"
-last_activity: 2026-03-25 -- Completed 12-02-PLAN.md (backend any types removal)
+stopped_at: Completed 12-01-PLAN.md
+last_updated: "2026-03-25T03:34:16Z"
+last_activity: 2026-03-25 -- Completed 12-01-PLAN.md (rental and contract service any-type removal)
 progress:
   total_phases: 5
   completed_phases: 2
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-03-25)
 Phase: 12 of 14 (TypeScript Strictness)
 Plan: 2 of 3 completed
 Status: Executing Phase 12
-Last activity: 2026-03-25 -- Completed 12-02-PLAN.md (backend any types removal)
+Last activity: 2026-03-25 -- Completed 12-01-PLAN.md (rental and contract service any-type removal)
 
 Progress: [████████░░] 78%
 
@@ -53,6 +53,7 @@ Progress: [████████░░] 78%
 | Phase 11-web-admin-panel-polish P03 | 3min | 2 tasks | 7 files |
 | Phase 11-web-admin-panel-polish P02 | 5min | 2 tasks | 5 files |
 | Phase 12-typescript-strictness P02 | 4min | 2 tasks | 4 files |
+| Phase 12-typescript-strictness P01 | 6min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -82,6 +83,9 @@ Recent decisions affecting current work:
 - [Phase 11-02]: Used z.input with superRefine for Zod+react-hook-form resolver type compatibility
 - [Phase 12-typescript-strictness]: Used parseDamagePins() helper for Prisma JSON reads instead of inline casts
 - [Phase 12-typescript-strictness]: Used Prisma.VehicleGetPayload with typeof VEHICLE_INCLUDE for typed toDto parameter
+- [Phase 12-01]: Used Prisma.RentalGetPayload with as const include for derived relation types
+- [Phase 12-01]: Exported types from service for controller declaration emit compatibility
+- [Phase 12-01]: Used 'in' operator for union type narrowing in controller
 
 ### Pending Todos
 
@@ -93,6 +97,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-25T03:32:45.979Z
-Stopped at: Completed 12-02-PLAN.md
+Last session: 2026-03-25T03:34:16Z
+Stopped at: Completed 12-01-PLAN.md
 Resume file: None

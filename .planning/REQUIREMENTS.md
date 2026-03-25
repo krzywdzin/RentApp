@@ -29,8 +29,8 @@
 
 ### TypeScript Strictness (TSFIX)
 
-- [ ] **TSFIX-01**: Rental service methods return typed DTOs instead of Promise<any>, and use Prisma.TransactionClient for tx parameters
-- [ ] **TSFIX-02**: Contract service methods use typed parameters instead of any (toDto, rental, customer, vehicle params)
+- [x] **TSFIX-01**: Rental service methods return typed DTOs instead of Promise<any>, and use Prisma.TransactionClient for tx parameters
+- [x] **TSFIX-02**: Contract service methods use typed parameters instead of any (toDto, rental, customer, vehicle params)
 - [x] **TSFIX-03**: Damage service uses typed DamagePin accessor instead of `pins as any` casts on Prisma JSON columns
 - [x] **TSFIX-04**: Portal controller uses typed PortalRequest interface instead of `@Req() req: any`
 - [ ] **TSFIX-05**: Web mutation hooks use specific input types (CreateVehicleInput, etc.) instead of Record<string, unknown>
@@ -109,8 +109,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | WEBUX-06 | Phase 11 | Complete |
 | WEBUX-07 | Phase 11 | Complete |
 | WEBUX-08 | Phase 11 | Complete |
-| TSFIX-01 | Phase 12 | Pending |
-| TSFIX-02 | Phase 12 | Pending |
+| TSFIX-01 | Phase 12 | Complete |
+| TSFIX-02 | Phase 12 | Complete |
 | TSFIX-03 | Phase 12 | Complete |
 | TSFIX-04 | Phase 12 | Complete |
 | TSFIX-05 | Phase 12 | Pending |
