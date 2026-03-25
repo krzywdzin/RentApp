@@ -19,6 +19,28 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(),
 }));
 
+// Mock lucide-react -- all icon components return a simple span
+// We list all icons used across the codebase to avoid "No export defined" errors
+vi.mock('lucide-react', () => {
+  const iconNames = [
+    'CalendarClock', 'Car', 'Clock', 'AlertTriangle', 'Plus', 'Download',
+    'ChevronLeft', 'ChevronRight', 'ChevronDown', 'ChevronUp',
+    'ChevronDownIcon', 'ChevronLeftIcon', 'ChevronRightIcon',
+    'ArrowDown', 'ArrowUp', 'ArrowUpDown', 'ArrowLeft',
+    'Check', 'Circle', 'X', 'Search', 'Eye', 'Pencil',
+    'MoreHorizontal', 'LogOut', 'Loader2', 'FileDown', 'FileText',
+    'Image', 'CalendarIcon',
+  ];
+
+  const mocks: Record<string, unknown> = {};
+  for (const name of iconNames) {
+    const fn = () => null;
+    fn.displayName = name;
+    mocks[name] = fn;
+  }
+  return mocks;
+});
+
 // Mock next/link
 vi.mock('next/link', () => ({
   default: ({
