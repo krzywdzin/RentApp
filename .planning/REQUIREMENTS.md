@@ -50,8 +50,8 @@
 
 ### Performance (PERF)
 
-- [ ] **PERF-01**: Contract list query uses a batch/join approach instead of N+1 per-rental fetching
-- [ ] **PERF-02**: Customer and vehicle detail pages filter rentals server-side (query param) instead of fetching all rentals
+- [x] **PERF-01**: Contract list query uses a batch/join approach instead of N+1 per-rental fetching
+- [x] **PERF-02**: Customer and vehicle detail pages filter rentals server-side (query param) instead of fetching all rentals
 
 ## v2 Requirements
 
@@ -118,8 +118,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DEPS-01 | Phase 13 | Complete |
 | DEPS-02 | Phase 13 | Complete |
 | DEPS-03 | Phase 13 | Complete |
-| PERF-01 | Phase 13 | Pending |
-| PERF-02 | Phase 13 | Pending |
+| PERF-01 | Phase 13 | Complete |
+| PERF-02 | Phase 13 | Complete |
 | TEST-01 | Phase 14 | Pending |
 | TEST-02 | Phase 14 | Pending |
 | TEST-03 | Phase 14 | Pending |
