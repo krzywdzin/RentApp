@@ -288,7 +288,12 @@ Plans:
   1. Web admin panel has passing component tests for dashboard, rental list, vehicle list, and customer list pages (render + key interactions)
   2. Mobile app has passing smoke tests for login, dashboard, rental list, and at least one rental wizard step (render without crash)
   3. API Jest config enforces a minimum statement coverage threshold -- `npm test` fails if coverage drops below the configured minimum
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 14-01-PLAN.md -- Set up Vitest + RTL for web admin, component tests for dashboard, rental list, vehicle list, customer list
+- [ ] 14-02-PLAN.md -- Configure jest-expo for mobile, smoke tests for login, dashboard, rental list, new rental wizard step
+- [ ] 14-03-PLAN.md -- Add coverageThreshold to API jest.config.ts, wire --coverage to test script
 
 ## Progress
 
@@ -312,4 +317,4 @@ v1.1: 10 -> 11 -> 12 -> 13 -> 14
 | 11. Web Admin Panel Polish | 3/3 | Complete    | 2026-03-25 | 2026-03-25 |
 | 12. TypeScript Strictness | 3/3 | Complete    | 2026-03-25 | - |
 | 13. Dependencies & Performance | 2/2 | Complete    | 2026-03-25 | - |
-| 14. Test Coverage | v1.1 | 0/? | Not started | - |
+| 14. Test Coverage | v1.1 | 0/3 | Not started | - |
