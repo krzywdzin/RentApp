@@ -22,7 +22,7 @@ import { RollbackRentalDto } from './dto/rollback-rental.dto';
 import { validateTransition } from './constants/rental-transitions';
 import { calculatePricing } from './utils/pricing';
 
-interface OverlapConflict {
+export interface OverlapConflict {
   id: string;
   startDate: Date;
   endDate: Date;
@@ -32,7 +32,20 @@ interface OverlapConflict {
 const RENTAL_INCLUDE = {
   vehicle: true,
   customer: true,
-};
+} as const;
+
+export type RentalWithRelations = Prisma.RentalGetPayload<{
+  include: typeof RENTAL_INCLUDE;
+}>;
+
+export interface RentalAuditResult extends RentalWithRelations {
+  __audit: {
+    action: string;
+    entityType: string;
+    entityId: string;
+    changes: Record<string, unknown>;
+  };
+}
 
 @Injectable()
 export class RentalsService {
@@ -44,7 +57,7 @@ export class RentalsService {
   async create(
     dto: CreateRentalDto,
     userId: string,
-  ): Promise<any> {
+  ): Promise<RentalWithRelations | { rental: null; conflicts: OverlapConflict[] }> {
     // 1. Validate vehicle exists and is not RETIRED
     const vehicle = await this.prisma.vehicle.findUnique({
       where: { id: dto.vehicleId },
@@ -90,7 +103,7 @@ export class RentalsService {
 
     // 7. Create in transaction
     const status = dto.status ?? RentalStatus.DRAFT;
-    const rental = await this.prisma.$transaction(async (tx: any) => {
+    const rental = await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const created = await tx.rental.create({
         data: {
           vehicleId: dto.vehicleId,
@@ -103,7 +116,7 @@ export class RentalsService {
           totalPriceNet: pricing.totalPriceNet,
           totalPriceGross: pricing.totalPriceGross,
           vatRate: pricing.vatRate,
-          handoverData: dto.handoverData ? (dto.handoverData as any) : undefined,
+          handoverData: dto.handoverData ? (dto.handoverData as unknown as Prisma.InputJsonValue) : undefined,
           notes: dto.notes,
           overrodeConflict: conflicts.length > 0,
         },
@@ -128,8 +141,8 @@ export class RentalsService {
     return rental;
   }
 
-  async findAll(status?: RentalStatus): Promise<any[]> {
-    const where: any = {};
+  async findAll(status?: RentalStatus): Promise<RentalWithRelations[]> {
+    const where: Prisma.RentalWhereInput = {};
     if (status) {
       where.status = status;
     }
@@ -141,7 +154,7 @@ export class RentalsService {
     });
   }
 
-  async findOne(id: string): Promise<any> {
+  async findOne(id: string): Promise<RentalWithRelations> {
     const rental = await this.prisma.rental.findUnique({
       where: { id },
       include: RENTAL_INCLUDE,
@@ -156,7 +169,7 @@ export class RentalsService {
     id: string,
     dto: ActivateRentalDto,
     userId: string,
-  ): Promise<any> {
+  ): Promise<RentalWithRelations> {
     // 1. Find rental
     const rental = await this.prisma.rental.findUnique({
       where: { id },
@@ -169,12 +182,12 @@ export class RentalsService {
     validateTransition(rental.status as RentalStatus, RentalStatus.ACTIVE);
 
     // 3. Transaction: update rental + vehicle
-    const updated = await this.prisma.$transaction(async (tx: any) => {
+    const updated = await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const updatedRental = await tx.rental.update({
         where: { id },
         data: {
           status: RentalStatus.ACTIVE,
-          handoverData: dto.handoverData ? (dto.handoverData as any) : undefined,
+          handoverData: dto.handoverData ? (dto.handoverData as unknown as Prisma.InputJsonValue) : undefined,
         },
         include: RENTAL_INCLUDE,
       });
@@ -194,7 +207,7 @@ export class RentalsService {
     return updated;
   }
 
-  async processReturn(id: string, dto: ReturnRentalDto, userId: string): Promise<any> {
+  async processReturn(id: string, dto: ReturnRentalDto, userId: string): Promise<RentalAuditResult> {
     // 1. Find rental with vehicle
     const rental = await this.prisma.rental.findUnique({
       where: { id },
@@ -209,13 +222,13 @@ export class RentalsService {
     validateTransition(rental.status as RentalStatus, RentalStatus.RETURNED);
 
     // 3. Transaction: update rental + vehicle
-    await this.prisma.$transaction(async (tx: any) => {
+    await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       await tx.rental.update({
         where: { id },
         data: {
           status: RentalStatus.RETURNED,
           returnMileage: dto.returnMileage,
-          returnData: dto.returnData ? (dto.returnData as any) : Prisma.JsonNull,
+          returnData: dto.returnData ? (dto.returnData as unknown as Prisma.InputJsonValue) : Prisma.JsonNull,
           ...(dto.notes ? { notes: dto.notes } : {}),
         },
       });
@@ -242,7 +255,7 @@ export class RentalsService {
 
     // 6. Return with audit metadata
     return {
-      ...updated,
+      ...updated!,
       __audit: {
         action: 'rental.return',
         entityType: 'Rental',
@@ -252,7 +265,7 @@ export class RentalsService {
     };
   }
 
-  async extend(id: string, dto: ExtendRentalDto, userId: string): Promise<any> {
+  async extend(id: string, dto: ExtendRentalDto, userId: string): Promise<RentalAuditResult> {
     // 1. Find rental
     const rental = await this.prisma.rental.findUnique({
       where: { id },
@@ -314,7 +327,7 @@ export class RentalsService {
     }
 
     // 6. Transaction: update rental
-    const updated = await this.prisma.$transaction(async (tx: any) => {
+    const updated = await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       return tx.rental.update({
         where: { id },
         data: {
@@ -352,7 +365,7 @@ export class RentalsService {
     };
   }
 
-  async rollback(id: string, dto: RollbackRentalDto, userId: string): Promise<any> {
+  async rollback(id: string, dto: RollbackRentalDto, userId: string): Promise<RentalAuditResult> {
     // 1. Find rental
     const rental = await this.prisma.rental.findUnique({
       where: { id },
@@ -374,7 +387,7 @@ export class RentalsService {
     const clearReturnData = oldStatus === RentalStatus.RETURNED;
 
     // 5. Transaction: update rental + vehicle
-    await this.prisma.$transaction(async (tx: any) => {
+    await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       await tx.rental.update({
         where: { id },
         data: {
@@ -408,7 +421,7 @@ export class RentalsService {
 
     // 8. Return with audit metadata
     return {
-      ...updated,
+      ...updated!,
       __audit: {
         action: 'rental.rollback',
         entityType: 'Rental',
@@ -467,7 +480,7 @@ export class RentalsService {
           startDate: r.startDate.toISOString(),
           endDate: r.endDate.toISOString(),
           status: r.status as RentalStatus,
-          customerName: `${(r as any).customer.firstName} ${(r as any).customer.lastName}`,
+          customerName: `${r.customer.firstName} ${r.customer.lastName}`,
           hasConflict,
         };
       });
@@ -487,7 +500,7 @@ export class RentalsService {
     };
   }
 
-  async delete(id: string): Promise<any> {
+  async delete(id: string): Promise<RentalWithRelations> {
     const rental = await this.prisma.rental.findUnique({
       where: { id },
       include: RENTAL_INCLUDE,
@@ -500,7 +513,7 @@ export class RentalsService {
       throw new BadRequestException('Only DRAFT rentals can be deleted');
     }
 
-    await this.prisma.$transaction(async (tx: any) => {
+    await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       await tx.contractSignature.deleteMany({
         where: { contract: { rentalId: id } },
       });

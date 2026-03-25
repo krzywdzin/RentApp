@@ -37,7 +37,7 @@ export class RentalsController {
     const result = await this.rentalsService.create(dto, userId);
 
     // If overlap detected and no override, return 409 Conflict
-    if (result.conflicts) {
+    if ('conflicts' in result) {
       res.status(HttpStatus.CONFLICT);
       return { conflicts: result.conflicts };
     }
