@@ -244,9 +244,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 11-01-PLAN.md -- User management API endpoints and DataTable page with edit, deactivate, password reset
-- [ ] 11-02-PLAN.md -- Rental list columns fix, contract tab wiring, edit form Zod validation, Polish status labels
-- [ ] 11-03-PLAN.md -- Audit date/actor filter wiring, dashboard/contracts error states, login design system
+- [x] 11-01-PLAN.md -- User management API endpoints and DataTable page with edit, deactivate, password reset
+- [x] 11-02-PLAN.md -- Rental list columns fix, contract tab wiring, edit form Zod validation, Polish status labels
+- [x] 11-03-PLAN.md -- Audit date/actor filter wiring, dashboard/contracts error states, login design system
 
 ### Phase 12: TypeScript Strictness
 **Goal**: All `any` types in backend services, web mutation hooks, and shared portal types are replaced with proper TypeScript types -- the codebase compiles without implicit-any warnings
@@ -300,7 +300,7 @@ v1.1: 10 -> 11 -> 12 -> 13 -> 14
 | 9. Customer Portal and CEPiK | v1.0 | 4/4 | Complete | 2026-03-24 |
 | 9.1 Mobile and Admin Bug Fixes | v1.0 | 4/4 | Complete | 2026-03-25 |
 | 10. Mobile UX Polish | v1.1 | 3/3 | Complete | 2026-03-25 |
-| 11. Web Admin Panel Polish | 2/3 | In Progress|  | - |
+| 11. Web Admin Panel Polish | v1.1 | 3/3 | Complete | 2026-03-25 |
 | 12. TypeScript Strictness | v1.1 | 0/? | Not started | - |
 | 13. Dependencies & Performance | v1.1 | 0/? | Not started | - |
 | 14. Test Coverage | v1.1 | 0/? | Not started | - |

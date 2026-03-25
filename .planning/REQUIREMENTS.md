@@ -22,10 +22,10 @@
 - [ ] **WEBUX-02**: Rental detail "Umowa" tab loads and displays the actual contract data using useContractByRental hook
 - [ ] **WEBUX-03**: Rental list shows vehicle registration and customer name instead of truncated UUIDs
 - [ ] **WEBUX-04**: Edit rental form uses Zod validation with inline error messages (same pattern as create form)
-- [ ] **WEBUX-05**: Audit page date filter is wired to the API query, and actor filter uses user dropdown instead of raw UUID input
+- [x] **WEBUX-05**: Audit page date filter is wired to the API query, and actor filter uses user dropdown instead of raw UUID input
 - [ ] **WEBUX-06**: Customer and vehicle detail rental tabs show Polish status labels and loading states
-- [ ] **WEBUX-07**: Dashboard and contract list show error states when API requests fail
-- [ ] **WEBUX-08**: Login page uses design system Input component instead of raw HTML input elements
+- [x] **WEBUX-07**: Dashboard and contract list show error states when API requests fail
+- [x] **WEBUX-08**: Login page uses design system Input component instead of raw HTML input elements
 
 ### TypeScript Strictness (TSFIX)
 
@@ -105,10 +105,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | WEBUX-02 | Phase 11 | Pending |
 | WEBUX-03 | Phase 11 | Pending |
 | WEBUX-04 | Phase 11 | Pending |
-| WEBUX-05 | Phase 11 | Pending |
+| WEBUX-05 | Phase 11 | Complete |
 | WEBUX-06 | Phase 11 | Pending |
-| WEBUX-07 | Phase 11 | Pending |
-| WEBUX-08 | Phase 11 | Pending |
+| WEBUX-07 | Phase 11 | Complete |
+| WEBUX-08 | Phase 11 | Complete |
 | TSFIX-01 | Phase 12 | Pending |
 | TSFIX-02 | Phase 12 | Pending |
 | TSFIX-03 | Phase 12 | Pending |
