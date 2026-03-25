@@ -5,6 +5,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Prisma, ContractSignature, ContractAnnex } from '@prisma/client';
 import * as crypto from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { PdfService } from './pdf/pdf.service';
@@ -20,9 +21,19 @@ import type {
   ContractFrozenData,
   SignatureType,
   SignerRole,
+  CustomerDto,
 } from '@rentapp/shared';
 import { ContractStatus } from '@rentapp/shared';
 import type { ContractPdfData } from './pdf/pdf.service';
+
+const CONTRACT_INCLUDE = {
+  signatures: true,
+  annexes: true,
+} as const;
+
+type ContractWithRelations = Prisma.ContractGetPayload<{
+  include: typeof CONTRACT_INCLUDE;
+}>;
 
 const ALL_SIGNATURE_TYPES: SignatureType[] = [
   'customer_page1',
@@ -30,6 +41,24 @@ const ALL_SIGNATURE_TYPES: SignatureType[] = [
   'customer_page2',
   'employee_page2',
 ];
+
+interface RentalForContract {
+  startDate: Date | string;
+  endDate: Date | string;
+  dailyRateNet: number;
+  totalPriceNet: number;
+  totalPriceGross: number;
+  vatRate: number;
+}
+
+interface VehicleForContract {
+  registration: string;
+  make: string;
+  model: string;
+  year: number;
+  vin: string;
+  mileage: number;
+}
 
 @Injectable()
 export class ContractsService {
@@ -61,9 +90,9 @@ export class ContractsService {
   }
 
   private buildFrozenData(
-    rental: any,
-    customer: any,
-    vehicle: any,
+    rental: RentalForContract,
+    customer: CustomerDto,
+    vehicle: VehicleForContract,
     conditions: { depositAmount: number | null; dailyRateNet: number; lateFeeNet: number | null },
   ): ContractFrozenData {
     return {
@@ -106,12 +135,13 @@ export class ContractsService {
   }
 
   generateContentHash(data: ContractFrozenData): string {
-    const sortedStringify = (obj: any): string => {
+    const sortedStringify = (obj: unknown): string => {
       if (obj === null || obj === undefined) return JSON.stringify(obj);
       if (typeof obj !== 'object') return JSON.stringify(obj);
       if (Array.isArray(obj)) return '[' + obj.map(sortedStringify).join(',') + ']';
-      const keys = Object.keys(obj).sort();
-      return '{' + keys.map((k) => JSON.stringify(k) + ':' + sortedStringify(obj[k])).join(',') + '}';
+      const record = obj as Record<string, unknown>;
+      const keys = Object.keys(record).sort();
+      return '{' + keys.map((k) => JSON.stringify(k) + ':' + sortedStringify(record[k])).join(',') + '}';
     };
     const serialized = sortedStringify(data);
     return crypto.createHash('sha256').update(serialized, 'utf-8').digest('hex');
@@ -177,7 +207,7 @@ export class ContractsService {
         rentalId: dto.rentalId,
         createdById: userId,
         status: ContractStatus.DRAFT,
-        contractData: frozenData as any,
+        contractData: frozenData as unknown as Prisma.InputJsonValue,
         contentHash,
         depositAmount: dto.depositAmount ?? null,
         dailyRateNet: rental.dailyRateNet,
@@ -185,7 +215,7 @@ export class ContractsService {
         rodoConsentAt: new Date(dto.rodoConsentAt),
         damageSketchKey,
       },
-      include: { signatures: true, annexes: true },
+      include: CONTRACT_INCLUDE,
     });
 
     return this.toDto(contract);
@@ -200,7 +230,7 @@ export class ContractsService {
     // 1. Fetch contract with signatures
     const contract = await this.prisma.contract.findUnique({
       where: { id: contractId },
-      include: { signatures: true, annexes: true },
+      include: CONTRACT_INCLUDE,
     });
     if (!contract) {
       throw new NotFoundException(`Contract with ID "${contractId}" not found`);
@@ -327,7 +357,7 @@ export class ContractsService {
       await this.storageService.upload(pdfKey, pdfBuffer, 'application/pdf');
 
       // e. Update contract status, pdfKey, pdfGeneratedAt
-      const updateData: any = {
+      const updateData: Prisma.ContractUpdateInput = {
         status: ContractStatus.SIGNED,
         pdfKey,
         pdfGeneratedAt: new Date(),
@@ -389,7 +419,7 @@ export class ContractsService {
     // Return updated contract
     const updated = await this.prisma.contract.findUnique({
       where: { id: contractId },
-      include: { signatures: true, annexes: true },
+      include: CONTRACT_INCLUDE,
     });
     return this.toDto(updated!);
   }
@@ -397,7 +427,7 @@ export class ContractsService {
   async findOne(id: string): Promise<ContractDto> {
     const contract = await this.prisma.contract.findUnique({
       where: { id },
-      include: { signatures: true, annexes: true },
+      include: CONTRACT_INCLUDE,
     });
     if (!contract) {
       throw new NotFoundException(`Contract with ID "${id}" not found`);
@@ -408,7 +438,7 @@ export class ContractsService {
   async findByRental(rentalId: string): Promise<ContractDto[]> {
     const contracts = await this.prisma.contract.findMany({
       where: { rentalId },
-      include: { signatures: true, annexes: true },
+      include: CONTRACT_INCLUDE,
       orderBy: { createdAt: 'desc' },
     });
     return contracts.map((c) => this.toDto(c));
@@ -444,7 +474,7 @@ export class ContractsService {
 
     // 3. Build changes object
     const frozenData = contract.contractData as unknown as ContractFrozenData;
-    const changes: Record<string, any> = {
+    const changes: Record<string, unknown> = {
       newEndDate: data.newEndDate,
       oldEndDate: frozenData.rental.endDate,
     };
@@ -495,7 +525,7 @@ export class ContractsService {
       await this.storageService.upload(pdfKey, pdfBuffer, 'application/pdf');
 
       // 7. Update annex with pdfKey
-      const updateData: any = {
+      const annexUpdateData: Prisma.ContractAnnexUpdateInput = {
         pdfKey,
         pdfGeneratedAt: new Date(),
       };
@@ -512,7 +542,7 @@ export class ContractsService {
             annexNumber,
             pdfBuffer,
           );
-          updateData.emailSentAt = new Date();
+          annexUpdateData.emailSentAt = new Date();
         } catch (error: any) {
           this.logger.error(
             `Failed to send annex email for ${contract.contractNumber}: ${error.message}`,
@@ -522,7 +552,7 @@ export class ContractsService {
 
       await this.prisma.contractAnnex.update({
         where: { id: annex.id },
-        data: updateData,
+        data: annexUpdateData,
       });
     } catch (error: any) {
       this.logger.error(
@@ -537,14 +567,14 @@ export class ContractsService {
     return this.toAnnexDto(updated!);
   }
 
-  toDto(contract: any): ContractDto {
+  toDto(contract: ContractWithRelations): ContractDto {
     return {
       id: contract.id,
       contractNumber: contract.contractNumber,
       rentalId: contract.rentalId,
       createdById: contract.createdById,
       status: contract.status as ContractStatus,
-      contractData: contract.contractData,
+      contractData: contract.contractData as Record<string, unknown>,
       contentHash: contract.contentHash,
       depositAmount: contract.depositAmount,
       dailyRateNet: contract.dailyRateNet,
@@ -555,7 +585,7 @@ export class ContractsService {
       pdfGeneratedAt: contract.pdfGeneratedAt?.toISOString() ?? null,
       emailSentAt: contract.emailSentAt?.toISOString() ?? null,
       emailSentTo: contract.emailSentTo,
-      signatures: (contract.signatures ?? []).map((s: any) => ({
+      signatures: (contract.signatures ?? []).map((s: ContractSignature) => ({
         id: s.id,
         contractId: s.contractId,
         signatureType: s.signatureType,
@@ -567,18 +597,18 @@ export class ContractsService {
         ipAddress: s.ipAddress,
         signedAt: s.signedAt?.toISOString() ?? s.signedAt,
       })),
-      annexes: (contract.annexes ?? []).map((a: any) => this.toAnnexDto(a)),
+      annexes: (contract.annexes ?? []).map((a: ContractAnnex) => this.toAnnexDto(a)),
       createdAt: contract.createdAt?.toISOString() ?? contract.createdAt,
       updatedAt: contract.updatedAt?.toISOString() ?? contract.updatedAt,
     };
   }
 
-  private toAnnexDto(annex: any): ContractAnnexDto {
+  private toAnnexDto(annex: ContractAnnex): ContractAnnexDto {
     return {
       id: annex.id,
       contractId: annex.contractId,
       annexNumber: annex.annexNumber,
-      changes: annex.changes,
+      changes: annex.changes as Record<string, unknown>,
       pdfKey: annex.pdfKey,
       pdfGeneratedAt: annex.pdfGeneratedAt?.toISOString() ?? null,
       emailSentAt: annex.emailSentAt?.toISOString() ?? null,
