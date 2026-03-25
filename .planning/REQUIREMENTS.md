@@ -46,7 +46,7 @@
 
 - [ ] **TEST-01**: Web admin panel has component tests for critical pages (dashboard, rental list, vehicle list, customer list)
 - [ ] **TEST-02**: Mobile app has smoke tests for key screens (login, dashboard, rental list, new rental wizard steps)
-- [ ] **TEST-03**: API test coverage thresholds enforced in Jest config (statement coverage minimum)
+- [x] **TEST-03**: API test coverage thresholds enforced in Jest config (statement coverage minimum)
 
 ### Performance (PERF)
 
@@ -122,7 +122,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PERF-02 | Phase 13 | Complete |
 | TEST-01 | Phase 14 | Pending |
 | TEST-02 | Phase 14 | Pending |
-| TEST-03 | Phase 14 | Pending |
+| TEST-03 | Phase 14 | Complete |
 
 **Coverage:**
 - v1.1 requirements: 29 total
