@@ -1,7 +1,9 @@
 import React, { useState, useCallback } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { useReturnDraftStore } from '@/stores/return-draft.store';
 import { ConfirmationDialog } from '@/components/ConfirmationDialog';
+import { OfflineBanner } from '@/components/OfflineBanner';
 import { useTranslation } from 'react-i18next';
 
 export default function ReturnLayout() {
@@ -23,7 +25,8 @@ export default function ReturnLayout() {
   );
 
   return (
-    <>
+    <View style={styles.root}>
+      <OfflineBanner />
       <Stack
         screenOptions={{
           headerShown: false,
@@ -57,6 +60,12 @@ export default function ReturnLayout() {
         }}
         onCancel={() => setShowDiscard(false)}
       />
-    </>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
+});

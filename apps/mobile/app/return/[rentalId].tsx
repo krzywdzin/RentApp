@@ -13,6 +13,14 @@ import { AppButton } from '@/components/AppButton';
 import { StatusBadge } from '@/components/StatusBadge';
 import { LoadingSkeleton } from '@/components/LoadingSkeleton';
 
+const RENTAL_STATUS_LABELS: Record<string, string> = {
+  DRAFT: 'Szkic',
+  ACTIVE: 'Aktywny',
+  EXTENDED: 'Przedluzony',
+  RETURNED: 'Zwrocony',
+  CANCELLED: 'Anulowany',
+};
+
 export default function ReturnConfirmRentalScreen() {
   const { rentalId } = useLocalSearchParams<{ rentalId: string }>();
   const { t } = useTranslation();
@@ -47,9 +55,7 @@ export default function ReturnConfirmRentalScreen() {
           <Text style={s.errorText}>
             {!rental
               ? 'Nie znaleziono wynajmu'
-              : 'Wynajem nie moze byc zwrocony (status: ' +
-                rental.status +
-                ')'}
+              : `Wynajem nie moze byc zwrocony (status: ${RENTAL_STATUS_LABELS[rental.status] ?? rental.status})`}
           </Text>
           <AppButton
             title={t('common.back')}
