@@ -7,6 +7,8 @@ import { useRentals } from '@/hooks/queries/use-rentals';
 import { StatCard } from '@/components/dashboard/stat-card';
 import { ActivityFeed } from '@/components/dashboard/activity-feed';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 function isToday(dateStr: string): boolean {
   const date = new Date(dateStr);
@@ -26,8 +28,8 @@ function isPast(dateStr: string): boolean {
 }
 
 export default function DashboardPage() {
-  const { data: vehicles, isLoading: vehiclesLoading } = useVehicles();
-  const { data: rentals, isLoading: rentalsLoading } = useRentals();
+  const { data: vehicles, isLoading: vehiclesLoading, isError: vehiclesError, refetch: refetchVehicles } = useVehicles();
+  const { data: rentals, isLoading: rentalsLoading, isError: rentalsError, refetch: refetchRentals } = useRentals();
 
   const stats = useMemo(() => {
     if (!vehicles || !rentals) return null;
@@ -47,10 +49,20 @@ export default function DashboardPage() {
   }, [vehicles, rentals]);
 
   const isLoading = vehiclesLoading || rentalsLoading;
+  const hasError = vehiclesError || rentalsError;
 
   return (
     <div className="space-y-6">
       <h1 className="text-[28px] font-semibold">Pulpit</h1>
+
+      {hasError && !isLoading && (
+        <Card className="border-destructive">
+          <CardContent className="flex items-center justify-between py-4">
+            <p className="text-sm text-destructive">Nie udalo sie zaladowac danych. Sprawdz polaczenie i sprobuj ponownie.</p>
+            <Button variant="outline" size="sm" onClick={() => { refetchVehicles(); refetchRentals(); }}>Ponow</Button>
+          </CardContent>
+        </Card>
+      )}
 
       {isLoading ? (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">

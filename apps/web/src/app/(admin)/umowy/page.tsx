@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { DataTable } from '@/components/data-table/data-table';
+import { Card, CardContent } from '@/components/ui/card';
 import { useContracts } from '@/hooks/queries/use-contracts';
 import { contractColumns } from './columns';
 
@@ -25,7 +26,7 @@ const statusOptions = [
 
 export default function ContractsPage() {
   const router = useRouter();
-  const { data: contracts, isLoading } = useContracts();
+  const { data: contracts, isLoading, isError } = useContracts();
 
   const [statusFilter, setStatusFilter] = useState<ContractStatus | 'ALL'>('ALL');
   const [pagination, setPagination] = useState<PaginationState>({
@@ -71,7 +72,16 @@ export default function ContractsPage() {
         </Select>
       </div>
 
-      {!isLoading && filtered.length === 0 ? (
+      {isError && (
+        <Card className="border-destructive">
+          <CardContent className="flex flex-col items-center justify-center py-8 text-center">
+            <p className="text-lg font-medium text-destructive">Nie udalo sie zaladowac umow</p>
+            <p className="text-sm text-muted-foreground mt-1">Sprawdz polaczenie i odswiez strone.</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {!isError && !isLoading && filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <p className="text-lg font-medium">Brak umow</p>
           <p className="text-sm text-muted-foreground">
