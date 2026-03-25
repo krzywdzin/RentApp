@@ -12,7 +12,7 @@ export const customersApi = {
     const { data } = await apiClient.get<CustomerSearchResultDto[]>(
       '/customers/search',
       {
-        params: { query },
+        params: { lastName: query },
       },
     );
     return data;
