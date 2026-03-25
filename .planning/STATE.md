@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
-stopped_at: Completed 09-04-PLAN.md
-last_updated: "2026-03-24T21:51:54.281Z"
-last_activity: 2026-03-24 -- Completed 09-04 Portal Web UI
+status: executing
+stopped_at: Completed 09.1-02-PLAN.md
+last_updated: "2026-03-25T02:09:32.915Z"
+last_activity: 2026-03-25 -- Completed 09.1-02 Signature Canvas and Base64 Fix
 progress:
-  total_phases: 9
-  completed_phases: 9
-  total_plans: 33
-  completed_plans: 33
-  percent: 100
+  total_phases: 10
+  completed_phases: 10
+  total_plans: 37
+  completed_plans: 37
+  percent: 97
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-23)
 
 **Core value:** Pracownik w terenie moze w pelni obsluzyc wynajem -- od wypelnienia umowy, przez zweryfikowanie uprawnien kierowcy, zrobienie zdjec auta, po podpis klienta i wysylke PDF -- bez papieru i bez powrotu do biura.
-**Current focus:** Phase 9: Customer Portal and CEPiK
+**Current focus:** Phase 9.1: Mobile and Admin Bug Fixes
 
 ## Current Position
 
-Phase: 9 of 9 (Customer Portal and CEPiK)
-Plan: 4 of 4 in current phase
-Status: Complete
-Last activity: 2026-03-24 -- Completed 09-04 Portal Web UI
+Phase: 9.1 (Mobile and Admin Bug Fixes)
+Plan: 2 of 4 in current phase
+Status: In Progress
+Last activity: 2026-03-25 -- Completed 09.1-02 Signature Canvas and Base64 Fix
 
-Progress: [██████████] 100%
+Progress: [██████████] 97%
 
 ## Performance Metrics
 
@@ -84,6 +84,8 @@ Progress: [██████████] 100%
 | Phase 09 P03 | 16min | 2 tasks | 12 files |
 | Phase 09 P02 | 11min | 2 tasks | 9 files |
 | Phase 09 P04 | 20min | 3 tasks | 12 files |
+| Phase 09.1 P02 | 1min | 2 tasks | 2 files |
+| Phase 09.1 P01 | 1min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -180,6 +182,10 @@ Recent decisions affecting current work:
 - [Phase 09]: Portal route group (portal) isolates layout from admin (admin) group
 - [Phase 09]: portal_token cookie scoped to /portal path with 24h maxAge matching JWT expiry
 - [Phase 09]: Token stripped from URL via replaceState after exchange for security
+- [Phase 09.1]: Fixed mobile search by changing client param (lastName) rather than modifying API contract
+- [Phase 09.1]: Draft rental deletion cascades through contractSignature -> contract -> rental in transaction
+- [Phase 09.1]: CSS absolute positioning for signature pad body to eliminate coordinate offset
+- [Phase 09.1]: Regex-based data URI prefix stripping handles both raw base64 and data URI formats
 
 ### Pending Todos
 
@@ -193,6 +199,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-24T21:46:41.825Z
-Stopped at: Completed 09-04-PLAN.md
+Last session: 2026-03-25T02:09:32.913Z
+Stopped at: Completed 09.1-02-PLAN.md
 Resume file: None

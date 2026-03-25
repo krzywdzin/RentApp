@@ -202,7 +202,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 **Plans:** 4 plans
 
 Plans:
-- [ ] 09.1-01-PLAN.md -- Fix customer search API param mismatch (BUG-5) and add draft rental deletion endpoint (BUG-3)
+- [x] 09.1-01-PLAN.md -- Fix customer search API param mismatch (BUG-5) and add draft rental deletion endpoint (BUG-3)
 - [ ] 09.1-02-PLAN.md -- Fix signature canvas coordinate offset (BUG-1) and base64 data URI prefix corruption (BUG-2)
 - [ ] 09.1-03-PLAN.md -- Add user management page to admin panel (BUG-4)
 - [ ] 09.1-04-PLAN.md -- Add error boundary for crash prevention (BUG-7) and optimize list rendering (BUG-6)
