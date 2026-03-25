@@ -7,7 +7,7 @@ interface AppCardProps {
   onPress?: () => void;
 }
 
-export function AppCard({ children, cardStyle, onPress }: AppCardProps) {
+export const AppCard = React.memo(function AppCard({ children, cardStyle, onPress }: AppCardProps) {
   const combinedStyle = [styles.card, cardStyle];
 
   if (onPress) {
@@ -19,7 +19,7 @@ export function AppCard({ children, cardStyle, onPress }: AppCardProps) {
   }
 
   return <View style={combinedStyle}>{children}</View>;
-}
+});
 
 const styles = StyleSheet.create({
   card: {
