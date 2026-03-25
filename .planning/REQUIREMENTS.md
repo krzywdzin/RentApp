@@ -1,92 +1,57 @@
 # Requirements: RentApp
 
-**Defined:** 2026-03-23
+**Defined:** 2026-03-25
+**Milestone:** v1.1 — Quality, Polish & UX Improvements
 **Core Value:** Pracownik w terenie może w pełni obsłużyć wynajem — od wypełnienia umowy, przez zweryfikowanie uprawnień kierowcy, zrobienie zdjęć auta, po podpis klienta i wysyłkę PDF — bez papieru i bez powrotu do biura.
 
-## v1 Requirements
+## v1.1 Requirements
 
-Requirements for initial release. Each maps to roadmap phases.
+### Mobile UX Polish (MOBUX)
 
-### Uwierzytelnianie i Role (Authentication & Roles)
+- [ ] **MOBUX-01**: All mobile list screens show loading skeletons while data is fetching (vehicle selection, return mileage, return confirm)
+- [ ] **MOBUX-02**: Customer search shows "type at least 2 characters" hint when query is empty, and a search-in-progress indicator while fetching
+- [ ] **MOBUX-03**: Rental detail screen shows error state with retry button when API request fails (instead of infinite skeleton)
+- [ ] **MOBUX-04**: Return wizard screens guard against missing rentalId with redirect to return start (prevent 0 km mileage bug)
+- [ ] **MOBUX-05**: OfflineBanner is included in return wizard layout (not just tab layout)
+- [ ] **MOBUX-06**: Dashboard greeting has fallback when user name is empty, and PDF open failure shows toast instead of silent catch
+- [ ] **MOBUX-07**: Error messages use human-readable status labels instead of raw enum values (e.g. return status guard)
 
-- [x] **AUTH-01**: Pracownik/admin może zalogować się emailem i hasłem
-- [x] **AUTH-02**: Pracownik może zresetować hasło przez link email
-- [x] **AUTH-03**: Sesja użytkownika utrzymuje się po odświeżeniu przeglądarki/aplikacji
-- [x] **AUTH-04**: System rozróżnia role: admin (pełny dostęp), pracownik (aplikacja mobilna + ograniczony web), klient (portal read-only)
-- [x] **AUTH-05**: Każda mutacja w systemie jest logowana w audit trailu (kto, co, kiedy) — log niezmienny
+### Web Admin Panel Polish (WEBUX)
 
-### Flota (Fleet Management)
+- [ ] **WEBUX-01**: User management page shows list of existing users with edit, deactivate, and password reset actions
+- [ ] **WEBUX-02**: Rental detail "Umowa" tab loads and displays the actual contract data using useContractByRental hook
+- [ ] **WEBUX-03**: Rental list shows vehicle registration and customer name instead of truncated UUIDs
+- [ ] **WEBUX-04**: Edit rental form uses Zod validation with inline error messages (same pattern as create form)
+- [ ] **WEBUX-05**: Audit page date filter is wired to the API query, and actor filter uses user dropdown instead of raw UUID input
+- [ ] **WEBUX-06**: Customer and vehicle detail rental tabs show Polish status labels and loading states
+- [ ] **WEBUX-07**: Dashboard and contract list show error states when API requests fail
+- [ ] **WEBUX-08**: Login page uses design system Input component instead of raw HTML input elements
 
-- [x] **FLEET-01**: Admin może dodawać/edytować/usuwać pojazdy (rejestracja, VIN, marka/model, przebieg, ubezpieczenie, przegląd)
-- [x] **FLEET-02**: Status pojazdu aktualizuje się automatycznie na podstawie cyklu wynajmu (dostępny, wynajęty, serwis)
-- [x] **FLEET-03**: Admin może zaimportować flotę z pliku CSV/XLS
+### TypeScript Strictness (TSFIX)
 
-### Klienci (Customer Management)
+- [ ] **TSFIX-01**: Rental service methods return typed DTOs instead of Promise<any>, and use Prisma.TransactionClient for tx parameters
+- [ ] **TSFIX-02**: Contract service methods use typed parameters instead of any (toDto, rental, customer, vehicle params)
+- [ ] **TSFIX-03**: Damage service uses typed DamagePin accessor instead of `pins as any` casts on Prisma JSON columns
+- [ ] **TSFIX-04**: Portal controller uses typed PortalRequest interface instead of `@Req() req: any`
+- [ ] **TSFIX-05**: Web mutation hooks use specific input types (CreateVehicleInput, etc.) instead of Record<string, unknown>
+- [ ] **TSFIX-06**: Shared portal types replace `returnData: any | null` with typed DTO
 
-- [x] **CUST-01**: Pracownik może dodać nowego klienta (imię, nazwisko, telefon, adres, email, dowód osobisty, PESEL, prawo jazdy)
-- [x] **CUST-02**: Dane wrażliwe (PESEL, nr dowodu, nr prawa jazdy) są szyfrowane na poziomie pola (AES-256-GCM)
-- [x] **CUST-03**: Pracownik może wyszukać klienta po nazwisku, telefonie lub PESEL-u — dane auto-uzupełniają się dla powracających klientów
-- [x] **CUST-04**: System implementuje polityki retencji danych zgodne z RODO (automatyczne usuwanie po okresie retencji)
+### Dependency Fixes (DEPS)
 
-### Cykl Wynajmu (Rental Lifecycle)
+- [ ] **DEPS-01**: react-native-webview added as explicit dependency in mobile package.json
+- [ ] **DEPS-02**: Expo dependency versions aligned (expo-router uses tilde range, Sentry SDK version verified for SDK 54 compatibility)
+- [ ] **DEPS-03**: React version pins use tilde/caret ranges instead of exact pins where safe
 
-- [x] **RENT-01**: Pracownik może utworzyć wynajem (pojazd + klient + daty od-do z godziną)
-- [x] **RENT-02**: Kalendarz wynajmów z interaktywnym widokiem timeline i zapobieganiem podwójnym rezerwacjom (PostgreSQL exclusion constraints)
-- [x] **RENT-03**: Wynajem przechodzi przez stany: szkic → aktywny → przedłużony → zwrócony → zamknięty (state machine)
-- [x] **RENT-04**: Pracownik może przeprowadzić strukturalny zwrot: rejestracja przebiegu, lista kontrolna uszkodzeń, porównanie ze stanem przy wydaniu
-- [x] **RENT-05**: Admin może przedłużyć wynajem — automatyczna aktualizacja dat, przeliczenie kosztu, powiadomienie SMS do klienta
+### Test Coverage (TEST)
 
-### Umowa i PDF (Contract & PDF)
+- [ ] **TEST-01**: Web admin panel has component tests for critical pages (dashboard, rental list, vehicle list, customer list)
+- [ ] **TEST-02**: Mobile app has smoke tests for key screens (login, dashboard, rental list, new rental wizard steps)
+- [ ] **TEST-03**: API test coverage thresholds enforced in Jest config (statement coverage minimum)
 
-- [x] **CONT-01**: Pracownik może wypełnić cyfrową umowę najmu z danymi klienta, pojazdu i warunków
-- [x] **CONT-02**: Klient podpisuje umowę cyfrowo (rysik/palec) z metadanymi audytowymi (timestamp, urządzenie, hash treści, ID pracownika-świadka)
-- [x] **CONT-03**: System generuje PDF z podpisanej umowy wg istniejącego szablonu (Handlebars + Puppeteer), z pełną obsługą polskich znaków
-- [x] **CONT-04**: PDF jest automatycznie wysyłany emailem do klienta po podpisaniu
-- [x] **CONT-05**: System przechowuje wersje umów — aneksy przy przedłużeniach
+### Performance (PERF)
 
-### Dokumentacja Fotograficzna (Photo Documentation)
-
-- [x] **PHOTO-01**: Pracownik może wykonać strukturalny obchód fotograficzny pojazdu przy wydaniu i zwrocie
-- [x] **PHOTO-02**: Każde zdjęcie zawiera timestamp i metadane GPS
-- [x] **PHOTO-03**: Zdjęcia są powiązane z konkretnym wynajmem i można porównać stan przy wydaniu vs zwrocie (side-by-side)
-
-### Powiadomienia (Notifications)
-
-- [x] **NOTIF-01**: System wysyła SMS przez smsapi.pl: potwierdzenie wynajmu, przypomnienie o zwrocie (1 dzień przed), alert o przekroczeniu terminu
-- [x] **NOTIF-02**: System wysyła email z umową PDF i potwierdzeniami wynajmu
-- [x] **NOTIF-03**: Przy przedłużeniu wynajmu system automatycznie wysyła SMS do klienta z nowym terminem
-
-### Panel Admina (Admin Panel)
-
-- [x] **ADMIN-01**: Admin ma pełny CRUD na wszystkich encjach (pojazdy, klienci, wynajmy, umowy) przez panel webowy (desktop-first)
-- [x] **ADMIN-02**: Admin może wyszukiwać i filtrować dane (po rejestracji, nazwisku, zakresie dat) z możliwością bulk operacji
-- [x] **ADMIN-03**: Admin może przeglądać audit trail per wynajem, pojazd lub pracownik
-
-### Aplikacja Mobilna (Mobile App)
-
-- [x] **MOB-01**: Pracownik ma aplikację mobilną cross-platform (Android + iOS) z logowaniem i dostępem do swoich funkcji
-- [x] **MOB-02**: Pracownik może w aplikacji: wyszukać/dodać klienta, wybrać pojazd, wypełnić umowę, pobrać podpis, zrobić zdjęcia, złożyć wynajem
-- [x] **MOB-03**: Pracownik może przeprowadzić zwrot pojazdu w aplikacji mobilnej
-
-### CEPiK (Driver Verification)
-
-- [x] **CEPIK-01**: System weryfikuje uprawnienia kierowcy przez CEPiK 2.0 API (status zawieszenia, ważność prawa jazdy) przed podpisaniem umowy
-- [x] **CEPIK-02**: Weryfikacja CEPiK jest asynchroniczna z ręcznym fallbackiem — wynajem może być realizowany bez niej
-
-### Portal Klienta (Customer Portal)
-
-- [x] **PORTAL-01**: Klient może zalogować się do prostego portalu web przez magic link (link w emailu z umową)
-- [x] **PORTAL-02**: Klient widzi swoje aktywne wynajmy, historię, terminy zwrotu i może pobrać PDF umowy
-
-### Oznaczanie Uszkodzeń (Damage Marking)
-
-- [x] **DMG-01**: Pracownik może oznaczyć uszkodzenia na interaktywnym diagramie SVG pojazdu (tap → pin → zdjęcie)
-- [x] **DMG-02**: System pozwala porównać diagramy uszkodzeń: stan przy wydaniu vs stan przy zwrocie (side-by-side)
-
-### System Alertów (Alert System)
-
-- [x] **ALERT-01**: System automatycznie generuje alerty: zbliżający się termin zwrotu, przeterminowany zwrot, wygasające ubezpieczenie, zbliżający się przegląd
-- [x] **ALERT-02**: Alerty wysyłane wielokanałowo (email + SMS + in-app) z konfigurowalnymi regułami (warunek + kanał + timing)
+- [ ] **PERF-01**: Contract list query uses a batch/join approach instead of N+1 per-rental fetching
+- [ ] **PERF-02**: Customer and vehicle detail pages filter rentals server-side (query param) instead of fetching all rentals
 
 ## v2 Requirements
 
@@ -117,12 +82,11 @@ Deferred to future release. Tracked but not in current roadmap.
 |---------|--------|
 | Płatności online | Wypożyczalnia rozlicza się bezpośrednio (gotówka/przelew) — PCI compliance niepotrzebne |
 | Rezerwacja online przez klienta | Wynajmy odbywają się na miejscu — booking engine to ogromny scope bez zapotrzebowania |
-| Wielojęzyczność | Polski rynek, v1 — kod strukturalnie gotowy na i18n, ale bez implementacji |
-| Integracja z księgowością | Brak istniejącego systemu — eksport CSV/XLS wystarczy |
-| Śledzenie GPS pojazdów | Wymaga hardware w każdym aucie — nadmiarowy koszt dla lokalnej floty |
-| Dynamiczny pricing | Firma używa stałych cenników — algorytmiczne ceny dodają nieprzewidywalność |
-| AI wykrywanie uszkodzeń | Technologia niedojrzała, kosztowna, false positives na małej skali |
-| Chat / moduł wiadomości | 10 pracowników, bezpośrednie relacje z klientami — SMS + telefon wystarczą |
+| Wielojęzyczność / i18n | Polski rynek, v1.1 — hardcoded Polish strings are acceptable |
+| Full E2E browser tests (Playwright) | Too heavy for v1.1 — component + unit tests first |
+| Vehicle creation insurance/inspection fields | Low priority — can be added via edit after creation |
+| Sidebar hydration flash fix | Cosmetic SSR issue, low impact |
+| New vehicle form insurance/inspection fields | Can be set via edit page; not blocking |
 
 ## Traceability
 
@@ -130,54 +94,41 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | Phase 1 | Complete |
-| AUTH-02 | Phase 1 | Complete |
-| AUTH-03 | Phase 1 | Complete |
-| AUTH-04 | Phase 1 | Complete |
-| AUTH-05 | Phase 1 | Complete |
-| FLEET-01 | Phase 2 | Complete |
-| FLEET-02 | Phase 2 | Complete |
-| FLEET-03 | Phase 2 | Complete |
-| CUST-01 | Phase 2 | Complete |
-| CUST-02 | Phase 2 | Complete |
-| CUST-03 | Phase 2 | Complete |
-| CUST-04 | Phase 2 | Complete |
-| RENT-01 | Phase 3 | Complete |
-| RENT-02 | Phase 3 | Complete |
-| RENT-03 | Phase 3 | Complete |
-| RENT-04 | Phase 3 | Complete |
-| RENT-05 | Phase 3 | Complete |
-| CONT-01 | Phase 4 | Complete |
-| CONT-02 | Phase 4 | Complete |
-| CONT-03 | Phase 4 | Complete |
-| CONT-04 | Phase 4 | Complete |
-| CONT-05 | Phase 4 | Complete |
-| ADMIN-01 | Phase 5 | Complete |
-| ADMIN-02 | Phase 5 | Complete |
-| ADMIN-03 | Phase 5 | Complete |
-| MOB-01 | Phase 6 | Complete |
-| MOB-02 | Phase 6 | Complete |
-| MOB-03 | Phase 6 | Complete |
-| PHOTO-01 | Phase 7 | Complete |
-| PHOTO-02 | Phase 7 | Complete |
-| PHOTO-03 | Phase 7 | Complete |
-| DMG-01 | Phase 7 | Complete |
-| DMG-02 | Phase 7 | Complete |
-| NOTIF-01 | Phase 8 | Complete |
-| NOTIF-02 | Phase 8 | Complete |
-| NOTIF-03 | Phase 8 | Complete |
-| ALERT-01 | Phase 8 | Complete |
-| ALERT-02 | Phase 8 | Complete |
-| CEPIK-01 | Phase 9 | Complete |
-| CEPIK-02 | Phase 9 | Complete |
-| PORTAL-01 | Phase 9 | Complete |
-| PORTAL-02 | Phase 9 | Complete |
+| MOBUX-01 | — | Pending |
+| MOBUX-02 | — | Pending |
+| MOBUX-03 | — | Pending |
+| MOBUX-04 | — | Pending |
+| MOBUX-05 | — | Pending |
+| MOBUX-06 | — | Pending |
+| MOBUX-07 | — | Pending |
+| WEBUX-01 | — | Pending |
+| WEBUX-02 | — | Pending |
+| WEBUX-03 | — | Pending |
+| WEBUX-04 | — | Pending |
+| WEBUX-05 | — | Pending |
+| WEBUX-06 | — | Pending |
+| WEBUX-07 | — | Pending |
+| WEBUX-08 | — | Pending |
+| TSFIX-01 | — | Pending |
+| TSFIX-02 | — | Pending |
+| TSFIX-03 | — | Pending |
+| TSFIX-04 | — | Pending |
+| TSFIX-05 | — | Pending |
+| TSFIX-06 | — | Pending |
+| DEPS-01 | — | Pending |
+| DEPS-02 | — | Pending |
+| DEPS-03 | — | Pending |
+| TEST-01 | — | Pending |
+| TEST-02 | — | Pending |
+| TEST-03 | — | Pending |
+| PERF-01 | — | Pending |
+| PERF-02 | — | Pending |
 
 **Coverage:**
-- v1 requirements: 42 total
-- Mapped to phases: 42
-- Unmapped: 0
+- v1.1 requirements: 29 total
+- Mapped to phases: 0
+- Unmapped: 29 ⚠️
 
 ---
-*Requirements defined: 2026-03-23*
-*Last updated: 2026-03-23 after roadmap creation*
+*Requirements defined: 2026-03-25*
+*Last updated: 2026-03-25 after initial definition*
