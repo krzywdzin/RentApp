@@ -487,6 +487,34 @@ export class RentalsService {
     };
   }
 
+  async delete(id: string): Promise<any> {
+    const rental = await this.prisma.rental.findUnique({
+      where: { id },
+      include: RENTAL_INCLUDE,
+    });
+    if (!rental) {
+      throw new NotFoundException(`Rental with ID "${id}" not found`);
+    }
+
+    if (rental.status !== RentalStatus.DRAFT) {
+      throw new BadRequestException('Only DRAFT rentals can be deleted');
+    }
+
+    await this.prisma.$transaction(async (tx: any) => {
+      await tx.contractSignature.deleteMany({
+        where: { contract: { rentalId: id } },
+      });
+      await tx.contract.deleteMany({
+        where: { rentalId: id },
+      });
+      await tx.rental.delete({
+        where: { id },
+      });
+    });
+
+    return rental;
+  }
+
   async checkOverlap(
     vehicleId: string,
     startDate: Date,

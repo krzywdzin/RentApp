@@ -3,6 +3,7 @@ import {
   Post,
   Get,
   Patch,
+  Delete,
   Param,
   Body,
   Query,
@@ -118,5 +119,22 @@ export class RentalsController {
     @CurrentUser('id') userId: string,
   ) {
     return this.rentalsService.rollback(id, dto, userId);
+  }
+
+  @Delete(':id')
+  @Roles(UserRole.ADMIN, UserRole.EMPLOYEE)
+  async delete(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser('id') userId: string,
+  ) {
+    const rental = await this.rentalsService.delete(id);
+    return {
+      ...rental,
+      __audit: {
+        action: 'rental.delete',
+        entityType: 'Rental',
+        entityId: id,
+      },
+    };
   }
 }
