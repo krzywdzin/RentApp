@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CreateCustomerSchema } from '@rentapp/shared';
+import { CreateCustomerSchema, type CreateCustomerInput } from '@rentapp/shared';
 import type { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -45,13 +45,13 @@ export default function NewCustomerPage() {
 
   function onSubmit(data: FormValues) {
     // Clean up empty optional fields
-    const cleaned: Record<string, unknown> = { ...data };
+    const cleaned = { ...data } as Record<string, unknown>;
     for (const key of Object.keys(cleaned)) {
       if (cleaned[key] === '') {
         cleaned[key] = null;
       }
     }
-    createCustomer.mutate(cleaned, {
+    createCustomer.mutate(cleaned as CreateCustomerInput, {
       onSuccess: () => router.push('/klienci'),
     });
   }

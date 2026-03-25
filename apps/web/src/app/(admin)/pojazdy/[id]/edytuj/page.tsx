@@ -4,7 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { UpdateVehicleSchema } from '@rentapp/shared';
+import { UpdateVehicleSchema, type UpdateVehicleInput } from '@rentapp/shared';
 import type { z } from 'zod';
 
 type UpdateFormValues = z.input<typeof UpdateVehicleSchema>;
@@ -73,7 +73,7 @@ export default function EditVehiclePage() {
   }, [vehicle, form]);
 
   function onSubmit(data: UpdateFormValues) {
-    updateVehicle.mutate(data as unknown as Record<string, unknown>, {
+    updateVehicle.mutate(data as UpdateVehicleInput, {
       onSuccess: () => router.push(`/pojazdy/${params.id}`),
     });
   }

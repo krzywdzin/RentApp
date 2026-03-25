@@ -28,8 +28,18 @@ function isPast(dateStr: string): boolean {
 }
 
 export default function DashboardPage() {
-  const { data: vehicles, isLoading: vehiclesLoading, isError: vehiclesError, refetch: refetchVehicles } = useVehicles();
-  const { data: rentals, isLoading: rentalsLoading, isError: rentalsError, refetch: refetchRentals } = useRentals();
+  const {
+    data: vehicles,
+    isLoading: vehiclesLoading,
+    isError: vehiclesError,
+    refetch: refetchVehicles,
+  } = useVehicles();
+  const {
+    data: rentals,
+    isLoading: rentalsLoading,
+    isError: rentalsError,
+    refetch: refetchRentals,
+  } = useRentals();
 
   const stats = useMemo(() => {
     if (!vehicles || !rentals) return null;
@@ -58,8 +68,19 @@ export default function DashboardPage() {
       {hasError && !isLoading && (
         <Card className="border-destructive">
           <CardContent className="flex items-center justify-between py-4">
-            <p className="text-sm text-destructive">Nie udalo sie zaladowac danych. Sprawdz polaczenie i sprobuj ponownie.</p>
-            <Button variant="outline" size="sm" onClick={() => { refetchVehicles(); refetchRentals(); }}>Ponow</Button>
+            <p className="text-sm text-destructive">
+              Nie udalo sie zaladowac danych. Sprawdz polaczenie i sprobuj ponownie.
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                refetchVehicles();
+                refetchRentals();
+              }}
+            >
+              Ponow
+            </Button>
           </CardContent>
         </Card>
       )}

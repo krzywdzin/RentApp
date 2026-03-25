@@ -4,7 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { UpdateCustomerSchema } from '@rentapp/shared';
+import { UpdateCustomerSchema, type UpdateCustomerInput } from '@rentapp/shared';
 import type { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -53,13 +53,13 @@ export default function EditCustomerPage() {
   }, [customer, form]);
 
   function onSubmit(data: UpdateFormValues) {
-    const cleaned: Record<string, unknown> = { ...data };
+    const cleaned = { ...data } as Record<string, unknown>;
     for (const key of Object.keys(cleaned)) {
       if (cleaned[key] === '') {
         cleaned[key] = null;
       }
     }
-    updateCustomer.mutate(cleaned, {
+    updateCustomer.mutate(cleaned as UpdateCustomerInput, {
       onSuccess: () => router.push(`/klienci/${params.id}`),
     });
   }

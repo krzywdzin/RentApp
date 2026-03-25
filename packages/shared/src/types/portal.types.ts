@@ -1,4 +1,11 @@
-import type { VehicleInspection } from './rental.types';
+export interface PortalReturnInspectionData {
+  fuelLevel?: number | null;
+  cleanliness?: string | null;
+  notes?: string | null;
+  mileage?: number | null;
+  areas?: { area: string; condition: string; note?: string }[];
+  generalNotes?: string | null;
+}
 
 export interface PortalRentalDto {
   id: string;
@@ -13,7 +20,7 @@ export interface PortalRentalDto {
   totalPriceGross: number;
   vatRate: number;
   returnMileage: number | null;
-  returnData: VehicleInspection | null;
+  returnData: PortalReturnInspectionData | null;
   contractId: string | null;
   contractNumber: string | null;
   contractPdfUrl: string | null;

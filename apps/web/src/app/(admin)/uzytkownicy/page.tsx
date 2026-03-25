@@ -160,15 +160,13 @@ export default function UzytkownicyPage() {
 
       {/* Collapsible Create User Form */}
       <Card className="max-w-lg">
-        <CardHeader
-          className="cursor-pointer"
-          onClick={() => setFormOpen(!formOpen)}
-        >
+        <CardHeader className="cursor-pointer" onClick={() => setFormOpen(!formOpen)}>
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>Nowy uzytkownik</CardTitle>
               <CardDescription>
-                Utworz konto pracownika. Nowy uzytkownik otrzyma email z linkiem do ustawienia hasla.
+                Utworz konto pracownika. Nowy uzytkownik otrzyma email z linkiem do ustawienia
+                hasla.
               </CardDescription>
             </div>
             {formOpen ? (
@@ -190,9 +188,7 @@ export default function UzytkownicyPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
-                {errors.email && (
-                  <p className="text-sm text-destructive">{errors.email}</p>
-                )}
+                {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
               </div>
 
               <div className="space-y-2">
@@ -203,9 +199,7 @@ export default function UzytkownicyPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
-                {errors.name && (
-                  <p className="text-sm text-destructive">{errors.name}</p>
-                )}
+                {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
               </div>
 
               <div className="space-y-2">
@@ -219,9 +213,7 @@ export default function UzytkownicyPage() {
                     <SelectItem value="EMPLOYEE">Pracownik</SelectItem>
                   </SelectContent>
                 </Select>
-                {errors.role && (
-                  <p className="text-sm text-destructive">{errors.role}</p>
-                )}
+                {errors.role && <p className="text-sm text-destructive">{errors.role}</p>}
               </div>
 
               <Button type="submit" disabled={submitting} className="w-full">
@@ -249,9 +241,7 @@ export default function UzytkownicyPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Edytuj uzytkownika</DialogTitle>
-            <DialogDescription>
-              Zmien dane uzytkownika {editUser?.email}
-            </DialogDescription>
+            <DialogDescription>Zmien dane uzytkownika {editUser?.email}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">

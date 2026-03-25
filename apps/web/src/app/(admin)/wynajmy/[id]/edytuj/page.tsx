@@ -20,26 +20,28 @@ import { useQueryClient } from '@tanstack/react-query';
 import { rentalKeys } from '@/hooks/queries/use-rentals';
 import { Loader2 } from 'lucide-react';
 
-const editRentalSchema = z.object({
-  startDate: z.string().min(1, 'Data poczatkowa jest wymagana'),
-  endDate: z.string().min(1, 'Data koncowa jest wymagana'),
-  dailyRateNet: z
-    .number({ invalid_type_error: 'Podaj stawke' })
-    .positive('Stawka musi byc wieksza od 0'),
-  vatRate: z
-    .number({ invalid_type_error: 'Podaj stawke VAT' })
-    .min(0, 'VAT musi byc >= 0')
-    .max(100, 'VAT musi byc miedzy 0 a 100'),
-  notes: z.string().default(''),
-}).superRefine((data, ctx) => {
-  if (data.startDate && data.endDate && new Date(data.endDate) <= new Date(data.startDate)) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: 'Data koncowa musi byc pozniejsza niz poczatkowa',
-      path: ['endDate'],
-    });
-  }
-});
+const editRentalSchema = z
+  .object({
+    startDate: z.string().min(1, 'Data poczatkowa jest wymagana'),
+    endDate: z.string().min(1, 'Data koncowa jest wymagana'),
+    dailyRateNet: z
+      .number({ invalid_type_error: 'Podaj stawke' })
+      .positive('Stawka musi byc wieksza od 0'),
+    vatRate: z
+      .number({ invalid_type_error: 'Podaj stawke VAT' })
+      .min(0, 'VAT musi byc >= 0')
+      .max(100, 'VAT musi byc miedzy 0 a 100'),
+    notes: z.string().default(''),
+  })
+  .superRefine((data, ctx) => {
+    if (data.startDate && data.endDate && new Date(data.endDate) <= new Date(data.startDate)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Data koncowa musi byc pozniejsza niz poczatkowa',
+        path: ['endDate'],
+      });
+    }
+  });
 
 type EditFormValues = z.input<typeof editRentalSchema>;
 

@@ -2,7 +2,12 @@
 
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { RentalStatus, ContractStatus } from '@rentapp/shared';
+import { type RentalDto, RentalStatus, ContractStatus } from '@rentapp/shared';
+
+interface RentalWithRelations extends RentalDto {
+  vehicle?: { registration: string; make: string; model: string };
+  customer?: { firstName: string; lastName: string };
+}
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -63,7 +68,11 @@ export default function RentalDetailPage() {
   const extendRental = useExtendRental(id);
   const rollbackRental = useRollbackRental(id);
 
-  const { data: contract, isLoading: contractLoading, isError: contractError } = useContractByRental(id);
+  const {
+    data: contract,
+    isLoading: contractLoading,
+    isError: contractError,
+  } = useContractByRental(id);
 
   const [extendOpen, setExtendOpen] = useState(false);
   const [returnOpen, setReturnOpen] = useState(false);
@@ -221,13 +230,15 @@ export default function RentalDetailPage() {
               <dl className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <dt className="text-sm text-muted-foreground">Pojazd</dt>
-                  <dd className="text-sm">{(rental as any).vehicle?.registration || rental.vehicleId}</dd>
+                  <dd className="text-sm">
+                    {(rental as RentalWithRelations).vehicle?.registration || rental.vehicleId}
+                  </dd>
                 </div>
                 <div>
                   <dt className="text-sm text-muted-foreground">Klient</dt>
                   <dd className="text-sm">
-                    {(rental as any).customer
-                      ? `${(rental as any).customer.firstName} ${(rental as any).customer.lastName}`
+                    {(rental as RentalWithRelations).customer
+                      ? `${(rental as RentalWithRelations).customer?.firstName} ${(rental as RentalWithRelations).customer?.lastName}`
                       : rental.customerId}
                   </dd>
                 </div>
@@ -301,7 +312,9 @@ export default function RentalDetailPage() {
                   <dl className="grid gap-4 sm:grid-cols-2">
                     <div>
                       <dt className="text-sm text-muted-foreground">Status</dt>
-                      <dd className="text-sm font-medium">{contractStatusLabel(contract.status)}</dd>
+                      <dd className="text-sm font-medium">
+                        {contractStatusLabel(contract.status)}
+                      </dd>
                     </div>
                     <div>
                       <dt className="text-sm text-muted-foreground">Data utworzenia</dt>

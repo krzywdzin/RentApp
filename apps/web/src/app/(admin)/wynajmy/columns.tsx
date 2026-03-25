@@ -9,6 +9,11 @@ import { formatDate, formatCurrency } from '@/lib/format';
 import { Eye } from 'lucide-react';
 import Link from 'next/link';
 
+interface RentalWithRelations extends RentalDto {
+  vehicle?: { registration: string; make: string; model: string };
+  customer?: { firstName: string; lastName: string };
+}
+
 const statusConfig: Record<
   RentalStatus,
   {
@@ -37,7 +42,7 @@ export function getRentalStatusBadge(rental: RentalDto) {
   return <Badge variant={config.variant}>{config.label}</Badge>;
 }
 
-export const rentalColumns: ColumnDef<RentalDto, unknown>[] = [
+export const rentalColumns: ColumnDef<RentalWithRelations, unknown>[] = [
   {
     accessorKey: 'id',
     header: ({ column }) => <DataTableColumnHeader column={column} title="Nr" />,
@@ -50,7 +55,7 @@ export const rentalColumns: ColumnDef<RentalDto, unknown>[] = [
     accessorKey: 'vehicleId',
     header: ({ column }) => <DataTableColumnHeader column={column} title="Pojazd" />,
     cell: ({ row }) => {
-      const vehicle = (row.original as any).vehicle;
+      const vehicle = row.original.vehicle;
       return (
         <span className="text-sm">
           {vehicle?.registration || row.original.vehicleId.slice(0, 8)}
@@ -63,7 +68,7 @@ export const rentalColumns: ColumnDef<RentalDto, unknown>[] = [
     accessorKey: 'customerId',
     header: ({ column }) => <DataTableColumnHeader column={column} title="Klient" />,
     cell: ({ row }) => {
-      const customer = (row.original as any).customer;
+      const customer = row.original.customer;
       return (
         <span className="text-sm">
           {customer
