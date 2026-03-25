@@ -1,17 +1,18 @@
 'use client';
 
 import { useState } from 'react';
-import type { DamageComparisonResult, DamagePin, SeverityLevel, DamageType, SvgView } from '@rentapp/shared';
+import type {
+  DamageComparisonResult,
+  DamagePin,
+  SeverityLevel,
+  DamageType,
+  SvgView,
+} from '@rentapp/shared';
 import { DAMAGE_TYPE_LABELS } from '@rentapp/shared';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { DamagePinList } from './damage-pin-list';
 
 const SVG_VIEW_TABS: { value: SvgView; label: string }[] = [
@@ -23,9 +24,9 @@ const SVG_VIEW_TABS: { value: SvgView; label: string }[] = [
 ];
 
 const SEVERITY_PIN_COLORS: Record<SeverityLevel, string> = {
-  minor: '#f59e0b',    // amber-500
+  minor: '#f59e0b', // amber-500
   moderate: '#f97316', // orange-500
-  severe: '#ef4444',   // red-500
+  severe: '#ef4444', // red-500
 };
 
 const PRE_EXISTING_COLOR = '#71717a'; // zinc-500
@@ -103,9 +104,7 @@ export function DamageComparison({ data }: DamageComparisonProps) {
                   />
                   {returnFiltered.length > 0 && (
                     <div className="flex gap-1 mt-2">
-                      <Badge variant="secondary">
-                        {returnFiltered.length} uszkodzen
-                      </Badge>
+                      <Badge variant="secondary">{returnFiltered.length} uszkodzen</Badge>
                       {returnFiltered.filter((p) => newPinNumbers.has(p.pinNumber)).length > 0 && (
                         <Badge variant="destructive">
                           {returnFiltered.filter((p) => newPinNumbers.has(p.pinNumber)).length} Nowe
@@ -135,11 +134,7 @@ export function DamageComparison({ data }: DamageComparisonProps) {
             <CardTitle className="text-sm">Lista uszkodzen - Zwrot</CardTitle>
           </CardHeader>
           <CardContent className="px-4 pb-4">
-            <DamagePinList
-              pins={data.returnPins}
-              showNewBadge
-              newPinNumbers={newPinNumbers}
-            />
+            <DamagePinList pins={data.returnPins} showNewBadge newPinNumbers={newPinNumbers} />
           </CardContent>
         </Card>
       </div>
@@ -182,10 +177,37 @@ function DamageDiagram({
           className="text-zinc-400"
         />
         {/* Windshield */}
-        <line x1="300" y1="100" x2="300" y2="500" stroke="currentColor" strokeWidth="1" className="text-zinc-400" strokeDasharray="4 4" />
-        <line x1="700" y1="100" x2="700" y2="500" stroke="currentColor" strokeWidth="1" className="text-zinc-400" strokeDasharray="4 4" />
+        <line
+          x1="300"
+          y1="100"
+          x2="300"
+          y2="500"
+          stroke="currentColor"
+          strokeWidth="1"
+          className="text-zinc-400"
+          strokeDasharray="4 4"
+        />
+        <line
+          x1="700"
+          y1="100"
+          x2="700"
+          y2="500"
+          stroke="currentColor"
+          strokeWidth="1"
+          className="text-zinc-400"
+          strokeDasharray="4 4"
+        />
         {/* Center line */}
-        <line x1="150" y1="300" x2="850" y2="300" stroke="currentColor" strokeWidth="1" className="text-zinc-400" strokeDasharray="4 4" />
+        <line
+          x1="150"
+          y1="300"
+          x2="850"
+          y2="300"
+          stroke="currentColor"
+          strokeWidth="1"
+          className="text-zinc-400"
+          strokeDasharray="4 4"
+        />
 
         {/* Damage pins */}
         {pins.map((pin) => {
@@ -195,7 +217,7 @@ function DamageDiagram({
           const isPreExisting = pin.isPreExisting || (allPreExisting && !isNew);
           const fillColor = isPreExisting
             ? PRE_EXISTING_COLOR
-            : SEVERITY_PIN_COLORS[pin.severity as SeverityLevel] ?? '#ef4444';
+            : (SEVERITY_PIN_COLORS[pin.severity as SeverityLevel] ?? '#ef4444');
           const strokeDash = isPreExisting ? '4 2' : 'none';
 
           const label = DAMAGE_TYPE_LABELS[pin.damageType as DamageType] ?? pin.damageType;

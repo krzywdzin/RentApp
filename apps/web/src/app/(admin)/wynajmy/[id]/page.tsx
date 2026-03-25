@@ -28,7 +28,15 @@ import {
 } from '@/hooks/queries/use-rentals';
 import { getRentalStatusBadge } from '../columns';
 import { formatDateTime, formatCurrency } from '@/lib/format';
-import { Loader2, Play, ArrowLeftRight, CalendarPlus, RotateCcw, Pencil, Camera } from 'lucide-react';
+import {
+  Loader2,
+  Play,
+  ArrowLeftRight,
+  CalendarPlus,
+  RotateCcw,
+  Pencil,
+  Camera,
+} from 'lucide-react';
 import { AuditTrail } from '@/components/audit/audit-trail';
 
 export default function RentalDetailPage() {

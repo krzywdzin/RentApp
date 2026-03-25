@@ -7,6 +7,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.service';
 import { MailService } from '../mail/mail.service';
 import { CustomersService } from '../customers/customers.service';
+import { PortalService } from '../portal/portal.service';
 import { ContractStatus } from '@rentapp/shared';
 import type { ContractFrozenData } from '@rentapp/shared';
 
@@ -137,6 +138,7 @@ describe('ContractsService', () => {
         { provide: StorageService, useValue: storageService },
         { provide: MailService, useValue: mailService },
         { provide: CustomersService, useValue: customersService },
+        { provide: PortalService, useValue: { generatePortalToken: jest.fn().mockResolvedValue('https://portal-url') } },
         { provide: ConfigService, useValue: { get: jest.fn() } },
       ],
     }).compile();
@@ -466,6 +468,7 @@ describe('ContractsService', () => {
         signatureKey: 'contracts/rental-1/signatures/sig.png',
       });
       prisma.contract.update.mockResolvedValue({});
+      prisma.rental.findUnique.mockResolvedValue({ customerId: 'customer-1' });
 
       await service.sign(
         'contract-1',
@@ -483,6 +486,7 @@ describe('ContractsService', () => {
         'TO 12345',
         'KITEK/2026/0324/0001',
         expect.any(Buffer),
+        expect.any(String),
       );
     });
   });

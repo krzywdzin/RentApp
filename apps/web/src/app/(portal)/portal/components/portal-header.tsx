@@ -12,9 +12,7 @@ export function PortalHeader() {
           <span className="text-lg font-bold text-primary">KITEK</span>
           <span className="text-sm text-muted-foreground">Portal Klienta</span>
         </div>
-        {customerName && (
-          <span className="text-sm text-muted-foreground">{customerName}</span>
-        )}
+        {customerName && <span className="text-sm text-muted-foreground">{customerName}</span>}
       </div>
     </header>
   );

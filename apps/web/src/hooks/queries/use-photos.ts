@@ -5,7 +5,8 @@ import type { PhotoComparisonPair, DamageComparisonResult } from '@rentapp/share
 export const photoKeys = {
   all: ['photos'] as const,
   comparison: (rentalId: string) => [...photoKeys.all, 'comparison', rentalId] as const,
-  damageComparison: (rentalId: string) => [...photoKeys.all, 'damage-comparison', rentalId] as const,
+  damageComparison: (rentalId: string) =>
+    [...photoKeys.all, 'damage-comparison', rentalId] as const,
 };
 
 export function usePhotoComparison(rentalId: string) {

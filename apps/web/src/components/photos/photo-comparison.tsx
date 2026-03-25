@@ -5,11 +5,7 @@ import Image from 'next/image';
 import type { PhotoComparisonPair } from '@rentapp/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 
 const POSITION_LABELS: Record<string, string> = {
   front: 'Przod',
@@ -46,9 +42,7 @@ export function PhotoComparison({ data }: PhotoComparisonProps) {
           <Card key={pair.position}>
             <CardHeader className="py-3 px-4">
               <CardTitle className="text-sm">
-                <Badge variant="outline">
-                  {POSITION_LABELS[pair.position] ?? pair.position}
-                </Badge>
+                <Badge variant="outline">{POSITION_LABELS[pair.position] ?? pair.position}</Badge>
               </CardTitle>
             </CardHeader>
             <CardContent className="px-4 pb-4">

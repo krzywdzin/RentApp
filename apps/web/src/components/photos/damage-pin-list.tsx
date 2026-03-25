@@ -26,18 +26,14 @@ interface DamagePinListProps {
 
 export function DamagePinList({ pins, showNewBadge, newPinNumbers }: DamagePinListProps) {
   if (pins.length === 0) {
-    return (
-      <p className="text-sm text-muted-foreground py-2">Brak uszkodzen</p>
-    );
+    return <p className="text-sm text-muted-foreground py-2">Brak uszkodzen</p>;
   }
 
   return (
     <div className="space-y-2">
       <h4 className="text-sm font-semibold">
         Lista uszkodzen{' '}
-        <span className="font-normal text-muted-foreground">
-          ({pins.length} uszkodzen)
-        </span>
+        <span className="font-normal text-muted-foreground">({pins.length} uszkodzen)</span>
       </h4>
       <div className="space-y-1">
         {pins.map((pin) => {
@@ -48,9 +44,7 @@ export function DamagePinList({ pins, showNewBadge, newPinNumbers }: DamagePinLi
               key={`${pin.svgView}-${pin.pinNumber}`}
               className="flex items-center gap-2 rounded-md border border-border px-3 py-2 text-sm"
             >
-              <span className="font-mono text-xs text-muted-foreground w-6">
-                #{pin.pinNumber}
-              </span>
+              <span className="font-mono text-xs text-muted-foreground w-6">#{pin.pinNumber}</span>
               <span className="text-xs text-muted-foreground w-12">
                 {SVG_VIEW_LABELS[pin.svgView] ?? pin.svgView}
               </span>
@@ -58,15 +52,17 @@ export function DamagePinList({ pins, showNewBadge, newPinNumbers }: DamagePinLi
                 {DAMAGE_TYPE_LABELS[pin.damageType as DamageType] ?? pin.damageType}
               </span>
               <SeverityBadge severity={pin.severity} />
-              {showNewBadge && (
-                isNew ? (
+              {showNewBadge &&
+                (isNew ? (
                   <Badge variant="destructive">Nowe</Badge>
                 ) : (
                   <Badge variant="secondary">Istniejace</Badge>
-                )
-              )}
+                ))}
               {pin.note && (
-                <span className="text-xs text-muted-foreground truncate max-w-[150px]" title={pin.note}>
+                <span
+                  className="text-xs text-muted-foreground truncate max-w-[150px]"
+                  title={pin.note}
+                >
                   {pin.note}
                 </span>
               )}
