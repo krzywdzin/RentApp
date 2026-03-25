@@ -52,7 +52,7 @@ export default function DashboardScreen() {
   const user = useAuthStore((s) => s.user);
   const { data: rentals, isLoading, refetch, isRefetching } = useRentals();
 
-  const firstName = user?.name?.split(' ')[0] ?? '';
+  const firstName = user?.name?.split(' ')[0] || user?.email?.split('@')[0] || '';
   const today = formatDate(new Date());
 
   const stats = useMemo(() => {

@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Check } from 'lucide-react-native';
+import Toast from 'react-native-toast-message';
 
 import { AppButton } from '@/components/AppButton';
 import { useRentalDraftStore } from '@/stores/rental-draft.store';
@@ -21,7 +22,11 @@ export default function SuccessScreen() {
     try {
       await Linking.openURL(url);
     } catch {
-      // Silently fail if URL can't be opened
+      Toast.show({
+        type: 'error',
+        text1: 'Nie udalo sie otworzyc PDF',
+        text2: 'Sprawdz czy masz zainstalowana przegladarke',
+      });
     }
   }, [contractId]);
 
