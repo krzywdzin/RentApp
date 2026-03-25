@@ -10,16 +10,19 @@ import Toast from 'react-native-toast-message';
 
 import { QueryProvider } from '@/providers/QueryProvider';
 import { AuthProvider } from '@/providers/AuthProvider';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <QueryProvider>
-          <AuthProvider>
-            <Slot />
-          </AuthProvider>
-        </QueryProvider>
+        <ErrorBoundary>
+          <QueryProvider>
+            <AuthProvider>
+              <Slot />
+            </AuthProvider>
+          </QueryProvider>
+        </ErrorBoundary>
       </SafeAreaProvider>
       <Toast />
     </GestureHandlerRootView>
