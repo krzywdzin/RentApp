@@ -224,7 +224,12 @@ Plans:
   3. When an API request fails on the rental detail screen, employee sees an error message with a retry button that re-fetches the data
   4. Navigating directly to a return wizard step without a rentalId redirects to the return start screen instead of submitting 0 km mileage
   5. Error messages throughout the app show human-readable Polish labels (e.g. "Oczekuje na zwrot") instead of raw enum values like "PENDING_RETURN"
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 10-01-PLAN.md -- Loading skeletons for vehicle selection, customer search UX hints and spinner, rental detail error state with retry
+- [ ] 10-02-PLAN.md -- Return wizard rentalId guards with redirect, OfflineBanner in return layout, Polish status labels
+- [ ] 10-03-PLAN.md -- Dashboard greeting fallback for missing user name, PDF open failure error toast
 
 ### Phase 11: Web Admin Panel Polish
 **Goal**: The admin panel displays real data with proper labels, validates forms consistently, handles errors visibly, and provides user management -- no more UUIDs, silent failures, or missing pages
@@ -289,7 +294,7 @@ v1.1: 10 -> 11 -> 12 -> 13 -> 14
 | 8. Notifications and Alerts | v1.0 | 2/2 | Complete | 2026-03-24 |
 | 9. Customer Portal and CEPiK | v1.0 | 4/4 | Complete | 2026-03-24 |
 | 9.1 Mobile and Admin Bug Fixes | v1.0 | 4/4 | Complete | 2026-03-25 |
-| 10. Mobile UX Polish | v1.1 | 0/? | Not started | - |
+| 10. Mobile UX Polish | v1.1 | 0/3 | Not started | - |
 | 11. Web Admin Panel Polish | v1.1 | 0/? | Not started | - |
 | 12. TypeScript Strictness | v1.1 | 0/? | Not started | - |
 | 13. Dependencies & Performance | v1.1 | 0/? | Not started | - |
