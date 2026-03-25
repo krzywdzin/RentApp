@@ -6,7 +6,8 @@
     "build": "nest build",
     "dev": "nest start --watch",
     "start": "nest start",
-    "test": "jest",
+    "test": "jest --coverage",
+    "test:no-coverage": "jest",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "lint": "eslint ."
   },
