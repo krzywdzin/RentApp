@@ -22,6 +22,8 @@ export interface AuditFilters {
   entityType?: string;
   entityId?: string;
   actorId?: string;
+  dateFrom?: string;
+  dateTo?: string;
   limit: number;
   offset: number;
 }
@@ -38,6 +40,8 @@ export function useAudit(filters: AuditFilters) {
   if (filters.entityType) searchParams.set('entityType', filters.entityType);
   if (filters.entityId) searchParams.set('entityId', filters.entityId);
   if (filters.actorId) searchParams.set('actorId', filters.actorId);
+  if (filters.dateFrom) searchParams.set('dateFrom', filters.dateFrom);
+  if (filters.dateTo) searchParams.set('dateTo', filters.dateTo);
 
   const qs = searchParams.toString();
 

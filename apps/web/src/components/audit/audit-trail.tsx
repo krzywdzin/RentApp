@@ -47,9 +47,11 @@ interface AuditTrailProps {
   entityType?: string;
   entityId?: string;
   actorId?: string;
+  dateFrom?: string;
+  dateTo?: string;
 }
 
-export function AuditTrail({ entityType, entityId, actorId }: AuditTrailProps) {
+export function AuditTrail({ entityType, entityId, actorId, dateFrom, dateTo }: AuditTrailProps) {
   const [limit, setLimit] = useState(25);
   const [offset, setOffset] = useState(0);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
@@ -58,6 +60,8 @@ export function AuditTrail({ entityType, entityId, actorId }: AuditTrailProps) {
     entityType,
     entityId,
     actorId,
+    dateFrom,
+    dateTo,
     limit,
     offset,
   });

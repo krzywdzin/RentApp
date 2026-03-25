@@ -21,6 +21,8 @@ export default function AuditPage() {
       <AuditTrail
         entityType={filters.entityType || undefined}
         actorId={filters.actorId || undefined}
+        dateFrom={filters.dateFrom || undefined}
+        dateTo={filters.dateTo || undefined}
       />
     </div>
   );

@@ -1,5 +1,7 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
+import { apiClient } from '@/lib/api-client';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -10,6 +12,20 @@ import {
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
+
+interface UserOption {
+  id: string;
+  name: string;
+  email: string;
+}
+
+function useUsersForFilter() {
+  return useQuery({
+    queryKey: ['users'],
+    queryFn: () => apiClient<UserOption[]>('/users'),
+    staleTime: 5 * 60 * 1000,
+  });
+}
 
 export interface AuditFilterValues {
   actorId: string;
@@ -32,6 +48,8 @@ const ENTITY_TYPE_OPTIONS = [
 ];
 
 export function AuditFilterBar({ values, onChange }: FilterBarProps) {
+  const { data: users } = useUsersForFilter();
+
   const hasFilters =
     values.actorId !== '' ||
     values.entityType !== '' ||
@@ -46,12 +64,22 @@ export function AuditFilterBar({ values, onChange }: FilterBarProps) {
     <div className="flex flex-wrap items-end gap-4">
       <div className="space-y-1">
         <label className="text-xs text-muted-foreground">Pracownik</label>
-        <Input
-          placeholder="ID pracownika..."
-          value={values.actorId}
-          onChange={(e) => onChange({ ...values, actorId: e.target.value })}
-          className="h-9 w-48"
-        />
+        <Select
+          value={values.actorId || 'all'}
+          onValueChange={(val) => onChange({ ...values, actorId: val === 'all' ? '' : val })}
+        >
+          <SelectTrigger className="h-9 w-48">
+            <SelectValue placeholder="Wszyscy" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Wszyscy</SelectItem>
+            {users?.map((user) => (
+              <SelectItem key={user.id} value={user.id}>
+                {user.name || user.email}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="space-y-1">
