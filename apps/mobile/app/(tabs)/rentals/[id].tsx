@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useRental } from '@/hooks/use-rentals';
 import { formatDate, formatDateTime, formatCurrency, formatMileage } from '@/lib/format';
+import { AlertTriangle } from 'lucide-react-native';
 import { AppCard } from '@/components/AppCard';
 import { AppButton } from '@/components/AppButton';
 import { StatusBadge } from '@/components/StatusBadge';
@@ -14,14 +15,32 @@ export default function RentalDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { t } = useTranslation();
   const router = useRouter();
-  const { data: rental, isLoading } = useRental(id ?? '');
+  const { data: rental, isLoading, isError, refetch } = useRental(id ?? '');
 
-  if (isLoading || !rental) {
+  if (isLoading) {
     return (
       <>
         <Stack.Screen options={{ title: '' }} />
         <View style={s.loadingWrap}>
           <LoadingSkeleton variant="card" count={4} />
+        </View>
+      </>
+    );
+  }
+
+  if (isError || !rental) {
+    return (
+      <>
+        <Stack.Screen options={{ title: '' }} />
+        <View style={s.errorCenter}>
+          <AlertTriangle size={48} color="#DC2626" />
+          <Text style={s.errorTitle}>Nie udalo sie zaladowac danych</Text>
+          <Text style={s.errorSub}>Sprawdz polaczenie i sprobuj ponownie</Text>
+          <AppButton
+            title="Sprobuj ponownie"
+            onPress={() => refetch()}
+            containerStyle={s.mt16}
+          />
         </View>
       </>
     );
@@ -176,6 +195,10 @@ const s = StyleSheet.create({
   durationText: { marginTop: 8, fontSize: 13, color: '#71717A' },
   priceRow: { flexDirection: 'row', justifyContent: 'space-between' },
   priceTotalRow: { marginTop: 8, flexDirection: 'row', justifyContent: 'space-between' },
+  errorCenter: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32, backgroundColor: '#FFFFFF' },
+  errorTitle: { marginTop: 16, fontSize: 18, fontWeight: '600', color: '#18181B', textAlign: 'center' },
+  errorSub: { marginTop: 8, fontSize: 14, color: '#71717A', textAlign: 'center' },
+  mt16: { marginTop: 16 },
   bottomBar: {
     position: 'absolute',
     bottom: 0,
