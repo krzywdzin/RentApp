@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Quality, Polish & UX Improvements
-status: in-progress
-stopped_at: Completed 14-03-PLAN.md
-last_updated: "2026-03-25T04:02:07.623Z"
+status: completed
+stopped_at: Completed 14-02-PLAN.md
+last_updated: "2026-03-25T04:03:41.000Z"
 last_activity: 2026-03-25 -- Completed 14-03-PLAN.md (API coverage threshold enforcement)
 progress:
   total_phases: 5
@@ -57,6 +57,7 @@ Progress: [█████████░] 93%
 | Phase 12-typescript-strictness P03 | 8min | 2 tasks | 13 files |
 | Phase 13-dependencies-performance P01 | 1min | 1 tasks | 2 files |
 | Phase 13-dependencies-performance P02 | 2min | 2 tasks | 8 files |
+| Phase 14-test-coverage P02 | 2min | 2 tasks | 7 files |
 | Phase 14-test-coverage P03 | 2min | 1 tasks | 2 files |
 
 ## Accumulated Context
@@ -95,6 +96,7 @@ Recent decisions affecting current work:
 - [Phase 12-03]: Used RentalWithRelations interface extending RentalDto for typed relation access
 - [Phase 13-01]: Used tilde (~) ranges for react-native-webview to match Expo convention
 - [Phase 13-dependencies-performance]: Used RentalFilters interface with URLSearchParams for server-side filtering
+- [Phase 14-test-coverage]: Used pnpm-aware transformIgnorePatterns with .pnpm allowlist for jest-expo
 - [Phase 14-test-coverage]: Set statement threshold to 35% (baseline 40%) as regression floor, not a target
 
 ### Pending Todos
@@ -107,6 +109,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-25T04:02:00Z
-Stopped at: Completed 14-03-PLAN.md
+Last session: 2026-03-25T04:03:40.998Z
+Stopped at: Completed 14-02-PLAN.md
 Resume file: None
