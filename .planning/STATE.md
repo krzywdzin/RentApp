@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Quality, Polish & UX Improvements
-status: executing
-stopped_at: Completed 12-01-PLAN.md
-last_updated: "2026-03-25T03:34:16Z"
-last_activity: 2026-03-25 -- Completed 12-01-PLAN.md (rental and contract service any-type removal)
+status: completed
+stopped_at: Completed 12-03-PLAN.md
+last_updated: "2026-03-25T03:36:53.287Z"
+last_activity: 2026-03-25 -- Completed 12-03-PLAN.md (typed portal returnData, typed mutation hooks, removed as-any casts)
 progress:
   total_phases: 5
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 9
-  completed_plans: 7
+  completed_plans: 9
   percent: 78
 ---
 
@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-03-25)
 
 ## Current Position
 
-Phase: 12 of 14 (TypeScript Strictness)
-Plan: 2 of 3 completed
-Status: Executing Phase 12
-Last activity: 2026-03-25 -- Completed 12-01-PLAN.md (rental and contract service any-type removal)
+Phase: 12 of 14 (TypeScript Strictness) -- complete
+Plan: 3 of 3 completed
+Status: Phase 12 complete
+Last activity: 2026-03-25 -- Completed 12-03-PLAN.md (typed portal returnData, typed mutation hooks, removed as-any casts)
 
 Progress: [████████░░] 78%
 
@@ -54,6 +54,7 @@ Progress: [████████░░] 78%
 | Phase 11-web-admin-panel-polish P02 | 5min | 2 tasks | 5 files |
 | Phase 12-typescript-strictness P02 | 4min | 2 tasks | 4 files |
 | Phase 12-typescript-strictness P01 | 6min | 2 tasks | 3 files |
+| Phase 12-typescript-strictness P03 | 8min | 2 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -86,6 +87,9 @@ Recent decisions affecting current work:
 - [Phase 12-01]: Used Prisma.RentalGetPayload with as const include for derived relation types
 - [Phase 12-01]: Exported types from service for controller declaration emit compatibility
 - [Phase 12-01]: Used 'in' operator for union type narrowing in controller
+- [Phase 12-03]: Created PortalReturnInspectionData instead of reusing VehicleInspection -- portal returnData has different fields
+- [Phase 12-03]: Used Resolver<FormValues> cast for zodResolver with refined Zod schemas instead of as any
+- [Phase 12-03]: Used RentalWithRelations interface extending RentalDto for typed relation access
 
 ### Pending Todos
 
@@ -97,6 +101,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-25T03:34:16Z
-Stopped at: Completed 12-01-PLAN.md
+Last session: 2026-03-25T03:35:40Z
+Stopped at: Completed 12-03-PLAN.md
 Resume file: None

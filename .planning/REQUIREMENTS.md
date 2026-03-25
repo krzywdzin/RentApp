@@ -33,8 +33,8 @@
 - [x] **TSFIX-02**: Contract service methods use typed parameters instead of any (toDto, rental, customer, vehicle params)
 - [x] **TSFIX-03**: Damage service uses typed DamagePin accessor instead of `pins as any` casts on Prisma JSON columns
 - [x] **TSFIX-04**: Portal controller uses typed PortalRequest interface instead of `@Req() req: any`
-- [ ] **TSFIX-05**: Web mutation hooks use specific input types (CreateVehicleInput, etc.) instead of Record<string, unknown>
-- [ ] **TSFIX-06**: Shared portal types replace `returnData: any | null` with typed DTO
+- [x] **TSFIX-05**: Web mutation hooks use specific input types (CreateVehicleInput, etc.) instead of Record<string, unknown>
+- [x] **TSFIX-06**: Shared portal types replace `returnData: any | null` with typed DTO
 
 ### Dependency Fixes (DEPS)
 
@@ -113,8 +113,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TSFIX-02 | Phase 12 | Complete |
 | TSFIX-03 | Phase 12 | Complete |
 | TSFIX-04 | Phase 12 | Complete |
-| TSFIX-05 | Phase 12 | Pending |
-| TSFIX-06 | Phase 12 | Pending |
+| TSFIX-05 | Phase 12 | Complete |
+| TSFIX-06 | Phase 12 | Complete |
 | DEPS-01 | Phase 13 | Pending |
 | DEPS-02 | Phase 13 | Pending |
 | DEPS-03 | Phase 13 | Pending |
