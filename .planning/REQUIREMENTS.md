@@ -38,9 +38,9 @@
 
 ### Dependency Fixes (DEPS)
 
-- [ ] **DEPS-01**: react-native-webview added as explicit dependency in mobile package.json
-- [ ] **DEPS-02**: Expo dependency versions aligned (expo-router uses tilde range, Sentry SDK version verified for SDK 54 compatibility)
-- [ ] **DEPS-03**: React version pins use tilde/caret ranges instead of exact pins where safe
+- [x] **DEPS-01**: react-native-webview added as explicit dependency in mobile package.json
+- [x] **DEPS-02**: Expo dependency versions aligned (expo-router uses tilde range, Sentry SDK version verified for SDK 54 compatibility)
+- [x] **DEPS-03**: React version pins use tilde/caret ranges instead of exact pins where safe
 
 ### Test Coverage (TEST)
 
@@ -115,9 +115,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TSFIX-04 | Phase 12 | Complete |
 | TSFIX-05 | Phase 12 | Complete |
 | TSFIX-06 | Phase 12 | Complete |
-| DEPS-01 | Phase 13 | Pending |
-| DEPS-02 | Phase 13 | Pending |
-| DEPS-03 | Phase 13 | Pending |
+| DEPS-01 | Phase 13 | Complete |
+| DEPS-02 | Phase 13 | Complete |
+| DEPS-03 | Phase 13 | Complete |
 | PERF-01 | Phase 13 | Pending |
 | PERF-02 | Phase 13 | Pending |
 | TEST-01 | Phase 14 | Pending |
