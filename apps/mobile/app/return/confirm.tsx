@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -10,6 +10,7 @@ import { useReturnDraftStore } from '@/stores/return-draft.store';
 import { formatMileage } from '@/lib/format';
 import { CHECKLIST_ITEMS } from '@/lib/constants';
 import { WizardStepper } from '@/components/WizardStepper';
+import { LoadingSkeleton } from '@/components/LoadingSkeleton';
 import { AppCard } from '@/components/AppCard';
 import { AppButton } from '@/components/AppButton';
 
@@ -24,7 +25,28 @@ export default function ReturnConfirmScreen() {
   const notes = useReturnDraftStore((s) => s.notes);
   const clearDraft = useReturnDraftStore((s) => s.clearDraft);
 
-  const { data: rental } = useRental(rentalId ?? '');
+  const { data: rental, isLoading } = useRental(rentalId ?? '');
+
+  useEffect(() => {
+    if (!rentalId) {
+      router.replace('/(tabs)/rentals');
+    }
+  }, [rentalId, router]);
+
+  if (!rentalId) return null;
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={s.safeArea}>
+        <View style={s.padWrap}>
+          <WizardStepper currentStep={5} totalSteps={5} />
+          <View style={{ marginTop: 16 }}>
+            <LoadingSkeleton variant="card" count={4} />
+          </View>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   const handoverMileage = rental?.vehicle?.mileage ?? 0;
   const distanceDriven =

@@ -8,6 +8,7 @@ import { useRental } from '@/hooks/use-rentals';
 import { useReturnDraftStore } from '@/stores/return-draft.store';
 import { formatMileage } from '@/lib/format';
 import { WizardStepper } from '@/components/WizardStepper';
+import { LoadingSkeleton } from '@/components/LoadingSkeleton';
 import { AppCard } from '@/components/AppCard';
 import { AppButton } from '@/components/AppButton';
 import { AppInput } from '@/components/AppInput';
@@ -18,7 +19,7 @@ export default function ReturnMileageScreen() {
   const rentalId = useReturnDraftStore((s) => s.rentalId);
   const draftMileage = useReturnDraftStore((s) => s.returnMileage);
   const updateDraft = useReturnDraftStore((s) => s.updateDraft);
-  const { data: rental } = useRental(rentalId ?? '');
+  const { data: rental, isLoading } = useRental(rentalId ?? '');
 
   const [mileageText, setMileageText] = useState(
     draftMileage != null ? String(draftMileage) : '',
@@ -31,6 +32,27 @@ export default function ReturnMileageScreen() {
       setMileageText(String(draftMileage));
     }
   }, [draftMileage]);
+
+  useEffect(() => {
+    if (!rentalId) {
+      router.replace('/(tabs)/rentals');
+    }
+  }, [rentalId, router]);
+
+  if (!rentalId) return null;
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={s.safeArea}>
+        <View style={s.padWrap}>
+          <WizardStepper currentStep={2} totalSteps={5} />
+          <View style={{ marginTop: 16 }}>
+            <LoadingSkeleton variant="card" count={3} />
+          </View>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   const handoverMileage = rental?.vehicle?.mileage ?? 0;
   const returnMileage = mileageText ? parseInt(mileageText, 10) : null;

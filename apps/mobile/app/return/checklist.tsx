@@ -18,6 +18,7 @@ export default function ReturnChecklistScreen() {
   const router = useRouter();
   const draftChecklist = useReturnDraftStore((s) => s.checklist);
   const updateDraft = useReturnDraftStore((s) => s.updateDraft);
+  const rentalId = useReturnDraftStore((s) => s.rentalId);
 
   const [checklist, setChecklist] = useState<ChecklistState>(() => {
     const initial: ChecklistState = {};
@@ -43,6 +44,14 @@ export default function ReturnChecklistScreen() {
       setChecklist(merged);
     }
   }, []);
+
+  useEffect(() => {
+    if (!rentalId) {
+      router.replace('/(tabs)/rentals');
+    }
+  }, [rentalId, router]);
+
+  if (!rentalId) return null;
 
   const toggleItem = (key: string) => {
     setChecklist((prev) => ({
