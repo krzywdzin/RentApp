@@ -8,9 +8,9 @@
 
 ### Mobile UX Polish (MOBUX)
 
-- [ ] **MOBUX-01**: All mobile list screens show loading skeletons while data is fetching (vehicle selection, return mileage, return confirm)
-- [ ] **MOBUX-02**: Customer search shows "type at least 2 characters" hint when query is empty, and a search-in-progress indicator while fetching
-- [ ] **MOBUX-03**: Rental detail screen shows error state with retry button when API request fails (instead of infinite skeleton)
+- [x] **MOBUX-01**: All mobile list screens show loading skeletons while data is fetching (vehicle selection, return mileage, return confirm)
+- [x] **MOBUX-02**: Customer search shows "type at least 2 characters" hint when query is empty, and a search-in-progress indicator while fetching
+- [x] **MOBUX-03**: Rental detail screen shows error state with retry button when API request fails (instead of infinite skeleton)
 - [x] **MOBUX-04**: Return wizard screens guard against missing rentalId with redirect to return start (prevent 0 km mileage bug)
 - [x] **MOBUX-05**: OfflineBanner is included in return wizard layout (not just tab layout)
 - [x] **MOBUX-06**: Dashboard greeting has fallback when user name is empty, and PDF open failure shows toast instead of silent catch
@@ -94,9 +94,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| MOBUX-01 | Phase 10 | Pending |
-| MOBUX-02 | Phase 10 | Pending |
-| MOBUX-03 | Phase 10 | Pending |
+| MOBUX-01 | Phase 10 | Complete |
+| MOBUX-02 | Phase 10 | Complete |
+| MOBUX-03 | Phase 10 | Complete |
 | MOBUX-04 | Phase 10 | Complete |
 | MOBUX-05 | Phase 10 | Complete |
 | MOBUX-06 | Phase 10 | Complete |
