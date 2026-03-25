@@ -8,26 +8,45 @@ System do zarządzania wypożyczalnią samochodów składający się z aplikacji
 
 Pracownik w terenie może w pełni obsłużyć wynajem — od wypełnienia umowy, przez zweryfikowanie uprawnień kierowcy, zrobienie zdjęć auta, po podpis klienta i wysyłkę PDF — bez papieru i bez powrotu do biura.
 
+## Current Milestone: v1.1 Quality, Polish & UX Improvements
+
+**Goal:** Improve code quality, UX polish, and test coverage across the entire monorepo — empty states, loading skeletons, TypeScript strictness, dependency fixes, and E2E tests.
+
+**Target features:**
+- Mobile UX polish — empty states, loading skeletons, better error messages
+- TypeScript strict mode / fix any type errors across monorepo
+- Fix dependency version mismatches (Expo SDK 54 compatibility)
+- Mobile screens polish — edge cases, missing states
+- Web admin panel polish — missing features, UX issues
+- E2E test coverage improvements
+- Performance improvements (building on Phase 9.1 work)
+
 ## Requirements
 
 ### Validated
 
-(None yet — ship to validate)
+- ✓ Interaktywna umowa cyfrowa z podpisem (rysik/palec) — v1.0
+- ✓ Generowanie PDF z gotowego wzoru umowy i wysyłka mailem — v1.0
+- ✓ Weryfikacja uprawnień kierowcy (CEPiK 2.0 API) — v1.0
+- ✓ Dokumentacja fotograficzna pojazdu (przed wynajmem, przy zwrocie, oznaczanie szkód) — v1.0
+- ✓ Panel admina z bazą danych i wyszukiwaniem — v1.0
+- ✓ Kalendarz wynajmów z alertami (mail + in-app) — v1.0
+- ✓ Integracja SMS (smsapi.pl) — v1.0
+- ✓ Przedłużanie najmu przez admina z automatycznym SMS — v1.0
+- ✓ Prosty panel klienta (podgląd umów, terminów, historii) — v1.0
+- ✓ Auth z audit trailem — v1.0
+- ✓ Aplikacja cross-platform dla pracowników (Android + iOS) — v1.0
+- ✓ Panel webowy admina (desktop) — v1.0
 
 ### Active
 
-- [ ] Interaktywna umowa cyfrowa z podpisem (rysik/palec)
-- [ ] Generowanie PDF z gotowego wzoru umowy i wysyłka mailem
-- [ ] Weryfikacja uprawnień kierowcy (CEPiK 2.0 API — do zbadania dostępność i koszty)
-- [ ] Dokumentacja fotograficzna pojazdu (przed wynajmem, przy zwrocie, oznaczanie szkód)
-- [ ] Panel admina z bazą danych i wyszukiwaniem (po rejestracji, nazwisku, etc.)
-- [ ] Kalendarz wynajmów z alertami (mail + in-app) o zbliżających się terminach
-- [ ] Integracja SMS (smsapi.pl) — przypomnienia o zwrocie, info o przedłużeniu
-- [ ] Przedłużanie najmu przez admina z automatycznym SMS do klienta
-- [ ] Prosty panel klienta (podgląd umów, terminów, historii) z instrukcją dostępu w mailu
-- [ ] Auth z audit trailem — identyfikacja kto (który pracownik) wykonał jaką akcję
-- [ ] Aplikacja cross-platform dla pracowników (Android + iOS)
-- [ ] Panel webowy admina (desktop)
+- [ ] Mobile UX polish — empty states, loading skeletons, error messages
+- [ ] TypeScript strict mode across monorepo
+- [ ] Expo SDK 54 dependency compatibility fixes
+- [ ] Mobile screens edge case handling
+- [ ] Web admin panel UX improvements
+- [ ] E2E test coverage
+- [ ] Performance optimizations
 
 ### Out of Scope
 
@@ -81,4 +100,4 @@ Pracownik w terenie może w pełni obsłużyć wynajem — od wypełnienia umowy
 | smsapi.pl jako provider SMS | Wymaganie biznesowe — polski dostawca, sprawdzone API | — Pending |
 
 ---
-*Last updated: 2026-03-23 after initialization*
+*Last updated: 2026-03-25 after v1.1 milestone start*
