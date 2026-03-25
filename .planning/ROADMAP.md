@@ -274,7 +274,11 @@ Plans:
   2. react-native-webview is listed as an explicit dependency in mobile package.json (not silently resolved from a transitive dependency)
   3. Contract list page loads in a single database query using a join/batch approach -- no N+1 per-rental fetch visible in query logs
   4. Customer and vehicle detail pages pass a filter parameter to the rentals API endpoint and receive only relevant rentals -- not all rentals in the system
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 13-01-PLAN.md -- Align Expo SDK 54 dependency versions, add react-native-webview, use tilde ranges
+- [ ] 13-02-PLAN.md -- Add GET /contracts list endpoint, add customerId/vehicleId filters to GET /rentals, update web hooks
 
 ### Phase 14: Test Coverage
 **Goal**: Critical UI paths have automated test coverage and the API enforces a minimum statement coverage threshold -- regressions in core screens and endpoints are caught before merge
@@ -307,5 +311,5 @@ v1.1: 10 -> 11 -> 12 -> 13 -> 14
 | 10. Mobile UX Polish | v1.1 | 3/3 | Complete | 2026-03-25 |
 | 11. Web Admin Panel Polish | 3/3 | Complete    | 2026-03-25 | 2026-03-25 |
 | 12. TypeScript Strictness | 3/3 | Complete    | 2026-03-25 | - |
-| 13. Dependencies & Performance | v1.1 | 0/? | Not started | - |
+| 13. Dependencies & Performance | v1.1 | 0/2 | Not started | - |
 | 14. Test Coverage | v1.1 | 0/? | Not started | - |
