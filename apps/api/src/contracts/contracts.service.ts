@@ -160,7 +160,9 @@ export class ContractsService {
     // 7. Upload damage sketch if provided
     let damageSketchKey: string | null = null;
     if (dto.damageSketchBase64) {
-      const buffer = Buffer.from(dto.damageSketchBase64, 'base64');
+      // Strip data URI prefix if present (e.g. "data:image/png;base64,")
+      const rawSketchBase64 = dto.damageSketchBase64.replace(/^data:image\/\w+;base64,/, '');
+      const buffer = Buffer.from(rawSketchBase64, 'base64');
       damageSketchKey = await this.storageService.upload(
         `contracts/${rental.id}/damage-sketch.png`,
         buffer,
@@ -219,7 +221,9 @@ export class ContractsService {
     }
 
     // 4. Upload signature to MinIO
-    const signatureBuffer = Buffer.from(dto.signatureBase64, 'base64');
+    // Strip data URI prefix if present (e.g. "data:image/png;base64,")
+    const rawSignatureBase64 = dto.signatureBase64.replace(/^data:image\/\w+;base64,/, '');
+    const signatureBuffer = Buffer.from(rawSignatureBase64, 'base64');
     const signatureKey = await this.storageService.upload(
       `contracts/${contract.rentalId}/signatures/${dto.signatureType}.png`,
       signatureBuffer,
