@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Quality, Polish & UX Improvements
-status: in-progress
-stopped_at: Completed 11-03-PLAN.md
-last_updated: "2026-03-25T03:13:37Z"
+status: completed
+stopped_at: Completed 11-02-PLAN.md
+last_updated: "2026-03-25T03:16:37.937Z"
 last_activity: 2026-03-25 -- Completed 11-03-PLAN.md (audit filters, error states, login design system)
 progress:
   total_phases: 5
@@ -51,6 +51,7 @@ Progress: [██████████] 100%
 | Phase 10-mobile-ux-polish P02 | 2min | 2 tasks | 5 files |
 | Phase 11-web-admin-panel-polish P01 | 3min | 2 tasks | 6 files |
 | Phase 11-web-admin-panel-polish P03 | 3min | 2 tasks | 7 files |
+| Phase 11-web-admin-panel-polish P02 | 5min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -76,6 +77,8 @@ Recent decisions affecting current work:
 - [Phase 11-01]: Reused setupToken pattern for admin-initiated password reset
 - [Phase 11-03]: Inline useUsersForFilter hook in filter-bar.tsx rather than shared hook
 - [Phase 11-03]: Used 'all' sentinel value for Select components (shadcn Select cannot have empty string values)
+- [Phase 11-02]: Used (as any) type assertions for vehicle/customer nested objects -- defer to Phase 12 types cleanup
+- [Phase 11-02]: Used z.input with superRefine for Zod+react-hook-form resolver type compatibility
 
 ### Pending Todos
 
@@ -87,6 +90,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-25T03:13:37Z
-Stopped at: Completed 11-03-PLAN.md
+Last session: 2026-03-25T03:16:37.934Z
+Stopped at: Completed 11-02-PLAN.md
 Resume file: None

@@ -19,11 +19,11 @@
 ### Web Admin Panel Polish (WEBUX)
 
 - [x] **WEBUX-01**: User management page shows list of existing users with edit, deactivate, and password reset actions
-- [ ] **WEBUX-02**: Rental detail "Umowa" tab loads and displays the actual contract data using useContractByRental hook
-- [ ] **WEBUX-03**: Rental list shows vehicle registration and customer name instead of truncated UUIDs
-- [ ] **WEBUX-04**: Edit rental form uses Zod validation with inline error messages (same pattern as create form)
+- [x] **WEBUX-02**: Rental detail "Umowa" tab loads and displays the actual contract data using useContractByRental hook
+- [x] **WEBUX-03**: Rental list shows vehicle registration and customer name instead of truncated UUIDs
+- [x] **WEBUX-04**: Edit rental form uses Zod validation with inline error messages (same pattern as create form)
 - [x] **WEBUX-05**: Audit page date filter is wired to the API query, and actor filter uses user dropdown instead of raw UUID input
-- [ ] **WEBUX-06**: Customer and vehicle detail rental tabs show Polish status labels and loading states
+- [x] **WEBUX-06**: Customer and vehicle detail rental tabs show Polish status labels and loading states
 - [x] **WEBUX-07**: Dashboard and contract list show error states when API requests fail
 - [x] **WEBUX-08**: Login page uses design system Input component instead of raw HTML input elements
 
@@ -102,11 +102,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MOBUX-06 | Phase 10 | Complete |
 | MOBUX-07 | Phase 10 | Complete |
 | WEBUX-01 | Phase 11 | Complete |
-| WEBUX-02 | Phase 11 | Pending |
-| WEBUX-03 | Phase 11 | Pending |
-| WEBUX-04 | Phase 11 | Pending |
+| WEBUX-02 | Phase 11 | Complete |
+| WEBUX-03 | Phase 11 | Complete |
+| WEBUX-04 | Phase 11 | Complete |
 | WEBUX-05 | Phase 11 | Complete |
-| WEBUX-06 | Phase 11 | Pending |
+| WEBUX-06 | Phase 11 | Complete |
 | WEBUX-07 | Phase 11 | Complete |
 | WEBUX-08 | Phase 11 | Complete |
 | TSFIX-01 | Phase 12 | Pending |
