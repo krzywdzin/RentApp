@@ -94,41 +94,41 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| MOBUX-01 | — | Pending |
-| MOBUX-02 | — | Pending |
-| MOBUX-03 | — | Pending |
-| MOBUX-04 | — | Pending |
-| MOBUX-05 | — | Pending |
-| MOBUX-06 | — | Pending |
-| MOBUX-07 | — | Pending |
-| WEBUX-01 | — | Pending |
-| WEBUX-02 | — | Pending |
-| WEBUX-03 | — | Pending |
-| WEBUX-04 | — | Pending |
-| WEBUX-05 | — | Pending |
-| WEBUX-06 | — | Pending |
-| WEBUX-07 | — | Pending |
-| WEBUX-08 | — | Pending |
-| TSFIX-01 | — | Pending |
-| TSFIX-02 | — | Pending |
-| TSFIX-03 | — | Pending |
-| TSFIX-04 | — | Pending |
-| TSFIX-05 | — | Pending |
-| TSFIX-06 | — | Pending |
-| DEPS-01 | — | Pending |
-| DEPS-02 | — | Pending |
-| DEPS-03 | — | Pending |
-| TEST-01 | — | Pending |
-| TEST-02 | — | Pending |
-| TEST-03 | — | Pending |
-| PERF-01 | — | Pending |
-| PERF-02 | — | Pending |
+| MOBUX-01 | Phase 10 | Pending |
+| MOBUX-02 | Phase 10 | Pending |
+| MOBUX-03 | Phase 10 | Pending |
+| MOBUX-04 | Phase 10 | Pending |
+| MOBUX-05 | Phase 10 | Pending |
+| MOBUX-06 | Phase 10 | Pending |
+| MOBUX-07 | Phase 10 | Pending |
+| WEBUX-01 | Phase 11 | Pending |
+| WEBUX-02 | Phase 11 | Pending |
+| WEBUX-03 | Phase 11 | Pending |
+| WEBUX-04 | Phase 11 | Pending |
+| WEBUX-05 | Phase 11 | Pending |
+| WEBUX-06 | Phase 11 | Pending |
+| WEBUX-07 | Phase 11 | Pending |
+| WEBUX-08 | Phase 11 | Pending |
+| TSFIX-01 | Phase 12 | Pending |
+| TSFIX-02 | Phase 12 | Pending |
+| TSFIX-03 | Phase 12 | Pending |
+| TSFIX-04 | Phase 12 | Pending |
+| TSFIX-05 | Phase 12 | Pending |
+| TSFIX-06 | Phase 12 | Pending |
+| DEPS-01 | Phase 13 | Pending |
+| DEPS-02 | Phase 13 | Pending |
+| DEPS-03 | Phase 13 | Pending |
+| PERF-01 | Phase 13 | Pending |
+| PERF-02 | Phase 13 | Pending |
+| TEST-01 | Phase 14 | Pending |
+| TEST-02 | Phase 14 | Pending |
+| TEST-03 | Phase 14 | Pending |
 
 **Coverage:**
 - v1.1 requirements: 29 total
-- Mapped to phases: 0
-- Unmapped: 29 ⚠️
+- Mapped to phases: 29
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-25*
-*Last updated: 2026-03-25 after initial definition*
+*Last updated: 2026-03-25 after roadmap creation*
