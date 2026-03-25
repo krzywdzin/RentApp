@@ -10,6 +10,7 @@ import {
   CalendarClock,
   FileText,
   Shield,
+  UserCog,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
@@ -24,6 +25,7 @@ const navItems = [
   { href: '/wynajmy', label: 'Wynajmy', icon: CalendarClock },
   { href: '/umowy', label: 'Umowy', icon: FileText },
   { href: '/audyt', label: 'Audyt', icon: Shield },
+  { href: '/uzytkownicy', label: 'Uzytkownicy', icon: UserCog },
 ];
 
 const STORAGE_KEY = 'sidebar-collapsed';
