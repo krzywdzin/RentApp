@@ -16,10 +16,11 @@ interface SignatureScreenProps {
 }
 
 const SIGNATURE_WEB_STYLE = `
-  .m-signature-pad { box-shadow: none; border: none; }
-  .m-signature-pad--body { border: none; }
+  body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
+  canvas { width: 100% !important; height: 100% !important; }
+  .m-signature-pad { box-shadow: none; border: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
+  .m-signature-pad--body { position: absolute; top: 0; left: 0; right: 0; bottom: 0; border: none; }
   .m-signature-pad--footer { display: none; margin: 0; padding: 0; }
-  body, html { margin: 0; padding: 0; }
 `;
 
 export function SignatureScreen({
@@ -89,6 +90,9 @@ export function SignatureScreen({
           maxWidth={3}
           backgroundColor="white"
           dotSize={3}
+          androidHardwareAccelerationDisabled={true}
+          trimWhitespace={false}
+          style={{ flex: 1 }}
         />
 
         {/* Loading overlay */}
@@ -152,6 +156,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#E4E4E7',
+    position: 'relative',
   },
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,
