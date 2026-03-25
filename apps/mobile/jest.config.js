@@ -2,7 +2,8 @@ module.exports = {
   preset: 'jest-expo',
   setupFiles: ['./src/test/setup.js'],
   transformIgnorePatterns: [
-    'node_modules/(?!((jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|@rentapp/shared|react-native-reanimated|react-native-gesture-handler|react-native-screens|react-native-safe-area-context|react-native-svg|react-native-toast-message|react-native-webview|react-native-signature-canvas|lucide-react-native|@gorhom/bottom-sheet|@tanstack/react-query|zustand|i18next|react-i18next|@hookform/resolvers|react-hook-form)/)',
+    '/node_modules/(?!(.pnpm|react-native|@react-native|@react-native-community|expo|@expo|@expo-google-fonts|react-navigation|@react-navigation|@sentry/react-native|native-base|@rentapp/shared|lucide-react-native|@gorhom/bottom-sheet|@tanstack/react-query|zustand|i18next|react-i18next|@hookform/resolvers|react-hook-form|react-native-toast-message|react-native-signature-canvas))',
+    '/node_modules/react-native-reanimated/plugin/',
   ],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
