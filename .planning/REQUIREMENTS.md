@@ -13,7 +13,7 @@
 - [ ] **MOBUX-03**: Rental detail screen shows error state with retry button when API request fails (instead of infinite skeleton)
 - [ ] **MOBUX-04**: Return wizard screens guard against missing rentalId with redirect to return start (prevent 0 km mileage bug)
 - [ ] **MOBUX-05**: OfflineBanner is included in return wizard layout (not just tab layout)
-- [ ] **MOBUX-06**: Dashboard greeting has fallback when user name is empty, and PDF open failure shows toast instead of silent catch
+- [x] **MOBUX-06**: Dashboard greeting has fallback when user name is empty, and PDF open failure shows toast instead of silent catch
 - [ ] **MOBUX-07**: Error messages use human-readable status labels instead of raw enum values (e.g. return status guard)
 
 ### Web Admin Panel Polish (WEBUX)
@@ -99,7 +99,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MOBUX-03 | Phase 10 | Pending |
 | MOBUX-04 | Phase 10 | Pending |
 | MOBUX-05 | Phase 10 | Pending |
-| MOBUX-06 | Phase 10 | Pending |
+| MOBUX-06 | Phase 10 | Complete |
 | MOBUX-07 | Phase 10 | Pending |
 | WEBUX-01 | Phase 11 | Pending |
 | WEBUX-02 | Phase 11 | Pending |
