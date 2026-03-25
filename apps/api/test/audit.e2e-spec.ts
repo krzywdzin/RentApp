@@ -6,10 +6,15 @@ import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { AuditService } from '../src/audit/audit.service';
 import { MailService } from '../src/mail/mail.service';
+import { StorageService } from '../src/storage/storage.service';
+import { PdfService } from '../src/contracts/pdf/pdf.service';
+import { SmsService } from '../src/notifications/sms/sms.service';
 import { UserRole } from '@rentapp/shared';
 import Redis from 'ioredis';
 
 const ARGON2_OPTIONS = { memoryCost: 32768, timeCost: 3, parallelism: 1 };
+
+jest.setTimeout(30000);
 
 describe('Audit (e2e)', () => {
   let app: INestApplication;
@@ -43,6 +48,12 @@ describe('Audit (e2e)', () => {
     })
       .overrideProvider(MailService)
       .useValue({ sendSetupPasswordEmail: jest.fn(), sendResetPasswordEmail: jest.fn() })
+      .overrideProvider(StorageService)
+      .useValue({ onModuleInit: jest.fn(), upload: jest.fn(), getPresignedDownloadUrl: jest.fn(), delete: jest.fn() })
+      .overrideProvider(PdfService)
+      .useValue({ onModuleInit: jest.fn(), onModuleDestroy: jest.fn(), generateContractPdf: jest.fn(), generateAnnexPdf: jest.fn() })
+      .overrideProvider(SmsService)
+      .useValue({ normalizePhone: jest.fn((p: string) => p), send: jest.fn() })
       .compile();
 
     app = moduleFixture.createNestApplication();
@@ -53,8 +64,28 @@ describe('Audit (e2e)', () => {
     auditService = app.get(AuditService);
     redis = new Redis(process.env.REDIS_URL!);
 
-    // Clean up from previous runs
+    // Force fresh DB connection to avoid stale cached plans after schema reset
+    try { await prisma.$executeRawUnsafe('DEALLOCATE ALL'); } catch {}
+    await prisma.$disconnect();
+    await prisma.$connect();
+
+    // Clean up from previous runs (full dependency order)
     await redis.flushdb();
+    await prisma.cepikVerification.deleteMany({});
+    await prisma.inAppNotification.deleteMany({});
+    await prisma.notification.deleteMany({});
+    await prisma.damageReport.deleteMany({});
+    await prisma.walkthroughPhoto.deleteMany({});
+    await prisma.photoWalkthrough.deleteMany({});
+    await prisma.contractSignature.deleteMany({});
+    await prisma.contractAnnex.deleteMany({});
+    await prisma.contract.deleteMany({});
+    await prisma.rental.deleteMany({});
+    await prisma.vehicleDocument.deleteMany({});
+    await prisma.vehicleInsurance.deleteMany({});
+    await prisma.vehicleInspection.deleteMany({});
+    await prisma.vehicle.deleteMany({});
+    await prisma.customer.deleteMany({});
     await prisma.auditLog.deleteMany({});
     await prisma.user.deleteMany({});
 
@@ -89,6 +120,21 @@ describe('Audit (e2e)', () => {
   });
 
   afterAll(async () => {
+    await prisma.cepikVerification.deleteMany({});
+    await prisma.inAppNotification.deleteMany({});
+    await prisma.notification.deleteMany({});
+    await prisma.damageReport.deleteMany({});
+    await prisma.walkthroughPhoto.deleteMany({});
+    await prisma.photoWalkthrough.deleteMany({});
+    await prisma.contractSignature.deleteMany({});
+    await prisma.contractAnnex.deleteMany({});
+    await prisma.contract.deleteMany({});
+    await prisma.rental.deleteMany({});
+    await prisma.vehicleDocument.deleteMany({});
+    await prisma.vehicleInsurance.deleteMany({});
+    await prisma.vehicleInspection.deleteMany({});
+    await prisma.vehicle.deleteMany({});
+    await prisma.customer.deleteMany({});
     await prisma.auditLog.deleteMany({});
     await prisma.user.deleteMany({});
     await redis.flushdb();

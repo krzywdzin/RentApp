@@ -78,12 +78,19 @@ describe('Alerts (e2e)', () => {
 
     prisma = app.get(PrismaService);
     redis = new Redis(process.env.REDIS_URL!);
+
+    // Force fresh DB connection to avoid stale cached plans after schema reset
+    try { await prisma.$executeRawUnsafe('DEALLOCATE ALL'); } catch {}
+    await prisma.$disconnect();
+    await prisma.$connect();
+
     await redis.flushdb();
 
-    // Clean up
+    // Clean up (full dependency order) -- do NOT delete alertConfig here,
+    // it was seeded by AlertConfigService.onModuleInit during app.init()
+    await prisma.cepikVerification.deleteMany({});
     await prisma.inAppNotification.deleteMany({});
     await prisma.notification.deleteMany({});
-    await prisma.alertConfig.deleteMany({});
     await prisma.damageReport.deleteMany({});
     await prisma.walkthroughPhoto.deleteMany({});
     await prisma.photoWalkthrough.deleteMany({});
@@ -140,7 +147,24 @@ describe('Alerts (e2e)', () => {
   });
 
   afterAll(async () => {
+    await prisma.cepikVerification.deleteMany({});
+    await prisma.inAppNotification.deleteMany({});
+    await prisma.notification.deleteMany({});
     await prisma.alertConfig.deleteMany({});
+    await prisma.damageReport.deleteMany({});
+    await prisma.walkthroughPhoto.deleteMany({});
+    await prisma.photoWalkthrough.deleteMany({});
+    await prisma.contractSignature.deleteMany({});
+    await prisma.contractAnnex.deleteMany({});
+    await prisma.contract.deleteMany({});
+    await prisma.rental.deleteMany({});
+    await prisma.vehicleDocument.deleteMany({});
+    await prisma.vehicleInsurance.deleteMany({});
+    await prisma.vehicleInspection.deleteMany({});
+    await prisma.vehicle.deleteMany({});
+    await prisma.customer.deleteMany({});
+    await prisma.auditLog.deleteMany({});
+    await prisma.user.deleteMany({});
     await redis.flushdb();
     await redis.quit();
     await app.close();
