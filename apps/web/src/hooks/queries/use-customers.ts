@@ -1,7 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
 import { toast } from 'sonner';
-import type { CustomerDto, CustomerSearchResultDto } from '@rentapp/shared';
+import type {
+  CustomerDto,
+  CustomerSearchResultDto,
+  CreateCustomerInput,
+  UpdateCustomerInput,
+} from '@rentapp/shared';
 
 export const customerKeys = {
   all: ['customers'] as const,
@@ -37,7 +42,7 @@ export function useSearchCustomers(query: string) {
 export function useCreateCustomer() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: Record<string, unknown>) =>
+    mutationFn: (data: CreateCustomerInput) =>
       apiClient<CustomerDto>('/customers', {
         method: 'POST',
         body: JSON.stringify(data),
@@ -55,7 +60,7 @@ export function useCreateCustomer() {
 export function useUpdateCustomer(id: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: Record<string, unknown>) =>
+    mutationFn: (data: UpdateCustomerInput) =>
       apiClient<CustomerDto>(`/customers/${id}`, {
         method: 'PATCH',
         body: JSON.stringify(data),

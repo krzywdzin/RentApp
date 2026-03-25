@@ -1,7 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
 import { toast } from 'sonner';
-import type { VehicleDto, VehicleStatus } from '@rentapp/shared';
+import type {
+  VehicleDto,
+  VehicleStatus,
+  CreateVehicleInput,
+  UpdateVehicleInput,
+} from '@rentapp/shared';
 
 export const vehicleKeys = {
   all: ['vehicles'] as const,
@@ -27,7 +32,7 @@ export function useVehicle(id: string) {
 export function useCreateVehicle() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: Record<string, unknown>) =>
+    mutationFn: (data: CreateVehicleInput) =>
       apiClient<VehicleDto>('/vehicles', {
         method: 'POST',
         body: JSON.stringify(data),
@@ -45,7 +50,7 @@ export function useCreateVehicle() {
 export function useUpdateVehicle(id: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: Record<string, unknown>) =>
+    mutationFn: (data: UpdateVehicleInput) =>
       apiClient<VehicleDto>(`/vehicles/${id}`, {
         method: 'PATCH',
         body: JSON.stringify(data),

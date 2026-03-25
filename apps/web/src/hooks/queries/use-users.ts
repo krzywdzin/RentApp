@@ -26,7 +26,13 @@ export function useUsers() {
 export function useUpdateUser() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: { name?: string; role?: string; isActive?: boolean } }) =>
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: { name?: string; role?: string; isActive?: boolean };
+    }) =>
       apiClient<UserDto>(`/users/${id}`, {
         method: 'PATCH',
         body: JSON.stringify(data),
