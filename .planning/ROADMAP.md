@@ -311,5 +311,5 @@ v1.1: 10 -> 11 -> 12 -> 13 -> 14
 | 10. Mobile UX Polish | v1.1 | 3/3 | Complete | 2026-03-25 |
 | 11. Web Admin Panel Polish | 3/3 | Complete    | 2026-03-25 | 2026-03-25 |
 | 12. TypeScript Strictness | 3/3 | Complete    | 2026-03-25 | - |
-| 13. Dependencies & Performance | 2/2 | Complete   | 2026-03-25 | - |
+| 13. Dependencies & Performance | 2/2 | Complete    | 2026-03-25 | - |
 | 14. Test Coverage | v1.1 | 0/? | Not started | - |
