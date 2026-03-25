@@ -18,7 +18,7 @@
 
 ### Web Admin Panel Polish (WEBUX)
 
-- [ ] **WEBUX-01**: User management page shows list of existing users with edit, deactivate, and password reset actions
+- [x] **WEBUX-01**: User management page shows list of existing users with edit, deactivate, and password reset actions
 - [ ] **WEBUX-02**: Rental detail "Umowa" tab loads and displays the actual contract data using useContractByRental hook
 - [ ] **WEBUX-03**: Rental list shows vehicle registration and customer name instead of truncated UUIDs
 - [ ] **WEBUX-04**: Edit rental form uses Zod validation with inline error messages (same pattern as create form)
@@ -101,7 +101,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MOBUX-05 | Phase 10 | Complete |
 | MOBUX-06 | Phase 10 | Complete |
 | MOBUX-07 | Phase 10 | Complete |
-| WEBUX-01 | Phase 11 | Pending |
+| WEBUX-01 | Phase 11 | Complete |
 | WEBUX-02 | Phase 11 | Pending |
 | WEBUX-03 | Phase 11 | Pending |
 | WEBUX-04 | Phase 11 | Pending |
