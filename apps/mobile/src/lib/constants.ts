@@ -15,14 +15,20 @@ export const RENTAL_STATUS_COLORS: Record<string, string> = {
 
 export const CHECKLIST_ITEMS = [
   { key: 'bodywork', label: 'Karoseria' },
-  { key: 'interior', label: 'Wnetrze' },
+  { key: 'interior', label: 'Wnętrze' },
   { key: 'tires', label: 'Opony' },
-  { key: 'lights', label: 'Oswietlenie' },
+  { key: 'lights', label: 'Oświetlenie' },
   { key: 'documents', label: 'Dokumenty' },
   { key: 'accessories', label: 'Akcesoria' },
-  { key: 'cleanliness', label: 'Czystosc' },
+  { key: 'cleanliness', label: 'Czystość' },
   { key: 'fuel', label: 'Paliwo' },
 ] as const;
+
+export const RENTAL_WIZARD_LABELS: string[] = ['Klient', 'Pojazd', 'Daty', 'Umowa', 'Zdjęcia', 'Podpisy'];
+export const DEFAULT_VAT_RATE = 23;
+export const VAT_MULTIPLIER = 1 + DEFAULT_VAT_RATE / 100; // 1.23
+export const ONE_DAY_MS = 86_400_000;
+export const UPCOMING_RETURN_THRESHOLD_DAYS = 3;
 
 export const SECURE_STORE_KEYS = {
   ACCESS_TOKEN: 'access_token',

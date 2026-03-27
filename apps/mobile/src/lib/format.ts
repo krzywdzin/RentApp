@@ -1,3 +1,5 @@
+import { DEFAULT_VAT_RATE } from './constants';
+
 /**
  * Format date as dd.MM.yyyy (Polish convention)
  */
@@ -36,7 +38,7 @@ export function formatCurrency(amountGrosze: number): string {
 /**
  * Format net amount in grosze to gross with 23% VAT
  */
-export function formatGross(netGrosze: number, vatRate = 23): string {
+export function formatGross(netGrosze: number, vatRate = DEFAULT_VAT_RATE): string {
   const gross = netGrosze * (1 + vatRate / 100);
   return formatCurrency(Math.round(gross));
 }

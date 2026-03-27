@@ -14,8 +14,7 @@ import { AppInput } from '@/components/AppInput';
 import { AppButton } from '@/components/AppButton';
 import { useRentalDraftStore } from '@/stores/rental-draft.store';
 import { formatDateTime, formatCurrency } from '@/lib/format';
-
-const WIZARD_LABELS = ['Klient', 'Pojazd', 'Daty', 'Umowa', 'Zdjecia', 'Podpisy'];
+import { RENTAL_WIZARD_LABELS, VAT_MULTIPLIER, ONE_DAY_MS } from '@/lib/constants';
 
 interface DatesFormValues {
   startDate: Date;
@@ -33,7 +32,7 @@ export default function DatesStep() {
     : new Date();
   const defaultEndDate = draft.endDate
     ? new Date(draft.endDate)
-    : new Date(Date.now() + 86400000);
+    : new Date(Date.now() + ONE_DAY_MS);
 
   const { control, handleSubmit, watch, setValue } = useForm<DatesFormValues>({
     defaultValues: {
@@ -56,9 +55,9 @@ export default function DatesStep() {
     const rateZloty = parseFloat(dailyRateStr) || 0;
     const rateGrosze = Math.round(rateZloty * 100);
     const diffMs = endDate.getTime() - startDate.getTime();
-    const days = Math.max(Math.ceil(diffMs / 86400000), 0);
+    const days = Math.max(Math.ceil(diffMs / ONE_DAY_MS), 0);
     const totalNetGrosze = rateGrosze * days;
-    const totalGrossGrosze = Math.round(totalNetGrosze * 1.23);
+    const totalGrossGrosze = Math.round(totalNetGrosze * VAT_MULTIPLIER);
 
     return {
       days,
@@ -75,7 +74,7 @@ export default function DatesStep() {
         setValue('startDate', date);
         // If end date is before new start, push it forward
         if (date >= watch('endDate')) {
-          setValue('endDate', new Date(date.getTime() + 86400000));
+          setValue('endDate', new Date(date.getTime() + ONE_DAY_MS));
         }
       }
     },
@@ -127,7 +126,7 @@ export default function DatesStep() {
       <WizardStepper
         currentStep={3}
         totalSteps={6}
-        labels={WIZARD_LABELS}
+        labels={RENTAL_WIZARD_LABELS}
       />
 
       <Text style={s.stepTitle}>

@@ -9,8 +9,7 @@ import { WizardStepper } from '@/components/WizardStepper';
 import { AppButton } from '@/components/AppButton';
 import { useRentalDraftStore } from '@/stores/rental-draft.store';
 import { formatDateTime, formatCurrency } from '@/lib/format';
-
-const WIZARD_LABELS = ['Klient', 'Pojazd', 'Daty', 'Umowa', 'Zdjecia', 'Podpisy'];
+import { RENTAL_WIZARD_LABELS, VAT_MULTIPLIER, ONE_DAY_MS } from '@/lib/constants';
 
 export default function ContractStep() {
   const { t } = useTranslation();
@@ -21,11 +20,11 @@ export default function ContractStep() {
     if (!draft.startDate || !draft.endDate) return 0;
     const diffMs =
       new Date(draft.endDate).getTime() - new Date(draft.startDate).getTime();
-    return Math.max(Math.ceil(diffMs / 86400000), 0);
+    return Math.max(Math.ceil(diffMs / ONE_DAY_MS), 0);
   })();
 
   const totalNetGrosze = (draft.dailyRateNet ?? 0) * days;
-  const totalGrossGrosze = Math.round(totalNetGrosze * 1.23);
+  const totalGrossGrosze = Math.round(totalNetGrosze * VAT_MULTIPLIER);
 
   const handleToggleRodo = useCallback(() => {
     if (draft.rodoConsent) {
@@ -51,7 +50,7 @@ export default function ContractStep() {
       <WizardStepper
         currentStep={4}
         totalSteps={6}
-        labels={WIZARD_LABELS}
+        labels={RENTAL_WIZARD_LABELS}
       />
 
       <Text style={s.stepTitle}>

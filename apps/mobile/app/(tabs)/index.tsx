@@ -22,6 +22,7 @@ import { StatusBadge } from '@/components/StatusBadge';
 import { EmptyState } from '@/components/EmptyState';
 import { LoadingSkeleton } from '@/components/LoadingSkeleton';
 import type { RentalWithRelations } from '@/api/rentals.api';
+import { UPCOMING_RETURN_THRESHOLD_DAYS } from '@/lib/constants';
 
 function isOverdue(rental: RentalWithRelations): boolean {
   if (rental.status !== 'ACTIVE' && rental.status !== 'EXTENDED') return false;
@@ -80,7 +81,7 @@ export default function DashboardScreen() {
       .filter(
         (r) =>
           (r.status === 'ACTIVE' || r.status === 'EXTENDED') &&
-          isDueWithinDays(r.endDate, 3) &&
+          isDueWithinDays(r.endDate, UPCOMING_RETURN_THRESHOLD_DAYS) &&
           !isOverdue(r),
       )
       .sort(

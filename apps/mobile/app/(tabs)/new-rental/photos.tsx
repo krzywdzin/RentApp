@@ -10,8 +10,7 @@ import Toast from 'react-native-toast-message';
 import { WizardStepper } from '@/components/WizardStepper';
 import { AppButton } from '@/components/AppButton';
 import { useRentalDraftStore } from '@/stores/rental-draft.store';
-
-const WIZARD_LABELS = ['Klient', 'Pojazd', 'Daty', 'Umowa', 'Zdjecia', 'Podpisy'];
+import { RENTAL_WIZARD_LABELS } from '@/lib/constants';
 
 interface PhotoPosition {
   key: string;
@@ -76,7 +75,7 @@ export default function PhotosStep() {
       <WizardStepper
         currentStep={5}
         totalSteps={6}
-        labels={WIZARD_LABELS}
+        labels={RENTAL_WIZARD_LABELS}
       />
 
       <Text style={s.stepTitle}>Zdjecia pojazdu</Text>

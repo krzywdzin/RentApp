@@ -14,8 +14,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { LoadingSkeleton } from '@/components/LoadingSkeleton';
 import { useRentalDraftStore } from '@/stores/rental-draft.store';
 import { useVehicles } from '@/hooks/use-vehicles';
-
-const WIZARD_LABELS = ['Klient', 'Pojazd', 'Daty', 'Umowa', 'Zdjecia', 'Podpisy'];
+import { RENTAL_WIZARD_LABELS } from '@/lib/constants';
 
 export default function VehicleStep() {
   const { t } = useTranslation();
@@ -61,7 +60,7 @@ export default function VehicleStep() {
   if (isLoading) {
     return (
       <SafeAreaView style={s.safeArea} edges={['top']}>
-        <WizardStepper currentStep={2} totalSteps={6} labels={WIZARD_LABELS} />
+        <WizardStepper currentStep={2} totalSteps={6} labels={RENTAL_WIZARD_LABELS} />
         <Text style={s.stepTitle}>{t('wizard.step2')}</Text>
         <View style={s.loadingWrap}>
           <LoadingSkeleton variant="list-item" count={6} />
@@ -75,7 +74,7 @@ export default function VehicleStep() {
       <WizardStepper
         currentStep={2}
         totalSteps={6}
-        labels={WIZARD_LABELS}
+        labels={RENTAL_WIZARD_LABELS}
       />
 
       <Text style={s.stepTitle}>
