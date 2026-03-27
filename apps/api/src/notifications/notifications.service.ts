@@ -81,6 +81,13 @@ export class NotificationsService {
       return;
     }
 
+    const { date, time } = formatDateWarsaw(newEndDate);
+    const message = extensionSms({
+      newReturnDate: date,
+      newReturnTime: time,
+      companyPhone: this.companyPhone,
+    });
+
     const notification = await this.prisma.notification.create({
       data: {
         type: 'EXTENSION',
@@ -91,19 +98,8 @@ export class NotificationsService {
         relatedEntityId: rentalId,
         status: 'PENDING',
         scheduledFor: new Date(),
+        message,
       },
-    });
-
-    const { date, time } = formatDateWarsaw(newEndDate);
-    const message = extensionSms({
-      newReturnDate: date,
-      newReturnTime: time,
-      companyPhone: this.companyPhone,
-    });
-
-    await this.prisma.notification.update({
-      where: { id: notification.id },
-      data: { message },
     });
 
     await this.smsQueue.add({
@@ -135,6 +131,13 @@ export class NotificationsService {
       return;
     }
 
+    const { date, time } = formatDateWarsaw(rental.endDate);
+    const message = returnReminderSms({
+      returnDate: date,
+      returnTime: time,
+      companyPhone: this.companyPhone,
+    });
+
     const notification = await this.prisma.notification.create({
       data: {
         type: 'RETURN_REMINDER',
@@ -145,19 +148,8 @@ export class NotificationsService {
         relatedEntityId: rental.id,
         status: 'PENDING',
         scheduledFor: new Date(),
+        message,
       },
-    });
-
-    const { date, time } = formatDateWarsaw(rental.endDate);
-    const message = returnReminderSms({
-      returnDate: date,
-      returnTime: time,
-      companyPhone: this.companyPhone,
-    });
-
-    await this.prisma.notification.update({
-      where: { id: notification.id },
-      data: { message },
     });
 
     await this.smsQueue.add({
@@ -192,6 +184,13 @@ export class NotificationsService {
       return;
     }
 
+    const { date, time } = formatDateWarsaw(rental.endDate);
+    const message = overdueSms({
+      returnDate: date,
+      returnTime: time,
+      companyPhone: this.companyPhone,
+    });
+
     const notification = await this.prisma.notification.create({
       data: {
         type: 'OVERDUE',
@@ -202,19 +201,8 @@ export class NotificationsService {
         relatedEntityId: rental.id,
         status: 'PENDING',
         scheduledFor: new Date(),
+        message,
       },
-    });
-
-    const { date, time } = formatDateWarsaw(rental.endDate);
-    const message = overdueSms({
-      returnDate: date,
-      returnTime: time,
-      companyPhone: this.companyPhone,
-    });
-
-    await this.prisma.notification.update({
-      where: { id: notification.id },
-      data: { message },
     });
 
     await this.smsQueue.add({
@@ -249,6 +237,9 @@ export class NotificationsService {
       return;
     }
 
+    const { subject, html } =
+      this.emailNotificationService.rentalConfirmationHtml(rental);
+
     const notification = await this.prisma.notification.create({
       data: {
         type: 'RENTAL_CONFIRMATION',
@@ -258,11 +249,9 @@ export class NotificationsService {
         relatedEntityId: rental.id,
         status: 'PENDING',
         scheduledFor: new Date(),
+        message: subject,
       },
     });
-
-    const { subject, html } =
-      this.emailNotificationService.rentalConfirmationHtml(rental);
 
     await this.emailQueue.add({
       notificationId: notification.id,

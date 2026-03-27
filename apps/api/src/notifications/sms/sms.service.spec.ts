@@ -12,29 +12,30 @@ jest.mock('smsapi', () => ({
 
 describe('SmsService', () => {
   let service: SmsService;
-  let smsapiInstance: any;
+
+  function createConfigValue(overrides: Record<string, string> = {}) {
+    const defaults: Record<string, string> = {
+      SMSAPI_TOKEN: 'test-token',
+      SMSAPI_TEST_MODE: 'false',
+      SMSAPI_SENDER_NAME: 'KITEK',
+    };
+    const merged = { ...defaults, ...overrides };
+    return {
+      get: jest.fn().mockImplementation((key: string, def?: string) => {
+        return merged[key] ?? def;
+      }),
+    };
+  }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         SmsService,
-        {
-          provide: ConfigService,
-          useValue: {
-            getOrThrow: jest.fn().mockReturnValue('test-token'),
-            get: jest.fn().mockImplementation((key: string, def?: string) => {
-              if (key === 'SMSAPI_TEST_MODE') return 'false';
-              if (key === 'SMSAPI_SENDER_NAME') return 'KITEK';
-              return def;
-            }),
-          },
-        },
+        { provide: ConfigService, useValue: createConfigValue() },
       ],
     }).compile();
 
     service = module.get<SmsService>(SmsService);
-    // Access the internal smsapi instance
-    smsapiInstance = (service as any).smsapi;
   });
 
   it('should normalize phone: strip +, spaces, dashes', () => {
@@ -48,6 +49,9 @@ describe('SmsService', () => {
 
   it('should send SMS via smsapi.pl SDK', async () => {
     const messageId = await service.send('+48605123456', 'Test message');
+    // Lazy init creates client on first send
+    const smsapiInstance = (service as any).smsapi;
+    expect(smsapiInstance).toBeDefined();
     expect(smsapiInstance.sms.sendSms).toHaveBeenCalledWith(
       '48605123456',
       'Test message',
@@ -56,29 +60,18 @@ describe('SmsService', () => {
     expect(messageId).toBe('sms-123');
   });
 
-  it('should pass test=1 when SMSAPI_TEST_MODE is true', async () => {
-    // Re-create service with test mode enabled
+  it('should pass test=true when SMSAPI_TEST_MODE is true', async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         SmsService,
-        {
-          provide: ConfigService,
-          useValue: {
-            getOrThrow: jest.fn().mockReturnValue('test-token'),
-            get: jest.fn().mockImplementation((key: string, def?: string) => {
-              if (key === 'SMSAPI_TEST_MODE') return 'true';
-              if (key === 'SMSAPI_SENDER_NAME') return 'KITEK';
-              return def;
-            }),
-          },
-        },
+        { provide: ConfigService, useValue: createConfigValue({ SMSAPI_TEST_MODE: 'true' }) },
       ],
     }).compile();
 
     const testService = module.get<SmsService>(SmsService);
-    const testSmsapi = (testService as any).smsapi;
-
     await testService.send('605123456', 'Test');
+
+    const testSmsapi = (testService as any).smsapi;
     expect(testSmsapi.sms.sendSms).toHaveBeenCalledWith(
       '48605123456',
       'Test',
@@ -88,6 +81,7 @@ describe('SmsService', () => {
 
   it('should use SMSAPI_SENDER_NAME as from field', async () => {
     await service.send('605123456', 'Test');
+    const smsapiInstance = (service as any).smsapi;
     expect(smsapiInstance.sms.sendSms).toHaveBeenCalledWith(
       expect.any(String),
       expect.any(String),
@@ -101,11 +95,28 @@ describe('SmsService', () => {
   });
 
   it('should throw on smsapi error', async () => {
+    // Trigger lazy init first
+    await service.send('605123456', 'Test');
+    const smsapiInstance = (service as any).smsapi;
     smsapiInstance.sms.sendSms.mockRejectedValueOnce(
       new Error('API Error'),
     );
     await expect(service.send('605123456', 'Test')).rejects.toThrow(
       'API Error',
     );
+  });
+
+  it('should return skipped when SMSAPI_TOKEN is not configured', async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        SmsService,
+        { provide: ConfigService, useValue: createConfigValue({ SMSAPI_TOKEN: '' }) },
+      ],
+    }).compile();
+
+    const noTokenService = module.get<SmsService>(SmsService);
+    const result = await noTokenService.send('605123456', 'Test');
+    expect(result).toBe('skipped');
+    expect((noTokenService as any).smsapi).toBeNull();
   });
 });

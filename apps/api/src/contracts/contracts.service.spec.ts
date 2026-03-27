@@ -108,6 +108,10 @@ describe('ContractsService', () => {
         findUnique: jest.fn(),
         count: jest.fn().mockResolvedValue(0),
       },
+      $transaction: jest.fn(async (fn: (tx: any) => Promise<any>) => {
+        // Pass a tx object that mirrors prisma's contract methods
+        return fn(prisma);
+      }),
     };
 
     pdfService = {
@@ -139,7 +143,20 @@ describe('ContractsService', () => {
         { provide: MailService, useValue: mailService },
         { provide: CustomersService, useValue: customersService },
         { provide: PortalService, useValue: { generatePortalToken: jest.fn().mockResolvedValue('https://portal-url') } },
-        { provide: ConfigService, useValue: { get: jest.fn() } },
+        {
+          provide: ConfigService,
+          useValue: {
+            get: jest.fn().mockImplementation((key: string, defaultValue?: string) => {
+              const configMap: Record<string, string> = {
+                COMPANY_NAME: 'KITEK',
+                COMPANY_OWNER: 'Pawel Romanowski',
+                COMPANY_ADDRESS: 'ul. Sieradzka 18, 87-100 Torun',
+                COMPANY_PHONE: '535 766 666 / 602 367 100',
+              };
+              return configMap[key] ?? defaultValue;
+            }),
+          },
+        },
       ],
     }).compile();
 
@@ -500,17 +517,6 @@ describe('ContractsService', () => {
         id: 'annex-1',
         contractId: 'contract-1',
         annexNumber: 1,
-        changes: {},
-        pdfKey: null,
-        pdfGeneratedAt: null,
-        emailSentAt: null,
-        createdAt: new Date(),
-      });
-      prisma.contractAnnex.update.mockResolvedValue({});
-      prisma.contractAnnex.findUnique.mockResolvedValue({
-        id: 'annex-1',
-        contractId: 'contract-1',
-        annexNumber: 1,
         changes: { newEndDate: '2026-03-15', oldEndDate: '2026-03-10T00:00:00.000Z' },
         pdfKey: 'contracts/rental-1/annexes/annex-1.pdf',
         pdfGeneratedAt: new Date(),
@@ -525,20 +531,15 @@ describe('ContractsService', () => {
 
       expect(result).toBeDefined();
       expect(result!.annexNumber).toBe(1);
+      // Verify single create call (no subsequent update)
+      expect(prisma.contractAnnex.create).toHaveBeenCalledTimes(1);
+      expect(prisma.contractAnnex.update).not.toHaveBeenCalled();
     });
 
-    it('generates annex PDF', async () => {
+    it('generates annex PDF before DB write', async () => {
       prisma.contract.findFirst.mockResolvedValue(mockContract);
       prisma.contractAnnex.count.mockResolvedValue(0);
       prisma.contractAnnex.create.mockResolvedValue({
-        id: 'annex-1',
-        contractId: 'contract-1',
-        annexNumber: 1,
-        changes: {},
-        createdAt: new Date(),
-      });
-      prisma.contractAnnex.update.mockResolvedValue({});
-      prisma.contractAnnex.findUnique.mockResolvedValue({
         id: 'annex-1',
         contractId: 'contract-1',
         annexNumber: 1,
@@ -555,20 +556,14 @@ describe('ContractsService', () => {
       });
 
       expect(pdfService.generateAnnexPdf).toHaveBeenCalled();
+      // PDF generated before create (no update needed)
+      expect(prisma.contractAnnex.update).not.toHaveBeenCalled();
     });
 
     it('emails annex PDF to customer', async () => {
       prisma.contract.findFirst.mockResolvedValue(mockContract);
       prisma.contractAnnex.count.mockResolvedValue(0);
       prisma.contractAnnex.create.mockResolvedValue({
-        id: 'annex-1',
-        contractId: 'contract-1',
-        annexNumber: 1,
-        changes: {},
-        createdAt: new Date(),
-      });
-      prisma.contractAnnex.update.mockResolvedValue({});
-      prisma.contractAnnex.findUnique.mockResolvedValue({
         id: 'annex-1',
         contractId: 'contract-1',
         annexNumber: 1,
