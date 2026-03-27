@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.1
 milestone_name: Fix All Audit Issues
 status: executing
-stopped_at: Completed 21-04-PLAN.md
-last_updated: "2026-03-27T22:19:58.387Z"
-last_activity: 2026-03-27 -- Completed 21-04 API safety bugs (retention guard, null checks, photo atomicity)
+stopped_at: Completed 21-02-PLAN.md
+last_updated: "2026-03-27T22:27:30.000Z"
+last_activity: 2026-03-27 -- Completed 21-02 mobile bug fixes (biometric logout, hydration guards, ErrorBoundary)
 progress:
   total_phases: 7
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 6
-  completed_plans: 4
+  completed_plans: 6
   percent: 67
 ---
 
@@ -25,17 +25,17 @@ See: .planning/PROJECT.md (updated 2026-03-27)
 
 ## Current Position
 
-Phase: 21 of 26 (Critical Bug Fixes)
-Plan: 3 of 4 complete (21-01, 21-03, 21-04 done; 21-02 pending)
+Phase: 21 of 26 (Critical Bug Fixes) -- COMPLETE
+Plan: 4 of 4 complete (21-01, 21-02, 21-03, 21-04 all done)
 Status: Executing
-Last activity: 2026-03-27 -- Completed 21-03 API reliability bugs
+Last activity: 2026-03-27 -- Completed 21-02 mobile bug fixes
 
-Progress: [███████░░░] 67%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 59 (37 v1.0 + 14 v1.1 + 7 v2.0 + 1 v2.1)
+- Total plans completed: 60 (37 v1.0 + 14 v1.1 + 7 v2.0 + 2 v2.1)
 - Phases completed: 19 + 1 inserted (9.1)
 
 ## Accumulated Context
@@ -61,6 +61,7 @@ Progress: [███████░░░] 67%
 - [Phase 21]: useRef idempotency guard for rental creation; useState lazy initializer over redundant useEffect
 - [Phase 21]: ACTIVE/EXTENDED/DRAFT as active rental statuses for retention guard (no PENDING/RESERVED in schema)
 - [Phase 21]: replacePhoto uses same S3 keys (overwrite) instead of new-key-then-delete pattern
+- [Phase 21]: useReturnDraftHasHydrated hook co-located in store file; React.Fragment key for ErrorBoundary remount
 
 ### Pending Todos
 
@@ -74,6 +75,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-27T22:21:32Z
-Stopped at: Completed 21-03-PLAN.md
+Last session: 2026-03-27T22:27:30Z
+Stopped at: Completed 21-02-PLAN.md
 Resume file: None

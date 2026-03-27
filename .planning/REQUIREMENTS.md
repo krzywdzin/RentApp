@@ -27,9 +27,9 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 - [x] **MBUG-02**: isSubmitting/isUploading flags are properly cleared in all code paths
 - [x] **MBUG-03**: useEffect dependencies are correct in return wizard (mileage, checklist screens)
 - [x] **MBUG-04**: SearchBar local state syncs when parent value prop changes
-- [ ] **MBUG-05**: Biometric logout awaits completion before setting isReady
-- [ ] **MBUG-06**: Return wizard navigation guard waits for Zustand hydration before firing
-- [ ] **MBUG-07**: ErrorBoundary retry increments key to force remount of child tree
+- [x] **MBUG-05**: Biometric logout awaits completion before setting isReady
+- [x] **MBUG-06**: Return wizard navigation guard waits for Zustand hydration before firing
+- [x] **MBUG-07**: ErrorBoundary retry increments key to force remount of child tree
 
 ### API Reliability
 
@@ -216,9 +216,9 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 | MBUG-02 | Phase 21 | Complete |
 | MBUG-03 | Phase 21 | Complete |
 | MBUG-04 | Phase 21 | Complete |
-| MBUG-05 | Phase 21 | Pending |
-| MBUG-06 | Phase 21 | Pending |
-| MBUG-07 | Phase 21 | Pending |
+| MBUG-05 | Phase 21 | Complete |
+| MBUG-06 | Phase 21 | Complete |
+| MBUG-07 | Phase 21 | Complete |
 | AREL-01 | Phase 21 | Complete |
 | AREL-02 | Phase 21 | Complete |
 | AREL-03 | Phase 21 | Complete |
