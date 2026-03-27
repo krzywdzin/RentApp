@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
@@ -58,6 +58,9 @@ export default function SignaturesStep() {
   const createContract = useCreateContract();
   const signContract = useSignContract();
 
+  // Guard against duplicate rental creation on rapid re-tap
+  const isCreatingRef = useRef(false);
+
   // Store rentalId and contractId across signatures
   const [rentalId, setRentalId] = useState<string | null>(null);
   const [contractId, setContractId] = useState<string | null>(null);
@@ -65,6 +68,10 @@ export default function SignaturesStep() {
   const currentStep = SIGNATURE_STEPS[currentIndex];
 
   const handleCreateRentalAndContract = useCallback(async () => {
+    if (isCreatingRef.current) return { rentalId: rentalId!, contractId: contractId! };
+    isCreatingRef.current = true;
+
+    try {
     // Create rental first
     const rental = await createRental.mutateAsync({
       vehicleId: draft.vehicleId!,
@@ -86,7 +93,11 @@ export default function SignaturesStep() {
     setContractId(contract.id);
 
     return { rentalId: rental.id, contractId: contract.id };
-  }, [createRental, createContract, draft]);
+    } catch (err) {
+      isCreatingRef.current = false;
+      throw err;
+    }
+  }, [createRental, createContract, draft, rentalId, contractId]);
 
   const handleSignatureConfirm = useCallback(
     async (base64Png: string) => {
@@ -211,6 +222,7 @@ export default function SignaturesStep() {
         }
       } finally {
         setIsUploading(false);
+        setIsSubmitting(false);
       }
     },
     [
