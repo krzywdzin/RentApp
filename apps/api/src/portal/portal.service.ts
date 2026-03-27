@@ -10,7 +10,7 @@ import * as argon2 from 'argon2';
 import * as crypto from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.service';
-import type { PortalRentalDto, PortalCustomerInfo } from '@rentapp/shared';
+import type { PortalRentalDto, PortalCustomerInfo, PortalReturnInspectionData } from '@rentapp/shared';
 
 @Injectable()
 export class PortalService {
@@ -149,7 +149,7 @@ export class PortalService {
         totalPriceGross: rental.totalPriceGross,
         vatRate: rental.vatRate,
         returnMileage: rental.returnMileage,
-        returnData: rental.returnData,
+        returnData: rental.returnData as PortalReturnInspectionData | null,
         contractId: contract?.id ?? null,
         contractNumber: contract?.contractNumber ?? null,
         contractPdfUrl,
@@ -214,7 +214,7 @@ export class PortalService {
       totalPriceGross: rental.totalPriceGross,
       vatRate: rental.vatRate,
       returnMileage: rental.returnMileage,
-      returnData: rental.returnData,
+      returnData: rental.returnData as PortalReturnInspectionData | null,
       contractId: contract?.id ?? null,
       contractNumber: contract?.contractNumber ?? null,
       contractPdfUrl,

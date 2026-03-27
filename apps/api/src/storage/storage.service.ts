@@ -9,15 +9,20 @@ import {
   HeadBucketCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import * as fs from 'fs/promises';
+import * as path from 'path';
 
 @Injectable()
 export class StorageService implements OnModuleInit {
   private readonly logger = new Logger(StorageService.name);
   private client: S3Client;
   private bucket: string;
+  private s3Available = false;
+  private localStoragePath: string;
 
   constructor(private config: ConfigService) {
     this.bucket = this.config.get<string>('S3_BUCKET', 'rentapp');
+    this.localStoragePath = path.join(process.cwd(), '.local-storage');
     this.client = new S3Client({
       endpoint: this.config.get<string>(
         'S3_ENDPOINT',
@@ -41,11 +46,18 @@ export class StorageService implements OnModuleInit {
         new HeadBucketCommand({ Bucket: this.bucket }),
       );
       this.logger.log(`Bucket "${this.bucket}" exists`);
-    } catch {
-      await this.client.send(
-        new CreateBucketCommand({ Bucket: this.bucket }),
-      );
-      this.logger.log(`Bucket "${this.bucket}" created`);
+      this.s3Available = true;
+    } catch (error: any) {
+      if (error?.name === 'NotFound' || error?.$metadata?.httpStatusCode === 404) {
+        await this.client.send(
+          new CreateBucketCommand({ Bucket: this.bucket }),
+        );
+        this.logger.log(`Bucket "${this.bucket}" created`);
+        this.s3Available = true;
+      } else {
+        this.logger.warn(`S3/MinIO unavailable — falling back to local filesystem storage`);
+        await fs.mkdir(this.localStoragePath, { recursive: true });
+      }
     }
   }
 
@@ -54,14 +66,20 @@ export class StorageService implements OnModuleInit {
     body: Buffer,
     contentType: string,
   ): Promise<string> {
-    await this.client.send(
-      new PutObjectCommand({
-        Bucket: this.bucket,
-        Key: key,
-        Body: body,
-        ContentType: contentType,
-      }),
-    );
+    if (this.s3Available) {
+      await this.client.send(
+        new PutObjectCommand({
+          Bucket: this.bucket,
+          Key: key,
+          Body: body,
+          ContentType: contentType,
+        }),
+      );
+    } else {
+      const filePath = path.join(this.localStoragePath, key);
+      await fs.mkdir(path.dirname(filePath), { recursive: true });
+      await fs.writeFile(filePath, body);
+    }
     return key;
   }
 
@@ -69,34 +87,47 @@ export class StorageService implements OnModuleInit {
     key: string,
     expiresIn = 3600,
   ): Promise<string> {
-    const command = new GetObjectCommand({
-      Bucket: this.bucket,
-      Key: key,
-    });
-    return getSignedUrl(this.client, command, { expiresIn });
+    if (this.s3Available) {
+      const command = new GetObjectCommand({
+        Bucket: this.bucket,
+        Key: key,
+      });
+      return getSignedUrl(this.client, command, { expiresIn });
+    }
+    // Local fallback: serve via API
+    return `/storage/${encodeURIComponent(key)}`;
   }
 
   async getBuffer(key: string): Promise<Buffer> {
-    const response = await this.client.send(
-      new GetObjectCommand({
-        Bucket: this.bucket,
-        Key: key,
-      }),
-    );
-    const stream = response.Body as NodeJS.ReadableStream;
-    const chunks: Buffer[] = [];
-    for await (const chunk of stream) {
-      chunks.push(Buffer.from(chunk));
+    if (this.s3Available) {
+      const response = await this.client.send(
+        new GetObjectCommand({
+          Bucket: this.bucket,
+          Key: key,
+        }),
+      );
+      const stream = response.Body as NodeJS.ReadableStream;
+      const chunks: Buffer[] = [];
+      for await (const chunk of stream) {
+        chunks.push(Buffer.from(chunk));
+      }
+      return Buffer.concat(chunks);
     }
-    return Buffer.concat(chunks);
+    const filePath = path.join(this.localStoragePath, key);
+    return fs.readFile(filePath);
   }
 
   async delete(key: string): Promise<void> {
-    await this.client.send(
-      new DeleteObjectCommand({
-        Bucket: this.bucket,
-        Key: key,
-      }),
-    );
+    if (this.s3Available) {
+      await this.client.send(
+        new DeleteObjectCommand({
+          Bucket: this.bucket,
+          Key: key,
+        }),
+      );
+    } else {
+      const filePath = path.join(this.localStoragePath, key);
+      await fs.unlink(filePath).catch(() => {});
+    }
   }
 }

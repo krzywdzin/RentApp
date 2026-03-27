@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -24,6 +25,7 @@ import type {
   CustomerDto,
 } from '@rentapp/shared';
 import { ContractStatus } from '@rentapp/shared';
+import type { ContractSignatureDto } from '@rentapp/shared';
 import type { ContractPdfData } from './pdf/pdf.service';
 
 const CONTRACT_INCLUDE = {
@@ -323,34 +325,43 @@ export class ContractsService {
         damageSketch = sketchBuffer.toString('base64');
       }
 
-      // c. Generate PDF
-      const pdfData: ContractPdfData = {
-        ...frozenData,
-        contractNumber: contract.contractNumber,
-        signatures: {
-          employeePage1: signatures['employeePage1']
-            ? `data:image/png;base64,${signatures['employeePage1']}`
+      // c. Generate PDF (wrapped in try/catch to avoid crashing the process)
+      let pdfBuffer: Buffer;
+      try {
+        const pdfData: ContractPdfData = {
+          ...frozenData,
+          contractNumber: contract.contractNumber,
+          signatures: {
+            employeePage1: signatures['employeePage1']
+              ? `data:image/png;base64,${signatures['employeePage1']}`
+              : undefined,
+            customerPage1: signatures['customerPage1']
+              ? `data:image/png;base64,${signatures['customerPage1']}`
+              : undefined,
+            employeePage2: signatures['employeePage2']
+              ? `data:image/png;base64,${signatures['employeePage2']}`
+              : undefined,
+            customerPage2: signatures['customerPage2']
+              ? `data:image/png;base64,${signatures['customerPage2']}`
+              : undefined,
+          },
+          damageSketch: damageSketch
+            ? `data:image/png;base64,${damageSketch}`
             : undefined,
-          customerPage1: signatures['customerPage1']
-            ? `data:image/png;base64,${signatures['customerPage1']}`
-            : undefined,
-          employeePage2: signatures['employeePage2']
-            ? `data:image/png;base64,${signatures['employeePage2']}`
-            : undefined,
-          customerPage2: signatures['customerPage2']
-            ? `data:image/png;base64,${signatures['customerPage2']}`
-            : undefined,
-        },
-        damageSketch: damageSketch
-          ? `data:image/png;base64,${damageSketch}`
-          : undefined,
-        rodoConsent: {
-          accepted: !!contract.rodoConsentAt,
-          timestamp: contract.rodoConsentAt?.toISOString() ?? null,
-        },
-      };
+          rodoConsent: {
+            accepted: !!contract.rodoConsentAt,
+            timestamp: contract.rodoConsentAt?.toISOString() ?? null,
+          },
+        };
 
-      const pdfBuffer = await this.pdfService.generateContractPdf(pdfData);
+        pdfBuffer = await this.pdfService.generateContractPdf(pdfData);
+      } catch (pdfError: any) {
+        this.logger.error(
+          `PDF generation failed for contract ${contract.contractNumber}: ${pdfError.message}`,
+          pdfError.stack,
+        );
+        throw new InternalServerErrorException('PDF generation failed');
+      }
 
       // d. Upload PDF to MinIO
       const pdfKey = `contracts/${contract.rentalId}/${contract.id}.pdf`;
@@ -408,6 +419,18 @@ export class ContractsService {
         where: { id: contractId },
         data: updateData,
       });
+
+      // g. Activate the rental only if it is still in DRAFT status (idempotent guard)
+      const rental = await this.prisma.rental.findUnique({
+        where: { id: contract.rentalId },
+        select: { status: true },
+      });
+      if (rental && rental.status === 'DRAFT') {
+        await this.prisma.rental.update({
+          where: { id: contract.rentalId },
+          data: { status: 'ACTIVE' },
+        });
+      }
     } else if (contract.status === 'DRAFT') {
       // Update to PARTIALLY_SIGNED
       await this.prisma.contract.update({
@@ -498,7 +521,7 @@ export class ContractsService {
       data: {
         contractId: contract.id,
         annexNumber,
-        changes,
+        changes: changes as unknown as Prisma.InputJsonValue,
       },
     });
 
@@ -593,17 +616,17 @@ export class ContractsService {
       pdfGeneratedAt: contract.pdfGeneratedAt?.toISOString() ?? null,
       emailSentAt: contract.emailSentAt?.toISOString() ?? null,
       emailSentTo: contract.emailSentTo,
-      signatures: (contract.signatures ?? []).map((s: ContractSignature) => ({
+      signatures: (contract.signatures ?? []).map((s: ContractSignature): ContractSignatureDto => ({
         id: s.id,
         contractId: s.contractId,
-        signatureType: s.signatureType,
-        signerRole: s.signerRole,
+        signatureType: s.signatureType as ContractSignatureDto['signatureType'],
+        signerRole: s.signerRole as ContractSignatureDto['signerRole'],
         signerId: s.signerId,
         signatureKey: s.signatureKey,
         contentHash: s.contentHash,
         deviceInfo: s.deviceInfo,
         ipAddress: s.ipAddress,
-        signedAt: s.signedAt?.toISOString() ?? s.signedAt,
+        signedAt: s.signedAt instanceof Date ? s.signedAt.toISOString() : String(s.signedAt),
       })),
       annexes: (contract.annexes ?? []).map((a: ContractAnnex) => this.toAnnexDto(a)),
       createdAt: contract.createdAt?.toISOString() ?? contract.createdAt,

@@ -1,11 +1,21 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { json, urlencoded } from 'express';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
+import { validateEnvironment } from './common/env.validation';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 
 async function bootstrap() {
+  // Validate environment BEFORE creating the app
+  validateEnvironment();
+
   const app = await NestFactory.create(AppModule);
+  const logger = new Logger('Bootstrap');
+
+  // Enable graceful shutdown hooks (SIGTERM, SIGINT)
+  app.enableShutdownHooks();
+  logger.log('Shutdown hooks enabled — will shut down gracefully on SIGTERM/SIGINT');
 
   // Increase body size limit for signature PNG base64 uploads
   app.use(json({ limit: '10mb' }));
@@ -19,18 +29,23 @@ async function bootstrap() {
     }),
   );
 
-  app.use(helmet());
+  app.useGlobalFilters(new AllExceptionsFilter());
+
+  app.use(helmet({ contentSecurityPolicy: false }));
+
+  const corsOrigins = (process.env.CORS_ORIGINS || 'http://localhost:3001')
+    .split(',')
+    .map(s => s.trim())
+    .filter(Boolean);
+
   app.enableCors({
-    origin: [
-      process.env.WEB_URL ?? 'http://localhost:3001',
-      'http://192.168.0.26:3001',
-    ],
+    origin: corsOrigins,
     credentials: true,
   });
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
-  console.log(`Application is running on: http://localhost:${port}`);
+  logger.log(`Application is running on: http://localhost:${port}`);
 }
 
 bootstrap();
