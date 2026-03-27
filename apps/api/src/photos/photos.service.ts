@@ -184,47 +184,53 @@ export class PhotosService {
       returnWt.photos.forEach((p: WalkthroughPhoto) => allPositions.add(p.position));
     }
 
-    const pairs: PhotoComparisonPair[] = [];
+    const positions = Array.from(allPositions);
 
-    for (const position of allPositions) {
-      const handoverPhoto = handoverWt?.photos?.find(
-        (p: WalkthroughPhoto) => p.position === position,
-      );
-      const returnPhoto = returnWt?.photos?.find(
-        (p: WalkthroughPhoto) => p.position === position,
-      );
+    // Generate all presigned URLs in parallel instead of sequentially
+    const pairs = await Promise.all(
+      positions.map(async (position) => {
+        const handoverPhoto = handoverWt?.photos?.find(
+          (p: WalkthroughPhoto) => p.position === position,
+        );
+        const returnPhoto = returnWt?.photos?.find(
+          (p: WalkthroughPhoto) => p.position === position,
+        );
 
-      let handover: PhotoComparisonPair['handover'] = null;
-      let returnData: PhotoComparisonPair['return'] = null;
-
-      if (handoverPhoto) {
-        handover = {
-          photoUrl: await this.storage.getPresignedDownloadUrl(
-            handoverPhoto.photoKey,
-          ),
-          thumbnailUrl: await this.storage.getPresignedDownloadUrl(
-            handoverPhoto.thumbnailKey,
-          ),
+        // Collect all URL promises for this position (up to 4)
+        const urlPromises: Record<string, Promise<string> | null> = {
+          handoverPhotoUrl: handoverPhoto
+            ? this.storage.getPresignedDownloadUrl(handoverPhoto.photoKey)
+            : null,
+          handoverThumbUrl: handoverPhoto
+            ? this.storage.getPresignedDownloadUrl(handoverPhoto.thumbnailKey)
+            : null,
+          returnPhotoUrl: returnPhoto
+            ? this.storage.getPresignedDownloadUrl(returnPhoto.photoKey)
+            : null,
+          returnThumbUrl: returnPhoto
+            ? this.storage.getPresignedDownloadUrl(returnPhoto.thumbnailKey)
+            : null,
         };
-      }
 
-      if (returnPhoto) {
-        returnData = {
-          photoUrl: await this.storage.getPresignedDownloadUrl(
-            returnPhoto.photoKey,
-          ),
-          thumbnailUrl: await this.storage.getPresignedDownloadUrl(
-            returnPhoto.thumbnailKey,
-          ),
-        };
-      }
+        const [handoverPhotoUrl, handoverThumbUrl, returnPhotoUrl, returnThumbUrl] =
+          await Promise.all([
+            urlPromises.handoverPhotoUrl,
+            urlPromises.handoverThumbUrl,
+            urlPromises.returnPhotoUrl,
+            urlPromises.returnThumbUrl,
+          ]);
 
-      pairs.push({
-        position,
-        handover,
-        return: returnData,
-      });
-    }
+        const handover: PhotoComparisonPair['handover'] = handoverPhoto
+          ? { photoUrl: handoverPhotoUrl!, thumbnailUrl: handoverThumbUrl! }
+          : null;
+
+        const returnData: PhotoComparisonPair['return'] = returnPhoto
+          ? { photoUrl: returnPhotoUrl!, thumbnailUrl: returnThumbUrl! }
+          : null;
+
+        return { position, handover, return: returnData } as PhotoComparisonPair;
+      }),
+    );
 
     return pairs;
   }

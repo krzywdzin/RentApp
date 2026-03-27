@@ -19,6 +19,7 @@ import { ExtendRentalDto } from './dto/extend-rental.dto';
 import { ReturnRentalDto } from './dto/return-rental.dto';
 import { CalendarQueryDto } from './dto/calendar-query.dto';
 import { RollbackRentalDto } from './dto/rollback-rental.dto';
+import { RentalsQueryDto } from './dto/rentals-query.dto';
 import { validateTransition } from './constants/rental-transitions';
 import { calculatePricing } from './utils/pricing';
 
@@ -141,7 +142,8 @@ export class RentalsService {
     return rental;
   }
 
-  async findAll(status?: RentalStatus, customerId?: string, vehicleId?: string): Promise<RentalWithRelations[]> {
+  async findAll(query: RentalsQueryDto): Promise<{ data: RentalWithRelations[]; total: number; page: number; limit: number }> {
+    const { page = 1, limit = 20, status, customerId, vehicleId } = query;
     const where: Prisma.RentalWhereInput = {};
     if (status) {
       where.status = status;
@@ -153,11 +155,18 @@ export class RentalsService {
       where.vehicleId = vehicleId;
     }
 
-    return this.prisma.rental.findMany({
-      where,
-      include: RENTAL_INCLUDE,
-      orderBy: { startDate: 'desc' },
-    });
+    const [data, total] = await Promise.all([
+      this.prisma.rental.findMany({
+        where,
+        include: RENTAL_INCLUDE,
+        orderBy: { startDate: 'desc' },
+        take: limit,
+        skip: (page - 1) * limit,
+      }),
+      this.prisma.rental.count({ where }),
+    ]);
+
+    return { data, total, page, limit };
   }
 
   async findOne(id: string): Promise<RentalWithRelations> {

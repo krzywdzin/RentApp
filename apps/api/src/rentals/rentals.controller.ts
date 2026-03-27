@@ -12,7 +12,7 @@ import {
   Res,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { UserRole, RentalStatus } from '@rentapp/shared';
+import { UserRole } from '@rentapp/shared';
 import { Roles } from '../common/decorators/roles.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { RentalsService } from './rentals.service';
@@ -22,6 +22,7 @@ import { ExtendRentalDto } from './dto/extend-rental.dto';
 import { ReturnRentalDto } from './dto/return-rental.dto';
 import { CalendarQueryDto } from './dto/calendar-query.dto';
 import { RollbackRentalDto } from './dto/rollback-rental.dto';
+import { RentalsQueryDto } from './dto/rentals-query.dto';
 
 @Controller('rentals')
 export class RentalsController {
@@ -56,12 +57,8 @@ export class RentalsController {
 
   @Get()
   @Roles(UserRole.ADMIN, UserRole.EMPLOYEE)
-  async findAll(
-    @Query('status') status?: RentalStatus,
-    @Query('customerId') customerId?: string,
-    @Query('vehicleId') vehicleId?: string,
-  ) {
-    return this.rentalsService.findAll(status, customerId, vehicleId);
+  async findAll(@Query() query: RentalsQueryDto) {
+    return this.rentalsService.findAll(query);
   }
 
   @Get('calendar')

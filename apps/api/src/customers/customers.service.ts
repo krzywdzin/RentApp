@@ -14,6 +14,7 @@ import {
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { SearchCustomerDto } from './dto/search-customer.dto';
+import { CustomersQueryDto } from './dto/customers-query.dto';
 import {
   CustomerDto,
   CustomerSearchResultDto,
@@ -81,10 +82,20 @@ export class CustomersService {
     return this.toDto(customer);
   }
 
-  async findAll(includeArchived = false): Promise<CustomerDto[]> {
+  async findAll(query: CustomersQueryDto): Promise<{ data: CustomerDto[]; total: number; page: number; limit: number }> {
+    const { page = 1, limit = 20, includeArchived = false } = query;
     const where = includeArchived ? {} : { isArchived: false };
-    const customers = await this.prisma.customer.findMany({ where });
-    return customers.map((c) => this.toDto(c));
+
+    const [customers, total] = await Promise.all([
+      this.prisma.customer.findMany({
+        where,
+        take: limit,
+        skip: (page - 1) * limit,
+      }),
+      this.prisma.customer.count({ where }),
+    ]);
+
+    return { data: customers.map((c) => this.toDto(c)), total, page, limit };
   }
 
   async findOne(id: string): Promise<CustomerDto> {

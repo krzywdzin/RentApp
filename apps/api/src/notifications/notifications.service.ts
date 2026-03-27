@@ -283,53 +283,58 @@ export class NotificationsService {
       where: { role: 'ADMIN', isActive: true },
     });
 
-    for (const admin of admins) {
-      const notification = await this.prisma.notification.create({
-        data: {
-          type: alertType,
-          channel: 'EMAIL',
-          recipientId: admin.id,
-          recipientEmail: admin.email,
-          relatedEntityType: 'Vehicle',
-          relatedEntityId: vehicleId,
-          status: 'PENDING',
-          scheduledFor: new Date(),
-        },
-      });
+    const { subject, html } =
+      alertType === 'INSURANCE_EXPIRY'
+        ? this.emailNotificationService.insuranceExpiryHtml(
+            vehicle,
+            expiryDate,
+            daysUntil,
+          )
+        : this.emailNotificationService.inspectionExpiryHtml(
+            vehicle,
+            expiryDate,
+            daysUntil,
+          );
 
-      const { subject, html } =
-        alertType === 'INSURANCE_EXPIRY'
-          ? this.emailNotificationService.insuranceExpiryHtml(
-              vehicle,
-              expiryDate,
-              daysUntil,
-            )
-          : this.emailNotificationService.inspectionExpiryHtml(
-              vehicle,
-              expiryDate,
-              daysUntil,
-            );
+    const titlePrefix =
+      alertType === 'INSURANCE_EXPIRY' ? 'Ubezpieczenie' : 'Przeglad';
+    const now = new Date();
 
-      await this.emailQueue.add({
-        notificationId: notification.id,
-        to: admin.email,
-        subject,
-        html,
-      });
+    // Batch: create all notifications and in-app notifications in parallel per admin
+    await Promise.all(
+      admins.map(async (admin) => {
+        const [notification] = await Promise.all([
+          this.prisma.notification.create({
+            data: {
+              type: alertType,
+              channel: 'EMAIL',
+              recipientId: admin.id,
+              recipientEmail: admin.email,
+              relatedEntityType: 'Vehicle',
+              relatedEntityId: vehicleId,
+              status: 'PENDING',
+              scheduledFor: now,
+            },
+          }),
+          this.prisma.inAppNotification.create({
+            data: {
+              userId: admin.id,
+              title: `${titlePrefix} wygasa - ${vehicle.registration}`,
+              body: `${titlePrefix} pojazdu ${vehicle.registration} (${vehicle.make} ${vehicle.model}) wygasa za ${daysUntil} dni.`,
+              type: alertType,
+              linkUrl: `/vehicles/${vehicleId}`,
+            },
+          }),
+        ]);
 
-      // Create in-app notification
-      const titlePrefix =
-        alertType === 'INSURANCE_EXPIRY' ? 'Ubezpieczenie' : 'Przeglad';
-      await this.prisma.inAppNotification.create({
-        data: {
-          userId: admin.id,
-          title: `${titlePrefix} wygasa - ${vehicle.registration}`,
-          body: `${titlePrefix} pojazdu ${vehicle.registration} (${vehicle.make} ${vehicle.model}) wygasa za ${daysUntil} dni.`,
-          type: alertType,
-          linkUrl: `/vehicles/${vehicleId}`,
-        },
-      });
-    }
+        await this.emailQueue.add({
+          notificationId: notification.id,
+          to: admin.email,
+          subject,
+          html,
+        });
+      }),
+    );
 
     this.logger.log(
       `${alertType} alerts enqueued for vehicle ${vehicleId} (${daysUntil} days)`,

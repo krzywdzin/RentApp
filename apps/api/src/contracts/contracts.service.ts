@@ -16,6 +16,7 @@ import { CustomersService } from '../customers/customers.service';
 import { PortalService } from '../portal/portal.service';
 import { CreateContractDto } from './dto/create-contract.dto';
 import { SignContractDto } from './dto/sign-contract.dto';
+import { ContractsQueryDto } from './dto/contracts-query.dto';
 import type {
   ContractDto,
   ContractAnnexDto,
@@ -467,12 +468,20 @@ export class ContractsService {
     return this.toDto(updated!);
   }
 
-  async findAll(): Promise<ContractDto[]> {
-    const contracts = await this.prisma.contract.findMany({
-      include: CONTRACT_INCLUDE,
-      orderBy: { createdAt: 'desc' },
-    });
-    return contracts.map((c) => this.toDto(c));
+  async findAll(query: ContractsQueryDto): Promise<{ data: ContractDto[]; total: number; page: number; limit: number }> {
+    const { page = 1, limit = 20 } = query;
+
+    const [contracts, total] = await Promise.all([
+      this.prisma.contract.findMany({
+        include: CONTRACT_INCLUDE,
+        orderBy: { createdAt: 'desc' },
+        take: limit,
+        skip: (page - 1) * limit,
+      }),
+      this.prisma.contract.count(),
+    ]);
+
+    return { data: contracts.map((c) => this.toDto(c)), total, page, limit };
   }
 
   async findOne(id: string): Promise<ContractDto> {
@@ -561,7 +570,7 @@ export class ContractsService {
           newDailyRateNet: data.newDailyRateNet,
           newTotalPriceNet: data.newTotalPriceNet,
           newTotalPriceGross: data.newTotalPriceNet
-            ? Math.round(data.newTotalPriceNet * 1.23)
+            ? Math.round(data.newTotalPriceNet * (1 + frozenData.rental.vatRate / 100))
             : undefined,
         },
         createdAt: new Date().toISOString(),

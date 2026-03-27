@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Body,
+  Query,
   Req,
   Res,
   ParseUUIDPipe,
@@ -19,6 +20,7 @@ import { ContractsService } from './contracts.service';
 import { StorageService } from '../storage/storage.service';
 import { CreateContractDto } from './dto/create-contract.dto';
 import { SignContractDto } from './dto/sign-contract.dto';
+import { ContractsQueryDto } from './dto/contracts-query.dto';
 
 @Controller('contracts')
 export class ContractsController {
@@ -78,8 +80,8 @@ export class ContractsController {
 
   @Get()
   @Roles(UserRole.ADMIN, UserRole.EMPLOYEE)
-  async findAll() {
-    return this.contractsService.findAll();
+  async findAll(@Query() query: ContractsQueryDto) {
+    return this.contractsService.findAll(query);
   }
 
   @Get(':id')

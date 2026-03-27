@@ -7,8 +7,6 @@ import {
   Body,
   Query,
   ParseUUIDPipe,
-  ParseBoolPipe,
-  DefaultValuePipe,
 } from '@nestjs/common';
 import { UserRole } from '@rentapp/shared';
 import { Roles } from '../common/decorators/roles.decorator';
@@ -16,6 +14,7 @@ import { CustomersService } from './customers.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { SearchCustomerDto } from './dto/search-customer.dto';
+import { CustomersQueryDto } from './dto/customers-query.dto';
 
 @Controller('customers')
 @Roles(UserRole.ADMIN, UserRole.EMPLOYEE)
@@ -33,11 +32,8 @@ export class CustomersController {
   }
 
   @Get()
-  async findAll(
-    @Query('includeArchived', new DefaultValuePipe(false), ParseBoolPipe)
-    includeArchived: boolean,
-  ) {
-    return this.customersService.findAll(includeArchived);
+  async findAll(@Query() query: CustomersQueryDto) {
+    return this.customersService.findAll(query);
   }
 
   @Get(':id')
