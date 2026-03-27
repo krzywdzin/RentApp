@@ -62,12 +62,12 @@ export default function VehicleDetailPage() {
       />
 
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="flex min-w-0 flex-1 items-center gap-3">
           <h1 className="text-2xl font-semibold">{vehicle.registration}</h1>
           <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button variant="outline" asChild>
             <Link href={`/pojazdy/${params.id}/edytuj`}>
               <Pencil className="h-4 w-4" />

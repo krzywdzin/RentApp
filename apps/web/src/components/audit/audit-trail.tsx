@@ -147,7 +147,7 @@ export function AuditTrail({ entityType, entityId, actorId, dateFrom, dateTo }: 
 
   return (
     <div className="space-y-4">
-      <div className="rounded-md border">
+      <div className="overflow-x-auto rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>

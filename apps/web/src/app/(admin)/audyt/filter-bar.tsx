@@ -62,13 +62,13 @@ export function AuditFilterBar({ values, onChange }: FilterBarProps) {
 
   return (
     <div className="flex flex-wrap items-end gap-4">
-      <div className="space-y-1">
+      <div className="w-full space-y-1 sm:w-auto">
         <label className="text-xs text-muted-foreground">Pracownik</label>
         <Select
           value={values.actorId || 'all'}
           onValueChange={(val) => onChange({ ...values, actorId: val === 'all' ? '' : val })}
         >
-          <SelectTrigger className="h-9 w-48" aria-label="Filtruj po pracowniku">
+          <SelectTrigger className="h-9 w-full sm:w-48" aria-label="Filtruj po pracowniku">
             <SelectValue placeholder="Wszyscy" />
           </SelectTrigger>
           <SelectContent>
@@ -82,13 +82,13 @@ export function AuditFilterBar({ values, onChange }: FilterBarProps) {
         </Select>
       </div>
 
-      <div className="space-y-1">
+      <div className="w-full space-y-1 sm:w-auto">
         <label className="text-xs text-muted-foreground">Typ</label>
         <Select
           value={values.entityType}
           onValueChange={(val) => onChange({ ...values, entityType: val === 'all' ? '' : val })}
         >
-          <SelectTrigger className="h-9 w-40" aria-label="Filtruj po typie">
+          <SelectTrigger className="h-9 w-full sm:w-40" aria-label="Filtruj po typie">
             <SelectValue placeholder="Wszystkie" />
           </SelectTrigger>
           <SelectContent>
@@ -101,21 +101,21 @@ export function AuditFilterBar({ values, onChange }: FilterBarProps) {
         </Select>
       </div>
 
-      <div className="space-y-1">
+      <div className="w-full space-y-1 sm:w-auto">
         <label className="text-xs text-muted-foreground">Zakres dat</label>
         <div className="flex items-center gap-2">
           <Input
             type="date"
             value={values.dateFrom}
             onChange={(e) => onChange({ ...values, dateFrom: e.target.value })}
-            className="h-9 w-36"
+            className="h-9 w-full sm:w-36"
           />
           <span className="text-muted-foreground text-sm">-</span>
           <Input
             type="date"
             value={values.dateTo}
             onChange={(e) => onChange({ ...values, dateTo: e.target.value })}
-            className="h-9 w-36"
+            className="h-9 w-full sm:w-36"
           />
         </div>
       </div>

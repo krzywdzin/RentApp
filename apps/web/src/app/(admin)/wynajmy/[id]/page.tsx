@@ -132,7 +132,9 @@ export default function RentalDetailPage() {
     if (isNaN(mileage) || mileage < 0) return;
     const vehicleMileage = (rental as RentalWithRelations).vehicle?.mileage ?? 0;
     if (mileage < vehicleMileage) {
-      toast.error(`Przebieg zwrotu nie moze byc mniejszy niz obecny przebieg pojazdu (${vehicleMileage} km)`);
+      toast.error(
+        `Przebieg zwrotu nie moze byc mniejszy niz obecny przebieg pojazdu (${vehicleMileage} km)`,
+      );
       return;
     }
     returnRental.mutate(
@@ -173,12 +175,12 @@ export default function RentalDetailPage() {
       />
 
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="flex min-w-0 flex-1 items-center gap-3">
           <h1 className="text-2xl font-semibold">Wynajem #{id.slice(0, 8)}</h1>
           {getRentalStatusBadge(rental)}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button variant="outline" onClick={() => router.push(`/wynajmy/${id}/dokumentacja`)}>
             <Camera className="mr-2 h-4 w-4" />
             Dokumentacja
