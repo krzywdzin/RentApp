@@ -2,6 +2,7 @@ import {
   CallHandler,
   ExecutionContext,
   Injectable,
+  Logger,
   NestInterceptor,
 } from '@nestjs/common';
 import { Observable, tap } from 'rxjs';
@@ -11,6 +12,8 @@ const MUTATION_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
 @Injectable()
 export class AuditInterceptor implements NestInterceptor {
+  private readonly logger = new Logger(AuditInterceptor.name);
+
   constructor(private auditService: AuditService) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
@@ -40,7 +43,7 @@ export class AuditInterceptor implements NestInterceptor {
             })
             .catch((err) => {
               // Audit logging should never break the request
-              console.error('Audit log failed:', err);
+              this.logger.error('Audit log failed', err instanceof Error ? err.stack : err);
             });
 
           // Remove __audit from the response sent to client
@@ -72,7 +75,7 @@ export class AuditInterceptor implements NestInterceptor {
               ipAddress,
             })
             .catch((err) => {
-              console.error('Audit log failed:', err);
+              this.logger.error('Audit log failed', err instanceof Error ? err.stack : err);
             });
         }
       }),

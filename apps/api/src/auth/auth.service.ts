@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as argon2 from 'argon2';
@@ -13,6 +13,7 @@ const REFRESH_TOKEN_TTL = 86400; // 24 hours in seconds
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
   private redis: Redis;
 
   constructor(
@@ -21,11 +22,15 @@ export class AuthService {
     private config: ConfigService,
   ) {
     this.redis = new Redis(this.config.get<string>('REDIS_URL')!);
+    this.redis.on('error', (err) =>
+      this.logger.error('Redis connection error', err.stack),
+    );
   }
 
   async validateUser(email: string, password: string) {
     const lockout = await this.redis.get(`lockout:${email}`);
     if (lockout) {
+      this.logger.warn(`Login rejected: account locked for ${email}`);
       throw new UnauthorizedException(
         'Account locked. Try again in 15 minutes.',
       );
@@ -44,6 +49,7 @@ export class AuthService {
     }
 
     await this.redis.del(`attempts:${email}`);
+    this.logger.log(`Login successful for ${email}`);
 
     const { passwordHash, setupToken, setupTokenExpiry, ...result } = user;
     return result;
@@ -52,10 +58,14 @@ export class AuthService {
   private async trackFailedAttempt(email: string): Promise<void> {
     const count = await this.redis.incr(`attempts:${email}`);
     await this.redis.expire(`attempts:${email}`, LOCKOUT_TTL);
+    this.logger.warn(`Failed login attempt for ${email} (attempt ${count})`);
 
     if (count >= MAX_FAILED_ATTEMPTS) {
       await this.redis.setex(`lockout:${email}`, LOCKOUT_TTL, '1');
       await this.redis.del(`attempts:${email}`);
+      this.logger.warn(
+        `Account locked: ${email} after ${MAX_FAILED_ATTEMPTS} failed attempts`,
+      );
     }
   }
 
@@ -94,6 +104,9 @@ export class AuthService {
     const valid = await argon2.verify(stored, rawToken);
     if (!valid) {
       // Token reuse detected -- invalidate all sessions for this user
+      this.logger.warn(
+        `Token reuse detected for user ${userId}, invalidating all sessions`,
+      );
       const keys = await this.redis.keys(`refresh:${userId}:*`);
       if (keys.length > 0) {
         await this.redis.del(...keys);
