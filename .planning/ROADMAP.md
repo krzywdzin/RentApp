@@ -47,11 +47,11 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 ### v2.0 Production Ready
 
-- [ ] **Phase 15: API Hardening & Security** - Environment validation, graceful shutdown, global error filter, rate limiting, CORS config, security headers, PDF error handling, rental flow fix
-- [ ] **Phase 16: Mobile Production Ready** - Dynamic API URL, keyboard-aware forms, vehicle list optimization, photo walkthrough in rental wizard, EAS Build config
-- [ ] **Phase 17: Web Production Ready** - Token refresh, form validations, error states with retry, TypeScript build cleanup
-- [ ] **Phase 18: Infrastructure & Storage** - Dockerfile for API, Cloudflare R2 storage, Railway deployment config, web deployment config, health check endpoint
-- [ ] **Phase 19: CI/CD & Deployment** - GitHub Actions pipeline for lint/test/build, automated deployment to Railway, EAS Build for Android APK
+- [x] **Phase 15: API Hardening & Security** - Environment validation, graceful shutdown, global error filter, rate limiting, CORS config, security headers, PDF error handling, rental flow fix (completed 2026-03-27)
+- [x] **Phase 16: Mobile Production Ready** - Dynamic API URL, keyboard-aware forms, vehicle list optimization, photo walkthrough in rental wizard, EAS Build config (completed 2026-03-27)
+- [x] **Phase 17: Web Production Ready** - Token refresh, form validations, error states with retry, TypeScript build cleanup (completed 2026-03-27)
+- [x] **Phase 18: Infrastructure & Storage** - Dockerfile for API, Cloudflare R2 storage, Railway deployment config, web deployment config, health check endpoint (completed 2026-03-27)
+- [x] **Phase 19: CI/CD & Deployment** - GitHub Actions pipeline for lint/test/build, automated deployment to Railway, EAS Build for Android APK (completed 2026-03-27)
 
 ## Phase Details
 
@@ -119,8 +119,8 @@ v2.0: 15 -> 16 & 17 (parallel) -> 18 -> 19
 |-------|-----------|----------------|--------|-----------|
 | 1-9.1 | v1.0 | 37/37 | Complete | 2026-03-25 |
 | 10-14 | v1.1 | 14/14 | Complete | 2026-03-25 |
-| 15. API Hardening & Security | v2.0 | 0/0 | Not Started | - |
-| 16. Mobile Production Ready | v2.0 | 0/0 | Not Started | - |
-| 17. Web Production Ready | v2.0 | 0/0 | Not Started | - |
-| 18. Infrastructure & Storage | v2.0 | 0/0 | Not Started | - |
-| 19. CI/CD & Deployment | v2.0 | 0/0 | Not Started | - |
+| 15. API Hardening & Security | v2.0 | 2/2 | Complete | 2026-03-27 |
+| 16. Mobile Production Ready | v2.0 | 2/2 | Complete | 2026-03-27 |
+| 17. Web Production Ready | v2.0 | 1/1 | Complete | 2026-03-27 |
+| 18. Infrastructure & Storage | v2.0 | 1/1 | Complete | 2026-03-27 |
+| 19. CI/CD & Deployment | v2.0 | 1/1 | Complete | 2026-03-27 |

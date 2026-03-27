@@ -12,3 +12,9 @@
 - 29 requirements, 14 plans
 - Mobile UX polish, web admin polish, TypeScript strictness, dependency fixes, test coverage
 - See: `.planning/milestones/v1.1-MILESTONE.md`
+
+### v2.0 — Production Ready (2026-03-27)
+- 5 phases (15-19)
+- 28 requirements, 7 plans
+- API hardening & security, mobile/web production readiness, infrastructure (Docker, R2, Railway), CI/CD pipelines
+- See: `.planning/milestones/v2.0-MILESTONE.md`
