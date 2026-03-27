@@ -43,6 +43,7 @@ export function useReturnRental() {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: ReturnRentalInput }) =>
       rentalsApi.returnRental(id, data),
+    retry: 2,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: rentalKeys.all });
     },

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { isAxiosError } from 'axios';
 import type { UserDto } from '@rentapp/shared';
 import { SECURE_STORE_KEYS } from '@/lib/constants';
 import { authApi } from '@/api/auth.api';
@@ -78,11 +79,17 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         isLoading: false,
         biometricEnabled,
       });
-    } catch {
-      // Token invalid or expired, clear state
-      await SecureStore.deleteItemAsync(SECURE_STORE_KEYS.ACCESS_TOKEN);
-      await SecureStore.deleteItemAsync(SECURE_STORE_KEYS.REFRESH_TOKEN);
-      set({ user: null, isAuthenticated: false, isLoading: false });
+    } catch (error) {
+      if (isAxiosError(error) && error.response?.status === 401) {
+        // Token invalid or expired, clear state
+        await SecureStore.deleteItemAsync(SECURE_STORE_KEYS.ACCESS_TOKEN);
+        await SecureStore.deleteItemAsync(SECURE_STORE_KEYS.REFRESH_TOKEN);
+        set({ user: null, isAuthenticated: false, isLoading: false });
+      } else {
+        // Network error, timeout, 500, etc. -- keep session alive with stale data
+        console.warn('Auth initialize failed (non-401), keeping session:', error);
+        set({ isLoading: false });
+      }
     }
   },
 }));

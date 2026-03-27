@@ -56,6 +56,7 @@ export default function SignaturesStep() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConflict, setShowConflict] = useState(false);
   const [conflictCallback, setConflictCallback] = useState<(() => void) | null>(null);
+  const [failedPhotos, setFailedPhotos] = useState<Record<string, string>>({});
 
   const createRental = useCreateRental();
   const createContract = useCreateContract();
@@ -201,30 +202,44 @@ export default function SignaturesStep() {
           // All signatures done -- finalize
           setIsSubmitting(true);
 
-          // Upload walkthrough photos (non-blocking)
+          // Upload walkthrough photos (non-blocking, per-photo error tracking)
           if (activeRentalId && Object.keys(draft.photoUris).length > 0) {
             try {
               const walkthrough = await apiClient.post('/walkthroughs', {
                 rentalId: activeRentalId,
                 type: 'HANDOVER',
               });
+              const photoFailures: Record<string, string> = {};
               for (const [position, uri] of Object.entries(draft.photoUris)) {
-                const formData = new FormData();
-                formData.append('photo', {
-                  uri,
-                  name: `${position}.jpg`,
-                  type: 'image/jpeg',
-                } as any);
-                formData.append('position', position);
-                await apiClient.post(
-                  `/walkthroughs/${walkthrough.data.id}/photos`,
-                  formData,
-                  { headers: { 'Content-Type': 'multipart/form-data' } },
-                );
+                try {
+                  const formData = new FormData();
+                  formData.append('photo', {
+                    uri,
+                    name: `${position}.jpg`,
+                    type: 'image/jpeg',
+                  } as any);
+                  formData.append('position', position);
+                  await apiClient.post(
+                    `/walkthroughs/${walkthrough.data.id}/photos`,
+                    formData,
+                    { headers: { 'Content-Type': 'multipart/form-data' } },
+                  );
+                } catch (photoError) {
+                  console.warn(`Photo upload failed for ${position}:`, photoError);
+                  photoFailures[position] = uri;
+                }
               }
-              await apiClient.post(`/walkthroughs/${walkthrough.data.id}/submit`);
-            } catch (photoError) {
-              console.warn('Photo upload failed:', photoError);
+              setFailedPhotos(photoFailures);
+              if (Object.keys(photoFailures).length > 0) {
+                Toast.show({
+                  type: 'info',
+                  text1: `${Object.keys(photoFailures).length} zdjec nie zostalo wyslanych. Mozesz dodac je pozniej.`,
+                });
+              } else {
+                await apiClient.post(`/walkthroughs/${walkthrough.data.id}/submit`);
+              }
+            } catch (walkthroughError) {
+              console.warn('Walkthrough creation failed:', walkthroughError);
               Toast.show({
                 type: 'info',
                 text1: 'Zdjecia nie zostaly wyslane',
