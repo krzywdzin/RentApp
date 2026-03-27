@@ -1,127 +1,337 @@
 # Requirements: RentApp
 
 **Defined:** 2026-03-27
-**Milestone:** v2.0 — Production Ready
-**Core Value:** Pracownik w terenie moze w pelni obsluzyc wynajem — od wypelnienia umowy, przez zweryfikowanie uprawnien kierowcy, zrobienie zdjec auta, po podpis klienta i wysylke PDF — bez papieru i bez powrotu do biura.
+**Milestone:** v2.1 — Fix All Audit Issues
+**Core Value:** Pracownik w terenie może w pełni obsłużyć wynajem — od wypełnienia umowy, przez zweryfikowanie uprawnień kierowcy, zrobienie zdjęć auta, po podpis klienta i wysyłkę PDF — bez papieru i bez powrotu do biura.
 
-## v2.0 Requirements
+## v2.1 Requirements
 
-### API Hardening (APIH)
+Requirements derived from comprehensive codebase audit across mobile, API, web, and infra. All 111 issues organized by domain and severity.
 
-- [x] **APIH-01**: API validates all required environment variables at startup and fails fast with clear error messages listing missing vars
-- [x] **APIH-02**: API handles SIGTERM/SIGINT gracefully — drains active requests, closes DB/Redis connections, then exits
-- [x] **APIH-03**: Global exception filter catches all unhandled errors and returns consistent JSON error responses (not HTML stack traces)
-- [x] **APIH-04**: PDF generation errors are caught and returned as 500 with a descriptive message instead of crashing the request
-- [x] **APIH-05**: Rental DRAFT→ACTIVE transition is properly triggered after all 4 signatures are collected (idempotent, no race condition)
+### Security
 
-### API Security (APIS)
+- [ ] **SEC-01**: Portal JWT uses a dedicated secret (PORTAL_JWT_SECRET) separate from employee JWT
+- [ ] **SEC-02**: apps/api/.env is properly gitignored to prevent credential leaks
+- [ ] **SEC-03**: Company PII (name, address, phone) moved from hardcoded source to env vars
+- [ ] **SEC-04**: FIELD_ENCRYPTION_KEY placeholder in .env.example cannot be used as a valid key
+- [ ] **SEC-05**: signatureBase64 and damageSketchBase64 DTOs have @MaxLength limits
+- [ ] **SEC-06**: SMTP auth (MAIL_USER, MAIL_PASS) configured for production mail delivery
+- [ ] **SEC-07**: S3 credentials have no default values in source code (force env var config)
+- [ ] **SEC-08**: Portal token exchange endpoint has per-IP rate limiting
+- [ ] **SEC-09**: CSV export sanitizes formula injection characters (=, +, -, @)
+- [ ] **SEC-10**: Mobile PDF URL uses signed URL or blob download instead of unauthenticated link
 
-- [x] **APIS-01**: Rate limiting applied per-endpoint — auth endpoints (login, refresh) limited to 10 req/min, general API to 100 req/min
-- [x] **APIS-02**: CORS origins configured via environment variable (not hardcoded IPs) — production allows only deployed domain
-- [x] **APIS-03**: Request body size limits enforced globally (10MB for signature uploads, 1MB default for other endpoints)
-- [x] **APIS-04**: Helmet security headers configured for production (CSP, HSTS, X-Frame-Options)
-- [x] **APIS-05**: All sensitive config values (DB URL, Redis URL, JWT secrets, API keys) loaded from environment — no defaults for secrets in production
+### Mobile Bugs
 
-### Mobile Production (MOBP)
+- [ ] **MBUG-01**: Rental creation is idempotent — duplicate tap does not create duplicate rental
+- [ ] **MBUG-02**: isSubmitting/isUploading flags are properly cleared in all code paths
+- [ ] **MBUG-03**: useEffect dependencies are correct in return wizard (mileage, checklist screens)
+- [ ] **MBUG-04**: SearchBar local state syncs when parent value prop changes
+- [ ] **MBUG-05**: Biometric logout awaits completion before setting isReady
+- [ ] **MBUG-06**: Return wizard navigation guard waits for Zustand hydration before firing
+- [ ] **MBUG-07**: ErrorBoundary retry increments key to force remount of child tree
 
-- [x] **MOBP-01**: API URL loaded from environment config (EXPO_PUBLIC_API_URL) — no hardcoded IPs in source code
-- [x] **MOBP-02**: Keyboard-aware scroll views on all form screens prevent input fields from being hidden behind the keyboard
-- [x] **MOBP-03**: Vehicle selection screen uses FlatList with proper keyExtractor and avoids VirtualizedList nesting warnings
-- [x] **MOBP-04**: Photo walkthrough step added to rental wizard — employee captures vehicle photos before signatures
-- [x] **MOBP-05**: EAS Build configuration (eas.json) set up with development, preview, and production profiles for Android APK
+### API Reliability
 
-### Web Production (WEBP)
+- [ ] **AREL-01**: Contract number generation is atomic (no race condition on concurrent requests)
+- [ ] **AREL-02**: Notification create sets message in initial create (no two-step create+update)
+- [ ] **AREL-03**: RetentionService filters out customers with active rentals before deletion
+- [ ] **AREL-04**: processReturn re-fetch has null guard before non-null assertion
+- [ ] **AREL-05**: Photo upload creates DB record before S3 upload (or cleans up on failure)
+- [ ] **AREL-06**: replacePhoto uploads new files before deleting old ones
+- [ ] **AREL-07**: createAnnex uses single DB operation (not create-then-update pattern)
+- [ ] **AREL-08**: SmsService initializes SMSAPI client lazily (no crash when token missing in dev)
 
-- [x] **WEBP-01**: API client implements automatic token refresh on 401 responses with request queue (no double-refresh race)
-- [x] **WEBP-02**: All create/edit forms show inline validation errors using Zod schemas consistent with API DTOs
-- [x] **WEBP-03**: All data-fetching pages show error states with retry buttons when API requests fail
-- [x] **WEBP-04**: Next.js build produces zero TypeScript errors — all type assertions cleaned up
+### API Validation & Pagination
 
-### Infrastructure (INFRA)
+- [ ] **AVAL-01**: Server-side pagination on GET /rentals, GET /customers, GET /contracts
+- [ ] **AVAL-02**: ParseUUIDPipe on all :id params (portal rental, users PATCH, users reset-password)
+- [ ] **AVAL-03**: CalendarQueryDto validates from < to and max range (6 months)
+- [ ] **AVAL-04**: CreateRentalDto validates startDate < endDate
+- [ ] **AVAL-05**: CreateVehicleDto fields have @MaxLength constraints
+- [ ] **AVAL-06**: UploadPhotoDto.position has @MaxLength(50)
+- [ ] **AVAL-07**: NotificationQueryDto.isRead validates as 'true'|'false'
+- [ ] **AVAL-08**: Notification route order: markAllAsRead before parameterized markAsRead
 
-- [x] **INFRA-01**: Dockerfile for API app — multi-stage build (deps, build, production) with non-root user
-- [x] **INFRA-02**: Storage service supports Cloudflare R2 as S3-compatible backend (endpoint, auth, bucket config via env vars)
-- [x] **INFRA-03**: Railway deployment config (railway.toml or Procfile) for API with health check endpoint
-- [x] **INFRA-04**: Web app deployable to Railway or Vercel with environment-based API URL configuration
-- [x] **INFRA-05**: EAS Build produces installable Android APK via `eas build --platform android --profile production`
+### API Performance & Logging
 
-### CI/CD Pipeline (CICD)
+- [ ] **APERF-01**: importFleet pre-fetches registrations in bulk (no N+1 DB queries in loop)
+- [ ] **APERF-02**: Photo comparison uses Promise.all for presigned URL generation
+- [ ] **APERF-03**: enqueueExpiryAlert uses createMany for batch notifications
+- [ ] **APERF-04**: AuditInterceptor uses NestJS Logger instead of console.error
+- [ ] **APERF-05**: AuthService logs security events (failed login, lockout, token reuse)
+- [ ] **APERF-06**: AuthService Redis client has error event handler
+- [ ] **APERF-07**: Health endpoint uses $queryRaw tagged template instead of $queryRawUnsafe
+- [ ] **APERF-08**: getWarsawDateRange uses proper timezone-aware date calculation
+- [ ] **APERF-09**: Annex PDF uses rental vatRate instead of hardcoded 23%
 
-- [x] **CICD-01**: GitHub Actions workflow runs lint + typecheck + test on every PR for all three apps
-- [x] **CICD-02**: API deployment triggered on push to main — builds Docker image and deploys to Railway
-- [x] **CICD-03**: Web deployment triggered on push to main — builds and deploys to Railway/Vercel
-- [x] **CICD-04**: Health check endpoint (GET /health) returns 200 with service status (DB, Redis, Storage connectivity)
+### Mobile State & Navigation
 
-## Previous Milestones
+- [ ] **MSTATE-01**: rentalId, contractId, currentIndex persisted in draft store (survive backgrounding)
+- [ ] **MSTATE-02**: Draft step routing includes photos step (step 4 → photos, step 5 → signatures)
+- [ ] **MSTATE-03**: logout() clears biometricEnabled from memory state
+- [ ] **MNAV-01**: beforeRemove discard dialog intercepts all wizard steps, not just the first
+- [ ] **MNAV-02**: Return submission uses router.replace instead of router.dismissAll
+- [ ] **MNAV-03**: overrideConflict defaults to false; user prompted on conflict before override
 
-<details>
-<summary>v1.1 Requirements (29 total — all complete)</summary>
+### Mobile Validation & Error Handling
 
-### Mobile UX Polish (MOBUX) — 7 requirements, all complete
-### Web Admin Panel Polish (WEBUX) — 8 requirements, all complete
-### TypeScript Strictness (TSFIX) — 6 requirements, all complete
-### Dependency Fixes (DEPS) — 3 requirements, all complete
-### Test Coverage (TEST) — 3 requirements, all complete
-### Performance (PERF) — 2 requirements, all complete
+- [ ] **MVAL-01**: Daily rate field has Zod regex validation for numeric format
+- [ ] **MVAL-02**: Return mileage has upper bound check for implausible values
+- [ ] **MVAL-03**: getMe() distinguishes network error from 401 before clearing tokens
+- [ ] **MVAL-04**: Return submit has retry configuration (retry: 2)
+- [ ] **MVAL-05**: Photo upload tracks partial failures and allows individual retry
 
-</details>
+### Mobile UX
 
-<details>
-<summary>v1.0 Requirements (42 total — all complete)</summary>
+- [ ] **MUX-01**: Bottom bar buttons use safe area insets instead of hardcoded paddingBottom
+- [ ] **MUX-02**: SignatureScreen shows toast feedback on empty canvas confirm
+- [ ] **MUX-03**: Polish diacritics are correct in all checklist labels and i18n strings
+- [ ] **MUX-04**: WIZARD_LABELS extracted to shared constant (not duplicated per step file)
+- [ ] **MUX-05**: VAT rate extracted to constant DEFAULT_VAT_RATE (not hardcoded 23 in 4 places)
+- [ ] **MUX-06**: Magic numbers extracted to named constants (ONE_DAY_MS, UPCOMING_RETURN_THRESHOLD)
+- [ ] **MUX-07**: OfflineBanner rendered inside SafeAreaView to avoid status bar overlap
 
-AUTH (5), FLEET (3), CUST (4), RENT (5), CONT (5), ADMIN (3), MOB (3), PHOTO (3), DMG (2), NOTIF (3), ALERT (2), CEPIK (2), PORTAL (2)
+### Mobile Accessibility
 
-</details>
+- [ ] **MA11Y-01**: Filter chips have accessibilityRole="radio" and accessibilityState
+- [ ] **MA11Y-02**: SearchBar TextInput has accessibilityLabel
+- [ ] **MA11Y-03**: AppInput label linked to TextInput via nativeID/accessibilityLabelledBy
+- [ ] **MA11Y-04**: Dashboard stat cards have combined accessibilityLabel
+
+### Web Error Handling
+
+- [ ] **WERR-01**: All detail pages (vehicle, customer, rental, contract) handle isError with retry
+- [ ] **WERR-02**: Photo documentation page handles isError for photo and damage queries
+- [ ] **WERR-03**: createRental.mutateAsync wrapped in try/catch in submit handler
+- [ ] **WERR-04**: Portal auth catch blocks log errors instead of swallowing silently
+- [ ] **WERR-05**: Proxy route handles non-JSON backend responses gracefully
+- [ ] **WERR-06**: formatDate/formatDateTime handle null/invalid dates without throwing
+- [ ] **WERR-07**: Global ErrorBoundary added (Next.js global-error.tsx)
+
+### Web Form Validation
+
+- [ ] **WVAL-01**: dailyRateNet is required (not optional) in new rental form
+- [ ] **WVAL-02**: Extend rental dialog validates new end date > current end date
+- [ ] **WVAL-03**: Return mileage validates against vehicle current mileage minimum
+- [ ] **WVAL-04**: Edit user dialog validates name and role before save
+- [ ] **WVAL-05**: Numeric inputs (year, seats, mileage) show validation error for 0 values
+
+### Web Accessibility
+
+- [ ] **WA11Y-01**: Interactive divs have role="button", tabIndex, and onKeyDown handlers
+- [ ] **WA11Y-02**: Collapsible card headers have role="button", aria-expanded, keyboard support
+- [ ] **WA11Y-03**: Filter bar labels properly associated with Select components via aria
+- [ ] **WA11Y-04**: Calendar rental blocks are keyboard accessible
+- [ ] **WA11Y-05**: Logout button has aria-label
+- [ ] **WA11Y-06**: Customer search dropdown uses combobox pattern with aria attributes
+- [ ] **WA11Y-07**: Vehicle search input has accessible label
+- [ ] **WA11Y-08**: Damage SVG pins are keyboard-focusable for tooltip access
+
+### Web UI Consistency
+
+- [ ] **WUI-01**: statusConfig, InfoRow, fuelTypeOptions extracted to shared files (no duplication)
+- [ ] **WUI-02**: Shared ErrorState and EmptyState components replace inline patterns
+- [ ] **WUI-03**: getInitials utility extracted to shared lib (not duplicated)
+- [ ] **WUI-04**: Portal uses theme-aware colors (bg-background) instead of hardcoded slate
+- [ ] **WUI-05**: Users page creation uses mutation hook with query invalidation
+
+### Web State & Performance
+
+- [ ] **WPERF-01**: Pagination resets to page 0 when filter changes (rentals, contracts)
+- [ ] **WPERF-02**: device_id cookie refreshed during token rotation
+- [ ] **WPERF-03**: Portal auth state shared via React Query (not re-fetched on every mount)
+- [ ] **WPERF-04**: Sidebar localStorage read in useState initializer (no flash)
+
+### Web Responsive Design
+
+- [ ] **WRESP-01**: Vehicle and rental detail action buttons wrap on small screens
+- [ ] **WRESP-02**: Audit trail table has overflow-x-auto for horizontal scroll
+- [ ] **WRESP-03**: Filter bar inputs use responsive widths (w-full sm:w-auto)
+
+### Infrastructure CI/CD
+
+- [ ] **CICD-01**: Redis service added to CI workflow
+- [ ] **CICD-02**: prisma migrate deploy runs in deployment pipeline (Dockerfile or railway.toml)
+- [ ] **CICD-03**: Web service has railway.toml with health check
+- [ ] **CICD-04**: deploy-web.yml has post-deploy health check step
+- [ ] **CICD-05**: Puppeteer Chromium installed in API Docker production image
+- [ ] **CICD-06**: Deploy health check uses polling loop instead of sleep 30
+- [ ] **CICD-07**: Mobile app included in CI (typecheck + test)
+- [ ] **CICD-08**: E2E tests run in CI pipeline
+- [ ] **CICD-09**: Coverage threshold enforced in CI
+
+### Infrastructure Config & Dependencies
+
+- [ ] **ICONF-01**: Unused dependencies removed (bullmq, @nestjs/cli in web, @gorhom/bottom-sheet, tailwindcss in mobile)
+- [ ] **ICONF-02**: zod and typescript versions aligned across all packages
+- [ ] **ICONF-03**: CORS_ORIGINS, COMPANY_PHONE, APP_URL added to .env.example with docs
+- [ ] **ICONF-04**: apps/web has .env.example documenting API_URL
+- [ ] **ICONF-05**: Root and API .env.example consolidated (single source of truth)
+- [ ] **ICONF-06**: Docker images pinned to specific versions (MinIO, Mailpit)
+- [ ] **ICONF-07**: MinIO has health check in docker-compose.yml
+- [ ] **ICONF-08**: tsconfig.base.json copied in both Dockerfiles
+- [ ] **ICONF-09**: turbo.json has outputs for lint/test tasks and typecheck task defined
+
+### Code Quality
+
+- [ ] **QUAL-01**: TypeScript 'any' types replaced with proper types across API services
+- [ ] **QUAL-02**: Non-null assertions have proper null guards
+- [ ] **QUAL-03**: Dead code removed (unused imports, unused DB fields documented, unused exports)
+- [ ] **QUAL-04**: Shared package exports PaginatedResponse, AuditLogDto types
+- [ ] **QUAL-05**: Photo Zod schemas moved from types/ to schemas/ directory
+- [ ] **QUAL-06**: RentalWithRelations type defined once in shared package (not duplicated)
+- [ ] **QUAL-07**: Web unsafe 'as' casts on form submits replaced with proper typing
+- [ ] **QUAL-08**: HealthModule has explicit dependency imports
+- [ ] **QUAL-09**: FIELD_ENCRYPTION_KEY required in all environments (with dev fallback warning)
+- [ ] **QUAL-10**: Missing database indexes added (Contract.createdById, CepikVerification.status, Notification.createdAt)
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Platnosci online | Wypozyczalnia rozlicza sie bezposrednio — PCI compliance niepotrzebne |
-| Rezerwacja online przez klienta | Wynajmy odbywaja sie na miejscu |
-| Wielojezycznosc / i18n | Polski rynek — hardcoded Polish strings acceptable |
-| Offline mode z sync | Complexity too high for v2.0 — requires queue/conflict resolution |
-| OCR skan dokumentow | Nice-to-have for future version |
-| Kubernetes / container orchestration | Railway handles scaling — no need for K8s |
-| iOS App Store deployment | Only 1 iOS user — TestFlight or ad-hoc sufficient |
+| Server-side search on web list pages | Performance optimization deferred — client-side adequate for current scale (~100 vehicles, ~1000 rentals) |
+| Sentry initialization in mobile | Requires SENTRY_DSN from Sentry account — setup deferred to production deployment |
+| EAS project UUID | Requires expo.dev account setup — deferred to production deployment |
+| Mobile NativeWind integration | Blocked by SDK 54 compatibility — revisit in future version |
+| i18n infrastructure overhaul | Current hardcoded Polish strings work for single-language deployment |
+| Full test coverage (>60%) | Incremental improvement — this milestone focuses on fixing bugs, not writing comprehensive tests |
+| Dark/light mode toggle for web | Intentional product decision to use dark mode only |
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| APIH-01 | Phase 15 | Complete |
-| APIH-02 | Phase 15 | Complete |
-| APIH-03 | Phase 15 | Complete |
-| APIH-04 | Phase 15 | Complete |
-| APIH-05 | Phase 15 | Complete |
-| APIS-01 | Phase 15 | Complete |
-| APIS-02 | Phase 15 | Complete |
-| APIS-03 | Phase 15 | Complete |
-| APIS-04 | Phase 15 | Complete |
-| APIS-05 | Phase 15 | Complete |
-| MOBP-01 | Phase 16 | Complete |
-| MOBP-02 | Phase 16 | Complete |
-| MOBP-03 | Phase 16 | Complete |
-| MOBP-04 | Phase 16 | Complete |
-| MOBP-05 | Phase 16 | Complete |
-| WEBP-01 | Phase 17 | Complete |
-| WEBP-02 | Phase 17 | Complete |
-| WEBP-03 | Phase 17 | Complete |
-| WEBP-04 | Phase 17 | Complete |
-| INFRA-01 | Phase 18 | Complete |
-| INFRA-02 | Phase 18 | Complete |
-| INFRA-03 | Phase 18 | Complete |
-| INFRA-04 | Phase 18 | Complete |
-| INFRA-05 | Phase 18 | Complete |
-| CICD-01 | Phase 19 | Complete |
-| CICD-02 | Phase 19 | Complete |
-| CICD-03 | Phase 19 | Complete |
-| CICD-04 | Phase 19 | Complete |
+| SEC-01 | Phase 20 | Pending |
+| SEC-02 | Phase 20 | Pending |
+| SEC-03 | Phase 20 | Pending |
+| SEC-04 | Phase 20 | Pending |
+| SEC-05 | Phase 20 | Pending |
+| SEC-06 | Phase 20 | Pending |
+| SEC-07 | Phase 20 | Pending |
+| SEC-08 | Phase 20 | Pending |
+| SEC-09 | Phase 20 | Pending |
+| SEC-10 | Phase 20 | Pending |
+| MBUG-01 | Phase 21 | Pending |
+| MBUG-02 | Phase 21 | Pending |
+| MBUG-03 | Phase 21 | Pending |
+| MBUG-04 | Phase 21 | Pending |
+| MBUG-05 | Phase 21 | Pending |
+| MBUG-06 | Phase 21 | Pending |
+| MBUG-07 | Phase 21 | Pending |
+| AREL-01 | Phase 21 | Pending |
+| AREL-02 | Phase 21 | Pending |
+| AREL-03 | Phase 21 | Pending |
+| AREL-04 | Phase 21 | Pending |
+| AREL-05 | Phase 21 | Pending |
+| AREL-06 | Phase 21 | Pending |
+| AREL-07 | Phase 21 | Pending |
+| AREL-08 | Phase 21 | Pending |
+| AVAL-01 | Phase 22 | Pending |
+| AVAL-02 | Phase 22 | Pending |
+| AVAL-03 | Phase 22 | Pending |
+| AVAL-04 | Phase 22 | Pending |
+| AVAL-05 | Phase 22 | Pending |
+| AVAL-06 | Phase 22 | Pending |
+| AVAL-07 | Phase 22 | Pending |
+| AVAL-08 | Phase 22 | Pending |
+| APERF-01 | Phase 22 | Pending |
+| APERF-02 | Phase 22 | Pending |
+| APERF-03 | Phase 22 | Pending |
+| APERF-04 | Phase 22 | Pending |
+| APERF-05 | Phase 22 | Pending |
+| APERF-06 | Phase 22 | Pending |
+| APERF-07 | Phase 22 | Pending |
+| APERF-08 | Phase 22 | Pending |
+| APERF-09 | Phase 22 | Pending |
+| MSTATE-01 | Phase 23 | Pending |
+| MSTATE-02 | Phase 23 | Pending |
+| MSTATE-03 | Phase 23 | Pending |
+| MNAV-01 | Phase 23 | Pending |
+| MNAV-02 | Phase 23 | Pending |
+| MNAV-03 | Phase 23 | Pending |
+| MVAL-01 | Phase 23 | Pending |
+| MVAL-02 | Phase 23 | Pending |
+| MVAL-03 | Phase 23 | Pending |
+| MVAL-04 | Phase 23 | Pending |
+| MVAL-05 | Phase 23 | Pending |
+| MUX-01 | Phase 23 | Pending |
+| MUX-02 | Phase 23 | Pending |
+| MUX-03 | Phase 23 | Pending |
+| MUX-04 | Phase 23 | Pending |
+| MUX-05 | Phase 23 | Pending |
+| MUX-06 | Phase 23 | Pending |
+| MUX-07 | Phase 23 | Pending |
+| MA11Y-01 | Phase 23 | Pending |
+| MA11Y-02 | Phase 23 | Pending |
+| MA11Y-03 | Phase 23 | Pending |
+| MA11Y-04 | Phase 23 | Pending |
+| WERR-01 | Phase 24 | Pending |
+| WERR-02 | Phase 24 | Pending |
+| WERR-03 | Phase 24 | Pending |
+| WERR-04 | Phase 24 | Pending |
+| WERR-05 | Phase 24 | Pending |
+| WERR-06 | Phase 24 | Pending |
+| WERR-07 | Phase 24 | Pending |
+| WVAL-01 | Phase 24 | Pending |
+| WVAL-02 | Phase 24 | Pending |
+| WVAL-03 | Phase 24 | Pending |
+| WVAL-04 | Phase 24 | Pending |
+| WVAL-05 | Phase 24 | Pending |
+| WA11Y-01 | Phase 24 | Pending |
+| WA11Y-02 | Phase 24 | Pending |
+| WA11Y-03 | Phase 24 | Pending |
+| WA11Y-04 | Phase 24 | Pending |
+| WA11Y-05 | Phase 24 | Pending |
+| WA11Y-06 | Phase 24 | Pending |
+| WA11Y-07 | Phase 24 | Pending |
+| WA11Y-08 | Phase 24 | Pending |
+| WUI-01 | Phase 24 | Pending |
+| WUI-02 | Phase 24 | Pending |
+| WUI-03 | Phase 24 | Pending |
+| WUI-04 | Phase 24 | Pending |
+| WUI-05 | Phase 24 | Pending |
+| WPERF-01 | Phase 24 | Pending |
+| WPERF-02 | Phase 24 | Pending |
+| WPERF-03 | Phase 24 | Pending |
+| WPERF-04 | Phase 24 | Pending |
+| WRESP-01 | Phase 24 | Pending |
+| WRESP-02 | Phase 24 | Pending |
+| WRESP-03 | Phase 24 | Pending |
+| CICD-01 | Phase 25 | Pending |
+| CICD-02 | Phase 25 | Pending |
+| CICD-03 | Phase 25 | Pending |
+| CICD-04 | Phase 25 | Pending |
+| CICD-05 | Phase 25 | Pending |
+| CICD-06 | Phase 25 | Pending |
+| CICD-07 | Phase 25 | Pending |
+| CICD-08 | Phase 25 | Pending |
+| CICD-09 | Phase 25 | Pending |
+| ICONF-01 | Phase 25 | Pending |
+| ICONF-02 | Phase 25 | Pending |
+| ICONF-03 | Phase 25 | Pending |
+| ICONF-04 | Phase 25 | Pending |
+| ICONF-05 | Phase 25 | Pending |
+| ICONF-06 | Phase 25 | Pending |
+| ICONF-07 | Phase 25 | Pending |
+| ICONF-08 | Phase 25 | Pending |
+| ICONF-09 | Phase 25 | Pending |
+| QUAL-01 | Phase 26 | Pending |
+| QUAL-02 | Phase 26 | Pending |
+| QUAL-03 | Phase 26 | Pending |
+| QUAL-04 | Phase 26 | Pending |
+| QUAL-05 | Phase 26 | Pending |
+| QUAL-06 | Phase 26 | Pending |
+| QUAL-07 | Phase 26 | Pending |
+| QUAL-08 | Phase 26 | Pending |
+| QUAL-09 | Phase 26 | Pending |
+| QUAL-10 | Phase 26 | Pending |
 
 **Coverage:**
-- v2.0 requirements: 28 total
-- Mapped to phases: 28
-- Unmapped: 0
+- v2.1 requirements: 111 total
+- Mapped to phases: 111
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-03-27*
+*Last updated: 2026-03-27 after initial definition*
