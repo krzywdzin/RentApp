@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Patch, Param, Body } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Param, Body, ParseUUIDPipe } from '@nestjs/common';
 import { UserRole } from '@rentapp/shared';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -33,7 +33,7 @@ export class UsersController {
   @Patch(':id')
   @Roles(UserRole.ADMIN)
   async update(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateUserDto,
   ) {
     return this.usersService.updateUser(id, dto);
@@ -41,7 +41,7 @@ export class UsersController {
 
   @Post(':id/reset-password')
   @Roles(UserRole.ADMIN)
-  async resetPassword(@Param('id') id: string) {
+  async resetPassword(@Param('id', ParseUUIDPipe) id: string) {
     await this.usersService.resetPasswordByAdmin(id);
     return { success: true };
   }

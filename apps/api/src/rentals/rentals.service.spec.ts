@@ -15,6 +15,7 @@ const mockPrisma = {
     findMany: jest.fn(),
     findUnique: jest.fn(),
     update: jest.fn(),
+    count: jest.fn(),
   },
   vehicle: {
     findUnique: jest.fn(),
@@ -331,12 +332,16 @@ describe('RentalsService', () => {
   // --- findAll / findOne ---
 
   describe('findAll', () => {
-    it('should return all rentals', async () => {
+    it('should return paginated rentals', async () => {
       const rentals = [baseDraftRental()];
       mockPrisma.rental.findMany.mockResolvedValue(rentals);
+      mockPrisma.rental.count.mockResolvedValue(1);
 
-      const result = await service.findAll();
-      expect(result).toHaveLength(1);
+      const result = await service.findAll({});
+      expect(result.data).toHaveLength(1);
+      expect(result.total).toBe(1);
+      expect(result.page).toBe(1);
+      expect(result.limit).toBe(20);
       expect(mockPrisma.rental.findMany).toHaveBeenCalled();
     });
   });

@@ -1,4 +1,4 @@
-import { Controller, Get, Req, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, Param, ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { Public } from '../common/decorators/public.decorator';
 import { PortalAuthGuard } from './guards/portal-auth.guard';
@@ -28,7 +28,7 @@ export class PortalController {
   }
 
   @Get('rentals/:id')
-  async getRentalDetail(@Req() req: PortalRequest, @Param('id') id: string) {
+  async getRentalDetail(@Req() req: PortalRequest, @Param('id', ParseUUIDPipe) id: string) {
     return this.portalService.getRentalDetail(req.user.customerId, id);
   }
 }
