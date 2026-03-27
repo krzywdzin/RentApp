@@ -10,6 +10,15 @@
         "EXPO_PUBLIC_API_URL": "http://localhost:3000"
       }
     },
+    "preview": {
+      "android": {
+        "buildType": "apk"
+      },
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://staging-api.kitek.pl"
+      }
+    },
     "staging": {
       "distribution": "internal",
       "env": {
@@ -17,6 +26,9 @@
       }
     },
     "production": {
+      "android": {
+        "buildType": "app-bundle"
+      },
       "distribution": "internal",
       "env": {
         "EXPO_PUBLIC_API_URL": "https://api.kitek.pl"

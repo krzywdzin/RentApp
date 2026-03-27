@@ -19,7 +19,7 @@ import { ConfirmationDialog } from '@/components/ConfirmationDialog';
 import { useRentalDraftStore } from '@/stores/rental-draft.store';
 import { useCustomerSearch, useCreateCustomer } from '@/hooks/use-customers';
 
-const WIZARD_LABELS = ['Klient', 'Pojazd', 'Daty', 'Umowa', 'Podpisy'];
+const WIZARD_LABELS = ['Klient', 'Pojazd', 'Daty', 'Umowa', 'Zdjecia', 'Podpisy'];
 
 export default function CustomerStep() {
   const { t } = useTranslation();
@@ -116,7 +116,7 @@ export default function CustomerStep() {
     <SafeAreaView style={s.safeArea} edges={['top']}>
       <WizardStepper
         currentStep={1}
-        totalSteps={5}
+        totalSteps={6}
         labels={WIZARD_LABELS}
       />
 

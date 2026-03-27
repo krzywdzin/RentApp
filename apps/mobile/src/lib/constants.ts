@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 
 export const API_URL =
-  Constants.expoConfig?.extra?.apiUrl ?? 'http://192.168.0.26:3000';
+  Constants.expoConfig?.extra?.apiUrl ?? 'http://localhost:3000';
 
 export const APP_VERSION = Constants.expoConfig?.version ?? '1.0.0';
 

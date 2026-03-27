@@ -39,6 +39,7 @@ export default function NewRentalLayout() {
         <Stack.Screen name="vehicle" />
         <Stack.Screen name="dates" />
         <Stack.Screen name="contract" />
+        <Stack.Screen name="photos" />
         <Stack.Screen name="signatures" />
         <Stack.Screen
           name="success"

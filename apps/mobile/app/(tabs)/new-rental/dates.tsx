@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +15,7 @@ import { AppButton } from '@/components/AppButton';
 import { useRentalDraftStore } from '@/stores/rental-draft.store';
 import { formatDateTime, formatCurrency } from '@/lib/format';
 
-const WIZARD_LABELS = ['Klient', 'Pojazd', 'Daty', 'Umowa', 'Podpisy'];
+const WIZARD_LABELS = ['Klient', 'Pojazd', 'Daty', 'Umowa', 'Zdjecia', 'Podpisy'];
 
 interface DatesFormValues {
   startDate: Date;
@@ -126,7 +126,7 @@ export default function DatesStep() {
     <SafeAreaView style={s.safeArea} edges={['top']}>
       <WizardStepper
         currentStep={3}
-        totalSteps={5}
+        totalSteps={6}
         labels={WIZARD_LABELS}
       />
 
@@ -134,9 +134,11 @@ export default function DatesStep() {
         {t('wizard.step3')}
       </Text>
 
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={s.flex1}>
       <ScrollView
         style={s.scrollBody}
         contentContainerStyle={{ paddingBottom: 120 }}
+        keyboardShouldPersistTaps="handled"
       >
         {/* Start Date */}
         <Text style={s.fieldLabel}>Data rozpoczecia</Text>
@@ -216,6 +218,7 @@ export default function DatesStep() {
           </View>
         </View>
       </ScrollView>
+      </KeyboardAvoidingView>
 
       {/* Bottom CTA */}
       <View style={s.bottomBar}>
@@ -231,6 +234,7 @@ export default function DatesStep() {
 
 const s = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  flex1: { flex: 1 },
   stepTitle: { marginTop: 16, paddingHorizontal: 16, fontSize: 20, fontWeight: '600', color: '#18181B' },
   scrollBody: { flex: 1, paddingHorizontal: 16, paddingTop: 16 },
   fieldLabel: { marginBottom: 4, fontSize: 13, color: '#71717A' },

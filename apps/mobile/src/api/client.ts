@@ -1,10 +1,7 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { router } from 'expo-router';
-import { SECURE_STORE_KEYS } from '@/lib/constants';
-
-// Hardcoded for dev — bypasses Metro cache issues with config
-const API_URL = 'http://192.168.0.26:3000';
+import { API_URL, SECURE_STORE_KEYS } from '@/lib/constants';
 
 const apiClient = axios.create({
   baseURL: API_URL,

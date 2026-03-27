@@ -15,7 +15,7 @@ import { LoadingSkeleton } from '@/components/LoadingSkeleton';
 import { useRentalDraftStore } from '@/stores/rental-draft.store';
 import { useVehicles } from '@/hooks/use-vehicles';
 
-const WIZARD_LABELS = ['Klient', 'Pojazd', 'Daty', 'Umowa', 'Podpisy'];
+const WIZARD_LABELS = ['Klient', 'Pojazd', 'Daty', 'Umowa', 'Zdjecia', 'Podpisy'];
 
 export default function VehicleStep() {
   const { t } = useTranslation();
@@ -25,18 +25,6 @@ export default function VehicleStep() {
   const [availableOnly, setAvailableOnly] = useState(true);
 
   const { data: vehicles, isLoading } = useVehicles();
-
-  if (isLoading) {
-    return (
-      <SafeAreaView style={s.safeArea} edges={['top']}>
-        <WizardStepper currentStep={2} totalSteps={5} labels={WIZARD_LABELS} />
-        <Text style={s.stepTitle}>{t('wizard.step2')}</Text>
-        <View style={s.loadingWrap}>
-          <LoadingSkeleton variant="list-item" count={6} />
-        </View>
-      </SafeAreaView>
-    );
-  }
 
   const filteredVehicles = useMemo(() => {
     if (!vehicles) return [];
@@ -70,11 +58,23 @@ export default function VehicleStep() {
     [availableOnly, draft, router],
   );
 
+  if (isLoading) {
+    return (
+      <SafeAreaView style={s.safeArea} edges={['top']}>
+        <WizardStepper currentStep={2} totalSteps={6} labels={WIZARD_LABELS} />
+        <Text style={s.stepTitle}>{t('wizard.step2')}</Text>
+        <View style={s.loadingWrap}>
+          <LoadingSkeleton variant="list-item" count={6} />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={s.safeArea} edges={['top']}>
       <WizardStepper
         currentStep={2}
-        totalSteps={5}
+        totalSteps={6}
         labels={WIZARD_LABELS}
       />
 

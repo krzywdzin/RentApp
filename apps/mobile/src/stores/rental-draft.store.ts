@@ -14,6 +14,7 @@ interface RentalDraft {
   rodoConsent: boolean;
   rodoTimestamp: string | null;
   signatures: string[];
+  photoUris: Record<string, string>;
 }
 
 interface RentalDraftState extends RentalDraft {
@@ -34,6 +35,7 @@ const initialDraft: RentalDraft = {
   rodoConsent: false,
   rodoTimestamp: null,
   signatures: [],
+  photoUris: {},
 };
 
 export const useRentalDraftStore = create<RentalDraftState>()(

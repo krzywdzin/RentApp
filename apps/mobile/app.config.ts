@@ -40,7 +40,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-localization',
   ],
   extra: {
-    apiUrl: process.env.EXPO_PUBLIC_API_URL ?? 'http://192.168.0.26:3000',
+    apiUrl: process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000',
     eas: {
       projectId: 'kitek-rental',
     },

@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -10,7 +10,7 @@ import { AppButton } from '@/components/AppButton';
 import { useRentalDraftStore } from '@/stores/rental-draft.store';
 import { formatDateTime, formatCurrency } from '@/lib/format';
 
-const WIZARD_LABELS = ['Klient', 'Pojazd', 'Daty', 'Umowa', 'Podpisy'];
+const WIZARD_LABELS = ['Klient', 'Pojazd', 'Daty', 'Umowa', 'Zdjecia', 'Podpisy'];
 
 export default function ContractStep() {
   const { t } = useTranslation();
@@ -43,14 +43,14 @@ export default function ContractStep() {
 
   const handleNext = useCallback(() => {
     draft.updateDraft({ step: 4 });
-    router.push('/(tabs)/new-rental/signatures');
+    router.push('/(tabs)/new-rental/photos');
   }, [draft, router]);
 
   return (
     <SafeAreaView style={s.safeArea} edges={['top']}>
       <WizardStepper
         currentStep={4}
-        totalSteps={5}
+        totalSteps={6}
         labels={WIZARD_LABELS}
       />
 
@@ -58,72 +58,75 @@ export default function ContractStep() {
         {t('wizard.step4')}
       </Text>
 
-      <ScrollView
-        style={s.scrollBody}
-        contentContainerStyle={{ paddingBottom: 140 }}
-      >
-        {/* Contract Preview */}
-        <View style={s.previewBox}>
-          {/* Customer section */}
-          <Text style={s.sectionHeader}>Klient</Text>
-          <Text style={s.sectionValue}>{draft.customerName ?? '-'}</Text>
-
-          {/* Vehicle section */}
-          <Text style={[s.sectionHeader, s.mt16]}>Pojazd</Text>
-          <Text style={s.sectionValue}>{draft.vehicleLabel ?? '-'}</Text>
-
-          {/* Dates section */}
-          <Text style={[s.sectionHeader, s.mt16]}>Okres wynajmu</Text>
-          <View style={s.datesRow}>
-            <Text style={s.sectionValue}>
-              {draft.startDate ? formatDateTime(draft.startDate) : '-'}
-            </Text>
-            <Text style={s.dash}>-</Text>
-            <Text style={s.sectionValue}>
-              {draft.endDate ? formatDateTime(draft.endDate) : '-'}
-            </Text>
-          </View>
-          <Text style={s.daysText}>
-            {days} {days === 1 ? 'dzien' : 'dni'}
-          </Text>
-
-          {/* Pricing section */}
-          <Text style={[s.sectionHeader, s.mt16]}>Cennik</Text>
-          <View style={s.mt4}>
-            <View style={s.priceRow}>
-              <Text style={s.priceLabel}>{t('wizard.dailyRate')}</Text>
-              <Text style={s.priceValue}>{formatCurrency(draft.dailyRateNet ?? 0)}</Text>
-            </View>
-            <View style={s.priceRowMt}>
-              <Text style={s.priceLabel}>Razem netto</Text>
-              <Text style={s.priceValue}>{formatCurrency(totalNetGrosze)}</Text>
-            </View>
-            <View style={s.totalRow}>
-              <Text style={s.totalLabel}>{t('wizard.totalGross')}</Text>
-              <Text style={s.totalValue}>{formatCurrency(totalGrossGrosze)}</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* RODO Consent */}
-        <Pressable
-          style={s.rodoRow}
-          onPress={handleToggleRodo}
-          accessibilityRole="checkbox"
-          accessibilityState={{ checked: draft.rodoConsent }}
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={s.flex1}>
+        <ScrollView
+          style={s.scrollBody}
+          contentContainerStyle={{ paddingBottom: 140 }}
+          keyboardShouldPersistTaps="handled"
         >
-          {draft.rodoConsent ? (
-            <View style={s.checkboxChecked}>
-              <Check size={16} color="#FFFFFF" />
+          {/* Contract Preview */}
+          <View style={s.previewBox}>
+            {/* Customer section */}
+            <Text style={s.sectionHeader}>Klient</Text>
+            <Text style={s.sectionValue}>{draft.customerName ?? '-'}</Text>
+
+            {/* Vehicle section */}
+            <Text style={[s.sectionHeader, s.mt16]}>Pojazd</Text>
+            <Text style={s.sectionValue}>{draft.vehicleLabel ?? '-'}</Text>
+
+            {/* Dates section */}
+            <Text style={[s.sectionHeader, s.mt16]}>Okres wynajmu</Text>
+            <View style={s.datesRow}>
+              <Text style={s.sectionValue}>
+                {draft.startDate ? formatDateTime(draft.startDate) : '-'}
+              </Text>
+              <Text style={s.dash}>-</Text>
+              <Text style={s.sectionValue}>
+                {draft.endDate ? formatDateTime(draft.endDate) : '-'}
+              </Text>
             </View>
-          ) : (
-            <View style={s.checkboxUnchecked}>
-              <Square size={24} color="#D4D4D8" />
+            <Text style={s.daysText}>
+              {days} {days === 1 ? 'dzien' : 'dni'}
+            </Text>
+
+            {/* Pricing section */}
+            <Text style={[s.sectionHeader, s.mt16]}>Cennik</Text>
+            <View style={s.mt4}>
+              <View style={s.priceRow}>
+                <Text style={s.priceLabel}>{t('wizard.dailyRate')}</Text>
+                <Text style={s.priceValue}>{formatCurrency(draft.dailyRateNet ?? 0)}</Text>
+              </View>
+              <View style={s.priceRowMt}>
+                <Text style={s.priceLabel}>Razem netto</Text>
+                <Text style={s.priceValue}>{formatCurrency(totalNetGrosze)}</Text>
+              </View>
+              <View style={s.totalRow}>
+                <Text style={s.totalLabel}>{t('wizard.totalGross')}</Text>
+                <Text style={s.totalValue}>{formatCurrency(totalGrossGrosze)}</Text>
+              </View>
             </View>
-          )}
-          <Text style={s.rodoText}>{t('wizard.rodoConsent')}</Text>
-        </Pressable>
-      </ScrollView>
+          </View>
+
+          {/* RODO Consent */}
+          <Pressable
+            style={s.rodoRow}
+            onPress={handleToggleRodo}
+            accessibilityRole="checkbox"
+            accessibilityState={{ checked: draft.rodoConsent }}
+          >
+            {draft.rodoConsent ? (
+              <View style={s.checkboxChecked}>
+                <Check size={16} color="#FFFFFF" />
+              </View>
+            ) : (
+              <View style={s.checkboxUnchecked}>
+                <Square size={24} color="#D4D4D8" />
+              </View>
+            )}
+            <Text style={s.rodoText}>{t('wizard.rodoConsent')}</Text>
+          </Pressable>
+        </ScrollView>
+      </KeyboardAvoidingView>
 
       {/* Bottom CTA */}
       <View style={s.bottomBar}>
@@ -140,6 +143,7 @@ export default function ContractStep() {
 
 const s = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  flex1: { flex: 1 },
   stepTitle: { marginTop: 16, paddingHorizontal: 16, fontSize: 20, fontWeight: '600', color: '#18181B' },
   scrollBody: { flex: 1, paddingHorizontal: 16, paddingTop: 16 },
   previewBox: {

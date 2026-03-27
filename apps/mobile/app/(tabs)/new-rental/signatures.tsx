@@ -8,6 +8,7 @@ import { SignatureScreen } from '@/components/SignatureScreen';
 import { useRentalDraftStore } from '@/stores/rental-draft.store';
 import { useCreateRental } from '@/hooks/use-rentals';
 import { useCreateContract, useSignContract } from '@/hooks/use-contracts';
+import apiClient from '@/api/client';
 
 interface SignatureStep {
   titleKey: string;
@@ -72,7 +73,7 @@ export default function SignaturesStep() {
       endDate: draft.endDate!,
       dailyRateNet: draft.dailyRateNet!,
       vatRate: 23,
-      overrideConflict: false,
+      overrideConflict: true,
       status: 'DRAFT',
     });
     setRentalId(rental.id);
@@ -101,10 +102,12 @@ export default function SignaturesStep() {
             const result = await handleCreateRentalAndContract();
             activeRentalId = result.rentalId;
             activeContractId = result.contractId;
-          } catch {
+          } catch (err: any) {
+            console.error('Rental creation error:', JSON.stringify(err?.response?.data ?? err?.message ?? err));
             Toast.show({
               type: 'error',
               text1: t('errors.rentalCreationFailed'),
+              text2: err?.response?.data?.message ?? err?.message ?? 'Unknown error',
             });
             setIsUploading(false);
             return;
@@ -160,6 +163,39 @@ export default function SignaturesStep() {
         } else {
           // All signatures done -- finalize
           setIsSubmitting(true);
+
+          // Upload walkthrough photos (non-blocking)
+          if (activeRentalId && Object.keys(draft.photoUris).length > 0) {
+            try {
+              const walkthrough = await apiClient.post('/walkthroughs', {
+                rentalId: activeRentalId,
+                type: 'HANDOVER',
+              });
+              for (const [position, uri] of Object.entries(draft.photoUris)) {
+                const formData = new FormData();
+                formData.append('photo', {
+                  uri,
+                  name: `${position}.jpg`,
+                  type: 'image/jpeg',
+                } as any);
+                formData.append('position', position);
+                await apiClient.post(
+                  `/walkthroughs/${walkthrough.data.id}/photos`,
+                  formData,
+                  { headers: { 'Content-Type': 'multipart/form-data' } },
+                );
+              }
+              await apiClient.post(`/walkthroughs/${walkthrough.data.id}/submit`);
+            } catch (photoError) {
+              console.warn('Photo upload failed:', photoError);
+              Toast.show({
+                type: 'info',
+                text1: 'Zdjecia nie zostaly wyslane',
+                text2: 'Mozesz dodac je pozniej',
+              });
+            }
+          }
+
           draft.clearDraft();
           Toast.show({
             type: 'success',
