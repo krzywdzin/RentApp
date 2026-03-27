@@ -1,9 +1,10 @@
-import { IsIn, IsString, IsOptional } from 'class-validator';
+import { IsIn, IsString, IsOptional, MaxLength } from 'class-validator';
 
 export class SignContractDto {
   @IsIn(['customer_page1', 'employee_page1', 'customer_page2', 'employee_page2'])
   signatureType!: string;
 
+  @MaxLength(500000)
   @IsString()
   signatureBase64!: string;
 

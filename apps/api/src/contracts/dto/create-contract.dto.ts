@@ -5,6 +5,7 @@ import {
   IsString,
   IsDateString,
   Min,
+  MaxLength,
 } from 'class-validator';
 
 export class CreateContractDto {
@@ -22,6 +23,7 @@ export class CreateContractDto {
   lateFeeNet?: number;
 
   @IsOptional()
+  @MaxLength(500000)
   @IsString()
   damageSketchBase64?: string;
 
