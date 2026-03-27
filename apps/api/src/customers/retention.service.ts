@@ -18,7 +18,7 @@ export class RetentionService {
         retentionExpiresAt: { lte: now },
         isArchived: true,
         rentals: {
-          none: { status: { in: ['ACTIVE', 'PENDING', 'RESERVED'] } },
+          none: { status: { in: ['ACTIVE', 'EXTENDED', 'DRAFT'] } },
         },
       },
       select: { id: true },
@@ -30,7 +30,7 @@ export class RetentionService {
         retentionExpiresAt: { lte: now },
         isArchived: true,
         rentals: {
-          some: { status: { in: ['ACTIVE', 'PENDING', 'RESERVED'] } },
+          some: { status: { in: ['ACTIVE', 'EXTENDED', 'DRAFT'] } },
         },
       },
     });

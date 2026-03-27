@@ -26,13 +26,6 @@ export default function ReturnMileageScreen() {
   );
   const [error, setError] = useState('');
 
-  // Restore draft value
-  useEffect(() => {
-    if (draftMileage != null && mileageText === '') {
-      setMileageText(String(draftMileage));
-    }
-  }, [draftMileage]);
-
   useEffect(() => {
     if (!rentalId) {
       router.replace('/(tabs)/rentals');

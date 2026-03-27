@@ -31,20 +31,6 @@ export default function ReturnChecklistScreen() {
     return initial;
   });
 
-  // Sync draft on mount
-  useEffect(() => {
-    if (Object.keys(draftChecklist).length > 0) {
-      const merged: ChecklistState = {};
-      for (const item of CHECKLIST_ITEMS) {
-        merged[item.key] = draftChecklist[item.key] ?? {
-          damaged: false,
-          notes: '',
-        };
-      }
-      setChecklist(merged);
-    }
-  }, []);
-
   useEffect(() => {
     if (!rentalId) {
       router.replace('/(tabs)/rentals');

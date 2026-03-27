@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { Search, X } from 'lucide-react-native';
 
@@ -11,6 +11,11 @@ interface SearchBarProps {
 export function SearchBar({ value, onChangeText, placeholder }: SearchBarProps) {
   const [localValue, setLocalValue] = useState(value);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Sync local state when parent value prop changes externally (e.g., reset to '')
+  useEffect(() => {
+    setLocalValue(value);
+  }, [value]);
 
   const handleChange = useCallback(
     (text: string) => {
