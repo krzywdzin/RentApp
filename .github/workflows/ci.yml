@@ -14,7 +14,7 @@ jobs:
   lint-and-test:
     name: Lint, Typecheck & Test
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
 
     services:
       postgres:
@@ -31,12 +31,23 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     env:
       DATABASE_URL: postgresql://test:test@localhost:5432/rentapp_test
       JWT_ACCESS_SECRET: test-access-secret-minimum-32-chars!!
       JWT_REFRESH_SECRET: test-refresh-secret-minimum-32-chars!!
       REDIS_URL: redis://localhost:6379
       FIELD_ENCRYPTION_KEY: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+      PORTAL_JWT_SECRET: test-portal-secret-minimum-32-chars!!
       NODE_ENV: test
 
     steps:
@@ -68,7 +79,19 @@ jobs:
         run: pnpm --filter web exec tsc --noEmit
 
       - name: Test API
-        run: pnpm --filter @rentapp/api test:no-coverage
+        run: pnpm --filter @rentapp/api test
 
       - name: Test Web
-        run: pnpm --filter web test
+        run: pnpm --filter web test -- --coverage
+
+      - name: Typecheck Mobile
+        run: pnpm --filter @rentapp/mobile exec tsc --noEmit
+
+      - name: Test Mobile
+        run: pnpm --filter @rentapp/mobile test
+
+      - name: Run migrations for E2E
+        run: pnpm --filter @rentapp/api exec prisma migrate deploy
+
+      - name: E2E Tests
+        run: pnpm --filter @rentapp/api test:e2e
