@@ -18,3 +18,11 @@
 - 28 requirements, 7 plans
 - API hardening & security, mobile/web production readiness, infrastructure (Docker, R2, Railway), CI/CD pipelines
 - See: `.planning/milestones/v2.0-MILESTONE.md`
+
+## In Progress
+
+### v2.1 — Fix All Audit Issues (2026-03-27 to ...)
+- 7 phases (20-26)
+- 124 requirements, plans TBD
+- Security hardening, critical bug fixes, API validation & performance, mobile quality & UX, web quality & accessibility, infrastructure & CI/CD, code quality & cleanup
+- Comprehensive codebase audit remediation across all components

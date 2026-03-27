@@ -6,7 +6,7 @@
 
 ## v2.1 Requirements
 
-Requirements derived from comprehensive codebase audit across mobile, API, web, and infra. All 111 issues organized by domain and severity.
+Requirements derived from comprehensive codebase audit across mobile, API, web, and infra. All 124 issues organized by domain and severity.
 
 ### Security
 
@@ -328,10 +328,10 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 | QUAL-10 | Phase 26 | Pending |
 
 **Coverage:**
-- v2.1 requirements: 111 total
-- Mapped to phases: 111
+- v2.1 requirements: 124 total
+- Mapped to phases: 124
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-03-27*
-*Last updated: 2026-03-27 after initial definition*
+*Last updated: 2026-03-27 after roadmap creation*
