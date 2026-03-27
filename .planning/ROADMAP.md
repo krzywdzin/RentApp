@@ -61,7 +61,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 20: Security Hardening** - Separate JWT secrets, gitignore credentials, base64 limits, rate limiting, CSV injection protection (completed 2026-03-27)
 - [x] **Phase 21: Critical Bug Fixes** - Mobile duplicate rental, hydration guard, SearchBar sync, API race conditions, data integrity fixes (completed 2026-03-27)
-- [ ] **Phase 22: API Validation & Performance** - Server-side pagination, DTO validation gaps, N+1 queries, structured logging, timezone fixes
+- [x] **Phase 22: API Validation & Performance** - Server-side pagination, DTO validation gaps, N+1 queries, structured logging, timezone fixes (completed 2026-03-27)
 - [ ] **Phase 23: Mobile Quality & UX** - State persistence, navigation guards, form validation, safe area insets, accessibility labels, constants extraction
 - [ ] **Phase 24: Web Quality & Accessibility** - Error handling on all pages, form validation, keyboard navigation, aria attributes, responsive design, shared components
 - [ ] **Phase 25: Infrastructure & CI/CD** - Redis in CI, Puppeteer in Docker, mobile CI, E2E tests, coverage enforcement, dependency cleanup, env consolidation
@@ -181,7 +181,7 @@ v2.1: 20 -> 21 -> 22 & 23 & 24 (parallel after 21) -> 25 (after 20) -> 26 (after
 | 15-19 | v2.0 | 7/7 | Complete | 2026-03-27 |
 | 20. Security Hardening | 2/2 | Complete    | 2026-03-27 | - |
 | 21. Critical Bug Fixes | 4/4 | Complete    | 2026-03-27 | - |
-| 22. API Validation & Performance | 3/4 | In Progress|  | - |
+| 22. API Validation & Performance | 4/4 | Complete   | 2026-03-27 | - |
 | 23. Mobile Quality & UX | v2.1 | 0/? | Not started | - |
 | 24. Web Quality & Accessibility | v2.1 | 0/? | Not started | - |
 | 25. Infrastructure & CI/CD | v2.1 | 0/? | Not started | - |

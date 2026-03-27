@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v2.1
 milestone_name: Fix All Audit Issues
 status: executing
-stopped_at: Completed 22-04-PLAN.md
-last_updated: "2026-03-27T22:43:43Z"
+stopped_at: Completed 22-02-PLAN.md
+last_updated: "2026-03-27T22:47:08.552Z"
 last_activity: 2026-03-27 -- Completed 22-04 logging, safety & correctness fixes
 progress:
   total_phases: 7
@@ -68,6 +68,7 @@ Progress: [██████████] 100%
 - [Phase 22]: Promise.all parallelization for presigned URLs and notification creation
 - [Phase 22]: Intl.DateTimeFormat shortOffset for dynamic CET/CEST offset (no date-fns-tz dependency)
 - [Phase 22]: frozenData.rental.vatRate for dynamic annex VAT calculation
+- [Phase 22]: Pagination pattern: page/limit with take/skip, default 20, max 100
 
 ### Pending Todos
 
@@ -81,6 +82,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-27T22:43:43Z
-Stopped at: Completed 22-04-PLAN.md
+Last session: 2026-03-27T22:47:08.551Z
+Stopped at: Completed 22-02-PLAN.md
 Resume file: None

@@ -44,8 +44,8 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 
 ### API Validation & Pagination
 
-- [ ] **AVAL-01**: Server-side pagination on GET /rentals, GET /customers, GET /contracts
-- [ ] **AVAL-02**: ParseUUIDPipe on all :id params (portal rental, users PATCH, users reset-password)
+- [x] **AVAL-01**: Server-side pagination on GET /rentals, GET /customers, GET /contracts
+- [x] **AVAL-02**: ParseUUIDPipe on all :id params (portal rental, users PATCH, users reset-password)
 - [x] **AVAL-03**: CalendarQueryDto validates from < to and max range (6 months)
 - [x] **AVAL-04**: CreateRentalDto validates startDate < endDate
 - [x] **AVAL-05**: CreateVehicleDto fields have @MaxLength constraints
@@ -227,8 +227,8 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 | AREL-06 | Phase 21 | Complete |
 | AREL-07 | Phase 21 | Complete |
 | AREL-08 | Phase 21 | Complete |
-| AVAL-01 | Phase 22 | Pending |
-| AVAL-02 | Phase 22 | Pending |
+| AVAL-01 | Phase 22 | Complete |
+| AVAL-02 | Phase 22 | Complete |
 | AVAL-03 | Phase 22 | Complete |
 | AVAL-04 | Phase 22 | Complete |
 | AVAL-05 | Phase 22 | Complete |
