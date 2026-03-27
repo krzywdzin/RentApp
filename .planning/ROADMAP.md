@@ -79,7 +79,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Uploading a signature or damage sketch larger than the configured max size returns a 400 error with a clear message
   4. Sending 20 rapid token-exchange requests from the same IP returns 429 after the rate limit is exceeded
   5. Exporting CSV data that contains cells starting with =, +, -, or @ produces escaped output that does not trigger formula execution in Excel
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 20-01-PLAN.md -- Credentials & environment hardening (SEC-01, SEC-02, SEC-03, SEC-04, SEC-06, SEC-07)
+- [ ] 20-02-PLAN.md -- Input limits, rate limiting, CSV & PDF security (SEC-05, SEC-08, SEC-09, SEC-10)
 
 ### Phase 21: Critical Bug Fixes
 **Goal**: All data-corrupting and crash-causing bugs in mobile and API are fixed -- no duplicate rentals, no race conditions on contract numbers, no crashes from missing guards
@@ -166,7 +169,7 @@ v2.1: 20 -> 21 -> 22 & 23 & 24 (parallel after 21) -> 25 (after 20) -> 26 (after
 | 1-9.1 | v1.0 | 37/37 | Complete | 2026-03-25 |
 | 10-14 | v1.1 | 14/14 | Complete | 2026-03-25 |
 | 15-19 | v2.0 | 7/7 | Complete | 2026-03-27 |
-| 20. Security Hardening | v2.1 | 0/? | Not started | - |
+| 20. Security Hardening | v2.1 | 0/2 | Planning complete | - |
 | 21. Critical Bug Fixes | v2.1 | 0/? | Not started | - |
 | 22. API Validation & Performance | v2.1 | 0/? | Not started | - |
 | 23. Mobile Quality & UX | v2.1 | 0/? | Not started | - |
