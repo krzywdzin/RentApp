@@ -6,6 +6,7 @@ import { useAudit, type AuditLogEntry } from '@/hooks/queries/use-audit';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
+import { getInitials } from '@/lib/utils';
 
 const actionLabels: Record<string, string> = {
   CREATE: 'Utworzono',
@@ -20,15 +21,6 @@ const entityLabels: Record<string, string> = {
   Contract: 'umowe',
   User: 'uzytkownika',
 };
-
-function getInitials(name: string): string {
-  return name
-    .split(' ')
-    .map((p) => p[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
-}
 
 function formatAction(entry: AuditLogEntry): string {
   const action = actionLabels[entry.action] ?? entry.action;

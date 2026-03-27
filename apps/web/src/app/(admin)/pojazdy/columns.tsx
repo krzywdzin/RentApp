@@ -14,17 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { MoreHorizontal } from 'lucide-react';
-
-const statusConfig: Record<
-  string,
-  { label: string; variant: 'success' | 'warning' | 'secondary' }
-> = {
-  AVAILABLE: { label: 'Dostepny', variant: 'success' },
-  RENTED: { label: 'Wynajety', variant: 'warning' },
-  SERVICE: { label: 'Serwis', variant: 'secondary' },
-  RETIRED: { label: 'Wycofany', variant: 'secondary' },
-  RESERVED: { label: 'Zarezerwowany', variant: 'warning' },
-};
+import { vehicleStatusConfig } from '@/lib/constants';
 
 export function getVehicleColumns({
   onDetail,
@@ -85,7 +75,10 @@ export function getVehicleColumns({
       header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
       cell: ({ row }) => {
         const status = row.getValue('status') as string;
-        const config = statusConfig[status] ?? { label: status, variant: 'secondary' as const };
+        const config = vehicleStatusConfig[status] ?? {
+          label: status,
+          variant: 'secondary' as const,
+        };
         return <Badge variant={config.variant}>{config.label}</Badge>;
       },
     },

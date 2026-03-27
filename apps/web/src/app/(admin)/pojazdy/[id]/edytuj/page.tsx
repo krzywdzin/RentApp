@@ -29,20 +29,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
+import { fuelTypeOptions, transmissionOptions } from '@/lib/constants';
 import { useVehicle, useUpdateVehicle } from '@/hooks/queries/use-vehicles';
-
-const fuelTypeOptions = [
-  { value: 'PETROL', label: 'Benzyna' },
-  { value: 'DIESEL', label: 'Diesel' },
-  { value: 'LPG', label: 'LPG' },
-  { value: 'HYBRID', label: 'Hybrydowy' },
-  { value: 'ELECTRIC', label: 'Elektryczny' },
-];
-
-const transmissionOptions = [
-  { value: 'MANUAL', label: 'Manualna' },
-  { value: 'AUTOMATIC', label: 'Automatyczna' },
-];
 
 export default function EditVehiclePage() {
   const params = useParams<{ id: string }>();

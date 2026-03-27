@@ -25,20 +25,8 @@ import {
 } from '@/components/ui/form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
+import { fuelTypeOptions, transmissionOptions } from '@/lib/constants';
 import { useCreateVehicle } from '@/hooks/queries/use-vehicles';
-
-const fuelTypeOptions = [
-  { value: 'PETROL', label: 'Benzyna' },
-  { value: 'DIESEL', label: 'Diesel' },
-  { value: 'LPG', label: 'LPG' },
-  { value: 'HYBRID', label: 'Hybrydowy' },
-  { value: 'ELECTRIC', label: 'Elektryczny' },
-];
-
-const transmissionOptions = [
-  { value: 'MANUAL', label: 'Manualna' },
-  { value: 'AUTOMATIC', label: 'Automatyczna' },
-];
 
 export default function NewVehiclePage() {
   const router = useRouter();
@@ -149,7 +137,10 @@ export default function NewVehiclePage() {
                         <Input
                           type="number"
                           {...field}
-                          onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                          onChange={(e) => {
+                            const val = parseInt(e.target.value);
+                            field.onChange(isNaN(val) ? undefined : val);
+                          }}
                         />
                       </FormControl>
                       <FormMessage />
