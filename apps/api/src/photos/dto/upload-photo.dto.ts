@@ -2,6 +2,7 @@ import { IsString, IsOptional, IsNumber, Min, Max, IsDateString, MaxLength } fro
 
 export class UploadPhotoDto {
   @IsString()
+  @MaxLength(50)
   position!: string;
 
   @IsDateString()

@@ -10,7 +10,9 @@ import {
   ValidateNested,
   ValidateIf,
   IsNumber,
+  Validate,
 } from 'class-validator';
+import { DateAfterValidator } from '../../common/validators/date-after.validator';
 import { Type } from 'class-transformer';
 import { RentalStatus } from '@rentapp/shared';
 
@@ -52,6 +54,7 @@ export class CreateRentalDto {
   startDate!: string;
 
   @IsISO8601()
+  @Validate(DateAfterValidator, ['startDate'])
   endDate!: string;
 
   @IsOptional()

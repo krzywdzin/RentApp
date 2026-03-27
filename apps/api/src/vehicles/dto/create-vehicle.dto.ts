@@ -48,9 +48,11 @@ export class CreateVehicleDto {
   vin!: string;
 
   @IsString()
+  @MaxLength(100)
   make!: string;
 
   @IsString()
+  @MaxLength(100)
   model!: string;
 
   @IsInt()
