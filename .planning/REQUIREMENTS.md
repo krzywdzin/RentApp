@@ -101,11 +101,11 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 
 ### Web Error Handling
 
-- [ ] **WERR-01**: All detail pages (vehicle, customer, rental, contract) handle isError with retry
-- [ ] **WERR-02**: Photo documentation page handles isError for photo and damage queries
-- [ ] **WERR-03**: createRental.mutateAsync wrapped in try/catch in submit handler
-- [ ] **WERR-04**: Portal auth catch blocks log errors instead of swallowing silently
-- [ ] **WERR-05**: Proxy route handles non-JSON backend responses gracefully
+- [x] **WERR-01**: All detail pages (vehicle, customer, rental, contract) handle isError with retry
+- [x] **WERR-02**: Photo documentation page handles isError for photo and damage queries
+- [x] **WERR-03**: createRental.mutateAsync wrapped in try/catch in submit handler
+- [x] **WERR-04**: Portal auth catch blocks log errors instead of swallowing silently
+- [x] **WERR-05**: Proxy route handles non-JSON backend responses gracefully
 - [x] **WERR-06**: formatDate/formatDateTime handle null/invalid dates without throwing
 - [x] **WERR-07**: Global ErrorBoundary added (Next.js global-error.tsx)
 
@@ -266,11 +266,11 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 | MA11Y-02 | Phase 23 | Complete |
 | MA11Y-03 | Phase 23 | Complete |
 | MA11Y-04 | Phase 23 | Complete |
-| WERR-01 | Phase 24 | Pending |
-| WERR-02 | Phase 24 | Pending |
-| WERR-03 | Phase 24 | Pending |
-| WERR-04 | Phase 24 | Pending |
-| WERR-05 | Phase 24 | Pending |
+| WERR-01 | Phase 24 | Complete |
+| WERR-02 | Phase 24 | Complete |
+| WERR-03 | Phase 24 | Complete |
+| WERR-04 | Phase 24 | Complete |
+| WERR-05 | Phase 24 | Complete |
 | WERR-06 | Phase 24 | Complete |
 | WERR-07 | Phase 24 | Complete |
 | WVAL-01 | Phase 24 | Complete |
