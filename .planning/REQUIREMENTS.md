@@ -106,8 +106,8 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 - [ ] **WERR-03**: createRental.mutateAsync wrapped in try/catch in submit handler
 - [ ] **WERR-04**: Portal auth catch blocks log errors instead of swallowing silently
 - [ ] **WERR-05**: Proxy route handles non-JSON backend responses gracefully
-- [ ] **WERR-06**: formatDate/formatDateTime handle null/invalid dates without throwing
-- [ ] **WERR-07**: Global ErrorBoundary added (Next.js global-error.tsx)
+- [x] **WERR-06**: formatDate/formatDateTime handle null/invalid dates without throwing
+- [x] **WERR-07**: Global ErrorBoundary added (Next.js global-error.tsx)
 
 ### Web Form Validation
 
@@ -130,9 +130,9 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 
 ### Web UI Consistency
 
-- [ ] **WUI-01**: statusConfig, InfoRow, fuelTypeOptions extracted to shared files (no duplication)
-- [ ] **WUI-02**: Shared ErrorState and EmptyState components replace inline patterns
-- [ ] **WUI-03**: getInitials utility extracted to shared lib (not duplicated)
+- [x] **WUI-01**: statusConfig, InfoRow, fuelTypeOptions extracted to shared files (no duplication)
+- [x] **WUI-02**: Shared ErrorState and EmptyState components replace inline patterns
+- [x] **WUI-03**: getInitials utility extracted to shared lib (not duplicated)
 - [ ] **WUI-04**: Portal uses theme-aware colors (bg-background) instead of hardcoded slate
 - [ ] **WUI-05**: Users page creation uses mutation hook with query invalidation
 
@@ -271,8 +271,8 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 | WERR-03 | Phase 24 | Pending |
 | WERR-04 | Phase 24 | Pending |
 | WERR-05 | Phase 24 | Pending |
-| WERR-06 | Phase 24 | Pending |
-| WERR-07 | Phase 24 | Pending |
+| WERR-06 | Phase 24 | Complete |
+| WERR-07 | Phase 24 | Complete |
 | WVAL-01 | Phase 24 | Pending |
 | WVAL-02 | Phase 24 | Pending |
 | WVAL-03 | Phase 24 | Pending |
@@ -286,9 +286,9 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 | WA11Y-06 | Phase 24 | Complete |
 | WA11Y-07 | Phase 24 | Complete |
 | WA11Y-08 | Phase 24 | Complete |
-| WUI-01 | Phase 24 | Pending |
-| WUI-02 | Phase 24 | Pending |
-| WUI-03 | Phase 24 | Pending |
+| WUI-01 | Phase 24 | Complete |
+| WUI-02 | Phase 24 | Complete |
+| WUI-03 | Phase 24 | Complete |
 | WUI-04 | Phase 24 | Pending |
 | WUI-05 | Phase 24 | Pending |
 | WPERF-01 | Phase 24 | Pending |
