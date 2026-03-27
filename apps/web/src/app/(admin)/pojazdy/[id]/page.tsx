@@ -19,43 +19,12 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
+import { InfoRow } from '@/components/ui/info-row';
+import { vehicleStatusConfig, fuelTypeLabels, transmissionLabels } from '@/lib/constants';
 import { useVehicle, useArchiveVehicle } from '@/hooks/queries/use-vehicles';
 import { useRentals } from '@/hooks/queries/use-rentals';
 import { getRentalStatusBadge } from '../../wynajmy/columns';
 import { formatDate } from '@/lib/format';
-
-const statusConfig: Record<
-  string,
-  { label: string; variant: 'success' | 'warning' | 'secondary' }
-> = {
-  AVAILABLE: { label: 'Dostepny', variant: 'success' },
-  RENTED: { label: 'Wynajety', variant: 'warning' },
-  SERVICE: { label: 'Serwis', variant: 'secondary' },
-  RETIRED: { label: 'Wycofany', variant: 'secondary' },
-  RESERVED: { label: 'Zarezerwowany', variant: 'warning' },
-};
-
-const fuelTypeLabels: Record<string, string> = {
-  PETROL: 'Benzyna',
-  DIESEL: 'Diesel',
-  LPG: 'LPG',
-  HYBRID: 'Hybrydowy',
-  ELECTRIC: 'Elektryczny',
-};
-
-const transmissionLabels: Record<string, string> = {
-  MANUAL: 'Manualna',
-  AUTOMATIC: 'Automatyczna',
-};
-
-function InfoRow({ label, value }: { label: string; value: string | null | undefined }) {
-  return (
-    <div className="flex flex-col gap-1">
-      <span className="text-xs text-muted-foreground">{label}</span>
-      <span className="text-sm">{value || '-'}</span>
-    </div>
-  );
-}
 
 export default function VehicleDetailPage() {
   const params = useParams<{ id: string }>();
@@ -81,7 +50,7 @@ export default function VehicleDetailPage() {
     return <div className="text-center py-12 text-muted-foreground">Nie znaleziono pojazdu.</div>;
   }
 
-  const statusInfo = statusConfig[vehicle.status] ?? {
+  const statusInfo = vehicleStatusConfig[vehicle.status] ?? {
     label: vehicle.status,
     variant: 'secondary' as const,
   };
@@ -207,7 +176,15 @@ export default function VehicleDetailPage() {
                     <div
                       key={rental.id}
                       className="flex items-center justify-between rounded-md border p-3 cursor-pointer hover:bg-muted/50"
+                      role="button"
+                      tabIndex={0}
                       onClick={() => router.push(`/wynajmy/${rental.id}`)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          router.push(`/wynajmy/${rental.id}`);
+                        }
+                      }}
                     >
                       <div className="text-sm">
                         <span className="font-medium">

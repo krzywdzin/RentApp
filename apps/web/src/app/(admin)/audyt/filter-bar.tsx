@@ -68,7 +68,7 @@ export function AuditFilterBar({ values, onChange }: FilterBarProps) {
           value={values.actorId || 'all'}
           onValueChange={(val) => onChange({ ...values, actorId: val === 'all' ? '' : val })}
         >
-          <SelectTrigger className="h-9 w-48">
+          <SelectTrigger className="h-9 w-48" aria-label="Filtruj po pracowniku">
             <SelectValue placeholder="Wszyscy" />
           </SelectTrigger>
           <SelectContent>
@@ -88,7 +88,7 @@ export function AuditFilterBar({ values, onChange }: FilterBarProps) {
           value={values.entityType}
           onValueChange={(val) => onChange({ ...values, entityType: val === 'all' ? '' : val })}
         >
-          <SelectTrigger className="h-9 w-40">
+          <SelectTrigger className="h-9 w-40" aria-label="Filtruj po typie">
             <SelectValue placeholder="Wszystkie" />
           </SelectTrigger>
           <SelectContent>

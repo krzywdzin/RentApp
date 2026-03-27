@@ -160,7 +160,19 @@ export default function UzytkownicyPage() {
 
       {/* Collapsible Create User Form */}
       <Card className="max-w-lg">
-        <CardHeader className="cursor-pointer" onClick={() => setFormOpen(!formOpen)}>
+        <CardHeader
+          className="cursor-pointer"
+          role="button"
+          tabIndex={0}
+          aria-expanded={formOpen}
+          onClick={() => setFormOpen(!formOpen)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              setFormOpen(!formOpen);
+            }
+          }}
+        >
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>Nowy uzytkownik</CardTitle>

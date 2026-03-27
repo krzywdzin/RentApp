@@ -18,19 +18,11 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
+import { InfoRow } from '@/components/ui/info-row';
 import { useCustomer, useArchiveCustomer } from '@/hooks/queries/use-customers';
 import { useRentals } from '@/hooks/queries/use-rentals';
 import { getRentalStatusBadge } from '../../wynajmy/columns';
 import { formatDate } from '@/lib/format';
-
-function InfoRow({ label, value }: { label: string; value: string | null | undefined }) {
-  return (
-    <div className="flex flex-col gap-1">
-      <span className="text-xs text-muted-foreground">{label}</span>
-      <span className="text-sm">{value || '-'}</span>
-    </div>
-  );
-}
 
 export default function CustomerDetailPage() {
   const params = useParams<{ id: string }>();
@@ -158,7 +150,15 @@ export default function CustomerDetailPage() {
                     <div
                       key={rental.id}
                       className="flex items-center justify-between rounded-md border p-3 cursor-pointer hover:bg-muted/50"
+                      role="button"
+                      tabIndex={0}
                       onClick={() => router.push(`/wynajmy/${rental.id}`)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          router.push(`/wynajmy/${rental.id}`);
+                        }
+                      }}
                     >
                       <div className="text-sm">
                         <span className="font-medium">
