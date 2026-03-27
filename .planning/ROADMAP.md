@@ -175,7 +175,7 @@ v2.1: 20 -> 21 -> 22 & 23 & 24 (parallel after 21) -> 25 (after 20) -> 26 (after
 | 10-14 | v1.1 | 14/14 | Complete | 2026-03-25 |
 | 15-19 | v2.0 | 7/7 | Complete | 2026-03-27 |
 | 20. Security Hardening | 2/2 | Complete    | 2026-03-27 | - |
-| 21. Critical Bug Fixes | v2.1 | 0/? | Not started | - |
+| 21. Critical Bug Fixes | 1/4 | In Progress|  | - |
 | 22. API Validation & Performance | v2.1 | 0/? | Not started | - |
 | 23. Mobile Quality & UX | v2.1 | 0/? | Not started | - |
 | 24. Web Quality & Accessibility | v2.1 | 0/? | Not started | - |

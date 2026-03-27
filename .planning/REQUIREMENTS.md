@@ -23,10 +23,10 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 
 ### Mobile Bugs
 
-- [ ] **MBUG-01**: Rental creation is idempotent — duplicate tap does not create duplicate rental
-- [ ] **MBUG-02**: isSubmitting/isUploading flags are properly cleared in all code paths
-- [ ] **MBUG-03**: useEffect dependencies are correct in return wizard (mileage, checklist screens)
-- [ ] **MBUG-04**: SearchBar local state syncs when parent value prop changes
+- [x] **MBUG-01**: Rental creation is idempotent — duplicate tap does not create duplicate rental
+- [x] **MBUG-02**: isSubmitting/isUploading flags are properly cleared in all code paths
+- [x] **MBUG-03**: useEffect dependencies are correct in return wizard (mileage, checklist screens)
+- [x] **MBUG-04**: SearchBar local state syncs when parent value prop changes
 - [ ] **MBUG-05**: Biometric logout awaits completion before setting isReady
 - [ ] **MBUG-06**: Return wizard navigation guard waits for Zustand hydration before firing
 - [ ] **MBUG-07**: ErrorBoundary retry increments key to force remount of child tree
@@ -212,10 +212,10 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 | SEC-08 | Phase 20 | Complete |
 | SEC-09 | Phase 20 | Complete |
 | SEC-10 | Phase 20 | Complete |
-| MBUG-01 | Phase 21 | Pending |
-| MBUG-02 | Phase 21 | Pending |
-| MBUG-03 | Phase 21 | Pending |
-| MBUG-04 | Phase 21 | Pending |
+| MBUG-01 | Phase 21 | Complete |
+| MBUG-02 | Phase 21 | Complete |
+| MBUG-03 | Phase 21 | Complete |
+| MBUG-04 | Phase 21 | Complete |
 | MBUG-05 | Phase 21 | Pending |
 | MBUG-06 | Phase 21 | Pending |
 | MBUG-07 | Phase 21 | Pending |

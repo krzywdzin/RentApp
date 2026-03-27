@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.1
 milestone_name: Fix All Audit Issues
 status: executing
-stopped_at: Completed 20-01-PLAN.md
-last_updated: "2026-03-27T22:08:39.617Z"
-last_activity: 2026-03-27 -- Completed 20-01 credential & environment hardening
+stopped_at: Completed 21-01-PLAN.md
+last_updated: "2026-03-27T22:19:30.892Z"
+last_activity: 2026-03-27 -- Completed 21-01 critical mobile bug fixes
 progress:
   total_phases: 7
   completed_phases: 1
-  total_plans: 2
-  completed_plans: 2
+  total_plans: 6
+  completed_plans: 3
   percent: 50
 ---
 
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-27)
 
 **Core value:** Pracownik w terenie moze w pelni obsluzyc wynajem -- od wypelnienia umowy, przez zweryfikowanie uprawnien kierowcy, zrobienie zdjec auta, po podpis klienta i wysylke PDF -- bez papieru i bez powrotu do biura.
-**Current focus:** Milestone v2.1 -- Fix All Audit Issues (Phase 20 in progress)
+**Current focus:** Milestone v2.1 -- Fix All Audit Issues (Phase 21 in progress)
 
 ## Current Position
 
-Phase: 20 of 26 (Security Hardening)
-Plan: 1 of 2 complete
+Phase: 21 of 26 (Critical Bug Fixes)
+Plan: 1 of 1 complete
 Status: Executing
-Last activity: 2026-03-27 -- Completed 20-01 credential & environment hardening
+Last activity: 2026-03-27 -- Completed 21-01 critical mobile bug fixes
 
 Progress: [█████░░░░░] 50%
 
@@ -58,6 +58,7 @@ Progress: [█████░░░░░] 50%
 - [Phase 20]: CSV formula injection uses single-quote prefix per OWASP
 - [Phase 20]: Mobile PDF uses 5-minute signed URL expiry
 - [Phase 20]: S3 credential defaults moved to env.validation optionalDefaults pattern
+- [Phase 21]: useRef idempotency guard for rental creation; useState lazy initializer over redundant useEffect
 
 ### Pending Todos
 
@@ -71,6 +72,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-27T22:05:12.457Z
-Stopped at: Completed 20-01-PLAN.md
+Last session: 2026-03-27T22:19:30.891Z
+Stopped at: Completed 21-01-PLAN.md
 Resume file: None
