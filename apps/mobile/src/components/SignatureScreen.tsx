@@ -3,6 +3,8 @@ import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import * as Haptics from 'expo-haptics';
 import SignatureCanvas, { type SignatureViewRef } from 'react-native-signature-canvas';
+import Toast from 'react-native-toast-message';
+import { useTranslation } from 'react-i18next';
 
 import { AppButton } from './AppButton';
 
@@ -32,6 +34,7 @@ export function SignatureScreen({
   instruction,
 }: SignatureScreenProps) {
   const signatureRef = useRef<SignatureViewRef>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     ScreenOrientation.lockAsync(
@@ -62,7 +65,11 @@ export function SignatureScreen({
   );
 
   const handleEmpty = useCallback(() => {
-    // User tried to confirm empty canvas -- do nothing
+    Toast.show({
+      type: 'info',
+      text1: 'Podpis jest pusty',
+      text2: 'Narysuj podpis przed zatwierdzeniem',
+    });
   }, []);
 
   return (
@@ -106,13 +113,13 @@ export function SignatureScreen({
       {/* Bottom controls */}
       <View style={styles.controls}>
         <AppButton
-          title="Wyczysc podpis"
+          title={t('signatures.clear')}
           variant="secondary"
           onPress={handleClear}
           disabled={loading}
         />
         <AppButton
-          title="Zatwierdz podpis"
+          title={t('signatures.confirm')}
           onPress={handleConfirm}
           loading={loading}
         />

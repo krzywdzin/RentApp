@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 
 import { useRental } from '@/hooks/use-rentals';
@@ -25,6 +25,7 @@ export default function ReturnConfirmRentalScreen() {
   const { rentalId } = useLocalSearchParams<{ rentalId: string }>();
   const { t } = useTranslation();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { data: rental, isLoading } = useRental(rentalId ?? '');
   const updateDraft = useReturnDraftStore((s) => s.updateDraft);
 
@@ -129,7 +130,7 @@ export default function ReturnConfirmRentalScreen() {
       </ScrollView>
 
       {/* Bottom button */}
-      <View style={s.bottomBar}>
+      <View style={[s.bottomBar, { paddingBottom: Math.max(insets.bottom, 16) }]}>
         <AppButton
           title={t('common.next')}
           fullWidth
@@ -168,7 +169,6 @@ const s = StyleSheet.create({
     borderTopColor: '#E4E4E7',
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 16,
-    paddingBottom: 32,
     paddingTop: 16,
   },
 });

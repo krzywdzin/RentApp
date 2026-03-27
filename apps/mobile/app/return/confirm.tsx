@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
 
@@ -17,6 +17,7 @@ import { AppButton } from '@/components/AppButton';
 export default function ReturnConfirmScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const hasHydrated = useReturnDraftHasHydrated();
   const returnMutation = useReturnRental();
 
@@ -190,7 +191,7 @@ export default function ReturnConfirmScreen() {
       </ScrollView>
 
       {/* Submit button */}
-      <View style={s.bottomBar}>
+      <View style={[s.bottomBar, { paddingBottom: Math.max(insets.bottom, 16) }]}>
         <AppButton
           title={t('returnWizard.submit')}
           fullWidth
@@ -232,7 +233,6 @@ const s = StyleSheet.create({
     borderTopColor: '#E4E4E7',
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 16,
-    paddingBottom: 32,
     paddingTop: 16,
   },
 });

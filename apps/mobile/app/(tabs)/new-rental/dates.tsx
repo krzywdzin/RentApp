@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useForm, Controller } from 'react-hook-form';
@@ -26,6 +26,7 @@ export default function DatesStep() {
   const { t } = useTranslation();
   const router = useRouter();
   const draft = useRentalDraftStore();
+  const insets = useSafeAreaInsets();
 
   const defaultStartDate = draft.startDate
     ? new Date(draft.startDate)
@@ -220,7 +221,7 @@ export default function DatesStep() {
       </KeyboardAvoidingView>
 
       {/* Bottom CTA */}
-      <View style={s.bottomBar}>
+      <View style={[s.bottomBar, { paddingBottom: Math.max(insets.bottom, 16) }]}>
         <AppButton
           title={t('common.next')}
           onPress={handleSubmit(handleNext)}
@@ -281,7 +282,6 @@ const s = StyleSheet.create({
     borderTopColor: '#F4F4F5',
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 16,
-    paddingBottom: 32,
     paddingTop: 12,
   },
 });

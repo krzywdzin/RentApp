@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 
 import { useReturnDraftStore, useReturnDraftHasHydrated } from '@/stores/return-draft.store';
@@ -16,6 +16,7 @@ interface ChecklistState {
 export default function ReturnChecklistScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const hasHydrated = useReturnDraftHasHydrated();
   const draftChecklist = useReturnDraftStore((s) => s.checklist);
   const updateDraft = useReturnDraftStore((s) => s.updateDraft);
@@ -108,7 +109,7 @@ export default function ReturnChecklistScreen() {
       </ScrollView>
 
       {/* Bottom button */}
-      <View style={s.bottomBar}>
+      <View style={[s.bottomBar, { paddingBottom: Math.max(insets.bottom, 16) }]}>
         <AppButton title={t('common.next')} fullWidth onPress={handleNext} />
       </View>
     </SafeAreaView>
@@ -149,7 +150,6 @@ const s = StyleSheet.create({
     borderTopColor: '#E4E4E7',
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 16,
-    paddingBottom: 32,
     paddingTop: 16,
   },
 });

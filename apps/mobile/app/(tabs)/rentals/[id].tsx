@@ -2,6 +2,7 @@ import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useRental } from '@/hooks/use-rentals';
 import { formatDate, formatDateTime, formatCurrency, formatMileage } from '@/lib/format';
@@ -15,6 +16,7 @@ export default function RentalDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { t } = useTranslation();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { data: rental, isLoading, isError, refetch } = useRental(id ?? '');
 
   if (isLoading) {
@@ -165,7 +167,7 @@ export default function RentalDetailScreen() {
 
         {/* Action Buttons */}
         {isActiveOrExtended && (
-          <View style={s.bottomBar}>
+          <View style={[s.bottomBar, { paddingBottom: Math.max(insets.bottom, 16) }]}>
             <AppButton
               title={t('rentals.startReturn')}
               fullWidth
@@ -208,7 +210,6 @@ const s = StyleSheet.create({
     borderTopColor: '#E4E4E7',
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 16,
-    paddingBottom: 32,
     paddingTop: 16,
   },
 });

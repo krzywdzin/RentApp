@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 
 import { useRental } from '@/hooks/use-rentals';
@@ -16,6 +16,7 @@ import { AppInput } from '@/components/AppInput';
 export default function ReturnMileageScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const hasHydrated = useReturnDraftHasHydrated();
   const rentalId = useReturnDraftStore((s) => s.rentalId);
   const draftMileage = useReturnDraftStore((s) => s.returnMileage);
@@ -114,7 +115,7 @@ export default function ReturnMileageScreen() {
       </ScrollView>
 
       {/* Bottom button */}
-      <View style={s.bottomBar}>
+      <View style={[s.bottomBar, { paddingBottom: Math.max(insets.bottom, 16) }]}>
         <AppButton title={t('common.next')} fullWidth onPress={handleNext} />
       </View>
     </SafeAreaView>
@@ -140,7 +141,6 @@ const s = StyleSheet.create({
     borderTopColor: '#E4E4E7',
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 16,
-    paddingBottom: 32,
     paddingTop: 16,
   },
 });

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 
 import { useReturnDraftStore } from '@/stores/return-draft.store';
@@ -11,6 +11,7 @@ import { AppButton } from '@/components/AppButton';
 export default function ReturnNotesScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const draftNotes = useReturnDraftStore((s) => s.notes);
   const updateDraft = useReturnDraftStore((s) => s.updateDraft);
 
@@ -47,7 +48,7 @@ export default function ReturnNotesScreen() {
       </ScrollView>
 
       {/* Bottom button */}
-      <View style={s.bottomBar}>
+      <View style={[s.bottomBar, { paddingBottom: Math.max(insets.bottom, 16) }]}>
         <AppButton title={t('common.next')} fullWidth onPress={handleNext} />
       </View>
     </SafeAreaView>
@@ -78,7 +79,6 @@ const s = StyleSheet.create({
     borderTopColor: '#E4E4E7',
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 16,
-    paddingBottom: 32,
     paddingTop: 16,
   },
 });
