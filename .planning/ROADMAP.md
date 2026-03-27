@@ -128,7 +128,12 @@ Plans:
   3. Entering non-numeric text in the daily rate field or an implausible mileage value shows a validation error before submission
   4. Bottom bar buttons and the offline banner render correctly on devices with notches -- no overlap with the status bar or home indicator
   5. Filter chips, search bar, and form inputs have accessibility roles and labels that a screen reader can announce
-**Plans**: TBD
+**Plans**: 4 plans
+Plans:
+- [ ] 23-01-PLAN.md -- State persistence and navigation fixes (MSTATE-01, MSTATE-02, MSTATE-03, MNAV-01, MNAV-02, MNAV-03)
+- [ ] 23-02-PLAN.md -- Form validation and error handling (MVAL-01, MVAL-02, MVAL-03, MVAL-04, MVAL-05)
+- [ ] 23-03-PLAN.md -- UX polish: safe area insets, constants, diacritics, toast feedback (MUX-01, MUX-02, MUX-03, MUX-04, MUX-05, MUX-06, MUX-07)
+- [ ] 23-04-PLAN.md -- Accessibility: roles, labels, and screen reader support (MA11Y-01, MA11Y-02, MA11Y-03, MA11Y-04)
 
 ### Phase 24: Web Quality & Accessibility
 **Goal**: Every web page handles errors gracefully with retry, all forms validate before submission, interactive elements are keyboard-accessible with proper ARIA attributes, and layouts adapt to small screens
@@ -182,7 +187,7 @@ v2.1: 20 -> 21 -> 22 & 23 & 24 (parallel after 21) -> 25 (after 20) -> 26 (after
 | 20. Security Hardening | 2/2 | Complete    | 2026-03-27 | - |
 | 21. Critical Bug Fixes | 4/4 | Complete    | 2026-03-27 | - |
 | 22. API Validation & Performance | 4/4 | Complete    | 2026-03-27 | - |
-| 23. Mobile Quality & UX | v2.1 | 0/? | Not started | - |
+| 23. Mobile Quality & UX | v2.1 | 0/4 | Not started | - |
 | 24. Web Quality & Accessibility | v2.1 | 0/? | Not started | - |
 | 25. Infrastructure & CI/CD | v2.1 | 0/? | Not started | - |
 | 26. Code Quality & Cleanup | v2.1 | 0/? | Not started | - |
