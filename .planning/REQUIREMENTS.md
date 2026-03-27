@@ -119,14 +119,14 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 
 ### Web Accessibility
 
-- [ ] **WA11Y-01**: Interactive divs have role="button", tabIndex, and onKeyDown handlers
-- [ ] **WA11Y-02**: Collapsible card headers have role="button", aria-expanded, keyboard support
-- [ ] **WA11Y-03**: Filter bar labels properly associated with Select components via aria
-- [ ] **WA11Y-04**: Calendar rental blocks are keyboard accessible
-- [ ] **WA11Y-05**: Logout button has aria-label
-- [ ] **WA11Y-06**: Customer search dropdown uses combobox pattern with aria attributes
-- [ ] **WA11Y-07**: Vehicle search input has accessible label
-- [ ] **WA11Y-08**: Damage SVG pins are keyboard-focusable for tooltip access
+- [x] **WA11Y-01**: Interactive divs have role="button", tabIndex, and onKeyDown handlers
+- [x] **WA11Y-02**: Collapsible card headers have role="button", aria-expanded, keyboard support
+- [x] **WA11Y-03**: Filter bar labels properly associated with Select components via aria
+- [x] **WA11Y-04**: Calendar rental blocks are keyboard accessible
+- [x] **WA11Y-05**: Logout button has aria-label
+- [x] **WA11Y-06**: Customer search dropdown uses combobox pattern with aria attributes
+- [x] **WA11Y-07**: Vehicle search input has accessible label
+- [x] **WA11Y-08**: Damage SVG pins are keyboard-focusable for tooltip access
 
 ### Web UI Consistency
 
@@ -278,14 +278,14 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 | WVAL-03 | Phase 24 | Pending |
 | WVAL-04 | Phase 24 | Pending |
 | WVAL-05 | Phase 24 | Pending |
-| WA11Y-01 | Phase 24 | Pending |
-| WA11Y-02 | Phase 24 | Pending |
-| WA11Y-03 | Phase 24 | Pending |
-| WA11Y-04 | Phase 24 | Pending |
-| WA11Y-05 | Phase 24 | Pending |
-| WA11Y-06 | Phase 24 | Pending |
-| WA11Y-07 | Phase 24 | Pending |
-| WA11Y-08 | Phase 24 | Pending |
+| WA11Y-01 | Phase 24 | Complete |
+| WA11Y-02 | Phase 24 | Complete |
+| WA11Y-03 | Phase 24 | Complete |
+| WA11Y-04 | Phase 24 | Complete |
+| WA11Y-05 | Phase 24 | Complete |
+| WA11Y-06 | Phase 24 | Complete |
+| WA11Y-07 | Phase 24 | Complete |
+| WA11Y-08 | Phase 24 | Complete |
 | WUI-01 | Phase 24 | Pending |
 | WUI-02 | Phase 24 | Pending |
 | WUI-03 | Phase 24 | Pending |
