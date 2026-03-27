@@ -27,6 +27,12 @@ export class NotificationsController {
     return { count };
   }
 
+  @Patch('in-app/read-all')
+  @Roles(UserRole.ADMIN, UserRole.EMPLOYEE)
+  async markAllAsRead(@CurrentUser() user: { id: string }) {
+    return this.notificationsService.markAllAsRead(user.id);
+  }
+
   @Patch('in-app/:id/read')
   @Roles(UserRole.ADMIN, UserRole.EMPLOYEE)
   async markAsRead(
@@ -34,12 +40,6 @@ export class NotificationsController {
     @CurrentUser() user: { id: string },
   ) {
     return this.notificationsService.markAsRead(id, user.id);
-  }
-
-  @Patch('in-app/read-all')
-  @Roles(UserRole.ADMIN, UserRole.EMPLOYEE)
-  async markAllAsRead(@CurrentUser() user: { id: string }) {
-    return this.notificationsService.markAllAsRead(user.id);
   }
 
   @Get('log')
