@@ -51,7 +51,7 @@ import { exportToCsv } from '@/lib/csv-export';
 
 export function VehiclesPage() {
   const router = useRouter();
-  const { data: vehicles, isLoading } = useVehicles();
+  const { data: vehicles, isLoading, isError, refetch } = useVehicles();
   const archiveVehicle = useArchiveVehicle();
   const bulkUpdate = useBulkUpdateVehicles();
 
@@ -170,6 +170,17 @@ export function VehiclesPage() {
           </Link>
         </Button>
       </div>
+
+      {isError && !isLoading && (
+        <div className="flex flex-col items-center justify-center rounded-md border border-destructive p-8 gap-4">
+          <p className="text-sm text-destructive">
+            Nie udalo sie zaladowac danych. Sprawdz polaczenie i sprobuj ponownie.
+          </p>
+          <Button variant="outline" size="sm" onClick={() => refetch()}>
+            Ponow probe
+          </Button>
+        </div>
+      )}
 
       {/* Filters */}
       <VehicleFilterBar onSearchChange={handleSearchChange} onStatusChange={handleStatusChange} />

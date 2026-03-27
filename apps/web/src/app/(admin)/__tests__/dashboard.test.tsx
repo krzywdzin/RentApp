@@ -19,7 +19,6 @@ vi.mock('@/components/dashboard/activity-feed', () => ({
   ActivityFeed: () => <div data-testid="activity-feed">Activity Feed</div>,
 }));
 
-
 describe('DashboardPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -58,9 +57,7 @@ describe('DashboardPage', () => {
       refetch: vi.fn(),
     });
     mockUseRentals.mockReturnValue({
-      data: [
-        { id: 'r1', status: 'ACTIVE', startDate: '2026-01-01', endDate: '2026-12-31' },
-      ],
+      data: [{ id: 'r1', status: 'ACTIVE', startDate: '2026-01-01', endDate: '2026-12-31' }],
       isLoading: false,
       isError: false,
       refetch: vi.fn(),
@@ -97,9 +94,7 @@ describe('DashboardPage', () => {
 
     render(<DashboardPage />);
 
-    expect(
-      screen.getByText(/Nie udalo sie zaladowac danych/),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Nie udalo sie zaladowac danych/)).toBeInTheDocument();
 
     const retryButton = screen.getByRole('button', { name: /Ponow/i });
     expect(retryButton).toBeInTheDocument();

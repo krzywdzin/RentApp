@@ -15,7 +15,7 @@ import { CalendarView } from './calendar-view';
 
 export default function RentalsPage() {
   const router = useRouter();
-  const { data: rentals, isLoading } = useRentals();
+  const { data: rentals, isLoading, isError, refetch } = useRentals();
 
   const [statusFilter, setStatusFilter] = useState<RentalStatus | 'ALL'>('ALL');
   const [dateFrom, setDateFrom] = useState<Date | undefined>();
@@ -52,6 +52,17 @@ export default function RentalsPage() {
           Utworz wynajem
         </Button>
       </div>
+
+      {isError && !isLoading && (
+        <div className="flex flex-col items-center justify-center rounded-md border border-destructive p-8 gap-4">
+          <p className="text-sm text-destructive">
+            Nie udalo sie zaladowac danych. Sprawdz polaczenie i sprobuj ponownie.
+          </p>
+          <Button variant="outline" size="sm" onClick={() => refetch()}>
+            Ponow probe
+          </Button>
+        </div>
+      )}
 
       <Tabs defaultValue="lista">
         <TabsList>

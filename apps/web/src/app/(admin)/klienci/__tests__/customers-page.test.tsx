@@ -39,11 +39,10 @@ vi.mock('../columns', () => ({
 }));
 
 vi.mock('../filter-bar', () => ({
-  CustomerFilterBar: ({ onSearchChange }: Record<string, unknown>) => (
+  CustomerFilterBar: (_props: Record<string, unknown>) => (
     <div data-testid="customer-filter-bar">Filters</div>
   ),
 }));
-
 
 describe('CustomersPage', () => {
   beforeEach(() => {

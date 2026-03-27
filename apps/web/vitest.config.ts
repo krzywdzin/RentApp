@@ -15,8 +15,10 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.test.{ts,tsx}'],
     css: false,
-    deps: {
-      inline: ['@rentapp/shared'],
+    server: {
+      deps: {
+        inline: ['@rentapp/shared'],
+      },
     },
   },
 });

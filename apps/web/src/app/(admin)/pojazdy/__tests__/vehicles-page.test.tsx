@@ -41,7 +41,7 @@ vi.mock('../columns', () => ({
 }));
 
 vi.mock('../filter-bar', () => ({
-  VehicleFilterBar: ({ onSearchChange, onStatusChange }: Record<string, unknown>) => (
+  VehicleFilterBar: (_props: Record<string, unknown>) => (
     <div data-testid="vehicle-filter-bar">Filters</div>
   ),
 }));
@@ -49,7 +49,6 @@ vi.mock('../filter-bar', () => ({
 vi.mock('@/lib/csv-export', () => ({
   exportToCsv: vi.fn(),
 }));
-
 
 describe('VehiclesPage', () => {
   beforeEach(() => {

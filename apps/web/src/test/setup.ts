@@ -23,13 +23,36 @@ vi.mock('next/navigation', () => ({
 // We list all icons used across the codebase to avoid "No export defined" errors
 vi.mock('lucide-react', () => {
   const iconNames = [
-    'CalendarClock', 'Car', 'Clock', 'AlertTriangle', 'Plus', 'Download',
-    'ChevronLeft', 'ChevronRight', 'ChevronDown', 'ChevronUp',
-    'ChevronDownIcon', 'ChevronLeftIcon', 'ChevronRightIcon',
-    'ArrowDown', 'ArrowUp', 'ArrowUpDown', 'ArrowLeft',
-    'Check', 'Circle', 'X', 'Search', 'Eye', 'Pencil',
-    'MoreHorizontal', 'LogOut', 'Loader2', 'FileDown', 'FileText',
-    'Image', 'CalendarIcon',
+    'CalendarClock',
+    'Car',
+    'Clock',
+    'AlertTriangle',
+    'Plus',
+    'Download',
+    'ChevronLeft',
+    'ChevronRight',
+    'ChevronDown',
+    'ChevronUp',
+    'ChevronDownIcon',
+    'ChevronLeftIcon',
+    'ChevronRightIcon',
+    'ArrowDown',
+    'ArrowUp',
+    'ArrowUpDown',
+    'ArrowLeft',
+    'Check',
+    'Circle',
+    'X',
+    'Search',
+    'Eye',
+    'Pencil',
+    'MoreHorizontal',
+    'LogOut',
+    'Loader2',
+    'FileDown',
+    'FileText',
+    'Image',
+    'CalendarIcon',
   ];
 
   const mocks: Record<string, unknown> = {};
@@ -42,17 +65,18 @@ vi.mock('lucide-react', () => {
 });
 
 // Mock next/link
-vi.mock('next/link', () => ({
-  default: ({
-    children,
-    href,
-    ...props
-  }: {
-    children: React.ReactNode;
-    href: string;
-    [key: string]: unknown;
-  }) => {
-    const { createElement } = require('react');
-    return createElement('a', { href, ...props }, children);
-  },
-}));
+vi.mock('next/link', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const React = require('react');
+  return {
+    default: ({
+      children,
+      href,
+      ...props
+    }: {
+      children: React.ReactNode;
+      href: string;
+      [key: string]: unknown;
+    }) => React.createElement('a', { href, ...props }, children),
+  };
+});

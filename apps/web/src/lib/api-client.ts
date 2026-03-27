@@ -9,6 +9,31 @@ export class ApiError extends Error {
   }
 }
 
+// Token refresh state management
+let refreshPromise: Promise<boolean> | null = null;
+
+async function refreshToken(): Promise<boolean> {
+  try {
+    const res = await fetch('/api/auth/refresh', { method: 'POST' });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+async function handleTokenRefresh(): Promise<boolean> {
+  // If a refresh is already in-flight, wait for it
+  if (refreshPromise) {
+    return refreshPromise;
+  }
+
+  refreshPromise = refreshToken().finally(() => {
+    refreshPromise = null;
+  });
+
+  return refreshPromise;
+}
+
 export async function apiClient<T>(path: string, options: RequestInit = {}): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
     ...options,
@@ -17,6 +42,34 @@ export async function apiClient<T>(path: string, options: RequestInit = {}): Pro
       ...options.headers,
     },
   });
+
+  if (res.status === 401) {
+    const refreshed = await handleTokenRefresh();
+
+    if (!refreshed) {
+      // Refresh failed -- redirect to login
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login';
+      }
+      throw new ApiError(401, { message: 'Sesja wygasla' });
+    }
+
+    // Retry the original request with fresh token
+    const retryRes = await fetch(`${API_BASE}${path}`, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+
+    if (!retryRes.ok) {
+      const data = await retryRes.json().catch(() => ({}));
+      throw new ApiError(retryRes.status, data);
+    }
+
+    return retryRes.json();
+  }
 
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));

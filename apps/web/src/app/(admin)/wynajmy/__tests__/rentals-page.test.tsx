@@ -48,7 +48,6 @@ vi.mock('../calendar-view', () => ({
   CalendarView: () => <div data-testid="calendar-view">Calendar</div>,
 }));
 
-
 describe('RentalsPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();

@@ -39,7 +39,7 @@ import { CustomerFilterBar } from './filter-bar';
 
 export function CustomersPage() {
   const router = useRouter();
-  const { data: customers, isLoading } = useCustomers();
+  const { data: customers, isLoading, isError, refetch } = useCustomers();
   const archiveCustomer = useArchiveCustomer();
 
   const [search, setSearch] = useState('');
@@ -105,6 +105,17 @@ export function CustomersPage() {
           </Link>
         </Button>
       </div>
+
+      {isError && !isLoading && (
+        <div className="flex flex-col items-center justify-center rounded-md border border-destructive p-8 gap-4">
+          <p className="text-sm text-destructive">
+            Nie udalo sie zaladowac danych. Sprawdz polaczenie i sprobuj ponownie.
+          </p>
+          <Button variant="outline" size="sm" onClick={() => refetch()}>
+            Ponow probe
+          </Button>
+        </div>
+      )}
 
       {/* Filters */}
       <CustomerFilterBar onSearchChange={handleSearchChange} />

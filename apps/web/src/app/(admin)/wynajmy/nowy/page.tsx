@@ -220,6 +220,9 @@ export default function NewRentalPage() {
                 {...register('dailyRateNet', { valueAsNumber: true })}
                 placeholder="np. 15000 (150 zl)"
               />
+              {errors.dailyRateNet && (
+                <p className="text-sm text-destructive">{errors.dailyRateNet.message}</p>
+              )}
             </div>
 
             {/* VAT rate */}
@@ -230,6 +233,9 @@ export default function NewRentalPage() {
                 {...register('vatRate', { valueAsNumber: true })}
                 defaultValue={23}
               />
+              {errors.vatRate && (
+                <p className="text-sm text-destructive">{errors.vatRate.message}</p>
+              )}
             </div>
 
             {/* Notes */}
