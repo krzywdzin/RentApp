@@ -8,18 +8,16 @@ System do zarządzania wypożyczalnią samochodów składający się z aplikacji
 
 Pracownik w terenie może w pełni obsłużyć wynajem — od wypełnienia umowy, przez zweryfikowanie uprawnień kierowcy, zrobienie zdjęć auta, po podpis klienta i wysyłkę PDF — bez papieru i bez powrotu do biura.
 
-## Current Milestone: v1.1 Quality, Polish & UX Improvements
+## Current Milestone: v2.0 Production Ready
 
-**Goal:** Improve code quality, UX polish, and test coverage across the entire monorepo — empty states, loading skeletons, TypeScript strictness, dependency fixes, and E2E tests.
+**Goal:** Doprowadzić aplikację do pełnego działania produkcyjnego — naprawić wszystkie bugi z audytu (111 issues), dodać brakujące funkcje (krok zdjęć w wizardzie), naprawić UI/UX (scroll, podpisy, formularze), zabezpieczyć API, i wdrożyć na zewnętrzne platformy (Railway, Cloudflare R2, EAS Build).
 
 **Target features:**
-- Mobile UX polish — empty states, loading skeletons, better error messages
-- TypeScript strict mode / fix any type errors across monorepo
-- Fix dependency version mismatches (Expo SDK 54 compatibility)
-- Mobile screens polish — edge cases, missing states
-- Web admin panel polish — missing features, UX issues
-- E2E test coverage improvements
-- Performance improvements (building on Phase 9.1 work)
+- Mobile: naprawić scroll/keyboard w formularzach, signature pad landscape, dodać krok zdjęć do wizarda, naprawić hardcoded API URL
+- API: naprawić rental DRAFT→ACTIVE flow, zabezpieczyć sekrety, dodać env validation, graceful shutdown, error handler, PDF generation error handling
+- Web: naprawić type safety, error handling, token refresh, walidacje formularzy
+- Infra: deploy API+Web na Railway, storage na Cloudflare R2, build APK przez EAS Build, CI/CD pipeline
+- Security: rotacja sekretów, CORS cleanup, rate limiting, input validation
 
 ## Requirements
 
@@ -40,13 +38,19 @@ Pracownik w terenie może w pełni obsłużyć wynajem — od wypełnienia umowy
 
 ### Active
 
-- [ ] Mobile UX polish — empty states, loading skeletons, error messages
-- [ ] TypeScript strict mode across monorepo
-- [ ] Expo SDK 54 dependency compatibility fixes
-- [ ] Mobile screens edge case handling
-- [ ] Web admin panel UX improvements
-- [ ] E2E test coverage
-- [ ] Performance optimizations
+- [ ] Mobile UI/UX fixes — scroll, keyboard handling, signature pad landscape
+- [ ] Mobile: krok zdjęć pojazdu w wizardzie wynajmu
+- [ ] Mobile: dynamiczny API URL z konfiguracji (nie hardcoded)
+- [ ] API: rental status transitions (DRAFT→ACTIVE po podpisach)
+- [ ] API: env validation, graceful shutdown, global error handler
+- [ ] API: security — rotacja sekretów, rate limiting per-endpoint, input size limits
+- [ ] API: PDF generation error handling i retry
+- [ ] Web: type safety fixes, token refresh, form validations
+- [ ] Infra: deploy API+Web na Railway
+- [ ] Infra: storage na Cloudflare R2 (zastąpić MinIO)
+- [ ] Infra: EAS Build dla APK (Android)
+- [ ] Infra: CI/CD pipeline (GitHub Actions)
+- [ ] Infra: Dockerfile dla API i Web
 
 ### Out of Scope
 
@@ -87,7 +91,7 @@ Pracownik w terenie może w pełni obsłużyć wynajem — od wypełnienia umowy
 - **SMS provider:** smsapi.pl (wymaganie biznesowe)
 - **Wzór umowy:** Musi odwzorować istniejący szablon PDF
 - **CEPiK:** Zależność od zewnętrznego API — może wymagać alternatywnego podejścia jeśli dostęp ograniczony
-- **Hosting:** Do dobrania — brak istniejącego serwera
+- **Hosting:** Zewnętrzne platformy (Railway dla API+Web, Cloudflare R2 dla storage, Neon DB, Upstash Redis) — użytkownik ma tylko FTP, nie VPS
 
 ## Key Decisions
 
@@ -100,4 +104,4 @@ Pracownik w terenie może w pełni obsłużyć wynajem — od wypełnienia umowy
 | smsapi.pl jako provider SMS | Wymaganie biznesowe — polski dostawca, sprawdzone API | — Pending |
 
 ---
-*Last updated: 2026-03-25 after v1.1 milestone start*
+*Last updated: 2026-03-27 after v2.0 milestone start*

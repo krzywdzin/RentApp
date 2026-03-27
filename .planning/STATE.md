@@ -1,105 +1,61 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.1
-milestone_name: Quality, Polish & UX Improvements
-status: completed
-stopped_at: Completed 14-01-PLAN.md
-last_updated: "2026-03-25T04:11:31.483Z"
-last_activity: 2026-03-25 -- Completed 14-01-PLAN.md (Vitest + RTL web admin component tests)
+milestone: v2.0
+milestone_name: Production Ready
+status: defining_requirements
+stopped_at: Milestone v2.0 started — defining requirements
+last_updated: "2026-03-27T19:50:00.000Z"
+last_activity: 2026-03-27 -- Milestone v2.0 started after full 4-area audit (111 issues found)
 progress:
-  total_phases: 5
-  completed_phases: 5
-  total_plans: 14
-  completed_plans: 14
-  percent: 93
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-25)
+See: .planning/PROJECT.md (updated 2026-03-27)
 
 **Core value:** Pracownik w terenie moze w pelni obsluzyc wynajem -- od wypelnienia umowy, przez zweryfikowanie uprawnien kierowcy, zrobienie zdjec auta, po podpis klienta i wysylke PDF -- bez papieru i bez powrotu do biura.
-**Current focus:** Milestone v1.1 -- Quality, Polish & UX Improvements (Phases 10-14)
+**Current focus:** Milestone v2.0 -- Production Ready
 
 ## Current Position
 
-Phase: 14 of 14 (Test Coverage)
-Plan: 3 of 3
-Status: Plan 14-03 complete
-Last activity: 2026-03-25 -- Completed 14-01-PLAN.md (Vitest + RTL web admin component tests)
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-03-27 -- Milestone v2.0 started after full audit
 
-Progress: [█████████░] 93%
+Progress: [░░░░░░░░░░] 0%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
-- Average duration: 3min
-- Total execution time: 3min
-
-**By Phase:**
-
-| Phase | Plans | Total | Avg/Plan |
-|-------|-------|-------|----------|
-| - | - | - | - |
-
-*Updated after each plan completion*
-| Phase 10-mobile-ux-polish P03 | 3min | 1 tasks | 2 files |
-| Phase 10-01 P01 | 2min | 2 tasks | 3 files |
-| Phase 10-mobile-ux-polish P02 | 2min | 2 tasks | 5 files |
-| Phase 11-web-admin-panel-polish P01 | 3min | 2 tasks | 6 files |
-| Phase 11-web-admin-panel-polish P03 | 3min | 2 tasks | 7 files |
-| Phase 11-web-admin-panel-polish P02 | 5min | 2 tasks | 5 files |
-| Phase 12-typescript-strictness P02 | 4min | 2 tasks | 4 files |
-| Phase 12-typescript-strictness P01 | 6min | 2 tasks | 3 files |
-| Phase 12-typescript-strictness P03 | 8min | 2 tasks | 13 files |
-| Phase 13-dependencies-performance P01 | 1min | 1 tasks | 2 files |
-| Phase 13-dependencies-performance P02 | 2min | 2 tasks | 8 files |
-| Phase 14-test-coverage P02 | 2min | 2 tasks | 7 files |
-| Phase 14-test-coverage P03 | 2min | 1 tasks | 2 files |
-| Phase 14-test-coverage P01 | 7min | 2 tasks | 9 files |
+- Total plans completed: 0
+- Average duration: —
+- Total execution time: —
 
 ## Accumulated Context
 
 ### Roadmap Evolution
 
 - v1.0 completed 2026-03-25 with 42 requirements across 9 phases + 9.1 bug-fix phase (37 plans)
-- v1.1 milestone started 2026-03-25 with 29 requirements across 5 phases (10-14)
+- v1.1 completed 2026-03-25 with 29 requirements across 5 phases (10-14), 14 plans
+- v2.0 started 2026-03-27 after comprehensive audit: 111 issues across mobile (26), API (38), web (27), infra (20)
 
 ### Decisions
 
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- [v1.0]: Full-TypeScript monorepo (Expo + Next.js + NestJS + Prisma + PostgreSQL)
-- [Phase 09.1]: NativeWind removed, migrated to React Native StyleSheet API
-- [Phase 09.1]: ErrorBoundary added as root-level crash recovery
-- [v1.1]: Phases 10-13 are independent (mobile, web, types, deps) -- Phase 14 (tests) depends on all prior
-- [Phase 10-mobile-ux-polish]: Used || instead of ?? for firstName fallback to treat empty string as falsy
-- [Phase 10-mobile-ux-polish]: Guard placement after all hooks to respect React rules of hooks
-- [Phase 10-01]: Used isFetching (not isLoading) for customer search spinner to show during background refetches
-- [Phase 11-01]: Client-side pagination for user list since user counts are small
-- [Phase 11-01]: Collapsible card for create user form to prioritize DataTable view
-- [Phase 11-01]: Reused setupToken pattern for admin-initiated password reset
-- [Phase 11-03]: Inline useUsersForFilter hook in filter-bar.tsx rather than shared hook
-- [Phase 11-03]: Used 'all' sentinel value for Select components (shadcn Select cannot have empty string values)
-- [Phase 11-02]: Used (as any) type assertions for vehicle/customer nested objects -- defer to Phase 12 types cleanup
-- [Phase 11-02]: Used z.input with superRefine for Zod+react-hook-form resolver type compatibility
-- [Phase 12-typescript-strictness]: Used parseDamagePins() helper for Prisma JSON reads instead of inline casts
-- [Phase 12-typescript-strictness]: Used Prisma.VehicleGetPayload with typeof VEHICLE_INCLUDE for typed toDto parameter
-- [Phase 12-01]: Used Prisma.RentalGetPayload with as const include for derived relation types
-- [Phase 12-01]: Exported types from service for controller declaration emit compatibility
-- [Phase 12-01]: Used 'in' operator for union type narrowing in controller
-- [Phase 12-03]: Created PortalReturnInspectionData instead of reusing VehicleInspection -- portal returnData has different fields
-- [Phase 12-03]: Used Resolver<FormValues> cast for zodResolver with refined Zod schemas instead of as any
-- [Phase 12-03]: Used RentalWithRelations interface extending RentalDto for typed relation access
-- [Phase 13-01]: Used tilde (~) ranges for react-native-webview to match Expo convention
-- [Phase 13-dependencies-performance]: Used RentalFilters interface with URLSearchParams for server-side filtering
-- [Phase 14-test-coverage]: Used pnpm-aware transformIgnorePatterns with .pnpm allowlist for jest-expo
-- [Phase 14-test-coverage]: Set statement threshold to 35% (baseline 40%) as regression floor, not a target
-- [Phase 14-01]: Used explicit icon name list for lucide-react mock instead of Proxy (vitest 4 async hang)
+- [v2.0]: Deploy na zewnetrzne platformy (Railway, Cloudflare R2, EAS Build) — uzytkownik ma tylko FTP, nie VPS
+- [v2.0]: Storage fallback na local filesystem dodany w v1.1 bugfix — docelowo Cloudflare R2
+- [v2.0]: Rental DRAFT→ACTIVE transition dodany w contracts.service.ts po zebraniu podpisow
+- [v2.0]: overrideConflict: true w mobile signatures flow zeby nie blokowac na osieroconych DRAFT-ach
 
 ### Pending Todos
 
@@ -107,10 +63,11 @@ None yet.
 
 ### Blockers/Concerns
 
-None.
+- Sekrety (Neon DB, Upstash Redis, SMSAPI) wymagaja rotacji przed deploy
+- Docker Desktop nie zainstalowany na maszynie dewelopera
 
 ## Session Continuity
 
-Last session: 2026-03-25T04:07:12Z
-Stopped at: Completed 14-01-PLAN.md
+Last session: 2026-03-27T19:50:00Z
+Stopped at: Milestone v2.0 started — defining requirements
 Resume file: None
