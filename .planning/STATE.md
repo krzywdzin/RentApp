@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v2.1
 milestone_name: Fix All Audit Issues
 status: executing
-stopped_at: Completed 24-02-PLAN.md
-last_updated: "2026-03-27T23:44:45.482Z"
-last_activity: 2026-03-27 -- Completed 24-05 state management, performance & responsive fixes
+stopped_at: Completed 25-03-PLAN.md
+last_updated: "2026-03-27T23:54:19.172Z"
+last_activity: 2026-03-27 -- Completed 25-03 infrastructure config cleanup
 progress:
   total_phases: 7
-  completed_phases: 5
-  total_plans: 19
-  completed_plans: 19
-  percent: 95
+  completed_phases: 6
+  total_plans: 22
+  completed_plans: 22
+  percent: 100
 ---
 
 # Project State
@@ -21,22 +21,22 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-27)
 
 **Core value:** Pracownik w terenie moze w pelni obsluzyc wynajem -- od wypelnienia umowy, przez zweryfikowanie uprawnien kierowcy, zrobienie zdjec auta, po podpis klienta i wysylke PDF -- bez papieru i bez powrotu do biura.
-**Current focus:** Milestone v2.1 -- Fix All Audit Issues (Phase 24 in progress)
+**Current focus:** Milestone v2.1 -- Fix All Audit Issues (Phase 25 complete)
 
 ## Current Position
 
-Phase: 24 of 26 (Web Quality & Accessibility) -- COMPLETE
-Plan: 5 of 5 complete
+Phase: 25 of 26 (Infrastructure & CI/CD) -- COMPLETE
+Plan: 3 of 3 complete
 Status: Executing
-Last activity: 2026-03-27 -- Completed 24-05 state management, performance & responsive fixes
+Last activity: 2026-03-27 -- Completed 25-03 infrastructure config cleanup
 
-Progress: [██████████] 95%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 68 (37 v1.0 + 14 v1.1 + 7 v2.0 + 10 v2.1)
-- Phases completed: 20 + 1 inserted (9.1)
+- Total plans completed: 71 (37 v1.0 + 14 v1.1 + 7 v2.0 + 13 v2.1)
+- Phases completed: 21 + 1 inserted (9.1)
 
 ## Accumulated Context
 
@@ -90,6 +90,14 @@ Progress: [██████████] 95%
 - [Phase 24]: useState lazy initializer with typeof window guard for localStorage sidebar state (no flash)
 - [Phase 24]: Numeric inputs use isNaN undefined fallback instead of || 0 for proper Zod validation
 - [Phase 24]: Photo documentation page combines photoQuery and damageQuery error checks with joint refetch
+- [Phase 25]: Chromium installed via apk in API Docker production stage with PUPPETEER_EXECUTABLE_PATH env
+- [Phase 25]: Railway startCommand runs prisma migrate deploy before node dist/main.js
+- [Phase 25]: Polling health check: 12 attempts x 10s = 2min timeout with graceful skip if URL not configured
+- [Phase 25]: S3_REGION=auto in root .env.example (matches R2 convention, not us-east-1)
+- [Phase 25]: apps/api/.env.example replaced with reference to root to eliminate env var drift
+- [Phase 25]: Docker images pinned: MinIO RELEASE.2025-01-20T14-49-07Z, Mailpit v1.21
+- [Phase 25]: Web coverage threshold 30% (lower than API 35%) due to fewer tests currently
+- [Phase 25]: E2E tests run after unit tests with prisma migrate deploy for DB setup
 
 ### Pending Todos
 
@@ -103,6 +111,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-27T23:39:01.073Z
-Stopped at: Completed 24-02-PLAN.md
+Last session: 2026-03-27T23:54:19.170Z
+Stopped at: Completed 25-03-PLAN.md
 Resume file: None

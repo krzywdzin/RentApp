@@ -151,15 +151,15 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 
 ### Infrastructure CI/CD
 
-- [ ] **CICD-01**: Redis service added to CI workflow
-- [ ] **CICD-02**: prisma migrate deploy runs in deployment pipeline (Dockerfile or railway.toml)
-- [ ] **CICD-03**: Web service has railway.toml with health check
-- [ ] **CICD-04**: deploy-web.yml has post-deploy health check step
-- [ ] **CICD-05**: Puppeteer Chromium installed in API Docker production image
-- [ ] **CICD-06**: Deploy health check uses polling loop instead of sleep 30
-- [ ] **CICD-07**: Mobile app included in CI (typecheck + test)
-- [ ] **CICD-08**: E2E tests run in CI pipeline
-- [ ] **CICD-09**: Coverage threshold enforced in CI
+- [x] **CICD-01**: Redis service added to CI workflow
+- [x] **CICD-02**: prisma migrate deploy runs in deployment pipeline (Dockerfile or railway.toml)
+- [x] **CICD-03**: Web service has railway.toml with health check
+- [x] **CICD-04**: deploy-web.yml has post-deploy health check step
+- [x] **CICD-05**: Puppeteer Chromium installed in API Docker production image
+- [x] **CICD-06**: Deploy health check uses polling loop instead of sleep 30
+- [x] **CICD-07**: Mobile app included in CI (typecheck + test)
+- [x] **CICD-08**: E2E tests run in CI pipeline
+- [x] **CICD-09**: Coverage threshold enforced in CI
 
 ### Infrastructure Config & Dependencies
 
@@ -170,7 +170,7 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 - [ ] **ICONF-05**: Root and API .env.example consolidated (single source of truth)
 - [ ] **ICONF-06**: Docker images pinned to specific versions (MinIO, Mailpit)
 - [ ] **ICONF-07**: MinIO has health check in docker-compose.yml
-- [ ] **ICONF-08**: tsconfig.base.json copied in both Dockerfiles
+- [x] **ICONF-08**: tsconfig.base.json copied in both Dockerfiles
 - [ ] **ICONF-09**: turbo.json has outputs for lint/test tasks and typecheck task defined
 
 ### Code Quality
@@ -298,15 +298,15 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 | WRESP-01 | Phase 24 | Complete |
 | WRESP-02 | Phase 24 | Complete |
 | WRESP-03 | Phase 24 | Complete |
-| CICD-01 | Phase 25 | Pending |
-| CICD-02 | Phase 25 | Pending |
-| CICD-03 | Phase 25 | Pending |
-| CICD-04 | Phase 25 | Pending |
-| CICD-05 | Phase 25 | Pending |
-| CICD-06 | Phase 25 | Pending |
-| CICD-07 | Phase 25 | Pending |
-| CICD-08 | Phase 25 | Pending |
-| CICD-09 | Phase 25 | Pending |
+| CICD-01 | Phase 25 | Complete |
+| CICD-02 | Phase 25 | Complete |
+| CICD-03 | Phase 25 | Complete |
+| CICD-04 | Phase 25 | Complete |
+| CICD-05 | Phase 25 | Complete |
+| CICD-06 | Phase 25 | Complete |
+| CICD-07 | Phase 25 | Complete |
+| CICD-08 | Phase 25 | Complete |
+| CICD-09 | Phase 25 | Complete |
 | ICONF-01 | Phase 25 | Pending |
 | ICONF-02 | Phase 25 | Pending |
 | ICONF-03 | Phase 25 | Pending |
@@ -314,7 +314,7 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 | ICONF-05 | Phase 25 | Pending |
 | ICONF-06 | Phase 25 | Pending |
 | ICONF-07 | Phase 25 | Pending |
-| ICONF-08 | Phase 25 | Pending |
+| ICONF-08 | Phase 25 | Complete |
 | ICONF-09 | Phase 25 | Pending |
 | QUAL-01 | Phase 26 | Pending |
 | QUAL-02 | Phase 26 | Pending |
