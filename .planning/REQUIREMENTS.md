@@ -84,13 +84,13 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 
 ### Mobile UX
 
-- [ ] **MUX-01**: Bottom bar buttons use safe area insets instead of hardcoded paddingBottom
-- [ ] **MUX-02**: SignatureScreen shows toast feedback on empty canvas confirm
-- [ ] **MUX-03**: Polish diacritics are correct in all checklist labels and i18n strings
-- [ ] **MUX-04**: WIZARD_LABELS extracted to shared constant (not duplicated per step file)
-- [ ] **MUX-05**: VAT rate extracted to constant DEFAULT_VAT_RATE (not hardcoded 23 in 4 places)
-- [ ] **MUX-06**: Magic numbers extracted to named constants (ONE_DAY_MS, UPCOMING_RETURN_THRESHOLD)
-- [ ] **MUX-07**: OfflineBanner rendered inside SafeAreaView to avoid status bar overlap
+- [x] **MUX-01**: Bottom bar buttons use safe area insets instead of hardcoded paddingBottom
+- [x] **MUX-02**: SignatureScreen shows toast feedback on empty canvas confirm
+- [x] **MUX-03**: Polish diacritics are correct in all checklist labels and i18n strings
+- [x] **MUX-04**: WIZARD_LABELS extracted to shared constant (not duplicated per step file)
+- [x] **MUX-05**: VAT rate extracted to constant DEFAULT_VAT_RATE (not hardcoded 23 in 4 places)
+- [x] **MUX-06**: Magic numbers extracted to named constants (ONE_DAY_MS, UPCOMING_RETURN_THRESHOLD)
+- [x] **MUX-07**: OfflineBanner rendered inside SafeAreaView to avoid status bar overlap
 
 ### Mobile Accessibility
 
@@ -255,13 +255,13 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 | MVAL-03 | Phase 23 | Pending |
 | MVAL-04 | Phase 23 | Pending |
 | MVAL-05 | Phase 23 | Pending |
-| MUX-01 | Phase 23 | Pending |
-| MUX-02 | Phase 23 | Pending |
-| MUX-03 | Phase 23 | Pending |
-| MUX-04 | Phase 23 | Pending |
-| MUX-05 | Phase 23 | Pending |
-| MUX-06 | Phase 23 | Pending |
-| MUX-07 | Phase 23 | Pending |
+| MUX-01 | Phase 23 | Complete |
+| MUX-02 | Phase 23 | Complete |
+| MUX-03 | Phase 23 | Complete |
+| MUX-04 | Phase 23 | Complete |
+| MUX-05 | Phase 23 | Complete |
+| MUX-06 | Phase 23 | Complete |
+| MUX-07 | Phase 23 | Complete |
 | MA11Y-01 | Phase 23 | Complete |
 | MA11Y-02 | Phase 23 | Complete |
 | MA11Y-03 | Phase 23 | Complete |
