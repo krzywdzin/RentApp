@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.1
 milestone_name: Fix All Audit Issues
-status: active
-stopped_at: Roadmap created
-last_updated: "2026-03-27T23:00:00.000Z"
-last_activity: 2026-03-27 -- Roadmap created for v2.1
+status: planning
+stopped_at: Completed 20-02-PLAN.md
+last_updated: "2026-03-27T22:04:09.063Z"
+last_activity: 2026-03-27 -- Roadmap created for v2.1 (7 phases, 111 requirements)
 progress:
   total_phases: 7
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_plans: 2
+  completed_plans: 1
   percent: 0
 ---
 
@@ -53,6 +53,10 @@ Progress: [░░░░░░░░░░] 0%
 - [v2.0]: CORS origins from env var CORS_ORIGINS (no hardcoded IPs)
 - [v2.0]: Rate limiting 100 req/min global, 10 req/min auth endpoints
 - [v2.1]: Phase 26 (Code Quality) depends on all other v2.1 phases -- cleanup runs last
+- [Phase 20]: 500KB base64 string limit on signature/sketch DTOs
+- [Phase 20]: 5 req/min portal token exchange rate limit (tighter than global 100/min)
+- [Phase 20]: CSV formula injection uses single-quote prefix per OWASP
+- [Phase 20]: Mobile PDF uses 5-minute signed URL expiry
 
 ### Pending Todos
 
@@ -66,6 +70,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-27T23:00:00Z
-Stopped at: Roadmap created for v2.1 -- ready to plan Phase 20
+Last session: 2026-03-27T22:04:09.062Z
+Stopped at: Completed 20-02-PLAN.md
 Resume file: None
