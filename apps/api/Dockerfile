@@ -15,13 +15,16 @@ COPY --from=deps /app/apps/api/node_modules ./apps/api/node_modules
 COPY --from=deps /app/packages/shared/node_modules ./packages/shared/node_modules
 COPY packages/shared/ packages/shared/
 COPY apps/api/ apps/api/
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json ./
 RUN pnpm --filter @rentapp/shared build
 RUN pnpm --filter @rentapp/api exec prisma generate
 RUN pnpm --filter @rentapp/api build
 
 FROM node:20-alpine AS production
 WORKDIR /app
+RUN apk add --no-cache chromium
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 RUN addgroup -g 1001 -S nodejs && adduser -S nestjs -u 1001
 
 COPY --from=build /app/apps/api/dist ./dist
