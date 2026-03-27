@@ -12,15 +12,34 @@ export class RetentionService {
   async cleanupExpiredCustomers() {
     const now = new Date();
 
-    // Find expired, archived customers
-    // In Phase 3+, also check that customer has no active rentals
+    // Find expired, archived customers with no active rentals
     const expired = await this.prisma.customer.findMany({
       where: {
         retentionExpiresAt: { lte: now },
         isArchived: true,
+        rentals: {
+          none: { status: { in: ['ACTIVE', 'PENDING', 'RESERVED'] } },
+        },
       },
       select: { id: true },
     });
+
+    // Count customers skipped due to active rentals
+    const skippedCount = await this.prisma.customer.count({
+      where: {
+        retentionExpiresAt: { lte: now },
+        isArchived: true,
+        rentals: {
+          some: { status: { in: ['ACTIVE', 'PENDING', 'RESERVED'] } },
+        },
+      },
+    });
+
+    if (skippedCount > 0) {
+      this.logger.warn(
+        `Skipped ${skippedCount} customers with active rentals during retention cleanup`,
+      );
+    }
 
     if (expired.length === 0) {
       this.logger.log('Retention cleanup: no expired customers found');

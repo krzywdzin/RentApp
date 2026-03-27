@@ -250,6 +250,9 @@ export class RentalsService {
       where: { id },
       include: RENTAL_INCLUDE,
     });
+    if (!updated) {
+      throw new NotFoundException('Rental not found after processing return');
+    }
 
     // 5. Emit event
     this.eventEmitter.emit('rental.returned', {
@@ -261,7 +264,7 @@ export class RentalsService {
 
     // 6. Return with audit metadata
     return {
-      ...updated!,
+      ...updated,
       __audit: {
         action: 'rental.return',
         entityType: 'Rental',
@@ -415,6 +418,9 @@ export class RentalsService {
       where: { id },
       include: RENTAL_INCLUDE,
     });
+    if (!updated) {
+      throw new NotFoundException('Rental not found after rollback');
+    }
 
     // 7. Emit event
     this.eventEmitter.emit('rental.rolledBack', {
@@ -427,7 +433,7 @@ export class RentalsService {
 
     // 8. Return with audit metadata
     return {
-      ...updated!,
+      ...updated,
       __audit: {
         action: 'rental.rollback',
         entityType: 'Rental',
