@@ -58,12 +58,12 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 - [x] **APERF-01**: importFleet pre-fetches registrations in bulk (no N+1 DB queries in loop)
 - [x] **APERF-02**: Photo comparison uses Promise.all for presigned URL generation
 - [x] **APERF-03**: enqueueExpiryAlert uses createMany for batch notifications
-- [ ] **APERF-04**: AuditInterceptor uses NestJS Logger instead of console.error
-- [ ] **APERF-05**: AuthService logs security events (failed login, lockout, token reuse)
-- [ ] **APERF-06**: AuthService Redis client has error event handler
-- [ ] **APERF-07**: Health endpoint uses $queryRaw tagged template instead of $queryRawUnsafe
-- [ ] **APERF-08**: getWarsawDateRange uses proper timezone-aware date calculation
-- [ ] **APERF-09**: Annex PDF uses rental vatRate instead of hardcoded 23%
+- [x] **APERF-04**: AuditInterceptor uses NestJS Logger instead of console.error
+- [x] **APERF-05**: AuthService logs security events (failed login, lockout, token reuse)
+- [x] **APERF-06**: AuthService Redis client has error event handler
+- [x] **APERF-07**: Health endpoint uses $queryRaw tagged template instead of $queryRawUnsafe
+- [x] **APERF-08**: getWarsawDateRange uses proper timezone-aware date calculation
+- [x] **APERF-09**: Annex PDF uses rental vatRate instead of hardcoded 23%
 
 ### Mobile State & Navigation
 
@@ -238,12 +238,12 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 | APERF-01 | Phase 22 | Complete |
 | APERF-02 | Phase 22 | Complete |
 | APERF-03 | Phase 22 | Complete |
-| APERF-04 | Phase 22 | Pending |
-| APERF-05 | Phase 22 | Pending |
-| APERF-06 | Phase 22 | Pending |
-| APERF-07 | Phase 22 | Pending |
-| APERF-08 | Phase 22 | Pending |
-| APERF-09 | Phase 22 | Pending |
+| APERF-04 | Phase 22 | Complete |
+| APERF-05 | Phase 22 | Complete |
+| APERF-06 | Phase 22 | Complete |
+| APERF-07 | Phase 22 | Complete |
+| APERF-08 | Phase 22 | Complete |
+| APERF-09 | Phase 22 | Complete |
 | MSTATE-01 | Phase 23 | Pending |
 | MSTATE-02 | Phase 23 | Pending |
 | MSTATE-03 | Phase 23 | Pending |

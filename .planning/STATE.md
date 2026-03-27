@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v2.1
 milestone_name: Fix All Audit Issues
 status: executing
-stopped_at: Completed 22-03-PLAN.md
-last_updated: "2026-03-27T22:43:30Z"
-last_activity: 2026-03-27 -- Completed 22-03 N+1 query fixes
+stopped_at: Completed 22-04-PLAN.md
+last_updated: "2026-03-27T22:43:43Z"
+last_activity: 2026-03-27 -- Completed 22-04 logging, safety & correctness fixes
 progress:
   total_phases: 7
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 10
-  completed_plans: 8
-  percent: 70
+  completed_plans: 10
+  percent: 100
 ---
 
 # Project State
@@ -25,17 +25,17 @@ See: .planning/PROJECT.md (updated 2026-03-27)
 
 ## Current Position
 
-Phase: 22 of 26 (API Validation & Performance)
-Plan: 3 of 4 complete
+Phase: 22 of 26 (API Validation & Performance) -- COMPLETE
+Plan: 4 of 4 complete
 Status: Executing
-Last activity: 2026-03-27 -- Completed 22-03 N+1 query fixes
+Last activity: 2026-03-27 -- Completed 22-04 logging, safety & correctness fixes
 
-Progress: [████████░░] 80%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 63 (37 v1.0 + 14 v1.1 + 7 v2.0 + 5 v2.1)
+- Total plans completed: 64 (37 v1.0 + 14 v1.1 + 7 v2.0 + 6 v2.1)
 - Phases completed: 19 + 1 inserted (9.1)
 
 ## Accumulated Context
@@ -66,6 +66,8 @@ Progress: [████████░░] 80%
 - [Phase 22]: DateAfterValidator created as reusable validator in common/validators for cross-field date ordering
 - [Phase 22]: Bulk pre-fetch with Set for O(1) registration lookup in importFleet
 - [Phase 22]: Promise.all parallelization for presigned URLs and notification creation
+- [Phase 22]: Intl.DateTimeFormat shortOffset for dynamic CET/CEST offset (no date-fns-tz dependency)
+- [Phase 22]: frozenData.rental.vatRate for dynamic annex VAT calculation
 
 ### Pending Todos
 
@@ -79,6 +81,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-27T22:43:30Z
-Stopped at: Completed 22-03-PLAN.md
+Last session: 2026-03-27T22:43:43Z
+Stopped at: Completed 22-04-PLAN.md
 Resume file: None
