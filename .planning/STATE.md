@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.1
 milestone_name: Fix All Audit Issues
 status: executing
-stopped_at: Completed 23-04-PLAN.md
-last_updated: "2026-03-27T23:03:44.458Z"
+stopped_at: Completed 23-01-PLAN.md
+last_updated: "2026-03-27T23:06:23.913Z"
 last_activity: 2026-03-27 -- Completed 23-04 accessibility attributes
 progress:
   total_phases: 7
   completed_phases: 3
   total_plans: 14
-  completed_plans: 11
+  completed_plans: 12
   percent: 86
 ---
 
@@ -72,6 +72,8 @@ Progress: [████████░░] 86%
 - [Phase 23]: SearchBar accessibilityLabel fallback chain: prop > placeholder > hardcoded 'Szukaj'
 - [Phase 23]: Stat cards use accessible View wrapper inside AppCard rather than modifying shared component
 - [Phase 23]: nativeID/accessibilityLabelledBy for Android label linkage, accessibilityLabel for iOS fallback
+- [Phase 23]: overrideConflict defaults to false; 409 triggers ConfirmationDialog before retry with override
+- [Phase 23]: useRentalDraftHasHydrated follows same pattern as useReturnDraftHasHydrated for consistency
 
 ### Pending Todos
 
@@ -85,6 +87,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-27T23:03:44.456Z
-Stopped at: Completed 23-04-PLAN.md
+Last session: 2026-03-27T23:06:23.912Z
+Stopped at: Completed 23-01-PLAN.md
 Resume file: None

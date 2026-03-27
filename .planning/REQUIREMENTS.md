@@ -67,12 +67,12 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 
 ### Mobile State & Navigation
 
-- [ ] **MSTATE-01**: rentalId, contractId, currentIndex persisted in draft store (survive backgrounding)
-- [ ] **MSTATE-02**: Draft step routing includes photos step (step 4 → photos, step 5 → signatures)
-- [ ] **MSTATE-03**: logout() clears biometricEnabled from memory state
-- [ ] **MNAV-01**: beforeRemove discard dialog intercepts all wizard steps, not just the first
-- [ ] **MNAV-02**: Return submission uses router.replace instead of router.dismissAll
-- [ ] **MNAV-03**: overrideConflict defaults to false; user prompted on conflict before override
+- [x] **MSTATE-01**: rentalId, contractId, currentIndex persisted in draft store (survive backgrounding)
+- [x] **MSTATE-02**: Draft step routing includes photos step (step 4 → photos, step 5 → signatures)
+- [x] **MSTATE-03**: logout() clears biometricEnabled from memory state
+- [x] **MNAV-01**: beforeRemove discard dialog intercepts all wizard steps, not just the first
+- [x] **MNAV-02**: Return submission uses router.replace instead of router.dismissAll
+- [x] **MNAV-03**: overrideConflict defaults to false; user prompted on conflict before override
 
 ### Mobile Validation & Error Handling
 
@@ -244,12 +244,12 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 | APERF-07 | Phase 22 | Complete |
 | APERF-08 | Phase 22 | Complete |
 | APERF-09 | Phase 22 | Complete |
-| MSTATE-01 | Phase 23 | Pending |
-| MSTATE-02 | Phase 23 | Pending |
-| MSTATE-03 | Phase 23 | Pending |
-| MNAV-01 | Phase 23 | Pending |
-| MNAV-02 | Phase 23 | Pending |
-| MNAV-03 | Phase 23 | Pending |
+| MSTATE-01 | Phase 23 | Complete |
+| MSTATE-02 | Phase 23 | Complete |
+| MSTATE-03 | Phase 23 | Complete |
+| MNAV-01 | Phase 23 | Complete |
+| MNAV-02 | Phase 23 | Complete |
+| MNAV-03 | Phase 23 | Complete |
 | MVAL-01 | Phase 23 | Pending |
 | MVAL-02 | Phase 23 | Pending |
 | MVAL-03 | Phase 23 | Pending |
