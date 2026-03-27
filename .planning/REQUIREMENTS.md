@@ -46,12 +46,12 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 
 - [ ] **AVAL-01**: Server-side pagination on GET /rentals, GET /customers, GET /contracts
 - [ ] **AVAL-02**: ParseUUIDPipe on all :id params (portal rental, users PATCH, users reset-password)
-- [ ] **AVAL-03**: CalendarQueryDto validates from < to and max range (6 months)
-- [ ] **AVAL-04**: CreateRentalDto validates startDate < endDate
-- [ ] **AVAL-05**: CreateVehicleDto fields have @MaxLength constraints
-- [ ] **AVAL-06**: UploadPhotoDto.position has @MaxLength(50)
-- [ ] **AVAL-07**: NotificationQueryDto.isRead validates as 'true'|'false'
-- [ ] **AVAL-08**: Notification route order: markAllAsRead before parameterized markAsRead
+- [x] **AVAL-03**: CalendarQueryDto validates from < to and max range (6 months)
+- [x] **AVAL-04**: CreateRentalDto validates startDate < endDate
+- [x] **AVAL-05**: CreateVehicleDto fields have @MaxLength constraints
+- [x] **AVAL-06**: UploadPhotoDto.position has @MaxLength(50)
+- [x] **AVAL-07**: NotificationQueryDto.isRead validates as 'true'|'false'
+- [x] **AVAL-08**: Notification route order: markAllAsRead before parameterized markAsRead
 
 ### API Performance & Logging
 
@@ -229,12 +229,12 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 | AREL-08 | Phase 21 | Complete |
 | AVAL-01 | Phase 22 | Pending |
 | AVAL-02 | Phase 22 | Pending |
-| AVAL-03 | Phase 22 | Pending |
-| AVAL-04 | Phase 22 | Pending |
-| AVAL-05 | Phase 22 | Pending |
-| AVAL-06 | Phase 22 | Pending |
-| AVAL-07 | Phase 22 | Pending |
-| AVAL-08 | Phase 22 | Pending |
+| AVAL-03 | Phase 22 | Complete |
+| AVAL-04 | Phase 22 | Complete |
+| AVAL-05 | Phase 22 | Complete |
+| AVAL-06 | Phase 22 | Complete |
+| AVAL-07 | Phase 22 | Complete |
+| AVAL-08 | Phase 22 | Complete |
 | APERF-01 | Phase 22 | Pending |
 | APERF-02 | Phase 22 | Pending |
 | APERF-03 | Phase 22 | Pending |

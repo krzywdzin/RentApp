@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.1
 milestone_name: Fix All Audit Issues
 status: executing
-stopped_at: Completed 21-02-PLAN.md
-last_updated: "2026-03-27T22:32:39.704Z"
-last_activity: 2026-03-27 -- Completed 21-02 mobile bug fixes
+stopped_at: Completed 22-01-PLAN.md
+last_updated: "2026-03-27T22:45:33.000Z"
+last_activity: 2026-03-27 -- Completed 22-01 DTO validation gaps
 progress:
   total_phases: 7
   completed_phases: 2
-  total_plans: 6
-  completed_plans: 6
+  total_plans: 10
+  completed_plans: 7
   percent: 100
 ---
 
@@ -21,21 +21,21 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-27)
 
 **Core value:** Pracownik w terenie moze w pelni obsluzyc wynajem -- od wypelnienia umowy, przez zweryfikowanie uprawnien kierowcy, zrobienie zdjec auta, po podpis klienta i wysylke PDF -- bez papieru i bez powrotu do biura.
-**Current focus:** Milestone v2.1 -- Fix All Audit Issues (Phase 21 in progress)
+**Current focus:** Milestone v2.1 -- Fix All Audit Issues (Phase 22 in progress)
 
 ## Current Position
 
-Phase: 21 of 26 (Critical Bug Fixes) -- COMPLETE
-Plan: 4 of 4 complete (21-01, 21-02, 21-03, 21-04 all done)
+Phase: 22 of 26 (API Validation & Performance)
+Plan: 1 of 3 complete
 Status: Executing
-Last activity: 2026-03-27 -- Completed 21-02 mobile bug fixes
+Last activity: 2026-03-27 -- Completed 22-01 DTO validation gaps
 
-Progress: [██████████] 100%
+Progress: [███████░░░] 70%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 60 (37 v1.0 + 14 v1.1 + 7 v2.0 + 2 v2.1)
+- Total plans completed: 61 (37 v1.0 + 14 v1.1 + 7 v2.0 + 3 v2.1)
 - Phases completed: 19 + 1 inserted (9.1)
 
 ## Accumulated Context
@@ -62,6 +62,8 @@ Progress: [██████████] 100%
 - [Phase 21]: ACTIVE/EXTENDED/DRAFT as active rental statuses for retention guard (no PENDING/RESERVED in schema)
 - [Phase 21]: replacePhoto uses same S3 keys (overwrite) instead of new-key-then-delete pattern
 - [Phase 21]: useReturnDraftHasHydrated hook co-located in store file; React.Fragment key for ErrorBoundary remount
+- [Phase 22]: CalendarRangeValidator uses 184-day threshold for 6-month max range
+- [Phase 22]: DateAfterValidator created as reusable validator in common/validators for cross-field date ordering
 
 ### Pending Todos
 
@@ -75,6 +77,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-27T22:27:30Z
-Stopped at: Completed 21-02-PLAN.md
+Last session: 2026-03-27T22:45:33Z
+Stopped at: Completed 22-01-PLAN.md
 Resume file: None
