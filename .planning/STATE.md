@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.1
 milestone_name: Fix All Audit Issues
 status: executing
-stopped_at: Completed 23-03-PLAN.md
-last_updated: "2026-03-27T23:09:56.654Z"
+stopped_at: Completed 23-02-PLAN.md
+last_updated: "2026-03-27T23:15:30.859Z"
 last_activity: 2026-03-27 -- Completed 23-04 accessibility attributes
 progress:
   total_phases: 7
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 14
-  completed_plans: 13
+  completed_plans: 14
   percent: 93
 ---
 
@@ -76,6 +76,9 @@ Progress: [█████████░] 93%
 - [Phase 23]: useRentalDraftHasHydrated follows same pattern as useReturnDraftHasHydrated for consistency
 - [Phase 23]: RENTAL_WIZARD_LABELS typed as string[] for WizardStepper prop compatibility
 - [Phase 23]: Math.max(insets.bottom, 16) pattern for safe area bottom bars
+- [Phase 23]: Zod regex /^\d+([.,]\d{1,2})?$/ for Polish decimal format (comma or dot)
+- [Phase 23]: Mileage warning is soft-block with Potwierdz acknowledge link, not hard rejection
+- [Phase 23]: Auth initialize keeps session on non-401 errors with console.warn for debugging
 
 ### Pending Todos
 
@@ -89,6 +92,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-27T23:09:56.652Z
-Stopped at: Completed 23-03-PLAN.md
+Last session: 2026-03-27T23:15:30.857Z
+Stopped at: Completed 23-02-PLAN.md
 Resume file: None

@@ -76,11 +76,11 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 
 ### Mobile Validation & Error Handling
 
-- [ ] **MVAL-01**: Daily rate field has Zod regex validation for numeric format
-- [ ] **MVAL-02**: Return mileage has upper bound check for implausible values
-- [ ] **MVAL-03**: getMe() distinguishes network error from 401 before clearing tokens
-- [ ] **MVAL-04**: Return submit has retry configuration (retry: 2)
-- [ ] **MVAL-05**: Photo upload tracks partial failures and allows individual retry
+- [x] **MVAL-01**: Daily rate field has Zod regex validation for numeric format
+- [x] **MVAL-02**: Return mileage has upper bound check for implausible values
+- [x] **MVAL-03**: getMe() distinguishes network error from 401 before clearing tokens
+- [x] **MVAL-04**: Return submit has retry configuration (retry: 2)
+- [x] **MVAL-05**: Photo upload tracks partial failures and allows individual retry
 
 ### Mobile UX
 
@@ -250,11 +250,11 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 | MNAV-01 | Phase 23 | Complete |
 | MNAV-02 | Phase 23 | Complete |
 | MNAV-03 | Phase 23 | Complete |
-| MVAL-01 | Phase 23 | Pending |
-| MVAL-02 | Phase 23 | Pending |
-| MVAL-03 | Phase 23 | Pending |
-| MVAL-04 | Phase 23 | Pending |
-| MVAL-05 | Phase 23 | Pending |
+| MVAL-01 | Phase 23 | Complete |
+| MVAL-02 | Phase 23 | Complete |
+| MVAL-03 | Phase 23 | Complete |
+| MVAL-04 | Phase 23 | Complete |
+| MVAL-05 | Phase 23 | Complete |
 | MUX-01 | Phase 23 | Complete |
 | MUX-02 | Phase 23 | Complete |
 | MUX-03 | Phase 23 | Complete |
