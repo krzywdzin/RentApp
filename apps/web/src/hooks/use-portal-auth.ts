@@ -7,9 +7,14 @@ import type { PortalCustomerInfo } from '@rentapp/shared';
 const PORTAL_AUTH_KEY = ['portal', 'auth'] as const;
 
 async function fetchPortalAuth(): Promise<PortalCustomerInfo | null> {
-  const res = await fetch('/api/portal/me');
-  if (!res.ok) return null;
-  return res.json();
+  try {
+    const res = await fetch('/api/portal/me');
+    if (!res.ok) return null;
+    return res.json();
+  } catch (error) {
+    console.error('Portal auth check failed:', error);
+    return null;
+  }
 }
 
 export function usePortalAuth() {
@@ -45,7 +50,8 @@ export function usePortalAuth() {
 
         await queryClient.invalidateQueries({ queryKey: PORTAL_AUTH_KEY });
         return true;
-      } catch {
+      } catch (error) {
+        console.error('Token exchange failed:', error);
         setExchangeError('Wystapil blad. Sprobuj ponownie.');
         return false;
       }

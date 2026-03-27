@@ -101,11 +101,12 @@ export default function NewRentalPage() {
       overrideConflict: false,
     };
 
-    await createRental.mutateAsync(payload, {
-      onSuccess: () => {
-        router.push('/wynajmy');
-      },
-    });
+    try {
+      await createRental.mutateAsync(payload);
+      router.push('/wynajmy');
+    } catch {
+      /* handled by mutation onError */
+    }
   }
 
   return (
