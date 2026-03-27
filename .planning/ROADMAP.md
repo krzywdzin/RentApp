@@ -94,7 +94,12 @@ Plans:
   3. The return wizard does not fire navigation guards before Zustand store has hydrated from AsyncStorage
   4. RetentionService never deletes a customer who has an active rental -- attempting to do so skips that customer
   5. Photo upload failure (S3 timeout) does not leave orphaned database records -- either both DB record and file exist, or neither does
-**Plans**: TBD
+**Plans**: 4 plans
+Plans:
+- [ ] 21-01-PLAN.md -- Mobile bugs: duplicate rental, stuck loading, useEffect deps, SearchBar sync (MBUG-01, MBUG-02, MBUG-03, MBUG-04)
+- [ ] 21-02-PLAN.md -- Mobile bugs: biometric logout, hydration guard, ErrorBoundary retry (MBUG-05, MBUG-06, MBUG-07)
+- [ ] 21-03-PLAN.md -- API bugs: contract race, notification create, annex single-op, SmsService lazy init (AREL-01, AREL-02, AREL-07, AREL-08)
+- [ ] 21-04-PLAN.md -- API bugs: retention guard, null assertions, photo upload/replace ordering (AREL-03, AREL-04, AREL-05, AREL-06)
 
 ### Phase 22: API Validation & Performance
 **Goal**: All API endpoints validate inputs strictly, paginate large result sets, use efficient queries, and log structured events -- no unvalidated UUIDs, no unbounded queries, no N+1 loops
