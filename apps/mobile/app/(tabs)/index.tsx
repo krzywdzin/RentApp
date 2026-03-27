@@ -179,22 +179,40 @@ export default function DashboardScreen() {
             contentContainerStyle={s.statsContent}
           >
             <AppCard cardStyle={s.statCard}>
-              <Text style={s.statLabel}>
-                {t('dashboard.activeRentals')}
-              </Text>
-              <Text style={s.statValue}>{stats.active}</Text>
+              <View
+                accessible={true}
+                accessibilityRole="text"
+                accessibilityLabel={`${t('dashboard.activeRentals')}: ${stats.active}`}
+              >
+                <Text style={s.statLabel}>
+                  {t('dashboard.activeRentals')}
+                </Text>
+                <Text style={s.statValue}>{stats.active}</Text>
+              </View>
             </AppCard>
             <AppCard cardStyle={s.statCard}>
-              <Text style={s.statLabel}>
-                {t('dashboard.todayPickups')}
-              </Text>
-              <Text style={s.statValue}>{stats.pickups}</Text>
+              <View
+                accessible={true}
+                accessibilityRole="text"
+                accessibilityLabel={`${t('dashboard.todayPickups')}: ${stats.pickups}`}
+              >
+                <Text style={s.statLabel}>
+                  {t('dashboard.todayPickups')}
+                </Text>
+                <Text style={s.statValue}>{stats.pickups}</Text>
+              </View>
             </AppCard>
             <AppCard cardStyle={s.statCard}>
-              <Text style={s.statLabel}>
-                {t('dashboard.todayReturns')}
-              </Text>
-              <Text style={s.statValue}>{stats.returns}</Text>
+              <View
+                accessible={true}
+                accessibilityRole="text"
+                accessibilityLabel={`${t('dashboard.todayReturns')}: ${stats.returns}`}
+              >
+                <Text style={s.statLabel}>
+                  {t('dashboard.todayReturns')}
+                </Text>
+                <Text style={s.statValue}>{stats.returns}</Text>
+              </View>
             </AppCard>
           </ScrollView>
 

@@ -17,6 +17,8 @@ export function AppInput({
 }: AppInputProps) {
   const [isFocused, setIsFocused] = useState(false);
 
+  const inputId = label.toLowerCase().replace(/\s+/g, '-') + '-input';
+
   const borderColor = error
     ? '#DC2626'
     : isFocused
@@ -25,12 +27,15 @@ export function AppInput({
 
   return (
     <View style={containerStyle}>
-      <Text style={styles.label}>{label}</Text>
+      <Text style={styles.label} nativeID={inputId + '-label'}>{label}</Text>
       <View style={[styles.inputRow, { borderColor }]}>
         {leftIcon && <View style={styles.iconWrap}>{leftIcon}</View>}
         <TextInput
           style={styles.input}
           placeholderTextColor="#A1A1AA"
+          accessibilityLabel={label}
+          accessibilityLabelledBy={inputId + '-label'}
+          {...(error ? { accessibilityHint: error } : {})}
           onFocus={(e) => {
             setIsFocused(true);
             rest.onFocus?.(e);
