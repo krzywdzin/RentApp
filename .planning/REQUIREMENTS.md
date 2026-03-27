@@ -55,9 +55,9 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 
 ### API Performance & Logging
 
-- [ ] **APERF-01**: importFleet pre-fetches registrations in bulk (no N+1 DB queries in loop)
-- [ ] **APERF-02**: Photo comparison uses Promise.all for presigned URL generation
-- [ ] **APERF-03**: enqueueExpiryAlert uses createMany for batch notifications
+- [x] **APERF-01**: importFleet pre-fetches registrations in bulk (no N+1 DB queries in loop)
+- [x] **APERF-02**: Photo comparison uses Promise.all for presigned URL generation
+- [x] **APERF-03**: enqueueExpiryAlert uses createMany for batch notifications
 - [ ] **APERF-04**: AuditInterceptor uses NestJS Logger instead of console.error
 - [ ] **APERF-05**: AuthService logs security events (failed login, lockout, token reuse)
 - [ ] **APERF-06**: AuthService Redis client has error event handler
@@ -235,9 +235,9 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 | AVAL-06 | Phase 22 | Complete |
 | AVAL-07 | Phase 22 | Complete |
 | AVAL-08 | Phase 22 | Complete |
-| APERF-01 | Phase 22 | Pending |
-| APERF-02 | Phase 22 | Pending |
-| APERF-03 | Phase 22 | Pending |
+| APERF-01 | Phase 22 | Complete |
+| APERF-02 | Phase 22 | Complete |
+| APERF-03 | Phase 22 | Complete |
 | APERF-04 | Phase 22 | Pending |
 | APERF-05 | Phase 22 | Pending |
 | APERF-06 | Phase 22 | Pending |
