@@ -30,7 +30,7 @@ export class HealthController {
   @Get('health')
   async health() {
     const [db, redis, storageResult] = await Promise.allSettled([
-      this.prisma.$queryRawUnsafe('SELECT 1'),
+      this.prisma.$queryRaw`SELECT 1`,
       this.redis?.ping(),
       Promise.resolve((this.storage as any).s3Available),
     ]);

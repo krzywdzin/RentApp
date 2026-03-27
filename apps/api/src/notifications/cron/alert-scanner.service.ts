@@ -177,19 +177,43 @@ export class AlertScannerService {
     startOfTarget: Date;
     endOfTarget: Date;
   } {
-    // Get current date in Europe/Warsaw timezone
+    const TIMEZONE = 'Europe/Warsaw';
+
+    // Get current date in Warsaw timezone (YYYY-MM-DD)
     const now = new Date();
     const warsawStr = now.toLocaleDateString('en-CA', {
-      timeZone: 'Europe/Warsaw',
+      timeZone: TIMEZONE,
     }); // YYYY-MM-DD
     const [year, month, day] = warsawStr.split('-').map(Number);
 
-    // Create target date in Warsaw
-    const target = new Date(year, month - 1, day + daysFromNow);
-    const startOfTarget = new Date(target);
-    startOfTarget.setHours(0, 0, 0, 0);
-    const endOfTarget = new Date(target);
-    endOfTarget.setHours(23, 59, 59, 999);
+    // Add daysFromNow to get target date
+    const target = new Date(Date.UTC(year, month - 1, day + daysFromNow));
+    const targetStr = target.toISOString().split('T')[0]; // YYYY-MM-DD
+
+    // Get Warsaw UTC offset for start-of-day and end-of-day of target date
+    // by formatting a date at that point and extracting the offset
+    const getWarsawOffset = (date: Date): number => {
+      const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone: TIMEZONE,
+        timeZoneName: 'shortOffset',
+      }).formatToParts(date);
+      const tzPart = parts.find((p) => p.type === 'timeZoneName')?.value ?? '';
+      // tzPart is like "GMT+1" or "GMT+2"
+      const match = tzPart.match(/GMT([+-]\d+)/);
+      return match ? parseInt(match[1], 10) : 1;
+    };
+
+    // Start of day in Warsaw = midnight Warsaw time, converted to UTC
+    const startOfTarget = new Date(`${targetStr}T00:00:00Z`);
+    const startOffset = getWarsawOffset(startOfTarget);
+    startOfTarget.setUTCHours(-startOffset, 0, 0, 0);
+
+    // End of day in Warsaw = 23:59:59.999 Warsaw time, converted to UTC
+    const endOfTarget = new Date(`${targetStr}T00:00:00Z`);
+    const endOffset = getWarsawOffset(
+      new Date(`${targetStr}T23:59:59Z`),
+    );
+    endOfTarget.setUTCHours(23 - endOffset, 59, 59, 999);
 
     return { startOfTarget, endOfTarget };
   }
