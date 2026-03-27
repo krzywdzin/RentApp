@@ -224,15 +224,13 @@ export class VehiclesService {
       'transmission',
     ];
 
-    let imported = 0;
-    let skipped = 0;
-    const errors: Array<{ row: number; reason: string }> = [];
+    // Normalize all rows first, then bulk pre-fetch existing registrations
+    const normalizedRows: Array<{ rowNum: number; normalized: Record<string, unknown> }> = [];
 
     for (let i = 0; i < rows.length; i++) {
       const raw = rows[i];
       const rowNum = i + 2; // +2 for 1-indexed and header row
 
-      // Normalize column names
       const normalized: Record<string, unknown> = {};
       for (const [targetKey, aliases] of Object.entries(columnMapping)) {
         for (const alias of aliases) {
@@ -242,7 +240,27 @@ export class VehiclesService {
           }
         }
       }
+      normalizedRows.push({ rowNum, normalized });
+    }
 
+    // Extract all registrations from parsed rows for bulk lookup
+    const allRegistrations = normalizedRows
+      .map((r) => r.normalized.registration)
+      .filter((reg): reg is string | number => reg !== undefined && reg !== null && reg !== '')
+      .map((reg) => String(reg));
+
+    // Single bulk query instead of N individual findUnique calls
+    const existingVehicles = await this.prisma.vehicle.findMany({
+      where: { registration: { in: allRegistrations } },
+      select: { registration: true },
+    });
+    const existingRegistrations = new Set(existingVehicles.map((v) => v.registration));
+
+    let imported = 0;
+    let skipped = 0;
+    const errors: Array<{ row: number; reason: string }> = [];
+
+    for (const { rowNum, normalized } of normalizedRows) {
       // Validate required fields
       const missingFields = requiredFields.filter(
         (f) =>
@@ -261,11 +279,8 @@ export class VehiclesService {
 
       const registration = String(normalized.registration);
 
-      // Check for duplicate registration
-      const existing = await this.prisma.vehicle.findUnique({
-        where: { registration },
-      });
-      if (existing) {
+      // Check for duplicate registration using pre-fetched Set (O(1) lookup)
+      if (existingRegistrations.has(registration)) {
         skipped++;
         errors.push({
           row: rowNum,
@@ -321,6 +336,8 @@ export class VehiclesService {
           },
         });
         imported++;
+        // Track newly created registration to prevent intra-batch duplicates
+        existingRegistrations.add(registration);
       } catch (err: any) {
         skipped++;
         errors.push({
