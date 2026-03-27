@@ -30,20 +30,22 @@ jobs:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         run: railway up --service api --detach
 
-      - name: Wait for deployment
-        run: sleep 30
-
-      - name: Health check
+      - name: Health check (polling)
         env:
           API_URL: ${{ vars.API_URL }}
         run: |
-          if [ -n "$API_URL" ]; then
+          if [ -z "$API_URL" ]; then
+            echo "API_URL not configured - skipping health check"
+            exit 0
+          fi
+          for i in $(seq 1 12); do
             STATUS=$(curl -s -o /dev/null -w '%{http_code}' "${API_URL}/health" || echo "000")
             if [ "$STATUS" = "200" ]; then
-              echo "Health check passed"
-            else
-              echo "Warning: Health check returned $STATUS (deployment may still be starting)"
+              echo "Health check passed on attempt $i"
+              exit 0
             fi
-          else
-            echo "API_URL not configured — skipping health check"
-          fi
+            echo "Attempt $i/12: status $STATUS - retrying in 10s"
+            sleep 10
+          done
+          echo "Health check failed after 12 attempts (2 minutes)"
+          exit 1

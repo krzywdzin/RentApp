@@ -29,3 +29,23 @@ jobs:
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         run: railway up --service web --detach
+
+      - name: Health check (polling)
+        env:
+          WEB_URL: ${{ vars.WEB_URL }}
+        run: |
+          if [ -z "$WEB_URL" ]; then
+            echo "WEB_URL not configured - skipping health check"
+            exit 0
+          fi
+          for i in $(seq 1 12); do
+            STATUS=$(curl -s -o /dev/null -w '%{http_code}' "${WEB_URL}/api/health" || echo "000")
+            if [ "$STATUS" = "200" ]; then
+              echo "Health check passed on attempt $i"
+              exit 0
+            fi
+            echo "Attempt $i/12: status $STATUS - retrying in 10s"
+            sleep 10
+          done
+          echo "Health check failed after 12 attempts (2 minutes)"
+          exit 1
