@@ -32,7 +32,10 @@ const formSchema = z
     customerId: z.string().uuid('Wybierz klienta'),
     startDate: z.string().min(1, 'Wymagane'),
     endDate: z.string().min(1, 'Wymagane'),
-    dailyRateNet: z.number().int().min(0).optional(),
+    dailyRateNet: z
+      .number({ required_error: 'Stawka dzienna jest wymagana' })
+      .int()
+      .min(1, 'Stawka musi byc wieksza niz 0'),
     vatRate: z.number().int().min(0).max(100).default(23),
     notes: z.string().max(2000).optional(),
     status: z.enum(['DRAFT', 'ACTIVE']).default('DRAFT'),
@@ -55,6 +58,7 @@ export default function NewRentalPage() {
     id: string;
     name: string;
   } | null>(null);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   const {
     register,

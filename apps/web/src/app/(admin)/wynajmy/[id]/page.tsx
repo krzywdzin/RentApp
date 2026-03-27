@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { type RentalDto, RentalStatus, ContractStatus } from '@rentapp/shared';
 
 interface RentalWithRelations extends RentalDto {
-  vehicle?: { registration: string; make: string; model: string };
+  vehicle?: { registration: string; make: string; model: string; mileage?: number };
   customer?: { firstName: string; lastName: string };
 }
 import { Button } from '@/components/ui/button';
@@ -45,6 +45,7 @@ import {
 } from 'lucide-react';
 import { AuditTrail } from '@/components/audit/audit-trail';
 import Link from 'next/link';
+import { toast } from 'sonner';
 
 const contractStatusLabels: Record<ContractStatus, string> = {
   [ContractStatus.DRAFT]: 'Szkic',
@@ -105,6 +106,12 @@ export default function RentalDetailPage() {
 
   function handleExtend() {
     if (!newEndDate) return;
+    const currentEnd = new Date(rental.endDate);
+    const selectedEnd = new Date(newEndDate);
+    if (selectedEnd <= currentEnd) {
+      toast.error('Nowa data musi byc pozniejsza niz obecna data zakonczenia');
+      return;
+    }
     extendRental.mutate(
       {
         newEndDate: new Date(newEndDate).toISOString(),
@@ -123,6 +130,11 @@ export default function RentalDetailPage() {
   function handleReturn() {
     const mileage = parseInt(returnMileage, 10);
     if (isNaN(mileage) || mileage < 0) return;
+    const vehicleMileage = (rental as RentalWithRelations).vehicle?.mileage ?? 0;
+    if (mileage < vehicleMileage) {
+      toast.error(`Przebieg zwrotu nie moze byc mniejszy niz obecny przebieg pojazdu (${vehicleMileage} km)`);
+      return;
+    }
     returnRental.mutate(
       {
         returnMileage: mileage,
