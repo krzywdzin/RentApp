@@ -91,12 +91,8 @@ export class PhotosService {
     const photoKey = `photos/${walkthrough.rentalId}/${typePath}/${positionKey}.jpg`;
     const thumbnailKey = `photos/${walkthrough.rentalId}/${typePath}/${positionKey}_thumb.jpg`;
 
-    // Upload to MinIO
-    await this.storage.upload(photoKey, fullBuffer, 'image/jpeg');
-    await this.storage.upload(thumbnailKey, thumbBuffer, 'image/jpeg');
-
-    // Create DB record
-    return this.prisma.walkthroughPhoto.create({
+    // Create DB record FIRST (so no orphaned S3 objects if DB fails)
+    const record = await this.prisma.walkthroughPhoto.create({
       data: {
         walkthroughId,
         position: dto.position,
@@ -109,6 +105,20 @@ export class PhotosService {
         label: dto.label,
       },
     });
+
+    // Upload to MinIO -- clean up DB record if S3 upload fails
+    try {
+      await this.storage.upload(photoKey, fullBuffer, 'image/jpeg');
+      await this.storage.upload(thumbnailKey, thumbBuffer, 'image/jpeg');
+    } catch (uploadError) {
+      this.logger.warn(
+        `S3 upload failed, cleaning up DB record ${record.id}: ${(uploadError as Error).message}`,
+      );
+      await this.prisma.walkthroughPhoto.delete({ where: { id: record.id } });
+      throw uploadError;
+    }
+
+    return record;
   }
 
   async submitWalkthrough(walkthroughId: string, userId: string) {
@@ -248,10 +258,6 @@ export class PhotosService {
       throw new NotFoundException(`No photo found for position: ${position}`);
     }
 
-    // Delete old MinIO objects
-    await this.storage.delete(existingPhoto.photoKey);
-    await this.storage.delete(existingPhoto.thumbnailKey);
-
     // Extract GPS from new image
     const gps = await this.extractGps(file.buffer);
 
@@ -268,11 +274,11 @@ export class PhotosService {
       .jpeg({ quality: 75 })
       .toBuffer();
 
-    // Upload new files (same keys as old)
+    // 1. Upload new files FIRST (same keys -- overwrites old)
     await this.storage.upload(existingPhoto.photoKey, fullBuffer, 'image/jpeg');
     await this.storage.upload(existingPhoto.thumbnailKey, thumbBuffer, 'image/jpeg');
 
-    // Update DB record
+    // 2. Update DB record
     return this.prisma.walkthroughPhoto.update({
       where: { id: existingPhoto.id },
       data: {
