@@ -128,6 +128,9 @@ export default function RentalsListScreen() {
                   isActive ? s.chipActive : s.chipInactive,
                 ]}
                 onPress={() => setActiveFilter(filter.key)}
+                accessibilityRole="radio"
+                accessibilityState={{ selected: isActive }}
+                accessibilityLabel={`Filtr: ${t(filter.labelKey)}`}
               >
                 <Text
                   style={[

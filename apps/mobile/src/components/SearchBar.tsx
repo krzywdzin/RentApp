@@ -6,9 +6,10 @@ interface SearchBarProps {
   value: string;
   onChangeText: (text: string) => void;
   placeholder?: string;
+  accessibilityLabel?: string;
 }
 
-export function SearchBar({ value, onChangeText, placeholder }: SearchBarProps) {
+export function SearchBar({ value, onChangeText, placeholder, accessibilityLabel }: SearchBarProps) {
   const [localValue, setLocalValue] = useState(value);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -41,7 +42,7 @@ export function SearchBar({ value, onChangeText, placeholder }: SearchBarProps) 
   }, [onChangeText]);
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} accessibilityRole="search">
       <Search size={20} color="#A1A1AA" />
       <TextInput
         style={styles.input}
@@ -50,9 +51,10 @@ export function SearchBar({ value, onChangeText, placeholder }: SearchBarProps) 
         placeholder={placeholder}
         placeholderTextColor="#A1A1AA"
         returnKeyType="search"
+        accessibilityLabel={accessibilityLabel ?? placeholder ?? 'Szukaj'}
       />
       {localValue.length > 0 && (
-        <Pressable onPress={handleClear} hitSlop={8}>
+        <Pressable onPress={handleClear} hitSlop={8} accessibilityLabel="Wyczysc wyszukiwanie">
           <X size={20} color="#A1A1AA" />
         </Pressable>
       )}
