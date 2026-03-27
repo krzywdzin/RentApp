@@ -33,14 +33,14 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 
 ### API Reliability
 
-- [ ] **AREL-01**: Contract number generation is atomic (no race condition on concurrent requests)
-- [ ] **AREL-02**: Notification create sets message in initial create (no two-step create+update)
+- [x] **AREL-01**: Contract number generation is atomic (no race condition on concurrent requests)
+- [x] **AREL-02**: Notification create sets message in initial create (no two-step create+update)
 - [x] **AREL-03**: RetentionService filters out customers with active rentals before deletion
 - [x] **AREL-04**: processReturn re-fetch has null guard before non-null assertion
 - [x] **AREL-05**: Photo upload creates DB record before S3 upload (or cleans up on failure)
 - [x] **AREL-06**: replacePhoto uploads new files before deleting old ones
-- [ ] **AREL-07**: createAnnex uses single DB operation (not create-then-update pattern)
-- [ ] **AREL-08**: SmsService initializes SMSAPI client lazily (no crash when token missing in dev)
+- [x] **AREL-07**: createAnnex uses single DB operation (not create-then-update pattern)
+- [x] **AREL-08**: SmsService initializes SMSAPI client lazily (no crash when token missing in dev)
 
 ### API Validation & Pagination
 
@@ -219,14 +219,14 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 | MBUG-05 | Phase 21 | Pending |
 | MBUG-06 | Phase 21 | Pending |
 | MBUG-07 | Phase 21 | Pending |
-| AREL-01 | Phase 21 | Pending |
-| AREL-02 | Phase 21 | Pending |
+| AREL-01 | Phase 21 | Complete |
+| AREL-02 | Phase 21 | Complete |
 | AREL-03 | Phase 21 | Complete |
 | AREL-04 | Phase 21 | Complete |
 | AREL-05 | Phase 21 | Complete |
 | AREL-06 | Phase 21 | Complete |
-| AREL-07 | Phase 21 | Pending |
-| AREL-08 | Phase 21 | Pending |
+| AREL-07 | Phase 21 | Complete |
+| AREL-08 | Phase 21 | Complete |
 | AVAL-01 | Phase 22 | Pending |
 | AVAL-02 | Phase 22 | Pending |
 | AVAL-03 | Phase 22 | Pending |

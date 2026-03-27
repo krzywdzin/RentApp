@@ -98,7 +98,7 @@ Plans:
 Plans:
 - [ ] 21-01-PLAN.md -- Mobile bugs: duplicate rental, stuck loading, useEffect deps, SearchBar sync (MBUG-01, MBUG-02, MBUG-03, MBUG-04)
 - [ ] 21-02-PLAN.md -- Mobile bugs: biometric logout, hydration guard, ErrorBoundary retry (MBUG-05, MBUG-06, MBUG-07)
-- [ ] 21-03-PLAN.md -- API bugs: contract race, notification create, annex single-op, SmsService lazy init (AREL-01, AREL-02, AREL-07, AREL-08)
+- [x] 21-03-PLAN.md -- API bugs: contract race, notification create, annex single-op, SmsService lazy init (AREL-01, AREL-02, AREL-07, AREL-08)
 - [ ] 21-04-PLAN.md -- API bugs: retention guard, null assertions, photo upload/replace ordering (AREL-03, AREL-04, AREL-05, AREL-06)
 
 ### Phase 22: API Validation & Performance
