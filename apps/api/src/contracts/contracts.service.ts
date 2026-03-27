@@ -76,17 +76,11 @@ export class ContractsService {
     private portalService: PortalService,
   ) {}
 
-  private async generateContractNumber(): Promise<string> {
+  private generateContractNumberFromCount(count: number): string {
     const now = new Date();
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const day = String(now.getDate()).padStart(2, '0');
-
-    const startOfDay = new Date(year, now.getMonth(), now.getDate());
-    const count = await this.prisma.contract.count({
-      where: { createdAt: { gte: startOfDay } },
-    });
-
     const seq = (count + 1).toString().padStart(4, '0');
     return `KITEK/${year}/${month}${day}/${seq}`;
   }
@@ -186,10 +180,7 @@ export class ContractsService {
     // 5. Generate content hash
     const contentHash = this.generateContentHash(frozenData);
 
-    // 6. Generate contract number
-    const contractNumber = await this.generateContractNumber();
-
-    // 7. Upload damage sketch if provided
+    // 6. Upload damage sketch if provided (before transaction)
     let damageSketchKey: string | null = null;
     if (dto.damageSketchBase64) {
       // Strip data URI prefix if present (e.g. "data:image/png;base64,")
@@ -202,25 +193,54 @@ export class ContractsService {
       );
     }
 
-    // 8. Create contract
-    const contract = await this.prisma.contract.create({
-      data: {
-        contractNumber,
-        rentalId: dto.rentalId,
-        createdById: userId,
-        status: ContractStatus.DRAFT,
-        contractData: frozenData as unknown as Prisma.InputJsonValue,
-        contentHash,
-        depositAmount: dto.depositAmount ?? null,
-        dailyRateNet: rental.dailyRateNet,
-        lateFeeNet: dto.lateFeeNet ?? null,
-        rodoConsentAt: new Date(dto.rodoConsentAt),
-        damageSketchKey,
-      },
-      include: CONTRACT_INCLUDE,
-    });
+    // 7. Atomic contract number generation + create inside transaction
+    // Retry once on unique constraint violation (P2002) for concurrent requests
+    const MAX_RETRIES = 1;
+    let contract: ContractWithRelations | null = null;
 
-    return this.toDto(contract);
+    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+      try {
+        contract = await this.prisma.$transaction(async (tx) => {
+          const now = new Date();
+          const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          const count = await tx.contract.count({
+            where: { createdAt: { gte: startOfDay } },
+          });
+          const contractNumber = this.generateContractNumberFromCount(count);
+
+          return tx.contract.create({
+            data: {
+              contractNumber,
+              rentalId: dto.rentalId,
+              createdById: userId,
+              status: ContractStatus.DRAFT,
+              contractData: frozenData as unknown as Prisma.InputJsonValue,
+              contentHash,
+              depositAmount: dto.depositAmount ?? null,
+              dailyRateNet: rental.dailyRateNet,
+              lateFeeNet: dto.lateFeeNet ?? null,
+              rodoConsentAt: new Date(dto.rodoConsentAt),
+              damageSketchKey,
+            },
+            include: CONTRACT_INCLUDE,
+          });
+        });
+        break; // Success - exit retry loop
+      } catch (error: any) {
+        const isUniqueViolation =
+          error?.code === 'P2002' ||
+          error?.meta?.target?.includes('contractNumber');
+        if (isUniqueViolation && attempt < MAX_RETRIES) {
+          this.logger.warn(
+            `Contract number collision on attempt ${attempt + 1}, retrying...`,
+          );
+          continue;
+        }
+        throw error;
+      }
+    }
+
+    return this.toDto(contract!);
   }
 
   async sign(
@@ -516,18 +536,14 @@ export class ContractsService {
       changes.newTotalPriceNet = data.newTotalPriceNet;
     }
 
-    // 4. Create annex record
-    const annex = await this.prisma.contractAnnex.create({
-      data: {
-        contractId: contract.id,
-        annexNumber,
-        changes: changes as unknown as Prisma.InputJsonValue,
-      },
-    });
+    // 4. Generate annex PDF BEFORE any DB write (clean failure if PDF fails)
+    const annexId = crypto.randomUUID();
+    let pdfKey: string | null = null;
+    let pdfBuffer: Buffer | null = null;
+    let pdfGeneratedAt: Date | null = null;
 
-    // 5. Generate annex PDF
     try {
-      const pdfBuffer = await this.pdfService.generateAnnexPdf({
+      pdfBuffer = await this.pdfService.generateAnnexPdf({
         annexNumber,
         contractNumber: contract.contractNumber,
         contractDate: contract.createdAt.toISOString(),
@@ -551,17 +567,19 @@ export class ContractsService {
         createdAt: new Date().toISOString(),
       });
 
-      // 6. Upload to MinIO
-      const pdfKey = `contracts/${rentalId}/annexes/${annex.id}.pdf`;
+      // 5. Upload to MinIO
+      pdfKey = `contracts/${rentalId}/annexes/${annexId}.pdf`;
       await this.storageService.upload(pdfKey, pdfBuffer, 'application/pdf');
+      pdfGeneratedAt = new Date();
+    } catch (error: any) {
+      this.logger.error(
+        `Failed to generate annex PDF for contract ${contract.id}: ${error.message}`,
+      );
+    }
 
-      // 7. Update annex with pdfKey
-      const annexUpdateData: Prisma.ContractAnnexUpdateInput = {
-        pdfKey,
-        pdfGeneratedAt: new Date(),
-      };
-
-      // 8. Email annex to customer
+    // 6. Email annex to customer (before DB write, only if PDF was generated)
+    let emailSentAt: Date | null = null;
+    if (pdfBuffer) {
       const customerEmail = frozenData.customer?.email;
       if (customerEmail) {
         try {
@@ -573,29 +591,29 @@ export class ContractsService {
             annexNumber,
             pdfBuffer,
           );
-          annexUpdateData.emailSentAt = new Date();
+          emailSentAt = new Date();
         } catch (error: any) {
           this.logger.error(
             `Failed to send annex email for ${contract.contractNumber}: ${error.message}`,
           );
         }
       }
-
-      await this.prisma.contractAnnex.update({
-        where: { id: annex.id },
-        data: annexUpdateData,
-      });
-    } catch (error: any) {
-      this.logger.error(
-        `Failed to generate annex PDF for contract ${contract.id}: ${error.message}`,
-      );
     }
 
-    // Return updated annex
-    const updated = await this.prisma.contractAnnex.findUnique({
-      where: { id: annex.id },
+    // 7. Single DB create with all fields (no subsequent update needed)
+    const annex = await this.prisma.contractAnnex.create({
+      data: {
+        id: annexId,
+        contractId: contract.id,
+        annexNumber,
+        changes: changes as unknown as Prisma.InputJsonValue,
+        pdfKey,
+        pdfGeneratedAt,
+        emailSentAt,
+      },
     });
-    return this.toAnnexDto(updated!);
+
+    return this.toAnnexDto(annex);
   }
 
   toDto(contract: ContractWithRelations): ContractDto {
