@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { Controller, Get } from '@nestjs/common';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
@@ -11,7 +10,6 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 import { AuditModule } from './audit/audit.module';
 import { AuditInterceptor } from './audit/audit.interceptor';
-import { Public } from './common/decorators/public.decorator';
 import { StorageModule } from './storage/storage.module';
 import { VehiclesModule } from './vehicles/vehicles.module';
 import { CustomersModule } from './customers/customers.module';
@@ -25,15 +23,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { AlertConfigModule } from './alert-config/alert-config.module';
 import { CepikModule } from './cepik/cepik.module';
 import { PortalModule } from './portal/portal.module';
-
-@Controller()
-class HealthController {
-  @Public()
-  @Get('health')
-  health() {
-    return { status: 'ok', timestamp: new Date().toISOString() };
-  }
-}
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -62,8 +52,8 @@ class HealthController {
     AlertConfigModule,
     CepikModule,
     PortalModule,
+    HealthModule,
   ],
-  controllers: [HealthController],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
     { provide: APP_GUARD, useClass: JwtAuthGuard },

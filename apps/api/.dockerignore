@@ -1,0 +1,5 @@
+node_modules
+dist
+.local-storage
+*.spec.ts
+test/
