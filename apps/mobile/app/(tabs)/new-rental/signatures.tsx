@@ -5,10 +5,12 @@ import Toast from 'react-native-toast-message';
 import type { SignatureType } from '@rentapp/shared';
 
 import { SignatureScreen } from '@/components/SignatureScreen';
+import { ConfirmationDialog } from '@/components/ConfirmationDialog';
 import { useRentalDraftStore } from '@/stores/rental-draft.store';
 import { useCreateRental } from '@/hooks/use-rentals';
 import { useCreateContract, useSignContract } from '@/hooks/use-contracts';
 import apiClient from '@/api/client';
+import { DEFAULT_VAT_RATE } from '@/lib/constants';
 
 interface SignatureStep {
   titleKey: string;
@@ -50,9 +52,10 @@ export default function SignaturesStep() {
   const { t } = useTranslation();
   const router = useRouter();
   const draft = useRentalDraftStore();
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showConflict, setShowConflict] = useState(false);
+  const [conflictCallback, setConflictCallback] = useState<(() => void) | null>(null);
 
   const createRental = useCreateRental();
   const createContract = useCreateContract();
@@ -61,43 +64,66 @@ export default function SignaturesStep() {
   // Guard against duplicate rental creation on rapid re-tap
   const isCreatingRef = useRef(false);
 
-  // Store rentalId and contractId across signatures
-  const [rentalId, setRentalId] = useState<string | null>(null);
-  const [contractId, setContractId] = useState<string | null>(null);
+  // Read rentalId, contractId, and currentSignatureIndex from persisted store
+  const rentalId = draft.rentalId;
+  const contractId = draft.contractId;
+  const currentIndex = draft.currentSignatureIndex;
 
   const currentStep = SIGNATURE_STEPS[currentIndex];
 
-  const handleCreateRentalAndContract = useCallback(async () => {
+  const doCreateRentalAndContract = useCallback(async (override: boolean) => {
     if (isCreatingRef.current) return { rentalId: rentalId!, contractId: contractId! };
     isCreatingRef.current = true;
 
     try {
-    // Create rental first
-    const rental = await createRental.mutateAsync({
-      vehicleId: draft.vehicleId!,
-      customerId: draft.customerId!,
-      startDate: draft.startDate!,
-      endDate: draft.endDate!,
-      dailyRateNet: draft.dailyRateNet!,
-      vatRate: 23,
-      overrideConflict: true,
-      status: 'DRAFT',
-    });
-    setRentalId(rental.id);
+      // Create rental first
+      const rental = await createRental.mutateAsync({
+        vehicleId: draft.vehicleId!,
+        customerId: draft.customerId!,
+        startDate: draft.startDate!,
+        endDate: draft.endDate!,
+        dailyRateNet: draft.dailyRateNet!,
+        vatRate: DEFAULT_VAT_RATE,
+        overrideConflict: override,
+        status: 'DRAFT',
+      });
+      draft.updateDraft({ rentalId: rental.id });
 
-    // Create contract linked to rental
-    const contract = await createContract.mutateAsync({
-      rentalId: rental.id,
-      rodoConsentAt: draft.rodoTimestamp!,
-    });
-    setContractId(contract.id);
+      // Create contract linked to rental
+      const contract = await createContract.mutateAsync({
+        rentalId: rental.id,
+        rodoConsentAt: draft.rodoTimestamp!,
+      });
+      draft.updateDraft({ contractId: contract.id });
 
-    return { rentalId: rental.id, contractId: contract.id };
+      return { rentalId: rental.id, contractId: contract.id };
     } catch (err) {
       isCreatingRef.current = false;
       throw err;
     }
   }, [createRental, createContract, draft, rentalId, contractId]);
+
+  const handleCreateRentalAndContract = useCallback(async () => {
+    try {
+      return await doCreateRentalAndContract(false);
+    } catch (err: any) {
+      if (err?.response?.status === 409) {
+        // Vehicle conflict -- ask user to confirm override
+        return new Promise<{ rentalId: string; contractId: string }>((resolve, reject) => {
+          setConflictCallback(() => async () => {
+            try {
+              const result = await doCreateRentalAndContract(true);
+              resolve(result);
+            } catch (retryErr) {
+              reject(retryErr);
+            }
+          });
+          setShowConflict(true);
+        });
+      }
+      throw err;
+    }
+  }, [doCreateRentalAndContract]);
 
   const handleSignatureConfirm = useCallback(
     async (base64Png: string) => {
@@ -170,7 +196,7 @@ export default function SignaturesStep() {
 
         // Move to next signature or finalize
         if (currentIndex < SIGNATURE_STEPS.length - 1) {
-          setCurrentIndex((prev) => prev + 1);
+          draft.updateDraft({ currentSignatureIndex: currentIndex + 1 });
         } else {
           // All signatures done -- finalize
           setIsSubmitting(true);
@@ -236,28 +262,53 @@ export default function SignaturesStep() {
       router,
       t,
     ],
+    // rentalId and contractId derived from draft store
   );
 
   const handleBack = useCallback(() => {
     if (currentIndex > 0) {
-      setCurrentIndex((prev) => prev - 1);
+      draft.updateDraft({ currentSignatureIndex: currentIndex - 1 });
     } else {
       router.back();
     }
-  }, [currentIndex, router]);
+  }, [currentIndex, draft, router]);
+
+  const handleConflictConfirm = useCallback(() => {
+    setShowConflict(false);
+    if (conflictCallback) {
+      conflictCallback();
+      setConflictCallback(null);
+    }
+  }, [conflictCallback]);
+
+  const handleConflictCancel = useCallback(() => {
+    setShowConflict(false);
+    setConflictCallback(null);
+  }, []);
 
   if (!currentStep) return null;
 
   return (
-    <SignatureScreen
-      title={t(currentStep.titleKey)}
-      stepLabel={t('signatures.stepCounter', {
-        current: currentIndex + 1,
-      })}
-      instruction={t('signatures.instruction')}
-      onConfirm={handleSignatureConfirm}
-      onBack={handleBack}
-      loading={isUploading || isSubmitting}
-    />
+    <>
+      <SignatureScreen
+        title={t(currentStep.titleKey)}
+        stepLabel={t('signatures.stepCounter', {
+          current: currentIndex + 1,
+        })}
+        instruction={t('signatures.instruction')}
+        onConfirm={handleSignatureConfirm}
+        onBack={handleBack}
+        loading={isUploading || isSubmitting}
+      />
+      <ConfirmationDialog
+        visible={showConflict}
+        title={t('errors.vehicleConflictTitle')}
+        body={t('errors.vehicleConflictBody')}
+        confirmLabel={t('common.confirm')}
+        cancelLabel={t('common.cancel')}
+        onConfirm={handleConflictConfirm}
+        onCancel={handleConflictCancel}
+      />
+    </>
   );
 }

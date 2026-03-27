@@ -48,7 +48,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       await SecureStore.deleteItemAsync(SECURE_STORE_KEYS.ACCESS_TOKEN);
       await SecureStore.deleteItemAsync(SECURE_STORE_KEYS.REFRESH_TOKEN);
       await SecureStore.deleteItemAsync(SECURE_STORE_KEYS.DEVICE_ID);
-      set({ user: null, isAuthenticated: false });
+      set({ user: null, isAuthenticated: false, biometricEnabled: false });
     }
   },
 

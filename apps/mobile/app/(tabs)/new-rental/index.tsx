@@ -16,15 +16,15 @@ import { AppButton } from '@/components/AppButton';
 import { AppInput } from '@/components/AppInput';
 import { EmptyState } from '@/components/EmptyState';
 import { ConfirmationDialog } from '@/components/ConfirmationDialog';
-import { useRentalDraftStore } from '@/stores/rental-draft.store';
+import { useRentalDraftStore, useRentalDraftHasHydrated } from '@/stores/rental-draft.store';
 import { useCustomerSearch, useCreateCustomer } from '@/hooks/use-customers';
-
-const WIZARD_LABELS = ['Klient', 'Pojazd', 'Daty', 'Umowa', 'Zdjecia', 'Podpisy'];
+import { RENTAL_WIZARD_LABELS } from '@/lib/constants';
 
 export default function CustomerStep() {
   const { t } = useTranslation();
   const router = useRouter();
   const draft = useRentalDraftStore();
+  const hydrated = useRentalDraftHasHydrated();
   const [searchQuery, setSearchQuery] = useState('');
   const [showDraftResume, setShowDraftResume] = useState(false);
   const [showNewCustomer, setShowNewCustomer] = useState(false);
@@ -93,7 +93,8 @@ export default function CustomerStep() {
       1: '/(tabs)/new-rental/vehicle',
       2: '/(tabs)/new-rental/dates',
       3: '/(tabs)/new-rental/contract',
-      4: '/(tabs)/new-rental/signatures',
+      4: '/(tabs)/new-rental/photos',
+      5: '/(tabs)/new-rental/signatures',
     };
     const route = stepRoutes[draft.step];
     if (route) {
@@ -112,12 +113,15 @@ export default function CustomerStep() {
 
   // snapPoints removed - using Modal instead of BottomSheet
 
+  // Wait for persisted store to hydrate before rendering
+  if (!hydrated) return null;
+
   return (
     <SafeAreaView style={s.safeArea} edges={['top']}>
       <WizardStepper
         currentStep={1}
         totalSteps={6}
-        labels={WIZARD_LABELS}
+        labels={RENTAL_WIZARD_LABELS}
       />
 
       <Text style={s.stepTitle}>

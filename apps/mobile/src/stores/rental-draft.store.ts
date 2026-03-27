@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -15,6 +16,9 @@ interface RentalDraft {
   rodoTimestamp: string | null;
   signatures: string[];
   photoUris: Record<string, string>;
+  rentalId: string | null;
+  contractId: string | null;
+  currentSignatureIndex: number;
 }
 
 interface RentalDraftState extends RentalDraft {
@@ -36,7 +40,32 @@ const initialDraft: RentalDraft = {
   rodoTimestamp: null,
   signatures: [],
   photoUris: {},
+  rentalId: null,
+  contractId: null,
+  currentSignatureIndex: 0,
 };
+
+/**
+ * Hook to track whether the persisted store has finished hydrating from AsyncStorage.
+ * Wizard screens must gate navigation redirects on this to avoid
+ * false redirects before draft data is loaded from storage.
+ */
+export function useRentalDraftHasHydrated(): boolean {
+  const [hydrated, setHydrated] = useState(
+    useRentalDraftStore.persist.hasHydrated(),
+  );
+
+  useEffect(() => {
+    const unsub = useRentalDraftStore.persist.onFinishHydration(() =>
+      setHydrated(true),
+    );
+    return () => {
+      unsub();
+    };
+  }, []);
+
+  return hydrated;
+}
 
 export const useRentalDraftStore = create<RentalDraftState>()(
   persist(
