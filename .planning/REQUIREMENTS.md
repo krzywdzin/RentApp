@@ -1,134 +1,127 @@
 # Requirements: RentApp
 
-**Defined:** 2026-03-25
-**Milestone:** v1.1 — Quality, Polish & UX Improvements
-**Core Value:** Pracownik w terenie może w pełni obsłużyć wynajem — od wypełnienia umowy, przez zweryfikowanie uprawnień kierowcy, zrobienie zdjęć auta, po podpis klienta i wysyłkę PDF — bez papieru i bez powrotu do biura.
+**Defined:** 2026-03-27
+**Milestone:** v2.0 — Production Ready
+**Core Value:** Pracownik w terenie moze w pelni obsluzyc wynajem — od wypelnienia umowy, przez zweryfikowanie uprawnien kierowcy, zrobienie zdjec auta, po podpis klienta i wysylke PDF — bez papieru i bez powrotu do biura.
 
-## v1.1 Requirements
+## v2.0 Requirements
 
-### Mobile UX Polish (MOBUX)
+### API Hardening (APIH)
 
-- [x] **MOBUX-01**: All mobile list screens show loading skeletons while data is fetching (vehicle selection, return mileage, return confirm)
-- [x] **MOBUX-02**: Customer search shows "type at least 2 characters" hint when query is empty, and a search-in-progress indicator while fetching
-- [x] **MOBUX-03**: Rental detail screen shows error state with retry button when API request fails (instead of infinite skeleton)
-- [x] **MOBUX-04**: Return wizard screens guard against missing rentalId with redirect to return start (prevent 0 km mileage bug)
-- [x] **MOBUX-05**: OfflineBanner is included in return wizard layout (not just tab layout)
-- [x] **MOBUX-06**: Dashboard greeting has fallback when user name is empty, and PDF open failure shows toast instead of silent catch
-- [x] **MOBUX-07**: Error messages use human-readable status labels instead of raw enum values (e.g. return status guard)
+- [ ] **APIH-01**: API validates all required environment variables at startup and fails fast with clear error messages listing missing vars
+- [ ] **APIH-02**: API handles SIGTERM/SIGINT gracefully — drains active requests, closes DB/Redis connections, then exits
+- [ ] **APIH-03**: Global exception filter catches all unhandled errors and returns consistent JSON error responses (not HTML stack traces)
+- [ ] **APIH-04**: PDF generation errors are caught and returned as 500 with a descriptive message instead of crashing the request
+- [ ] **APIH-05**: Rental DRAFT→ACTIVE transition is properly triggered after all 4 signatures are collected (idempotent, no race condition)
 
-### Web Admin Panel Polish (WEBUX)
+### API Security (APIS)
 
-- [x] **WEBUX-01**: User management page shows list of existing users with edit, deactivate, and password reset actions
-- [x] **WEBUX-02**: Rental detail "Umowa" tab loads and displays the actual contract data using useContractByRental hook
-- [x] **WEBUX-03**: Rental list shows vehicle registration and customer name instead of truncated UUIDs
-- [x] **WEBUX-04**: Edit rental form uses Zod validation with inline error messages (same pattern as create form)
-- [x] **WEBUX-05**: Audit page date filter is wired to the API query, and actor filter uses user dropdown instead of raw UUID input
-- [x] **WEBUX-06**: Customer and vehicle detail rental tabs show Polish status labels and loading states
-- [x] **WEBUX-07**: Dashboard and contract list show error states when API requests fail
-- [x] **WEBUX-08**: Login page uses design system Input component instead of raw HTML input elements
+- [ ] **APIS-01**: Rate limiting applied per-endpoint — auth endpoints (login, refresh) limited to 10 req/min, general API to 100 req/min
+- [ ] **APIS-02**: CORS origins configured via environment variable (not hardcoded IPs) — production allows only deployed domain
+- [ ] **APIS-03**: Request body size limits enforced globally (10MB for signature uploads, 1MB default for other endpoints)
+- [ ] **APIS-04**: Helmet security headers configured for production (CSP, HSTS, X-Frame-Options)
+- [ ] **APIS-05**: All sensitive config values (DB URL, Redis URL, JWT secrets, API keys) loaded from environment — no defaults for secrets in production
 
-### TypeScript Strictness (TSFIX)
+### Mobile Production (MOBP)
 
-- [x] **TSFIX-01**: Rental service methods return typed DTOs instead of Promise<any>, and use Prisma.TransactionClient for tx parameters
-- [x] **TSFIX-02**: Contract service methods use typed parameters instead of any (toDto, rental, customer, vehicle params)
-- [x] **TSFIX-03**: Damage service uses typed DamagePin accessor instead of `pins as any` casts on Prisma JSON columns
-- [x] **TSFIX-04**: Portal controller uses typed PortalRequest interface instead of `@Req() req: any`
-- [x] **TSFIX-05**: Web mutation hooks use specific input types (CreateVehicleInput, etc.) instead of Record<string, unknown>
-- [x] **TSFIX-06**: Shared portal types replace `returnData: any | null` with typed DTO
+- [ ] **MOBP-01**: API URL loaded from environment config (EXPO_PUBLIC_API_URL) — no hardcoded IPs in source code
+- [ ] **MOBP-02**: Keyboard-aware scroll views on all form screens prevent input fields from being hidden behind the keyboard
+- [ ] **MOBP-03**: Vehicle selection screen uses FlatList with proper keyExtractor and avoids VirtualizedList nesting warnings
+- [ ] **MOBP-04**: Photo walkthrough step added to rental wizard — employee captures vehicle photos before signatures
+- [ ] **MOBP-05**: EAS Build configuration (eas.json) set up with development, preview, and production profiles for Android APK
 
-### Dependency Fixes (DEPS)
+### Web Production (WEBP)
 
-- [x] **DEPS-01**: react-native-webview added as explicit dependency in mobile package.json
-- [x] **DEPS-02**: Expo dependency versions aligned (expo-router uses tilde range, Sentry SDK version verified for SDK 54 compatibility)
-- [x] **DEPS-03**: React version pins use tilde/caret ranges instead of exact pins where safe
+- [ ] **WEBP-01**: API client implements automatic token refresh on 401 responses with request queue (no double-refresh race)
+- [ ] **WEBP-02**: All create/edit forms show inline validation errors using Zod schemas consistent with API DTOs
+- [ ] **WEBP-03**: All data-fetching pages show error states with retry buttons when API requests fail
+- [ ] **WEBP-04**: Next.js build produces zero TypeScript errors — all type assertions cleaned up
 
-### Test Coverage (TEST)
+### Infrastructure (INFRA)
 
-- [x] **TEST-01**: Web admin panel has component tests for critical pages (dashboard, rental list, vehicle list, customer list)
-- [x] **TEST-02**: Mobile app has smoke tests for key screens (login, dashboard, rental list, new rental wizard steps)
-- [x] **TEST-03**: API test coverage thresholds enforced in Jest config (statement coverage minimum)
+- [ ] **INFRA-01**: Dockerfile for API app — multi-stage build (deps, build, production) with non-root user
+- [ ] **INFRA-02**: Storage service supports Cloudflare R2 as S3-compatible backend (endpoint, auth, bucket config via env vars)
+- [ ] **INFRA-03**: Railway deployment config (railway.toml or Procfile) for API with health check endpoint
+- [ ] **INFRA-04**: Web app deployable to Railway or Vercel with environment-based API URL configuration
+- [ ] **INFRA-05**: EAS Build produces installable Android APK via `eas build --platform android --profile production`
 
-### Performance (PERF)
+### CI/CD Pipeline (CICD)
 
-- [x] **PERF-01**: Contract list query uses a batch/join approach instead of N+1 per-rental fetching
-- [x] **PERF-02**: Customer and vehicle detail pages filter rentals server-side (query param) instead of fetching all rentals
+- [ ] **CICD-01**: GitHub Actions workflow runs lint + typecheck + test on every PR for all three apps
+- [ ] **CICD-02**: API deployment triggered on push to main — builds Docker image and deploys to Railway
+- [ ] **CICD-03**: Web deployment triggered on push to main — builds and deploys to Railway/Vercel
+- [ ] **CICD-04**: Health check endpoint (GET /health) returns 200 with service status (DB, Redis, Storage connectivity)
 
-## v2 Requirements
+## Previous Milestones
 
-Deferred to future release. Tracked but not in current roadmap.
+<details>
+<summary>v1.1 Requirements (29 total — all complete)</summary>
 
-### Offline & Performance
+### Mobile UX Polish (MOBUX) — 7 requirements, all complete
+### Web Admin Panel Polish (WEBUX) — 8 requirements, all complete
+### TypeScript Strictness (TSFIX) — 6 requirements, all complete
+### Dependency Fixes (DEPS) — 3 requirements, all complete
+### Test Coverage (TEST) — 3 requirements, all complete
+### Performance (PERF) — 2 requirements, all complete
 
-- **OFFL-01**: Aplikacja mobilna działa offline — kolejkuje mutacje lokalnie, synchronizuje po przywróceniu połączenia
-- **OFFL-02**: Zdjęcia uploadują się w tle po przywróceniu połączenia
+</details>
 
-### Analityka i Raporty
+<details>
+<summary>v1.0 Requirements (42 total — all complete)</summary>
 
-- **REPT-01**: Dashboard z raportami: wykorzystanie floty %, przychód per pojazd, trendy sezonowe
-- **REPT-02**: Eksport raportów do PDF/XLS
+AUTH (5), FLEET (3), CUST (4), RENT (5), CONT (5), ADMIN (3), MOB (3), PHOTO (3), DMG (2), NOTIF (3), ALERT (2), CEPIK (2), PORTAL (2)
 
-### Serwis Pojazdów
-
-- **SERV-01**: Log serwisowy per pojazd (przeglądy, naprawy, koszty)
-- **SERV-02**: Dashboard rentowności per pojazd (koszty vs przychody)
-
-### Automatyzacja
-
-- **AUTO-01**: OCR skan dowodu osobistego i prawa jazdy — auto-fill pól formularza
+</details>
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Płatności online | Wypożyczalnia rozlicza się bezpośrednio (gotówka/przelew) — PCI compliance niepotrzebne |
-| Rezerwacja online przez klienta | Wynajmy odbywają się na miejscu — booking engine to ogromny scope bez zapotrzebowania |
-| Wielojęzyczność / i18n | Polski rynek, v1.1 — hardcoded Polish strings are acceptable |
-| Full E2E browser tests (Playwright) | Too heavy for v1.1 — component + unit tests first |
-| Vehicle creation insurance/inspection fields | Low priority — can be added via edit after creation |
-| Sidebar hydration flash fix | Cosmetic SSR issue, low impact |
-| New vehicle form insurance/inspection fields | Can be set via edit page; not blocking |
+| Platnosci online | Wypozyczalnia rozlicza sie bezposrednio — PCI compliance niepotrzebne |
+| Rezerwacja online przez klienta | Wynajmy odbywaja sie na miejscu |
+| Wielojezycznosc / i18n | Polski rynek — hardcoded Polish strings acceptable |
+| Offline mode z sync | Complexity too high for v2.0 — requires queue/conflict resolution |
+| OCR skan dokumentow | Nice-to-have for future version |
+| Kubernetes / container orchestration | Railway handles scaling — no need for K8s |
+| iOS App Store deployment | Only 1 iOS user — TestFlight or ad-hoc sufficient |
 
 ## Traceability
 
-Which phases cover which requirements. Updated during roadmap creation.
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| MOBUX-01 | Phase 10 | Complete |
-| MOBUX-02 | Phase 10 | Complete |
-| MOBUX-03 | Phase 10 | Complete |
-| MOBUX-04 | Phase 10 | Complete |
-| MOBUX-05 | Phase 10 | Complete |
-| MOBUX-06 | Phase 10 | Complete |
-| MOBUX-07 | Phase 10 | Complete |
-| WEBUX-01 | Phase 11 | Complete |
-| WEBUX-02 | Phase 11 | Complete |
-| WEBUX-03 | Phase 11 | Complete |
-| WEBUX-04 | Phase 11 | Complete |
-| WEBUX-05 | Phase 11 | Complete |
-| WEBUX-06 | Phase 11 | Complete |
-| WEBUX-07 | Phase 11 | Complete |
-| WEBUX-08 | Phase 11 | Complete |
-| TSFIX-01 | Phase 12 | Complete |
-| TSFIX-02 | Phase 12 | Complete |
-| TSFIX-03 | Phase 12 | Complete |
-| TSFIX-04 | Phase 12 | Complete |
-| TSFIX-05 | Phase 12 | Complete |
-| TSFIX-06 | Phase 12 | Complete |
-| DEPS-01 | Phase 13 | Complete |
-| DEPS-02 | Phase 13 | Complete |
-| DEPS-03 | Phase 13 | Complete |
-| PERF-01 | Phase 13 | Complete |
-| PERF-02 | Phase 13 | Complete |
-| TEST-01 | Phase 14 | Complete |
-| TEST-02 | Phase 14 | Complete |
-| TEST-03 | Phase 14 | Complete |
+| APIH-01 | Phase 15 | Pending |
+| APIH-02 | Phase 15 | Pending |
+| APIH-03 | Phase 15 | Pending |
+| APIH-04 | Phase 15 | Pending |
+| APIH-05 | Phase 15 | Pending |
+| APIS-01 | Phase 15 | Pending |
+| APIS-02 | Phase 15 | Pending |
+| APIS-03 | Phase 15 | Pending |
+| APIS-04 | Phase 15 | Pending |
+| APIS-05 | Phase 15 | Pending |
+| MOBP-01 | Phase 16 | Pending |
+| MOBP-02 | Phase 16 | Pending |
+| MOBP-03 | Phase 16 | Pending |
+| MOBP-04 | Phase 16 | Pending |
+| MOBP-05 | Phase 16 | Pending |
+| WEBP-01 | Phase 17 | Pending |
+| WEBP-02 | Phase 17 | Pending |
+| WEBP-03 | Phase 17 | Pending |
+| WEBP-04 | Phase 17 | Pending |
+| INFRA-01 | Phase 18 | Pending |
+| INFRA-02 | Phase 18 | Pending |
+| INFRA-03 | Phase 18 | Pending |
+| INFRA-04 | Phase 18 | Pending |
+| INFRA-05 | Phase 18 | Pending |
+| CICD-01 | Phase 19 | Pending |
+| CICD-02 | Phase 19 | Pending |
+| CICD-03 | Phase 19 | Pending |
+| CICD-04 | Phase 19 | Pending |
 
 **Coverage:**
-- v1.1 requirements: 29 total
-- Mapped to phases: 29
+- v2.0 requirements: 28 total
+- Mapped to phases: 28
 - Unmapped: 0
 
 ---
-*Requirements defined: 2026-03-25*
-*Last updated: 2026-03-25 after roadmap creation*
+*Requirements defined: 2026-03-27*
