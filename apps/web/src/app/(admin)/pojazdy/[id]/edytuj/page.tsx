@@ -163,7 +163,10 @@ export default function EditVehiclePage() {
                           type="number"
                           {...field}
                           value={field.value ?? ''}
-                          onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                          onChange={(e) => {
+                            const val = parseInt(e.target.value);
+                            field.onChange(isNaN(val) ? undefined : val);
+                          }}
                         />
                       </FormControl>
                       <FormMessage />
@@ -246,7 +249,10 @@ export default function EditVehiclePage() {
                           type="number"
                           {...field}
                           value={field.value ?? ''}
-                          onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                          onChange={(e) => {
+                            const val = parseInt(e.target.value);
+                            field.onChange(isNaN(val) ? undefined : val);
+                          }}
                         />
                       </FormControl>
                       <FormMessage />

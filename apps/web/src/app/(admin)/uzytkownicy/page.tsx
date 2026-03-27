@@ -27,6 +27,7 @@ import { DataTable } from '@/components/data-table/data-table';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import {
   useUsers,
+  useCreateUser,
   useUpdateUser,
   useDeactivateUser,
   useResetPassword,
@@ -48,7 +49,6 @@ export default function UzytkownicyPage() {
   const [name, setName] = useState('');
   const [role, setRole] = useState<string>('');
   const [errors, setErrors] = useState<Partial<Record<keyof CreateUserForm, string>>>({});
-  const [submitting, setSubmitting] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
 
   // DataTable state
@@ -62,6 +62,7 @@ export default function UzytkownicyPage() {
 
   // Queries & mutations
   const { data: users, isLoading } = useUsers();
+  const createUser = useCreateUser();
   const updateUser = useUpdateUser();
   const deactivateUser = useDeactivateUser();
   const resetPassword = useResetPassword();
@@ -122,32 +123,25 @@ export default function UzytkownicyPage() {
       return;
     }
 
-    setSubmitting(true);
-    try {
-      const res = await fetch('/api/users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(result.data),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.message || 'Nie udalo sie utworzyc uzytkownika');
-      }
-
-      toast.success('Uzytkownik utworzony. Email z linkiem do ustawienia hasla zostal wyslany.');
-      setEmail('');
-      setName('');
-      setRole('');
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Wystapil blad');
-    } finally {
-      setSubmitting(false);
-    }
+    createUser.mutate(result.data, {
+      onSuccess: () => {
+        setEmail('');
+        setName('');
+        setRole('');
+      },
+    });
   }
 
   function handleEditSave() {
     if (!editUser) return;
+    if (!editName?.trim()) {
+      toast.error('Imie i nazwisko jest wymagane');
+      return;
+    }
+    if (!editRole) {
+      toast.error('Rola jest wymagana');
+      return;
+    }
     updateUser.mutate(
       { id: editUser.id, data: { name: editName, role: editRole } },
       { onSuccess: () => setEditUser(null) },
@@ -228,8 +222,8 @@ export default function UzytkownicyPage() {
                 {errors.role && <p className="text-sm text-destructive">{errors.role}</p>}
               </div>
 
-              <Button type="submit" disabled={submitting} className="w-full">
-                {submitting ? 'Tworzenie...' : 'Utworz uzytkownika'}
+              <Button type="submit" disabled={createUser.isPending} className="w-full">
+                {createUser.isPending ? 'Tworzenie...' : 'Utworz uzytkownika'}
               </Button>
             </form>
           </CardContent>

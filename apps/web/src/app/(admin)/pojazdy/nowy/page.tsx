@@ -222,7 +222,10 @@ export default function NewVehiclePage() {
                         <Input
                           type="number"
                           {...field}
-                          onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                          onChange={(e) => {
+                            const val = parseInt(e.target.value);
+                            field.onChange(isNaN(val) ? undefined : val);
+                          }}
                         />
                       </FormControl>
                       <FormMessage />

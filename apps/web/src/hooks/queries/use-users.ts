@@ -65,6 +65,24 @@ export function useDeactivateUser() {
   });
 }
 
+export function useCreateUser() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: { name: string; email: string; role: string }) =>
+      apiClient<UserDto>('/users', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
+      toast.success('Uzytkownik utworzony. Email z linkiem do ustawienia hasla zostal wyslany.');
+    },
+    onError: () => {
+      toast.error('Nie udalo sie utworzyc uzytkownika');
+    },
+  });
+}
+
 export function useResetPassword() {
   return useMutation({
     mutationFn: (id: string) =>
