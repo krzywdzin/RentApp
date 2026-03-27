@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v2.1
 milestone_name: Fix All Audit Issues
 status: executing
-stopped_at: Completed 24-01-PLAN.md
-last_updated: "2026-03-27T23:33:06.500Z"
-last_activity: 2026-03-27 -- Completed 24-01 shared components & foundation
+stopped_at: Completed 24-03-PLAN.md
+last_updated: "2026-03-27T23:33:41.659Z"
+last_activity: 2026-03-27 -- Completed 24-05 state management, performance & responsive fixes
 progress:
   total_phases: 7
   completed_phases: 4
   total_plans: 19
   completed_plans: 18
-  percent: 89
+  percent: 95
 ---
 
 # Project State
@@ -85,6 +85,10 @@ Progress: [██████████] 95%
 - [Phase 24]: Full combobox ARIA pattern with ArrowDown/Up/Escape keyboard navigation for customer search
 - [Phase 24]: InfoRow accepts ReactNode value for flexibility; constants as 'as const' for type narrowing
 - [Phase 24]: global-error.tsx uses only Tailwind (no shadcn) per Next.js docs for self-contained error pages
+- [Phase 24]: Portal auth uses useQuery with 5min staleTime and local state for exchange errors
+- [Phase 24]: useCreateUser mutation hook follows existing useUpdateUser pattern with queryClient.invalidateQueries
+- [Phase 24]: useState lazy initializer with typeof window guard for localStorage sidebar state (no flash)
+- [Phase 24]: Numeric inputs use isNaN undefined fallback instead of || 0 for proper Zod validation
 
 ### Pending Todos
 
@@ -98,6 +102,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-27T23:33:04.690Z
-Stopped at: Completed 24-01-PLAN.md
+Last session: 2026-03-27T23:33:41.658Z
+Stopped at: Completed 24-03-PLAN.md
 Resume file: None

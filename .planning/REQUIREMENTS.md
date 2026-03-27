@@ -111,11 +111,11 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 
 ### Web Form Validation
 
-- [ ] **WVAL-01**: dailyRateNet is required (not optional) in new rental form
-- [ ] **WVAL-02**: Extend rental dialog validates new end date > current end date
-- [ ] **WVAL-03**: Return mileage validates against vehicle current mileage minimum
-- [ ] **WVAL-04**: Edit user dialog validates name and role before save
-- [ ] **WVAL-05**: Numeric inputs (year, seats, mileage) show validation error for 0 values
+- [x] **WVAL-01**: dailyRateNet is required (not optional) in new rental form
+- [x] **WVAL-02**: Extend rental dialog validates new end date > current end date
+- [x] **WVAL-03**: Return mileage validates against vehicle current mileage minimum
+- [x] **WVAL-04**: Edit user dialog validates name and role before save
+- [x] **WVAL-05**: Numeric inputs (year, seats, mileage) show validation error for 0 values
 
 ### Web Accessibility
 
@@ -133,21 +133,21 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 - [x] **WUI-01**: statusConfig, InfoRow, fuelTypeOptions extracted to shared files (no duplication)
 - [x] **WUI-02**: Shared ErrorState and EmptyState components replace inline patterns
 - [x] **WUI-03**: getInitials utility extracted to shared lib (not duplicated)
-- [ ] **WUI-04**: Portal uses theme-aware colors (bg-background) instead of hardcoded slate
-- [ ] **WUI-05**: Users page creation uses mutation hook with query invalidation
+- [x] **WUI-04**: Portal uses theme-aware colors (bg-background) instead of hardcoded slate
+- [x] **WUI-05**: Users page creation uses mutation hook with query invalidation
 
 ### Web State & Performance
 
-- [ ] **WPERF-01**: Pagination resets to page 0 when filter changes (rentals, contracts)
-- [ ] **WPERF-02**: device_id cookie refreshed during token rotation
-- [ ] **WPERF-03**: Portal auth state shared via React Query (not re-fetched on every mount)
-- [ ] **WPERF-04**: Sidebar localStorage read in useState initializer (no flash)
+- [x] **WPERF-01**: Pagination resets to page 0 when filter changes (rentals, contracts)
+- [x] **WPERF-02**: device_id cookie refreshed during token rotation
+- [x] **WPERF-03**: Portal auth state shared via React Query (not re-fetched on every mount)
+- [x] **WPERF-04**: Sidebar localStorage read in useState initializer (no flash)
 
 ### Web Responsive Design
 
-- [ ] **WRESP-01**: Vehicle and rental detail action buttons wrap on small screens
-- [ ] **WRESP-02**: Audit trail table has overflow-x-auto for horizontal scroll
-- [ ] **WRESP-03**: Filter bar inputs use responsive widths (w-full sm:w-auto)
+- [x] **WRESP-01**: Vehicle and rental detail action buttons wrap on small screens
+- [x] **WRESP-02**: Audit trail table has overflow-x-auto for horizontal scroll
+- [x] **WRESP-03**: Filter bar inputs use responsive widths (w-full sm:w-auto)
 
 ### Infrastructure CI/CD
 
@@ -273,11 +273,11 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 | WERR-05 | Phase 24 | Pending |
 | WERR-06 | Phase 24 | Complete |
 | WERR-07 | Phase 24 | Complete |
-| WVAL-01 | Phase 24 | Pending |
-| WVAL-02 | Phase 24 | Pending |
-| WVAL-03 | Phase 24 | Pending |
-| WVAL-04 | Phase 24 | Pending |
-| WVAL-05 | Phase 24 | Pending |
+| WVAL-01 | Phase 24 | Complete |
+| WVAL-02 | Phase 24 | Complete |
+| WVAL-03 | Phase 24 | Complete |
+| WVAL-04 | Phase 24 | Complete |
+| WVAL-05 | Phase 24 | Complete |
 | WA11Y-01 | Phase 24 | Complete |
 | WA11Y-02 | Phase 24 | Complete |
 | WA11Y-03 | Phase 24 | Complete |
@@ -289,15 +289,15 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 | WUI-01 | Phase 24 | Complete |
 | WUI-02 | Phase 24 | Complete |
 | WUI-03 | Phase 24 | Complete |
-| WUI-04 | Phase 24 | Pending |
-| WUI-05 | Phase 24 | Pending |
-| WPERF-01 | Phase 24 | Pending |
-| WPERF-02 | Phase 24 | Pending |
-| WPERF-03 | Phase 24 | Pending |
-| WPERF-04 | Phase 24 | Pending |
-| WRESP-01 | Phase 24 | Pending |
-| WRESP-02 | Phase 24 | Pending |
-| WRESP-03 | Phase 24 | Pending |
+| WUI-04 | Phase 24 | Complete |
+| WUI-05 | Phase 24 | Complete |
+| WPERF-01 | Phase 24 | Complete |
+| WPERF-02 | Phase 24 | Complete |
+| WPERF-03 | Phase 24 | Complete |
+| WPERF-04 | Phase 24 | Complete |
+| WRESP-01 | Phase 24 | Complete |
+| WRESP-02 | Phase 24 | Complete |
+| WRESP-03 | Phase 24 | Complete |
 | CICD-01 | Phase 25 | Pending |
 | CICD-02 | Phase 25 | Pending |
 | CICD-03 | Phase 25 | Pending |
