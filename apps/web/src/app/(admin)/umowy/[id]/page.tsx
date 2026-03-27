@@ -17,6 +17,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
+import { ErrorState } from '@/components/ui/error-state';
 import { useContract, getContractPdfUrl } from '@/hooks/queries/use-contracts';
 import { getContractStatusBadge } from '../columns';
 import { formatDate, formatDateTime, formatCurrency } from '@/lib/format';
@@ -31,7 +32,7 @@ const signatureTypeLabels: Record<string, string> = {
 export default function ContractDetailPage() {
   const params = useParams();
   const id = params.id as string;
-  const { data: contract, isLoading } = useContract(id);
+  const { data: contract, isLoading, isError, refetch } = useContract(id);
 
   if (isLoading) {
     return (
@@ -40,6 +41,10 @@ export default function ContractDetailPage() {
         <Skeleton className="h-64 w-full" />
       </div>
     );
+  }
+
+  if (isError) {
+    return <ErrorState onRetry={refetch} />;
   }
 
   if (!contract) {

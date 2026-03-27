@@ -21,6 +21,7 @@ import {
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import { InfoRow } from '@/components/ui/info-row';
 import { vehicleStatusConfig, fuelTypeLabels, transmissionLabels } from '@/lib/constants';
+import { ErrorState } from '@/components/ui/error-state';
 import { useVehicle, useArchiveVehicle } from '@/hooks/queries/use-vehicles';
 import { useRentals } from '@/hooks/queries/use-rentals';
 import { getRentalStatusBadge } from '../../wynajmy/columns';
@@ -29,7 +30,7 @@ import { formatDate } from '@/lib/format';
 export default function VehicleDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
-  const { data: vehicle, isLoading } = useVehicle(params.id);
+  const { data: vehicle, isLoading, isError, refetch } = useVehicle(params.id);
   const { data: rentals, isLoading: rentalsLoading } = useRentals({ vehicleId: params.id });
   const archiveVehicle = useArchiveVehicle();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -44,6 +45,10 @@ export default function VehicleDetailPage() {
         <Skeleton className="h-[400px] w-full" />
       </div>
     );
+  }
+
+  if (isError) {
+    return <ErrorState onRetry={refetch} />;
   }
 
   if (!vehicle) {

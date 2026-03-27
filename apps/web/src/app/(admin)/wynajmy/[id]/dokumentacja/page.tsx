@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
+import { ErrorState } from '@/components/ui/error-state';
 import { PhotoComparison } from '@/components/photos/photo-comparison';
 import { DamageComparison } from '@/components/photos/damage-comparison';
 import { usePhotoComparison, useDamageComparison } from '@/hooks/queries/use-photos';
@@ -14,6 +15,17 @@ export default function DokumentacjaPage() {
   const rentalId = params.id as string;
   const photoQuery = usePhotoComparison(rentalId);
   const damageQuery = useDamageComparison(rentalId);
+
+  if (photoQuery.isError || damageQuery.isError) {
+    return (
+      <ErrorState
+        onRetry={() => {
+          photoQuery.refetch();
+          damageQuery.refetch();
+        }}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">

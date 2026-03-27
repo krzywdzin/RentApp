@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ErrorState } from '@/components/ui/error-state';
 import { useRental } from '@/hooks/queries/use-rentals';
 import { apiClient } from '@/lib/api-client';
 import { toast } from 'sonner';
@@ -50,7 +51,7 @@ export default function EditRentalPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const id = params.id as string;
-  const { data: rental, isLoading } = useRental(id);
+  const { data: rental, isLoading, isError, refetch } = useRental(id);
 
   const {
     register,
@@ -87,6 +88,10 @@ export default function EditRentalPage() {
         <Skeleton className="h-64 w-full" />
       </div>
     );
+  }
+
+  if (isError) {
+    return <ErrorState onRetry={refetch} />;
   }
 
   if (!rental || rental.status !== RentalStatus.DRAFT) {

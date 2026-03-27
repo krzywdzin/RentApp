@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/dialog';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import { InfoRow } from '@/components/ui/info-row';
+import { ErrorState } from '@/components/ui/error-state';
 import { useCustomer, useArchiveCustomer } from '@/hooks/queries/use-customers';
 import { useRentals } from '@/hooks/queries/use-rentals';
 import { getRentalStatusBadge } from '../../wynajmy/columns';
@@ -27,7 +28,7 @@ import { formatDate } from '@/lib/format';
 export default function CustomerDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
-  const { data: customer, isLoading } = useCustomer(params.id);
+  const { data: customer, isLoading, isError, refetch } = useCustomer(params.id);
   const { data: rentals, isLoading: rentalsLoading } = useRentals({ customerId: params.id });
   const archiveCustomer = useArchiveCustomer();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -42,6 +43,10 @@ export default function CustomerDetailPage() {
         <Skeleton className="h-[400px] w-full" />
       </div>
     );
+  }
+
+  if (isError) {
+    return <ErrorState onRetry={refetch} />;
   }
 
   if (!customer) {
