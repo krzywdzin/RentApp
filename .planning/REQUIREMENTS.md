@@ -163,15 +163,15 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 
 ### Infrastructure Config & Dependencies
 
-- [ ] **ICONF-01**: Unused dependencies removed (bullmq, @nestjs/cli in web, @gorhom/bottom-sheet, tailwindcss in mobile)
-- [ ] **ICONF-02**: zod and typescript versions aligned across all packages
-- [ ] **ICONF-03**: CORS_ORIGINS, COMPANY_PHONE, APP_URL added to .env.example with docs
-- [ ] **ICONF-04**: apps/web has .env.example documenting API_URL
-- [ ] **ICONF-05**: Root and API .env.example consolidated (single source of truth)
-- [ ] **ICONF-06**: Docker images pinned to specific versions (MinIO, Mailpit)
-- [ ] **ICONF-07**: MinIO has health check in docker-compose.yml
+- [x] **ICONF-01**: Unused dependencies removed (bullmq, @nestjs/cli in web, @gorhom/bottom-sheet, tailwindcss in mobile)
+- [x] **ICONF-02**: zod and typescript versions aligned across all packages
+- [x] **ICONF-03**: CORS_ORIGINS, COMPANY_PHONE, APP_URL added to .env.example with docs
+- [x] **ICONF-04**: apps/web has .env.example documenting API_URL
+- [x] **ICONF-05**: Root and API .env.example consolidated (single source of truth)
+- [x] **ICONF-06**: Docker images pinned to specific versions (MinIO, Mailpit)
+- [x] **ICONF-07**: MinIO has health check in docker-compose.yml
 - [x] **ICONF-08**: tsconfig.base.json copied in both Dockerfiles
-- [ ] **ICONF-09**: turbo.json has outputs for lint/test tasks and typecheck task defined
+- [x] **ICONF-09**: turbo.json has outputs for lint/test tasks and typecheck task defined
 
 ### Code Quality
 
@@ -307,15 +307,15 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 | CICD-07 | Phase 25 | Complete |
 | CICD-08 | Phase 25 | Complete |
 | CICD-09 | Phase 25 | Complete |
-| ICONF-01 | Phase 25 | Pending |
-| ICONF-02 | Phase 25 | Pending |
-| ICONF-03 | Phase 25 | Pending |
-| ICONF-04 | Phase 25 | Pending |
-| ICONF-05 | Phase 25 | Pending |
-| ICONF-06 | Phase 25 | Pending |
-| ICONF-07 | Phase 25 | Pending |
+| ICONF-01 | Phase 25 | Complete |
+| ICONF-02 | Phase 25 | Complete |
+| ICONF-03 | Phase 25 | Complete |
+| ICONF-04 | Phase 25 | Complete |
+| ICONF-05 | Phase 25 | Complete |
+| ICONF-06 | Phase 25 | Complete |
+| ICONF-07 | Phase 25 | Complete |
 | ICONF-08 | Phase 25 | Complete |
-| ICONF-09 | Phase 25 | Pending |
+| ICONF-09 | Phase 25 | Complete |
 | QUAL-01 | Phase 26 | Pending |
 | QUAL-02 | Phase 26 | Pending |
 | QUAL-03 | Phase 26 | Pending |
