@@ -15,6 +15,13 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.test.{ts,tsx}'],
     css: false,
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'lcov'],
+      thresholds: {
+        statements: 30,
+      },
+    },
     server: {
       deps: {
         inline: ['@rentapp/shared'],
