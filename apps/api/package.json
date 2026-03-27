@@ -29,7 +29,6 @@
     "@rentapp/shared": "workspace:*",
     "argon2": "^0.41.0",
     "bull": "^4.16.5",
-    "bullmq": "^5.0.0",
     "class-transformer": "^0.5.0",
     "class-validator": "^0.14.0",
     "exifr": "^7.1.3",
