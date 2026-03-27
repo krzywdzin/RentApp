@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v2.1
 milestone_name: Fix All Audit Issues
 status: executing
-stopped_at: Completed 21-01-PLAN.md
-last_updated: "2026-03-27T22:19:30.892Z"
-last_activity: 2026-03-27 -- Completed 21-01 critical mobile bug fixes
+stopped_at: Completed 21-04-PLAN.md
+last_updated: "2026-03-27T22:19:58.387Z"
+last_activity: 2026-03-27 -- Completed 21-04 API safety bugs (retention guard, null checks, photo atomicity)
 progress:
   total_phases: 7
   completed_phases: 1
   total_plans: 6
-  completed_plans: 3
-  percent: 50
+  completed_plans: 4
+  percent: 67
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-27)
 ## Current Position
 
 Phase: 21 of 26 (Critical Bug Fixes)
-Plan: 1 of 1 complete
+Plan: 4 of 4 complete
 Status: Executing
-Last activity: 2026-03-27 -- Completed 21-01 critical mobile bug fixes
+Last activity: 2026-03-27 -- Completed 21-04 API safety bugs
 
-Progress: [█████░░░░░] 50%
+Progress: [███████░░░] 67%
 
 ## Performance Metrics
 
@@ -59,6 +59,8 @@ Progress: [█████░░░░░] 50%
 - [Phase 20]: Mobile PDF uses 5-minute signed URL expiry
 - [Phase 20]: S3 credential defaults moved to env.validation optionalDefaults pattern
 - [Phase 21]: useRef idempotency guard for rental creation; useState lazy initializer over redundant useEffect
+- [Phase 21]: ACTIVE/EXTENDED/DRAFT as active rental statuses for retention guard (no PENDING/RESERVED in schema)
+- [Phase 21]: replacePhoto uses same S3 keys (overwrite) instead of new-key-then-delete pattern
 
 ### Pending Todos
 
@@ -73,5 +75,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-03-27T22:19:30.891Z
-Stopped at: Completed 21-01-PLAN.md
+Stopped at: Completed 21-04-PLAN.md
 Resume file: None
