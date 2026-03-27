@@ -94,10 +94,10 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 
 ### Mobile Accessibility
 
-- [ ] **MA11Y-01**: Filter chips have accessibilityRole="radio" and accessibilityState
-- [ ] **MA11Y-02**: SearchBar TextInput has accessibilityLabel
-- [ ] **MA11Y-03**: AppInput label linked to TextInput via nativeID/accessibilityLabelledBy
-- [ ] **MA11Y-04**: Dashboard stat cards have combined accessibilityLabel
+- [x] **MA11Y-01**: Filter chips have accessibilityRole="radio" and accessibilityState
+- [x] **MA11Y-02**: SearchBar TextInput has accessibilityLabel
+- [x] **MA11Y-03**: AppInput label linked to TextInput via nativeID/accessibilityLabelledBy
+- [x] **MA11Y-04**: Dashboard stat cards have combined accessibilityLabel
 
 ### Web Error Handling
 
@@ -262,10 +262,10 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 | MUX-05 | Phase 23 | Pending |
 | MUX-06 | Phase 23 | Pending |
 | MUX-07 | Phase 23 | Pending |
-| MA11Y-01 | Phase 23 | Pending |
-| MA11Y-02 | Phase 23 | Pending |
-| MA11Y-03 | Phase 23 | Pending |
-| MA11Y-04 | Phase 23 | Pending |
+| MA11Y-01 | Phase 23 | Complete |
+| MA11Y-02 | Phase 23 | Complete |
+| MA11Y-03 | Phase 23 | Complete |
+| MA11Y-04 | Phase 23 | Complete |
 | WERR-01 | Phase 24 | Pending |
 | WERR-02 | Phase 24 | Pending |
 | WERR-03 | Phase 24 | Pending |
