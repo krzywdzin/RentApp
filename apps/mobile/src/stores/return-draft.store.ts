@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -28,6 +29,28 @@ const initialDraft: ReturnDraft = {
   checklist: {},
   notes: '',
 };
+
+/**
+ * Hook to track whether the persisted store has finished hydrating from AsyncStorage.
+ * Return wizard screens must gate navigation redirects on this to avoid
+ * false redirects before rentalId is loaded from storage.
+ */
+export function useReturnDraftHasHydrated(): boolean {
+  const [hydrated, setHydrated] = useState(
+    useReturnDraftStore.persist.hasHydrated(),
+  );
+
+  useEffect(() => {
+    const unsub = useReturnDraftStore.persist.onFinishHydration(() =>
+      setHydrated(true),
+    );
+    return () => {
+      unsub();
+    };
+  }, []);
+
+  return hydrated;
+}
 
 export const useReturnDraftStore = create<ReturnDraftState>()(
   persist(

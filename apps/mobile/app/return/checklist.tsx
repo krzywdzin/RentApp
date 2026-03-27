@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 
-import { useReturnDraftStore } from '@/stores/return-draft.store';
+import { useReturnDraftStore, useReturnDraftHasHydrated } from '@/stores/return-draft.store';
 import { CHECKLIST_ITEMS } from '@/lib/constants';
 import { WizardStepper } from '@/components/WizardStepper';
 import { AppButton } from '@/components/AppButton';
@@ -16,6 +16,7 @@ interface ChecklistState {
 export default function ReturnChecklistScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const hasHydrated = useReturnDraftHasHydrated();
   const draftChecklist = useReturnDraftStore((s) => s.checklist);
   const updateDraft = useReturnDraftStore((s) => s.updateDraft);
   const rentalId = useReturnDraftStore((s) => s.rentalId);
@@ -32,12 +33,12 @@ export default function ReturnChecklistScreen() {
   });
 
   useEffect(() => {
-    if (!rentalId) {
+    if (hasHydrated && !rentalId) {
       router.replace('/(tabs)/rentals');
     }
-  }, [rentalId, router]);
+  }, [hasHydrated, rentalId, router]);
 
-  if (!rentalId) return null;
+  if (!hasHydrated || !rentalId) return null;
 
   const toggleItem = (key: string) => {
     setChecklist((prev) => ({

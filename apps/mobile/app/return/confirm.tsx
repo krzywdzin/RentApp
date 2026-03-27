@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
 
 import { useRental, useReturnRental } from '@/hooks/use-rentals';
-import { useReturnDraftStore } from '@/stores/return-draft.store';
+import { useReturnDraftStore, useReturnDraftHasHydrated } from '@/stores/return-draft.store';
 import { formatMileage } from '@/lib/format';
 import { CHECKLIST_ITEMS } from '@/lib/constants';
 import { WizardStepper } from '@/components/WizardStepper';
@@ -17,6 +17,7 @@ import { AppButton } from '@/components/AppButton';
 export default function ReturnConfirmScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const hasHydrated = useReturnDraftHasHydrated();
   const returnMutation = useReturnRental();
 
   const rentalId = useReturnDraftStore((s) => s.rentalId);
@@ -28,12 +29,12 @@ export default function ReturnConfirmScreen() {
   const { data: rental, isLoading } = useRental(rentalId ?? '');
 
   useEffect(() => {
-    if (!rentalId) {
+    if (hasHydrated && !rentalId) {
       router.replace('/(tabs)/rentals');
     }
-  }, [rentalId, router]);
+  }, [hasHydrated, rentalId, router]);
 
-  if (!rentalId) return null;
+  if (!hasHydrated || !rentalId) return null;
 
   if (isLoading) {
     return (

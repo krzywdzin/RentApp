@@ -47,10 +47,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
         promptMessage: 'Zaloguj sie biometrycznie',
         fallbackLabel: 'Uzyj hasla',
         cancelLabel: 'Anuluj',
-      }).then((result) => {
+      }).then(async (result) => {
         if (!result.success) {
-          // Biometric failed, redirect to login
-          useAuthStore.getState().logout();
+          // Biometric failed — await logout to ensure tokens are cleared before isReady
+          await useAuthStore.getState().logout();
         }
         setBiometricChecked(true);
         setIsReady(true);

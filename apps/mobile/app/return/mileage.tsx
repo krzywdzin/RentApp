@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 
 import { useRental } from '@/hooks/use-rentals';
-import { useReturnDraftStore } from '@/stores/return-draft.store';
+import { useReturnDraftStore, useReturnDraftHasHydrated } from '@/stores/return-draft.store';
 import { formatMileage } from '@/lib/format';
 import { WizardStepper } from '@/components/WizardStepper';
 import { LoadingSkeleton } from '@/components/LoadingSkeleton';
@@ -16,6 +16,7 @@ import { AppInput } from '@/components/AppInput';
 export default function ReturnMileageScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const hasHydrated = useReturnDraftHasHydrated();
   const rentalId = useReturnDraftStore((s) => s.rentalId);
   const draftMileage = useReturnDraftStore((s) => s.returnMileage);
   const updateDraft = useReturnDraftStore((s) => s.updateDraft);
@@ -27,12 +28,12 @@ export default function ReturnMileageScreen() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (!rentalId) {
+    if (hasHydrated && !rentalId) {
       router.replace('/(tabs)/rentals');
     }
-  }, [rentalId, router]);
+  }, [hasHydrated, rentalId, router]);
 
-  if (!rentalId) return null;
+  if (!hasHydrated || !rentalId) return null;
 
   if (isLoading) {
     return (
