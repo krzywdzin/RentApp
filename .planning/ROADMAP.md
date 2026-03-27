@@ -145,7 +145,13 @@ Plans:
   3. All interactive elements (filter chips, collapsible cards, calendar blocks, damage pins) can be reached and activated via keyboard Tab/Enter -- no mouse-only interactions
   4. Shared components (ErrorState, EmptyState, statusConfig, getInitials) are defined once and imported -- no duplicated inline patterns across pages
   5. Action buttons on vehicle/rental detail pages and filter bars wrap or scroll properly on viewports under 768px wide
-**Plans**: TBD
+**Plans**: 5 plans
+Plans:
+- [ ] 24-01-PLAN.md -- Shared components extraction, formatDate safety, global ErrorBoundary (WUI-01, WUI-02, WUI-03, WERR-06, WERR-07)
+- [ ] 24-02-PLAN.md -- Error handling on all detail pages, rental submit, portal auth, proxy (WERR-01, WERR-02, WERR-03, WERR-04, WERR-05)
+- [ ] 24-03-PLAN.md -- Form validation: daily rate, extend/return, user edit, numeric inputs, user mutation (WVAL-01, WVAL-02, WVAL-03, WVAL-04, WVAL-05, WUI-05)
+- [ ] 24-04-PLAN.md -- Accessibility: keyboard nav, ARIA attributes, combobox, damage pins (WA11Y-01, WA11Y-02, WA11Y-03, WA11Y-04, WA11Y-05, WA11Y-06, WA11Y-07, WA11Y-08)
+- [ ] 24-05-PLAN.md -- Performance, responsive design, portal theme (WPERF-01, WPERF-02, WPERF-03, WPERF-04, WRESP-01, WRESP-02, WRESP-03, WUI-04)
 
 ### Phase 25: Infrastructure & CI/CD
 **Goal**: CI pipeline tests all components (API, web, mobile) with real service dependencies (Redis), enforces coverage thresholds, and deployment includes health checks and proper migrations
@@ -157,7 +163,13 @@ Plans:
   3. Puppeteer/Chromium is installed in the API Docker production image -- PDF generation works in the deployed container
   4. CI enforces a minimum test coverage threshold -- builds fail if coverage drops below the configured percentage
   5. Unused dependencies (bullmq, @nestjs/cli in web, @gorhom/bottom-sheet) are removed; zod and typescript versions are aligned across all packages
-**Plans**: TBD
+**Plans**: 5 plans
+Plans:
+- [ ] 24-01-PLAN.md -- Shared components extraction, formatDate safety, global ErrorBoundary (WUI-01, WUI-02, WUI-03, WERR-06, WERR-07)
+- [ ] 24-02-PLAN.md -- Error handling on all detail pages, rental submit, portal auth, proxy (WERR-01, WERR-02, WERR-03, WERR-04, WERR-05)
+- [ ] 24-03-PLAN.md -- Form validation: daily rate, extend/return, user edit, numeric inputs, user mutation (WVAL-01, WVAL-02, WVAL-03, WVAL-04, WVAL-05, WUI-05)
+- [ ] 24-04-PLAN.md -- Accessibility: keyboard nav, ARIA attributes, combobox, damage pins (WA11Y-01, WA11Y-02, WA11Y-03, WA11Y-04, WA11Y-05, WA11Y-06, WA11Y-07, WA11Y-08)
+- [ ] 24-05-PLAN.md -- Performance, responsive design, portal theme (WPERF-01, WPERF-02, WPERF-03, WPERF-04, WRESP-01, WRESP-02, WRESP-03, WUI-04)
 
 ### Phase 26: Code Quality & Cleanup
 **Goal**: Codebase has no TypeScript `any` types in API services, no unguarded non-null assertions, no dead code, and shared types are defined once -- the code is maintainable for the next milestone
@@ -169,7 +181,13 @@ Plans:
   3. Running the linter with unused-imports rule shows no dead imports; unused DB fields are documented with a comment explaining retention reason
   4. Database has indexes on Contract.createdById, CepikVerification.status, and Notification.createdAt -- confirmed via Prisma schema
   5. FIELD_ENCRYPTION_KEY is validated as required on startup in all environments, with a logged warning if using a dev fallback value
-**Plans**: TBD
+**Plans**: 5 plans
+Plans:
+- [ ] 24-01-PLAN.md -- Shared components extraction, formatDate safety, global ErrorBoundary (WUI-01, WUI-02, WUI-03, WERR-06, WERR-07)
+- [ ] 24-02-PLAN.md -- Error handling on all detail pages, rental submit, portal auth, proxy (WERR-01, WERR-02, WERR-03, WERR-04, WERR-05)
+- [ ] 24-03-PLAN.md -- Form validation: daily rate, extend/return, user edit, numeric inputs, user mutation (WVAL-01, WVAL-02, WVAL-03, WVAL-04, WVAL-05, WUI-05)
+- [ ] 24-04-PLAN.md -- Accessibility: keyboard nav, ARIA attributes, combobox, damage pins (WA11Y-01, WA11Y-02, WA11Y-03, WA11Y-04, WA11Y-05, WA11Y-06, WA11Y-07, WA11Y-08)
+- [ ] 24-05-PLAN.md -- Performance, responsive design, portal theme (WPERF-01, WPERF-02, WPERF-03, WPERF-04, WRESP-01, WRESP-02, WRESP-03, WUI-04)
 
 ## Progress
 
