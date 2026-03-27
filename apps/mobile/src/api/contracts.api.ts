@@ -34,7 +34,10 @@ export const contractsApi = {
     return data;
   },
 
-  getPdfUrl: (contractId: string): string => {
-    return `${apiClient.defaults.baseURL}/contracts/${contractId}/pdf`;
+  getPdfUrl: async (contractId: string): Promise<string> => {
+    const { data } = await apiClient.get<{ url: string }>(
+      `/contracts/${contractId}/pdf-url`,
+    );
+    return data.url;
   },
 };

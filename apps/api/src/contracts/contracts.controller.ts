@@ -94,6 +94,20 @@ export class ContractsController {
     return this.contractsService.findByRental(rentalId);
   }
 
+  @Get(':id/pdf-url')
+  @Roles(UserRole.ADMIN, UserRole.EMPLOYEE)
+  async getPdfUrl(@Param('id', ParseUUIDPipe) id: string) {
+    const contract = await this.contractsService.findOne(id);
+    if (!contract.pdfKey) {
+      throw new NotFoundException('PDF not yet generated for this contract');
+    }
+    const url = await this.storageService.getPresignedDownloadUrl(
+      contract.pdfKey,
+      300, // 5-minute expiry for mobile download
+    );
+    return { url };
+  }
+
   @Get(':id/pdf')
   @Roles(UserRole.ADMIN, UserRole.EMPLOYEE)
   async downloadPdf(

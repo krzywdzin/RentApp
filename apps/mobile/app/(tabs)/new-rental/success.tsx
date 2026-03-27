@@ -18,8 +18,8 @@ export default function SuccessScreen() {
 
   const handleViewPdf = useCallback(async () => {
     if (!contractId) return;
-    const url = contractsApi.getPdfUrl(contractId);
     try {
+      const url = await contractsApi.getPdfUrl(contractId);
       await Linking.openURL(url);
     } catch {
       Toast.show({
