@@ -10,15 +10,16 @@ interface Props {
 
 interface State {
   hasError: boolean;
+  retryKey: number;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, retryKey: 0 };
   }
 
-  static getDerivedStateFromError(_error: Error): State {
+  static getDerivedStateFromError(_error: Error): Partial<State> {
     return { hasError: true };
   }
 
@@ -27,7 +28,10 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   private handleRetry = () => {
-    this.setState({ hasError: false });
+    this.setState((prev) => ({
+      hasError: false,
+      retryKey: prev.retryKey + 1,
+    }));
   };
 
   render() {
@@ -48,7 +52,11 @@ export class ErrorBoundary extends Component<Props, State> {
       );
     }
 
-    return this.props.children;
+    return (
+      <React.Fragment key={this.state.retryKey}>
+        {this.props.children}
+      </React.Fragment>
+    );
   }
 }
 
