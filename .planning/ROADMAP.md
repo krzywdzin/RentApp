@@ -111,7 +111,12 @@ Plans:
   3. Importing a fleet of 50 vehicles executes a constant number of DB queries (not 50+ individual lookups)
   4. AuditInterceptor and AuthService log via NestJS Logger -- no console.log or console.error calls remain in API source
   5. Annex PDF uses the rental's actual VAT rate -- not a hardcoded 23%
-**Plans**: TBD
+**Plans**: 4 plans
+Plans:
+- [ ] 22-01-PLAN.md -- DTO validation gaps: cross-field dates, MaxLength, isRead, route order (AVAL-03, AVAL-04, AVAL-05, AVAL-06, AVAL-07, AVAL-08)
+- [ ] 22-02-PLAN.md -- Server-side pagination and ParseUUIDPipe (AVAL-01, AVAL-02)
+- [ ] 22-03-PLAN.md -- N+1 query fixes: importFleet, photo comparison, expiry alerts (APERF-01, APERF-02, APERF-03)
+- [ ] 22-04-PLAN.md -- Logging, Redis safety, health query, timezone, annex VAT (APERF-04, APERF-05, APERF-06, APERF-07, APERF-08, APERF-09)
 
 ### Phase 23: Mobile Quality & UX
 **Goal**: The mobile app persists wizard state across backgrounding, validates all inputs before submission, uses safe area insets correctly, and supports screen readers on interactive elements
@@ -176,7 +181,7 @@ v2.1: 20 -> 21 -> 22 & 23 & 24 (parallel after 21) -> 25 (after 20) -> 26 (after
 | 15-19 | v2.0 | 7/7 | Complete | 2026-03-27 |
 | 20. Security Hardening | 2/2 | Complete    | 2026-03-27 | - |
 | 21. Critical Bug Fixes | 4/4 | Complete    | 2026-03-27 | - |
-| 22. API Validation & Performance | v2.1 | 0/? | Not started | - |
+| 22. API Validation & Performance | v2.1 | 0/4 | Not started | - |
 | 23. Mobile Quality & UX | v2.1 | 0/? | Not started | - |
 | 24. Web Quality & Accessibility | v2.1 | 0/? | Not started | - |
 | 25. Infrastructure & CI/CD | v2.1 | 0/? | Not started | - |
