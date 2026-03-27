@@ -40,10 +40,30 @@ export default function ReturnLayout() {
             beforeRemove: handleBeforeRemove,
           }}
         />
-        <Stack.Screen name="mileage" />
-        <Stack.Screen name="checklist" />
-        <Stack.Screen name="notes" />
-        <Stack.Screen name="confirm" />
+        <Stack.Screen
+          name="mileage"
+          listeners={{
+            beforeRemove: handleBeforeRemove,
+          }}
+        />
+        <Stack.Screen
+          name="checklist"
+          listeners={{
+            beforeRemove: handleBeforeRemove,
+          }}
+        />
+        <Stack.Screen
+          name="notes"
+          listeners={{
+            beforeRemove: handleBeforeRemove,
+          }}
+        />
+        <Stack.Screen
+          name="confirm"
+          listeners={{
+            beforeRemove: handleBeforeRemove,
+          }}
+        />
       </Stack>
 
       <ConfirmationDialog

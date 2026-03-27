@@ -36,11 +36,36 @@ export default function NewRentalLayout() {
             beforeRemove: handleBeforeRemove,
           }}
         />
-        <Stack.Screen name="vehicle" />
-        <Stack.Screen name="dates" />
-        <Stack.Screen name="contract" />
-        <Stack.Screen name="photos" />
-        <Stack.Screen name="signatures" />
+        <Stack.Screen
+          name="vehicle"
+          listeners={{
+            beforeRemove: handleBeforeRemove,
+          }}
+        />
+        <Stack.Screen
+          name="dates"
+          listeners={{
+            beforeRemove: handleBeforeRemove,
+          }}
+        />
+        <Stack.Screen
+          name="contract"
+          listeners={{
+            beforeRemove: handleBeforeRemove,
+          }}
+        />
+        <Stack.Screen
+          name="photos"
+          listeners={{
+            beforeRemove: handleBeforeRemove,
+          }}
+        />
+        <Stack.Screen
+          name="signatures"
+          listeners={{
+            beforeRemove: handleBeforeRemove,
+          }}
+        />
         <Stack.Screen
           name="success"
           options={{

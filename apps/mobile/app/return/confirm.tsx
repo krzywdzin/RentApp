@@ -95,8 +95,8 @@ export default function ReturnConfirmScreen() {
             type: 'success',
             text1: t('toasts.returnSubmitted'),
           });
-          // Navigate back to rental list
-          router.dismissAll();
+          // Navigate back to rental list (replace ensures predictable destination)
+          router.replace('/(tabs)/rentals');
         },
         onError: () => {
           Toast.show({
