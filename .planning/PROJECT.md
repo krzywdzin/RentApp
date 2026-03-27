@@ -8,16 +8,18 @@ System do zarządzania wypożyczalnią samochodów składający się z aplikacji
 
 Pracownik w terenie może w pełni obsłużyć wynajem — od wypełnienia umowy, przez zweryfikowanie uprawnień kierowcy, zrobienie zdjęć auta, po podpis klienta i wysyłkę PDF — bez papieru i bez powrotu do biura.
 
-## Current Milestone: v2.0 Production Ready
+## Current Milestone: v2.1 Fix All Audit Issues
 
-**Goal:** Doprowadzić aplikację do pełnego działania produkcyjnego — naprawić wszystkie bugi z audytu (111 issues), dodać brakujące funkcje (krok zdjęć w wizardzie), naprawić UI/UX (scroll, podpisy, formularze), zabezpieczyć API, i wdrożyć na zewnętrzne platformy (Railway, Cloudflare R2, EAS Build).
+**Goal:** Naprawić wszystkie pozostałe problemy jakościowe znalezione w audycie kodu — bezpieczeństwo, bugi, brakująca walidacja, obsługa błędów, dostępność, wydajność, infrastruktura CI/CD, i jakość kodu we wszystkich komponentach (mobile, API, web, infra).
 
 **Target features:**
-- Mobile: naprawić scroll/keyboard w formularzach, signature pad landscape, dodać krok zdjęć do wizarda, naprawić hardcoded API URL
-- API: naprawić rental DRAFT→ACTIVE flow, zabezpieczyć sekrety, dodać env validation, graceful shutdown, error handler, PDF generation error handling
-- Web: naprawić type safety, error handling, token refresh, walidacje formularzy
-- Infra: deploy API+Web na Railway, storage na Cloudflare R2, build APK przez EAS Build, CI/CD pipeline
-- Security: rotacja sekretów, CORS cleanup, rate limiting, input validation
+- Security: osobny JWT secret dla portalu, gitignore dla .env, walidacja rozmiaru base64, SMTP auth, encryption key placeholder
+- API: race condition w numeracji umów, paginacja, walidacja DTO, logging, N+1 queries, retention guard, transaction handling
+- Mobile: 7 krytycznych bugów (duplikaty rental, hydration guard, SearchBar sync), state management, nawigacja, walidacja, safe area
+- Web: error handling na wszystkich stronach, form validation, error boundaries, paginacja, state management, responsive design
+- Accessibility: keyboard navigation, aria labels, screen reader support w mobile i web
+- Infra: Redis w CI, Puppeteer w Docker, prisma migrate w deploy, mobile w CI, coverage enforcement
+- Code Quality: dead code removal, type safety, shared types, consistent patterns
 
 ## Requirements
 
@@ -38,19 +40,13 @@ Pracownik w terenie może w pełni obsłużyć wynajem — od wypełnienia umowy
 
 ### Active
 
-- [ ] Mobile UI/UX fixes — scroll, keyboard handling, signature pad landscape
-- [ ] Mobile: krok zdjęć pojazdu w wizardzie wynajmu
-- [ ] Mobile: dynamiczny API URL z konfiguracji (nie hardcoded)
-- [ ] API: rental status transitions (DRAFT→ACTIVE po podpisach)
-- [ ] API: env validation, graceful shutdown, global error handler
-- [ ] API: security — rotacja sekretów, rate limiting per-endpoint, input size limits
-- [ ] API: PDF generation error handling i retry
-- [ ] Web: type safety fixes, token refresh, form validations
-- [ ] Infra: deploy API+Web na Railway
-- [ ] Infra: storage na Cloudflare R2 (zastąpić MinIO)
-- [ ] Infra: EAS Build dla APK (Android)
-- [ ] Infra: CI/CD pipeline (GitHub Actions)
-- [ ] Infra: Dockerfile dla API i Web
+- [ ] Security: separate portal JWT secret, gitignore .env files, base64 size limits, SMTP auth, encryption key safety
+- [ ] API: contract number race condition, server-side pagination, DTO validation gaps, structured logging, N+1 query fixes
+- [ ] Mobile: critical bugs (duplicate rental, hydration guard, SearchBar sync), state persistence, safe area, validation
+- [ ] Web: error handling on all pages, form validation, error boundaries, responsive design, state management fixes
+- [ ] Accessibility: keyboard navigation, aria labels, screen reader support across mobile and web
+- [ ] Infra: Redis in CI, Puppeteer in Docker, prisma migrate in deploy, mobile CI, coverage enforcement
+- [ ] Code Quality: dead code removal, type safety improvements, shared type exports, pattern consistency
 
 ### Out of Scope
 
@@ -104,4 +100,4 @@ Pracownik w terenie może w pełni obsłużyć wynajem — od wypełnienia umowy
 | smsapi.pl jako provider SMS | Wymaganie biznesowe — polski dostawca, sprawdzone API | — Pending |
 
 ---
-*Last updated: 2026-03-27 after v2.0 milestone start*
+*Last updated: 2026-03-27 after v2.1 milestone start*

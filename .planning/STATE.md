@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.0
-milestone_name: Production Ready
-status: complete
-stopped_at: All phases complete — milestone lifecycle running
-last_updated: "2026-03-27T21:00:00.000Z"
-last_activity: 2026-03-27 -- All 5 phases executed, 28 requirements delivered
+milestone: v2.1
+milestone_name: Fix All Audit Issues
+status: active
+stopped_at: Defining requirements
+last_updated: "2026-03-27T22:30:00.000Z"
+last_activity: 2026-03-27 -- Milestone v2.1 started
 progress:
-  total_phases: 5
-  completed_phases: 5
-  total_plans: 7
-  completed_plans: 7
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -21,23 +21,23 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-27)
 
 **Core value:** Pracownik w terenie moze w pelni obsluzyc wynajem -- od wypelnienia umowy, przez zweryfikowanie uprawnien kierowcy, zrobienie zdjec auta, po podpis klienta i wysylke PDF -- bez papieru i bez powrotu do biura.
-**Current focus:** Milestone v2.0 -- Production Ready (COMPLETE)
+**Current focus:** Milestone v2.1 -- Fix All Audit Issues
 
 ## Current Position
 
-Phase: All complete
-Plan: All complete
-Status: Milestone lifecycle
-Last activity: 2026-03-27 -- All 5 phases executed
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-03-27 — Milestone v2.1 started
 
-Progress: [██████████] 100%
+Progress: [░░░░░░░░░░] 0%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
-- Phases completed: 5 (15-19)
-- Requirements delivered: 28
+- Total plans completed: 0
+- Phases completed: 0
+- Requirements delivered: 0
 
 ## Accumulated Context
 
@@ -68,6 +68,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-27T21:00:00Z
-Stopped at: Milestone v2.0 complete
+Last session: 2026-03-27T22:30:00Z
+Stopped at: Defining requirements for v2.1
 Resume file: None
