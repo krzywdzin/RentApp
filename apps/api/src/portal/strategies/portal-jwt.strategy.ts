@@ -9,7 +9,7 @@ export class PortalJwtStrategy extends PassportStrategy(Strategy, 'portal-jwt') 
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: config.get<string>('JWT_ACCESS_SECRET')!,
+      secretOrKey: config.get<string>('PORTAL_JWT_SECRET')!,
     });
   }
 

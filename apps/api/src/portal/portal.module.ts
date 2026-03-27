@@ -13,7 +13,7 @@ import { PortalJwtStrategy } from './strategies/portal-jwt.strategy';
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
-        secret: config.get('JWT_ACCESS_SECRET'),
+        secret: config.get('PORTAL_JWT_SECRET'),
         signOptions: { expiresIn: '24h' },
       }),
     }),

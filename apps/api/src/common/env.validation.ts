@@ -12,6 +12,7 @@ export function validateEnvironment(): void {
     'DATABASE_URL',
     'JWT_ACCESS_SECRET',
     'JWT_REFRESH_SECRET',
+    'PORTAL_JWT_SECRET',
     'REDIS_URL',
   ];
 
