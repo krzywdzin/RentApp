@@ -30,11 +30,8 @@ export class StorageService implements OnModuleInit {
       ),
       region: this.config.get<string>('S3_REGION', 'us-east-1'),
       credentials: {
-        accessKeyId: this.config.get<string>('S3_ACCESS_KEY', 'minioadmin'),
-        secretAccessKey: this.config.get<string>(
-          'S3_SECRET_KEY',
-          'minioadmin',
-        ),
+        accessKeyId: this.config.get<string>('S3_ACCESS_KEY')!,
+        secretAccessKey: this.config.get<string>('S3_SECRET_KEY')!,
       },
       forcePathStyle: true,
     });

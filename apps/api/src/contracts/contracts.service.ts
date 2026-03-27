@@ -99,10 +99,10 @@ export class ContractsService {
   ): ContractFrozenData {
     return {
       company: {
-        name: 'KITEK',
-        owner: 'Pawel Romanowski',
-        address: 'ul. Sieradzka 18, 87-100 Torun',
-        phone: '535 766 666 / 602 367 100',
+        name: this.config.get<string>('COMPANY_NAME', 'KITEK'),
+        owner: this.config.get<string>('COMPANY_OWNER', 'Pawel Romanowski'),
+        address: this.config.get<string>('COMPANY_ADDRESS', 'ul. Sieradzka 18, 87-100 Torun'),
+        phone: this.config.get<string>('COMPANY_PHONE', '535 766 666 / 602 367 100'),
       },
       customer: {
         firstName: customer.firstName,

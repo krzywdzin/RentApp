@@ -27,6 +27,8 @@ export function validateEnvironment(): void {
     PORT: '3000',
     NODE_ENV: 'development',
     S3_ENDPOINT: 'http://localhost:9000',
+    S3_ACCESS_KEY: 'minioadmin',
+    S3_SECRET_KEY: 'minioadmin',
     CORS_ORIGINS: 'http://localhost:3001',
   };
 
@@ -39,7 +41,7 @@ export function validateEnvironment(): void {
   // --- Production-only requirements ---
   const nodeEnv = process.env.NODE_ENV;
   if (nodeEnv === 'production') {
-    const prodRequired = ['FIELD_ENCRYPTION_KEY', 'MAIL_HOST'];
+    const prodRequired = ['FIELD_ENCRYPTION_KEY', 'MAIL_HOST', 'MAIL_USER', 'MAIL_PASS', 'S3_ACCESS_KEY', 'S3_SECRET_KEY'];
     for (const key of prodRequired) {
       if (!process.env[key]) {
         missing.push(key);
