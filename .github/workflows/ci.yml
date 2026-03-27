@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-test:
+    name: Lint, Typecheck & Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: rentapp_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://test:test@localhost:5432/rentapp_test
+      JWT_ACCESS_SECRET: test-access-secret-minimum-32-chars!!
+      JWT_REFRESH_SECRET: test-refresh-secret-minimum-32-chars!!
+      REDIS_URL: redis://localhost:6379
+      FIELD_ENCRYPTION_KEY: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+      NODE_ENV: test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build shared package
+        run: pnpm --filter @rentapp/shared build
+
+      - name: Generate Prisma client
+        run: pnpm --filter @rentapp/api exec prisma generate
+
+      - name: Lint
+        run: pnpm --filter @rentapp/api lint && pnpm --filter web lint
+
+      - name: Typecheck API
+        run: pnpm --filter @rentapp/api exec tsc --noEmit
+
+      - name: Typecheck Web
+        run: pnpm --filter web exec tsc --noEmit
+
+      - name: Test API
+        run: pnpm --filter @rentapp/api test:no-coverage
+
+      - name: Test Web
+        run: pnpm --filter web test

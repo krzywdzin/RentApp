@@ -1,0 +1,49 @@
+name: Deploy API
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/api/**'
+      - 'packages/shared/**'
+      - 'pnpm-lock.yaml'
+
+concurrency:
+  group: deploy-api
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy API to Railway
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Deploy to Railway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway up --service api --detach
+
+      - name: Wait for deployment
+        run: sleep 30
+
+      - name: Health check
+        env:
+          API_URL: ${{ vars.API_URL }}
+        run: |
+          if [ -n "$API_URL" ]; then
+            STATUS=$(curl -s -o /dev/null -w '%{http_code}' "${API_URL}/health" || echo "000")
+            if [ "$STATUS" = "200" ]; then
+              echo "Health check passed"
+            else
+              echo "Warning: Health check returned $STATUS (deployment may still be starting)"
+            fi
+          else
+            echo "API_URL not configured — skipping health check"
+          fi
