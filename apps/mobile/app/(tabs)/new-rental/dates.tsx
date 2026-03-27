@@ -4,6 +4,8 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import DateTimePicker, {
   type DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
@@ -16,11 +18,15 @@ import { useRentalDraftStore } from '@/stores/rental-draft.store';
 import { formatDateTime, formatCurrency } from '@/lib/format';
 import { RENTAL_WIZARD_LABELS, VAT_MULTIPLIER, ONE_DAY_MS } from '@/lib/constants';
 
-interface DatesFormValues {
-  startDate: Date;
-  endDate: Date;
-  dailyRateNet: string;
-}
+const DatesSchema = z.object({
+  startDate: z.date(),
+  endDate: z.date(),
+  dailyRateNet: z.string()
+    .min(1, 'Stawka dzienna jest wymagana')
+    .regex(/^\d+([.,]\d{1,2})?$/, 'Nieprawidlowy format stawki (np. 150 lub 150.00)'),
+});
+
+type DatesFormValues = z.infer<typeof DatesSchema>;
 
 export default function DatesStep() {
   const { t } = useTranslation();
@@ -35,7 +41,8 @@ export default function DatesStep() {
     ? new Date(draft.endDate)
     : new Date(Date.now() + ONE_DAY_MS);
 
-  const { control, handleSubmit, watch, setValue } = useForm<DatesFormValues>({
+  const { control, handleSubmit, watch, setValue, formState: { errors } } = useForm<DatesFormValues>({
+    resolver: zodResolver(DatesSchema),
     defaultValues: {
       startDate: defaultStartDate,
       endDate: defaultEndDate,
@@ -53,7 +60,7 @@ export default function DatesStep() {
   const dailyRateStr = watch('dailyRateNet');
 
   const pricing = useMemo(() => {
-    const rateZloty = parseFloat(dailyRateStr) || 0;
+    const rateZloty = parseFloat(dailyRateStr.replace(',', '.')) || 0;
     const rateGrosze = Math.round(rateZloty * 100);
     const diffMs = endDate.getTime() - startDate.getTime();
     const days = Math.max(Math.ceil(diffMs / ONE_DAY_MS), 0);
@@ -102,7 +109,7 @@ export default function DatesStep() {
         return;
       }
 
-      const rateGrosze = Math.round((parseFloat(data.dailyRateNet) || 0) * 100);
+      const rateGrosze = Math.round((parseFloat(data.dailyRateNet.replace(',', '.')) || 0) * 100);
       if (rateGrosze <= 0) {
         Toast.show({
           type: 'error',
@@ -190,6 +197,7 @@ export default function DatesStep() {
               onBlur={onBlur}
               keyboardType="decimal-pad"
               placeholder="0.00"
+              error={errors.dailyRateNet?.message}
               containerStyle={s.mb16}
             />
           )}

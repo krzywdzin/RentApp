@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -27,6 +27,7 @@ export default function ReturnMileageScreen() {
     draftMileage != null ? String(draftMileage) : '',
   );
   const [error, setError] = useState('');
+  const [mileageWarningAcknowledged, setMileageWarningAcknowledged] = useState(false);
 
   useEffect(() => {
     if (hasHydrated && !rentalId) {
@@ -67,6 +68,10 @@ export default function ReturnMileageScreen() {
       );
       return;
     }
+    if (returnMileage - handoverMileage > 10000 && !mileageWarningAcknowledged) {
+      setError('Przebieg wydaje sie zbyt wysoki (max 10 000 km od wydania)');
+      return;
+    }
     setError('');
     updateDraft({ returnMileage, step: 2 });
     router.push('/return/checklist');
@@ -98,12 +103,26 @@ export default function ReturnMileageScreen() {
           onChangeText={(text) => {
             setMileageText(text.replace(/[^0-9]/g, ''));
             setError('');
+            setMileageWarningAcknowledged(false);
           }}
           keyboardType="numeric"
           placeholder="0"
           error={error}
           containerStyle={s.mb16}
         />
+
+        {/* High mileage warning acknowledgment */}
+        {error.includes('Przebieg wydaje') && (
+          <Pressable
+            onPress={() => {
+              setMileageWarningAcknowledged(true);
+              setError('');
+            }}
+            style={s.acknowledgeLink}
+          >
+            <Text style={s.acknowledgeLinkText}>Potwierdz wysoki przebieg</Text>
+          </Pressable>
+        )}
 
         {/* Distance driven calculation */}
         {distanceDriven != null && distanceDriven >= 0 && (
@@ -132,6 +151,8 @@ const s = StyleSheet.create({
   cardLabel: { fontSize: 13, color: '#71717A' },
   cardValue: { marginTop: 4, fontSize: 18, fontWeight: '600', color: '#18181B' },
   distanceValue: { marginTop: 4, fontSize: 18, fontWeight: '600', color: '#3B82F6' },
+  acknowledgeLink: { marginTop: -8, marginBottom: 16, paddingVertical: 4 },
+  acknowledgeLinkText: { fontSize: 13, color: '#3B82F6', textDecorationLine: 'underline' },
   bottomBar: {
     position: 'absolute',
     bottom: 0,
