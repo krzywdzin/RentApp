@@ -243,7 +243,16 @@ function VehicleRow({
             )}
             style={{ left, width: Math.max(width, 24) }}
             title={`${rental.customerName} (${rental.status})`}
+            role="button"
+            tabIndex={0}
+            aria-label={`${rental.customerName} - ${rental.status}`}
             onClick={() => onRentalClick(rental.id)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onRentalClick(rental.id);
+              }
+            }}
           >
             {width > 60 ? rental.customerName : ''}
           </div>

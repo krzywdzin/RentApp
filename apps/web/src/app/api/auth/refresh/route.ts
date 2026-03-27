@@ -50,5 +50,15 @@ export async function POST(request: NextRequest) {
     maxAge: 86400,
   });
 
+  if (deviceId) {
+    response.cookies.set('device_id', deviceId, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: 'lax',
+      maxAge: 86400,
+      path: '/',
+    });
+  }
+
   return response;
 }

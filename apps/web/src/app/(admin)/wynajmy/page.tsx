@@ -73,11 +73,20 @@ export default function RentalsPage() {
         <TabsContent value="lista" className="space-y-4">
           <RentalFilterBar
             statusFilter={statusFilter}
-            onStatusChange={setStatusFilter}
+            onStatusChange={(v) => {
+              setStatusFilter(v);
+              setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+            }}
             dateFrom={dateFrom}
             dateTo={dateTo}
-            onDateFromChange={setDateFrom}
-            onDateToChange={setDateTo}
+            onDateFromChange={(v) => {
+              setDateFrom(v);
+              setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+            }}
+            onDateToChange={(v) => {
+              setDateTo(v);
+              setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+            }}
           />
 
           {!isLoading && filtered.length === 0 ? (

@@ -226,7 +226,13 @@ function DamageDiagram({
           return (
             <Tooltip key={pin.pinNumber}>
               <TooltipTrigger asChild>
-                <g className="cursor-pointer">
+                <g
+                  className="cursor-pointer"
+                  tabIndex={0}
+                  role="button"
+                  aria-label={tooltipText}
+                  focusable="true"
+                >
                   <circle
                     cx={cx}
                     cy={cy}

@@ -1,49 +1,31 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { PortalCustomerInfo } from '@rentapp/shared';
 
-interface PortalAuthState {
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  customerName: string | null;
-  error: string | null;
+const PORTAL_AUTH_KEY = ['portal', 'auth'] as const;
+
+async function fetchPortalAuth(): Promise<PortalCustomerInfo | null> {
+  const res = await fetch('/api/portal/me');
+  if (!res.ok) return null;
+  return res.json();
 }
 
 export function usePortalAuth() {
-  const [state, setState] = useState<PortalAuthState>({
-    isAuthenticated: false,
-    isLoading: true,
-    customerName: null,
-    error: null,
+  const queryClient = useQueryClient();
+  const [exchangeError, setExchangeError] = useState<string | null>(null);
+
+  const { data: user, isLoading } = useQuery({
+    queryKey: PORTAL_AUTH_KEY,
+    queryFn: fetchPortalAuth,
+    retry: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
-
-  const checkAuth = useCallback(async () => {
-    try {
-      const res = await fetch('/api/portal/me');
-      if (!res.ok) {
-        setState({ isAuthenticated: false, isLoading: false, customerName: null, error: null });
-        return;
-      }
-      const data: PortalCustomerInfo = await res.json();
-      setState({
-        isAuthenticated: true,
-        isLoading: false,
-        customerName: `${data.firstName} ${data.lastName}`,
-        error: null,
-      });
-    } catch {
-      setState({ isAuthenticated: false, isLoading: false, customerName: null, error: null });
-    }
-  }, []);
-
-  useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
 
   const exchangeToken = useCallback(
     async (token: string, customerId: string) => {
-      setState((prev) => ({ ...prev, isLoading: true, error: null }));
+      setExchangeError(null);
       try {
         const res = await fetch('/api/portal/auth/exchange', {
           method: 'POST',
@@ -57,29 +39,32 @@ export function usePortalAuth() {
             res.status === 401
               ? 'Link wygasl. Skontaktuj sie z wypozyczalnia.'
               : 'Nieprawidlowy link.';
-          setState({
-            isAuthenticated: false,
-            isLoading: false,
-            customerName: null,
-            error: errorMsg,
-          });
+          setExchangeError(errorMsg);
           return false;
         }
 
-        await checkAuth();
+        await queryClient.invalidateQueries({ queryKey: PORTAL_AUTH_KEY });
         return true;
       } catch {
-        setState({
-          isAuthenticated: false,
-          isLoading: false,
-          customerName: null,
-          error: 'Wystapil blad. Sprobuj ponownie.',
-        });
+        setExchangeError('Wystapil blad. Sprobuj ponownie.');
         return false;
       }
     },
-    [checkAuth],
+    [queryClient],
   );
 
-  return { ...state, exchangeToken, refreshAuth: checkAuth };
+  const refreshAuth = useCallback(() => {
+    return queryClient.invalidateQueries({ queryKey: PORTAL_AUTH_KEY });
+  }, [queryClient]);
+
+  const customerName = user ? `${user.firstName} ${user.lastName}` : null;
+
+  return {
+    isAuthenticated: !!user,
+    isLoading,
+    customerName,
+    error: exchangeError,
+    exchangeToken,
+    refreshAuth,
+  };
 }

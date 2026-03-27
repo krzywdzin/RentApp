@@ -57,7 +57,10 @@ export default function ContractsPage() {
       <div className="flex items-center gap-3">
         <Select
           value={statusFilter}
-          onValueChange={(v) => setStatusFilter(v as ContractStatus | 'ALL')}
+          onValueChange={(v) => {
+            setStatusFilter(v as ContractStatus | 'ALL');
+            setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+          }}
         >
           <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="Status" />

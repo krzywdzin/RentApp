@@ -165,14 +165,40 @@ export default function NewRentalPage() {
                   <Input
                     placeholder="Szukaj klienta (nazwisko, telefon)..."
                     value={customerSearch}
-                    onChange={(e) => setCustomerSearch(e.target.value)}
+                    onChange={(e) => {
+                      setCustomerSearch(e.target.value);
+                      setShowDropdown(true);
+                    }}
+                    role="combobox"
+                    aria-expanded={showDropdown && !!customerResults?.length}
+                    aria-haspopup="listbox"
+                    aria-autocomplete="list"
+                    aria-controls="customer-search-results"
+                    onKeyDown={(e) => {
+                      if (e.key === 'ArrowDown' && showDropdown && customerResults?.length) {
+                        e.preventDefault();
+                        const first = document.querySelector<HTMLButtonElement>(
+                          '#customer-search-results button',
+                        );
+                        first?.focus();
+                      }
+                      if (e.key === 'Escape') {
+                        setShowDropdown(false);
+                      }
+                    }}
                   />
-                  {customerResults && customerResults.length > 0 && (
-                    <div className="absolute z-10 mt-1 w-full rounded-md border bg-popover shadow-md">
+                  {showDropdown && customerResults && customerResults.length > 0 && (
+                    <div
+                      id="customer-search-results"
+                      role="listbox"
+                      className="absolute z-10 mt-1 w-full rounded-md border bg-popover shadow-md"
+                    >
                       {customerResults.map((c) => (
                         <button
                           key={c.id}
                           type="button"
+                          role="option"
+                          aria-selected={false}
                           className="flex w-full items-center px-3 py-2 text-sm hover:bg-accent"
                           onClick={() => {
                             setValue('customerId', c.id);
@@ -181,6 +207,24 @@ export default function NewRentalPage() {
                               name: `${c.firstName} ${c.lastName}`,
                             });
                             setCustomerSearch('');
+                            setShowDropdown(false);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Escape') {
+                              setShowDropdown(false);
+                            }
+                            if (e.key === 'ArrowDown') {
+                              e.preventDefault();
+                              const next = e.currentTarget
+                                .nextElementSibling as HTMLButtonElement | null;
+                              next?.focus();
+                            }
+                            if (e.key === 'ArrowUp') {
+                              e.preventDefault();
+                              const prev = e.currentTarget
+                                .previousElementSibling as HTMLButtonElement | null;
+                              prev?.focus();
+                            }
                           }}
                         >
                           <span className="font-medium">
