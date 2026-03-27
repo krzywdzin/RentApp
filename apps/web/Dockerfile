@@ -15,7 +15,7 @@ COPY --from=deps /app/apps/web/node_modules ./apps/web/node_modules
 COPY --from=deps /app/packages/shared/node_modules ./packages/shared/node_modules
 COPY packages/shared/ packages/shared/
 COPY apps/web/ apps/web/
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json ./
 RUN pnpm --filter @rentapp/shared build
 RUN pnpm --filter @rentapp/web build
 
