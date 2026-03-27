@@ -59,7 +59,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 ### v2.1 Fix All Audit Issues
 
-- [ ] **Phase 20: Security Hardening** - Separate JWT secrets, gitignore credentials, base64 limits, rate limiting, CSV injection protection
+- [x] **Phase 20: Security Hardening** - Separate JWT secrets, gitignore credentials, base64 limits, rate limiting, CSV injection protection (completed 2026-03-27)
 - [ ] **Phase 21: Critical Bug Fixes** - Mobile duplicate rental, hydration guard, SearchBar sync, API race conditions, data integrity fixes
 - [ ] **Phase 22: API Validation & Performance** - Server-side pagination, DTO validation gaps, N+1 queries, structured logging, timezone fixes
 - [ ] **Phase 23: Mobile Quality & UX** - State persistence, navigation guards, form validation, safe area insets, accessibility labels, constants extraction
@@ -169,7 +169,7 @@ v2.1: 20 -> 21 -> 22 & 23 & 24 (parallel after 21) -> 25 (after 20) -> 26 (after
 | 1-9.1 | v1.0 | 37/37 | Complete | 2026-03-25 |
 | 10-14 | v1.1 | 14/14 | Complete | 2026-03-25 |
 | 15-19 | v2.0 | 7/7 | Complete | 2026-03-27 |
-| 20. Security Hardening | 1/2 | In Progress|  | - |
+| 20. Security Hardening | 2/2 | Complete   | 2026-03-27 | - |
 | 21. Critical Bug Fixes | v2.1 | 0/? | Not started | - |
 | 22. API Validation & Performance | v2.1 | 0/? | Not started | - |
 | 23. Mobile Quality & UX | v2.1 | 0/? | Not started | - |

@@ -10,13 +10,13 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 
 ### Security
 
-- [ ] **SEC-01**: Portal JWT uses a dedicated secret (PORTAL_JWT_SECRET) separate from employee JWT
-- [ ] **SEC-02**: apps/api/.env is properly gitignored to prevent credential leaks
-- [ ] **SEC-03**: Company PII (name, address, phone) moved from hardcoded source to env vars
-- [ ] **SEC-04**: FIELD_ENCRYPTION_KEY placeholder in .env.example cannot be used as a valid key
+- [x] **SEC-01**: Portal JWT uses a dedicated secret (PORTAL_JWT_SECRET) separate from employee JWT
+- [x] **SEC-02**: apps/api/.env is properly gitignored to prevent credential leaks
+- [x] **SEC-03**: Company PII (name, address, phone) moved from hardcoded source to env vars
+- [x] **SEC-04**: FIELD_ENCRYPTION_KEY placeholder in .env.example cannot be used as a valid key
 - [x] **SEC-05**: signatureBase64 and damageSketchBase64 DTOs have @MaxLength limits
-- [ ] **SEC-06**: SMTP auth (MAIL_USER, MAIL_PASS) configured for production mail delivery
-- [ ] **SEC-07**: S3 credentials have no default values in source code (force env var config)
+- [x] **SEC-06**: SMTP auth (MAIL_USER, MAIL_PASS) configured for production mail delivery
+- [x] **SEC-07**: S3 credentials have no default values in source code (force env var config)
 - [x] **SEC-08**: Portal token exchange endpoint has per-IP rate limiting
 - [x] **SEC-09**: CSV export sanitizes formula injection characters (=, +, -, @)
 - [x] **SEC-10**: Mobile PDF URL uses signed URL or blob download instead of unauthenticated link
@@ -202,13 +202,13 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SEC-01 | Phase 20 | Pending |
-| SEC-02 | Phase 20 | Pending |
-| SEC-03 | Phase 20 | Pending |
-| SEC-04 | Phase 20 | Pending |
+| SEC-01 | Phase 20 | Complete |
+| SEC-02 | Phase 20 | Complete |
+| SEC-03 | Phase 20 | Complete |
+| SEC-04 | Phase 20 | Complete |
 | SEC-05 | Phase 20 | Complete |
-| SEC-06 | Phase 20 | Pending |
-| SEC-07 | Phase 20 | Pending |
+| SEC-06 | Phase 20 | Complete |
+| SEC-07 | Phase 20 | Complete |
 | SEC-08 | Phase 20 | Complete |
 | SEC-09 | Phase 20 | Complete |
 | SEC-10 | Phase 20 | Complete |

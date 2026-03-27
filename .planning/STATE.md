@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v2.1
 milestone_name: Fix All Audit Issues
-status: planning
-stopped_at: Completed 20-02-PLAN.md
-last_updated: "2026-03-27T22:04:09.063Z"
-last_activity: 2026-03-27 -- Roadmap created for v2.1 (7 phases, 111 requirements)
+status: executing
+stopped_at: Completed 20-01-PLAN.md
+last_updated: "2026-03-27T22:05:12.459Z"
+last_activity: 2026-03-27 -- Completed 20-01 credential & environment hardening
 progress:
   total_phases: 7
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 2
-  completed_plans: 1
-  percent: 0
+  completed_plans: 2
+  percent: 50
 ---
 
 # Project State
@@ -21,21 +21,21 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-27)
 
 **Core value:** Pracownik w terenie moze w pelni obsluzyc wynajem -- od wypelnienia umowy, przez zweryfikowanie uprawnien kierowcy, zrobienie zdjec auta, po podpis klienta i wysylke PDF -- bez papieru i bez powrotu do biura.
-**Current focus:** Milestone v2.1 -- Fix All Audit Issues (Phase 20 ready to plan)
+**Current focus:** Milestone v2.1 -- Fix All Audit Issues (Phase 20 in progress)
 
 ## Current Position
 
 Phase: 20 of 26 (Security Hardening)
-Plan: Not started
-Status: Ready to plan
-Last activity: 2026-03-27 -- Roadmap created for v2.1 (7 phases, 111 requirements)
+Plan: 1 of 2 complete
+Status: Executing
+Last activity: 2026-03-27 -- Completed 20-01 credential & environment hardening
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█████░░░░░] 50%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 58 (37 v1.0 + 14 v1.1 + 7 v2.0)
+- Total plans completed: 59 (37 v1.0 + 14 v1.1 + 7 v2.0 + 1 v2.1)
 - Phases completed: 19 + 1 inserted (9.1)
 
 ## Accumulated Context
@@ -57,6 +57,7 @@ Progress: [░░░░░░░░░░] 0%
 - [Phase 20]: 5 req/min portal token exchange rate limit (tighter than global 100/min)
 - [Phase 20]: CSV formula injection uses single-quote prefix per OWASP
 - [Phase 20]: Mobile PDF uses 5-minute signed URL expiry
+- [Phase 20]: S3 credential defaults moved to env.validation optionalDefaults pattern
 
 ### Pending Todos
 
@@ -70,6 +71,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-27T22:04:09.062Z
-Stopped at: Completed 20-02-PLAN.md
+Last session: 2026-03-27T22:05:12.457Z
+Stopped at: Completed 20-01-PLAN.md
 Resume file: None
