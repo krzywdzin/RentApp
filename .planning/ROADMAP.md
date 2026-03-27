@@ -163,13 +163,11 @@ Plans:
   3. Puppeteer/Chromium is installed in the API Docker production image -- PDF generation works in the deployed container
   4. CI enforces a minimum test coverage threshold -- builds fail if coverage drops below the configured percentage
   5. Unused dependencies (bullmq, @nestjs/cli in web, @gorhom/bottom-sheet) are removed; zod and typescript versions are aligned across all packages
-**Plans**: 5 plans
+**Plans**: 3 plans
 Plans:
-- [ ] 24-01-PLAN.md -- Shared components extraction, formatDate safety, global ErrorBoundary (WUI-01, WUI-02, WUI-03, WERR-06, WERR-07)
-- [ ] 24-02-PLAN.md -- Error handling on all detail pages, rental submit, portal auth, proxy (WERR-01, WERR-02, WERR-03, WERR-04, WERR-05)
-- [ ] 24-03-PLAN.md -- Form validation: daily rate, extend/return, user edit, numeric inputs, user mutation (WVAL-01, WVAL-02, WVAL-03, WVAL-04, WVAL-05, WUI-05)
-- [ ] 24-04-PLAN.md -- Accessibility: keyboard nav, ARIA attributes, combobox, damage pins (WA11Y-01, WA11Y-02, WA11Y-03, WA11Y-04, WA11Y-05, WA11Y-06, WA11Y-07, WA11Y-08)
-- [ ] 24-05-PLAN.md -- Performance, responsive design, portal theme (WPERF-01, WPERF-02, WPERF-03, WPERF-04, WRESP-01, WRESP-02, WRESP-03, WUI-04)
+- [ ] 25-01-PLAN.md -- CI pipeline: Redis service, mobile checks, E2E tests, coverage enforcement (CICD-01, CICD-07, CICD-08, CICD-09)
+- [ ] 25-02-PLAN.md -- Deployment & Docker: Chromium, migrations, health checks, railway.toml, tsconfig (CICD-02, CICD-03, CICD-04, CICD-05, CICD-06, ICONF-08)
+- [ ] 25-03-PLAN.md -- Dependencies, env consolidation, Docker compose, turbo config (ICONF-01, ICONF-02, ICONF-03, ICONF-04, ICONF-05, ICONF-06, ICONF-07, ICONF-09)
 
 ### Phase 26: Code Quality & Cleanup
 **Goal**: Codebase has no TypeScript `any` types in API services, no unguarded non-null assertions, no dead code, and shared types are defined once -- the code is maintainable for the next milestone
@@ -183,11 +181,11 @@ Plans:
   5. FIELD_ENCRYPTION_KEY is validated as required on startup in all environments, with a logged warning if using a dev fallback value
 **Plans**: 5 plans
 Plans:
-- [ ] 24-01-PLAN.md -- Shared components extraction, formatDate safety, global ErrorBoundary (WUI-01, WUI-02, WUI-03, WERR-06, WERR-07)
-- [ ] 24-02-PLAN.md -- Error handling on all detail pages, rental submit, portal auth, proxy (WERR-01, WERR-02, WERR-03, WERR-04, WERR-05)
-- [ ] 24-03-PLAN.md -- Form validation: daily rate, extend/return, user edit, numeric inputs, user mutation (WVAL-01, WVAL-02, WVAL-03, WVAL-04, WVAL-05, WUI-05)
-- [ ] 24-04-PLAN.md -- Accessibility: keyboard nav, ARIA attributes, combobox, damage pins (WA11Y-01, WA11Y-02, WA11Y-03, WA11Y-04, WA11Y-05, WA11Y-06, WA11Y-07, WA11Y-08)
-- [ ] 24-05-PLAN.md -- Performance, responsive design, portal theme (WPERF-01, WPERF-02, WPERF-03, WPERF-04, WRESP-01, WRESP-02, WRESP-03, WUI-04)
+- [ ] 26-01-PLAN.md -- [To be planned]
+- [ ] 26-02-PLAN.md -- [To be planned]
+- [ ] 26-03-PLAN.md -- [To be planned]
+- [ ] 26-04-PLAN.md -- [To be planned]
+- [ ] 26-05-PLAN.md -- [To be planned]
 
 ## Progress
 
@@ -207,5 +205,5 @@ v2.1: 20 -> 21 -> 22 & 23 & 24 (parallel after 21) -> 25 (after 20) -> 26 (after
 | 22. API Validation & Performance | 4/4 | Complete    | 2026-03-27 | - |
 | 23. Mobile Quality & UX | 4/4 | Complete    | 2026-03-27 | - |
 | 24. Web Quality & Accessibility | 5/5 | Complete    | 2026-03-27 | - |
-| 25. Infrastructure & CI/CD | v2.1 | 0/? | Not started | - |
+| 25. Infrastructure & CI/CD | v2.1 | 0/3 | Not started | - |
 | 26. Code Quality & Cleanup | v2.1 | 0/? | Not started | - |
