@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v2.1
 milestone_name: Fix All Audit Issues
 status: completed
-stopped_at: Completed 260328-otq-PLAN.md (quick task)
-last_updated: "2026-03-28T17:19:47.437Z"
-last_activity: 2026-03-28 -- Completed 26-04 type safety and dead code cleanup
+stopped_at: Completed 260328-plc-PLAN.md (quick task)
+last_updated: "2026-03-28T18:24:00Z"
+last_activity: 2026-03-28 -- Fixed 4 pre-existing e2e test failures (124/124 green)
 progress:
   total_phases: 7
   completed_phases: 7
@@ -113,16 +113,15 @@ None.
 
 - Sekrety (Neon DB, Upstash Redis, SMSAPI) wymagaja rotacji przed deploy
 - RAILWAY_TOKEN secret needed in GitHub repo settings
-- 4 pre-existing e2e test failures need fixing (portal rate limit, auth JWT, rentals pagination, customers pagination)
-
 ### Quick Tasks Completed
 
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 260328-otq | Configure and run application tests (unit and e2e) | 2026-03-28 | 2ce4151 | [260328-otq-configure-and-run-application-tests-unit](./quick/260328-otq-configure-and-run-application-tests-unit/) |
+| 260328-plc | Fix 4 pre-existing e2e test failures (124/124 green) | 2026-03-28 | f9cb302, 1c7eb1c | [260328-plc-fix-4-pre-existing-e2e-test-failures-and](./quick/260328-plc-fix-4-pre-existing-e2e-test-failures-and/) |
 
 ## Session Continuity
 
-Last session: 2026-03-28T17:19:47.435Z
-Stopped at: Completed 260328-otq-PLAN.md (quick task)
+Last session: 2026-03-28T18:24:00Z
+Stopped at: Completed 260328-plc-PLAN.md (quick task)
 Resume file: None
