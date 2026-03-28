@@ -15,7 +15,7 @@ COPY apps/api/ apps/api/
 RUN pnpm --filter @rentapp/shared build
 RUN pnpm --filter @rentapp/api exec prisma generate
 RUN pnpm --filter @rentapp/api build
-RUN pnpm deploy --filter @rentapp/api --prod /app/deploy
+RUN pnpm deploy --filter @rentapp/api --prod --legacy /app/deploy
 
 FROM node:20-alpine AS production
 WORKDIR /app
