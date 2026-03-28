@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-03-27)
 Phase: 26 of 26 (Code Quality & Cleanup)
 Plan: 4 of 4 complete
 Status: Phase Complete
-Last activity: 2026-03-28 -- Completed 26-04 type safety and dead code cleanup
+Last activity: 2026-03-28 - Completed quick task 260328-otq: Configure and run application tests (unit and e2e)
 
 Progress: [██████████] 100%
 
@@ -113,7 +113,13 @@ None.
 
 - Sekrety (Neon DB, Upstash Redis, SMSAPI) wymagaja rotacji przed deploy
 - RAILWAY_TOKEN secret needed in GitHub repo settings
-- Docker Desktop nie zainstalowany na maszynie dewelopera
+- 4 pre-existing e2e test failures need fixing (portal rate limit, auth JWT, rentals pagination, customers pagination)
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260328-otq | Configure and run application tests (unit and e2e) | 2026-03-28 | 2ce4151 | [260328-otq-configure-and-run-application-tests-unit](./quick/260328-otq-configure-and-run-application-tests-unit/) |
 
 ## Session Continuity
 
