@@ -2,12 +2,7 @@
 
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { type RentalDto, RentalStatus, ContractStatus } from '@rentapp/shared';
-
-interface RentalWithRelations extends RentalDto {
-  vehicle?: { registration: string; make: string; model: string; mileage?: number };
-  customer?: { firstName: string; lastName: string };
-}
+import { type RentalWithRelations, RentalStatus, ContractStatus } from '@rentapp/shared';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -53,10 +48,6 @@ const contractStatusLabels: Record<ContractStatus, string> = {
   [ContractStatus.SIGNED]: 'Podpisana',
   [ContractStatus.VOIDED]: 'Uniewazniona',
 };
-
-function contractStatusLabel(status: ContractStatus): string {
-  return contractStatusLabels[status] || status;
-}
 
 export default function RentalDetailPage() {
   const params = useParams();
@@ -105,7 +96,7 @@ export default function RentalDetailPage() {
   }
 
   function handleExtend() {
-    if (!newEndDate) return;
+    if (!newEndDate || !rental) return;
     const currentEnd = new Date(rental.endDate);
     const selectedEnd = new Date(newEndDate);
     if (selectedEnd <= currentEnd) {
@@ -327,7 +318,7 @@ export default function RentalDetailPage() {
                     <div>
                       <dt className="text-sm text-muted-foreground">Status</dt>
                       <dd className="text-sm font-medium">
-                        {contractStatusLabel(contract.status)}
+                        {contractStatusLabels[contract.status] || contract.status}
                       </dd>
                     </div>
                     <div>

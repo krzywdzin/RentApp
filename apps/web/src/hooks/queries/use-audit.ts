@@ -1,18 +1,11 @@
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { type AuditLogDto } from '@rentapp/shared';
 import { apiClient } from '@/lib/api-client';
 
-export interface AuditLogEntry {
-  id: string;
-  action: string;
-  entityType: string;
-  entityId: string;
-  changesJson: Record<string, { old: unknown; new: unknown }> | null;
-  createdAt: string;
-  actor: { id: string; name: string; email: string } | null;
-}
+export type { AuditLogDto as AuditLogEntry } from '@rentapp/shared';
 
 export interface AuditResponse {
-  data: AuditLogEntry[];
+  data: AuditLogDto[];
   total: number;
   limit: number;
   offset: number;

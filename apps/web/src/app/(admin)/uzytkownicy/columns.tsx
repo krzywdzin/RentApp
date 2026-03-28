@@ -100,5 +100,3 @@ export function getUserColumns({
     },
   ];
 }
-
-export const userColumns = getUserColumns;

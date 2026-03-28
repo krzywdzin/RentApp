@@ -1,18 +1,13 @@
 'use client';
 
 import { type ColumnDef } from '@tanstack/react-table';
-import { type RentalDto, RentalStatus } from '@rentapp/shared';
+import { type RentalDto, type RentalWithRelations, RentalStatus } from '@rentapp/shared';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
 import { formatDate, formatCurrency } from '@/lib/format';
 import { Eye } from 'lucide-react';
 import Link from 'next/link';
-
-interface RentalWithRelations extends RentalDto {
-  vehicle?: { registration: string; make: string; model: string };
-  customer?: { firstName: string; lastName: string };
-}
 
 const statusConfig: Record<
   RentalStatus,

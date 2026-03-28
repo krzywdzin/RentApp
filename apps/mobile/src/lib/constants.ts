@@ -10,7 +10,6 @@ export const RENTAL_STATUS_COLORS: Record<string, string> = {
   ACTIVE: '#16A34A', // green-600
   EXTENDED: '#F59E0B', // amber-500
   RETURNED: '#71717A', // zinc-500
-  CANCELLED: '#DC2626', // red-600
 };
 
 export const CHECKLIST_ITEMS = [
