@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateCustomerSchema, type CreateCustomerInput } from '@rentapp/shared';
-import type { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -19,13 +18,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import { useCreateCustomer } from '@/hooks/queries/use-customers';
 
-type FormValues = z.input<typeof CreateCustomerSchema>;
-
 export default function NewCustomerPage() {
   const router = useRouter();
   const createCustomer = useCreateCustomer();
 
-  const form = useForm<FormValues>({
+  const form = useForm({
     resolver: zodResolver(CreateCustomerSchema),
     defaultValues: {
       firstName: '',
@@ -43,15 +40,15 @@ export default function NewCustomerPage() {
     },
   });
 
-  function onSubmit(data: FormValues) {
-    // Clean up empty optional fields
-    const cleaned = { ...data } as Record<string, unknown>;
-    for (const key of Object.keys(cleaned)) {
-      if (cleaned[key] === '') {
-        cleaned[key] = null;
+  function onSubmit(data: CreateCustomerInput) {
+    // Clean up empty optional fields - replace empty strings with null for optional fields
+    const cleaned = { ...data };
+    for (const [key, value] of Object.entries(cleaned)) {
+      if (value === '') {
+        (cleaned as Record<string, unknown>)[key] = null;
       }
     }
-    createCustomer.mutate(cleaned as CreateCustomerInput, {
+    createCustomer.mutate(cleaned, {
       onSuccess: () => router.push('/klienci'),
     });
   }

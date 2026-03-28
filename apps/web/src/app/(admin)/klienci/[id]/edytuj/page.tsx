@@ -5,7 +5,6 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { UpdateCustomerSchema, type UpdateCustomerInput } from '@rentapp/shared';
-import type { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -21,15 +20,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import { useCustomer, useUpdateCustomer } from '@/hooks/queries/use-customers';
 
-type UpdateFormValues = z.input<typeof UpdateCustomerSchema>;
-
 export default function EditCustomerPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const { data: customer, isLoading } = useCustomer(params.id);
   const updateCustomer = useUpdateCustomer(params.id);
 
-  const form = useForm<UpdateFormValues>({
+  const form = useForm({
     resolver: zodResolver(UpdateCustomerSchema),
   });
 
@@ -52,14 +49,15 @@ export default function EditCustomerPage() {
     }
   }, [customer, form]);
 
-  function onSubmit(data: UpdateFormValues) {
-    const cleaned = { ...data } as Record<string, unknown>;
-    for (const key of Object.keys(cleaned)) {
-      if (cleaned[key] === '') {
-        cleaned[key] = null;
+  function onSubmit(data: UpdateCustomerInput) {
+    // Clean up empty optional fields - replace empty strings with null
+    const cleaned = { ...data };
+    for (const [key, value] of Object.entries(cleaned)) {
+      if (value === '') {
+        (cleaned as Record<string, unknown>)[key] = null;
       }
     }
-    updateCustomer.mutate(cleaned as UpdateCustomerInput, {
+    updateCustomer.mutate(cleaned, {
       onSuccess: () => router.push(`/klienci/${params.id}`),
     });
   }

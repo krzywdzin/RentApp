@@ -5,9 +5,6 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { UpdateVehicleSchema, type UpdateVehicleInput } from '@rentapp/shared';
-import type { z } from 'zod';
-
-type UpdateFormValues = z.input<typeof UpdateVehicleSchema>;
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -38,7 +35,7 @@ export default function EditVehiclePage() {
   const { data: vehicle, isLoading } = useVehicle(params.id);
   const updateVehicle = useUpdateVehicle(params.id);
 
-  const form = useForm<UpdateFormValues>({
+  const form = useForm({
     resolver: zodResolver(UpdateVehicleSchema),
   });
 
@@ -60,8 +57,8 @@ export default function EditVehiclePage() {
     }
   }, [vehicle, form]);
 
-  function onSubmit(data: UpdateFormValues) {
-    updateVehicle.mutate(data as UpdateVehicleInput, {
+  function onSubmit(data: UpdateVehicleInput) {
+    updateVehicle.mutate(data, {
       onSuccess: () => router.push(`/pojazdy/${params.id}`),
     });
   }

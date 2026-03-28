@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateVehicleSchema, type CreateVehicleInput } from '@rentapp/shared';
-import type { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -32,9 +31,7 @@ export default function NewVehiclePage() {
   const router = useRouter();
   const createVehicle = useCreateVehicle();
 
-  type FormValues = z.input<typeof CreateVehicleSchema>;
-
-  const form = useForm<FormValues>({
+  const form = useForm({
     resolver: zodResolver(CreateVehicleSchema),
     defaultValues: {
       registration: '',
@@ -51,8 +48,8 @@ export default function NewVehiclePage() {
     },
   });
 
-  function onSubmit(data: FormValues) {
-    createVehicle.mutate(data as CreateVehicleInput, {
+  function onSubmit(data: CreateVehicleInput) {
+    createVehicle.mutate(data, {
       onSuccess: () => router.push('/pojazdy'),
     });
   }

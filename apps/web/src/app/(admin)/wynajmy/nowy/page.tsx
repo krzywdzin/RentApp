@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm, type Resolver } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { differenceInDays } from 'date-fns';
@@ -45,7 +45,7 @@ const formSchema = z
     path: ['endDate'],
   });
 
-type FormValues = z.infer<typeof formSchema>;
+type FormOutput = z.infer<typeof formSchema>;
 
 export default function NewRentalPage() {
   const router = useRouter();
@@ -66,8 +66,8 @@ export default function NewRentalPage() {
     watch,
     setValue,
     formState: { errors },
-  } = useForm<FormValues>({
-    resolver: zodResolver(formSchema) as unknown as Resolver<FormValues>,
+  } = useForm({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       vatRate: 23,
       status: 'DRAFT',
@@ -88,7 +88,7 @@ export default function NewRentalPage() {
     return { days, totalNet, totalGross };
   }, [startDate, endDate, dailyRateNet, vatRate]);
 
-  async function onSubmit(data: FormValues) {
+  async function onSubmit(data: FormOutput) {
     const payload = {
       vehicleId: data.vehicleId,
       customerId: data.customerId,
@@ -97,7 +97,7 @@ export default function NewRentalPage() {
       dailyRateNet: data.dailyRateNet,
       vatRate: data.vatRate,
       notes: data.notes || null,
-      status: data.status as 'DRAFT' | 'ACTIVE',
+      status: data.status,
       overrideConflict: false,
     };
 
@@ -155,7 +155,7 @@ export default function NewRentalPage() {
                     size="sm"
                     onClick={() => {
                       setSelectedCustomer(null);
-                      setValue('customerId', '' as unknown as string);
+                      setValue('customerId', '');
                     }}
                   >
                     Zmien
