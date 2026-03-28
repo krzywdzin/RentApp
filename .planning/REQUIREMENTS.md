@@ -178,9 +178,9 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 - [ ] **QUAL-01**: TypeScript 'any' types replaced with proper types across API services
 - [ ] **QUAL-02**: Non-null assertions have proper null guards
 - [ ] **QUAL-03**: Dead code removed (unused imports, unused DB fields documented, unused exports)
-- [ ] **QUAL-04**: Shared package exports PaginatedResponse, AuditLogDto types
-- [ ] **QUAL-05**: Photo Zod schemas moved from types/ to schemas/ directory
-- [ ] **QUAL-06**: RentalWithRelations type defined once in shared package (not duplicated)
+- [x] **QUAL-04**: Shared package exports PaginatedResponse, AuditLogDto types
+- [x] **QUAL-05**: Photo Zod schemas moved from types/ to schemas/ directory
+- [x] **QUAL-06**: RentalWithRelations type defined once in shared package (not duplicated)
 - [ ] **QUAL-07**: Web unsafe 'as' casts on form submits replaced with proper typing
 - [ ] **QUAL-08**: HealthModule has explicit dependency imports
 - [x] **QUAL-09**: FIELD_ENCRYPTION_KEY required in all environments (with dev fallback warning)
@@ -319,9 +319,9 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 | QUAL-01 | Phase 26 | Pending |
 | QUAL-02 | Phase 26 | Pending |
 | QUAL-03 | Phase 26 | Pending |
-| QUAL-04 | Phase 26 | Pending |
-| QUAL-05 | Phase 26 | Pending |
-| QUAL-06 | Phase 26 | Pending |
+| QUAL-04 | Phase 26 | Complete |
+| QUAL-05 | Phase 26 | Complete |
+| QUAL-06 | Phase 26 | Complete |
 | QUAL-07 | Phase 26 | Pending |
 | QUAL-08 | Phase 26 | Pending |
 | QUAL-09 | Phase 26 | Complete |

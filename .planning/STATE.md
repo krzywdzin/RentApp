@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v2.1
 milestone_name: Fix All Audit Issues
 status: executing
-stopped_at: Completed 26-03-PLAN.md
-last_updated: "2026-03-28T00:11:26.468Z"
+stopped_at: Completed 26-01-PLAN.md
+last_updated: "2026-03-28T00:11:56.179Z"
 last_activity: 2026-03-28 -- Completed 26-03 database indexes and encryption key validation
 progress:
   total_phases: 7
@@ -99,6 +99,9 @@ Progress: [█████████░] 92%
 - [Phase 25]: Web coverage threshold 30% (lower than API 35%) due to fewer tests currently
 - [Phase 25]: E2E tests run after unit tests with prisma migrate deploy for DB setup
 - [Phase 26]: FIELD_ENCRYPTION_KEY dev fallback with all-zeros key + Logger.warn on first use
+- [Phase 26]: AuditAction uses string union with open extension (string & {}) since actions are dynamic strings
+- [Phase 26]: RentalWithRelations uses superset of all web definitions including optional mileage and companyName
+- [Phase 26]: Photo Zod schemas re-exported from types/ for backward compatibility after move to schemas/
 
 ### Pending Todos
 
@@ -112,6 +115,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-28T00:11:26.466Z
-Stopped at: Completed 26-03-PLAN.md
+Last session: 2026-03-28T00:11:56.177Z
+Stopped at: Completed 26-01-PLAN.md
 Resume file: None
