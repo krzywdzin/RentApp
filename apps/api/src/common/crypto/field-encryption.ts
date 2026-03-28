@@ -1,8 +1,14 @@
 import * as crypto from 'crypto';
+import { Logger } from '@nestjs/common';
 
 const ALGORITHM = 'aes-256-gcm';
 const IV_LENGTH = 16;
 const TAG_LENGTH = 16;
+
+const DEV_FALLBACK_KEY = '0'.repeat(64);
+const EXAMPLE_PLACEHOLDER = 'a]bcd1234'; // partial match for .env.example placeholders
+
+let devFallbackWarningLogged = false;
 
 export interface EncryptedValue {
   ciphertext: string; // base64
@@ -17,6 +23,18 @@ function getKey(): Buffer {
       'FIELD_ENCRYPTION_KEY must be a 64-character hex string (32 bytes)',
     );
   }
+
+  if (
+    !devFallbackWarningLogged &&
+    (keyHex === DEV_FALLBACK_KEY || keyHex.includes(EXAMPLE_PLACEHOLDER))
+  ) {
+    const logger = new Logger('FieldEncryption');
+    logger.warn(
+      'FIELD_ENCRYPTION_KEY is using a development fallback value. Set a secure key for production.',
+    );
+    devFallbackWarningLogged = true;
+  }
+
   return Buffer.from(keyHex, 'hex');
 }
 
