@@ -183,8 +183,8 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 - [ ] **QUAL-06**: RentalWithRelations type defined once in shared package (not duplicated)
 - [ ] **QUAL-07**: Web unsafe 'as' casts on form submits replaced with proper typing
 - [ ] **QUAL-08**: HealthModule has explicit dependency imports
-- [ ] **QUAL-09**: FIELD_ENCRYPTION_KEY required in all environments (with dev fallback warning)
-- [ ] **QUAL-10**: Missing database indexes added (Contract.createdById, CepikVerification.status, Notification.createdAt)
+- [x] **QUAL-09**: FIELD_ENCRYPTION_KEY required in all environments (with dev fallback warning)
+- [x] **QUAL-10**: Missing database indexes added (Contract.createdById, CepikVerification.status, Notification.createdAt)
 
 ## Out of Scope
 
@@ -324,8 +324,8 @@ Requirements derived from comprehensive codebase audit across mobile, API, web, 
 | QUAL-06 | Phase 26 | Pending |
 | QUAL-07 | Phase 26 | Pending |
 | QUAL-08 | Phase 26 | Pending |
-| QUAL-09 | Phase 26 | Pending |
-| QUAL-10 | Phase 26 | Pending |
+| QUAL-09 | Phase 26 | Complete |
+| QUAL-10 | Phase 26 | Complete |
 
 **Coverage:**
 - v2.1 requirements: 124 total
