@@ -7,7 +7,7 @@ apps/api/.env
 apps/web/.env
 *.log
 .DS_Store
-apps/api/prisma/migrations/
+# apps/api/prisma/migrations/ — must be in git for deploy
 coverage/
 *.remote-backup
 apps/api/.local-storage/

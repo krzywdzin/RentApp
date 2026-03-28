@@ -25,4 +25,4 @@ RUN rm -rf apps/api/src apps/api/test apps/web apps/mobile packages/eslint-confi
 EXPOSE 3000
 ENV NODE_ENV=production
 WORKDIR /app/apps/api
-CMD ["node", "dist/main.js"]
+CMD ["sh", "-c", "npx prisma migrate deploy --schema=prisma/schema.prisma && node dist/main.js"]
