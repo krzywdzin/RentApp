@@ -467,8 +467,18 @@ describe('PhotosService', () => {
         }, 'user-1'),
       ).resolves.toBeDefined();
 
-      expect(storageService.delete).toHaveBeenCalledTimes(2);
+      // replacePhoto uses overwrite pattern (same S3 keys), no delete calls
       expect(storageService.upload).toHaveBeenCalledTimes(2);
+      expect(storageService.upload).toHaveBeenCalledWith(
+        'photos/rental-1/handover/front.jpg',
+        expect.any(Buffer),
+        'image/jpeg',
+      );
+      expect(storageService.upload).toHaveBeenCalledWith(
+        'photos/rental-1/handover/front_thumb.jpg',
+        expect.any(Buffer),
+        'image/jpeg',
+      );
     });
 
     it('rejects replacement after edit window expires', async () => {
@@ -486,7 +496,7 @@ describe('PhotosService', () => {
       ).rejects.toThrow(BadRequestException);
     });
 
-    it('deletes old MinIO objects before uploading new ones', async () => {
+    it('overwrites old MinIO objects with new uploads (same keys)', async () => {
       prisma.photoWalkthrough.findUnique.mockResolvedValue(mockWalkthrough);
       prisma.walkthroughPhoto.findUnique.mockResolvedValue(existingPhoto);
       prisma.walkthroughPhoto.update.mockResolvedValue({ ...existingPhoto });
@@ -497,8 +507,17 @@ describe('PhotosService', () => {
         capturedAt: '2026-03-24T12:00:00Z',
       }, 'user-1');
 
-      expect(storageService.delete).toHaveBeenCalledWith('photos/rental-1/handover/front.jpg');
-      expect(storageService.delete).toHaveBeenCalledWith('photos/rental-1/handover/front_thumb.jpg');
+      // Overwrite pattern: upload to same keys, no delete needed
+      expect(storageService.upload).toHaveBeenCalledWith(
+        'photos/rental-1/handover/front.jpg',
+        expect.any(Buffer),
+        'image/jpeg',
+      );
+      expect(storageService.upload).toHaveBeenCalledWith(
+        'photos/rental-1/handover/front_thumb.jpg',
+        expect.any(Buffer),
+        'image/jpeg',
+      );
     });
   });
 });

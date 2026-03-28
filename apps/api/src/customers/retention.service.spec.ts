@@ -8,6 +8,7 @@ describe('RetentionService', () => {
     customer: {
       findMany: jest.Mock;
       deleteMany: jest.Mock;
+      count: jest.Mock;
     };
   };
 
@@ -16,6 +17,7 @@ describe('RetentionService', () => {
       customer: {
         findMany: jest.fn(),
         deleteMany: jest.fn(),
+        count: jest.fn().mockResolvedValue(0),
       },
     };
 
@@ -40,6 +42,9 @@ describe('RetentionService', () => {
       where: {
         retentionExpiresAt: { lte: expect.any(Date) },
         isArchived: true,
+        rentals: {
+          none: { status: { in: ['ACTIVE', 'EXTENDED', 'DRAFT'] } },
+        },
       },
       select: { id: true },
     });
