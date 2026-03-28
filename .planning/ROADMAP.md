@@ -179,13 +179,12 @@ Plans:
   3. Running the linter with unused-imports rule shows no dead imports; unused DB fields are documented with a comment explaining retention reason
   4. Database has indexes on Contract.createdById, CepikVerification.status, and Notification.createdAt -- confirmed via Prisma schema
   5. FIELD_ENCRYPTION_KEY is validated as required on startup in all environments, with a logged warning if using a dev fallback value
-**Plans**: 5 plans
+**Plans**: 4 plans
 Plans:
-- [ ] 26-01-PLAN.md -- [To be planned]
-- [ ] 26-02-PLAN.md -- [To be planned]
-- [ ] 26-03-PLAN.md -- [To be planned]
-- [ ] 26-04-PLAN.md -- [To be planned]
-- [ ] 26-05-PLAN.md -- [To be planned]
+- [ ] 26-01-PLAN.md -- Shared types: PaginatedResponse, AuditLogDto, RentalWithRelations, photo schema reorg (QUAL-04, QUAL-05, QUAL-06)
+- [ ] 26-02-PLAN.md -- API any removal, null guards, HealthModule fix (QUAL-01, QUAL-02, QUAL-08)
+- [ ] 26-03-PLAN.md -- Database indexes and FIELD_ENCRYPTION_KEY enforcement (QUAL-09, QUAL-10)
+- [ ] 26-04-PLAN.md -- Web type casts, RentalWithRelations consolidation, dead code removal (QUAL-03, QUAL-07)
 
 ## Progress
 
@@ -206,4 +205,4 @@ v2.1: 20 -> 21 -> 22 & 23 & 24 (parallel after 21) -> 25 (after 20) -> 26 (after
 | 23. Mobile Quality & UX | 4/4 | Complete    | 2026-03-27 | - |
 | 24. Web Quality & Accessibility | 5/5 | Complete    | 2026-03-27 | - |
 | 25. Infrastructure & CI/CD | 3/3 | Complete    | 2026-03-27 | - |
-| 26. Code Quality & Cleanup | v2.1 | 0/? | Not started | - |
+| 26. Code Quality & Cleanup | v2.1 | 0/4 | Not started | - |
