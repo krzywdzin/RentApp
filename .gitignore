@@ -12,7 +12,6 @@ coverage/
 *.remote-backup
 apps/api/.local-storage/
 apps/mobile/.env
-.npmrc
 
 # Next.js
 apps/web/.next/
