@@ -1,5 +1,14 @@
 # Milestones: RentApp
 
+## v2.1 Fix All Audit Issues (Shipped: 2026-03-28)
+
+**Phases completed:** 7 phases, 26 plans, 1 tasks
+
+**Key accomplishments:**
+- (none recorded)
+
+---
+
 ## Completed
 
 ### v1.0 — MVP (2026-03-23 to 2026-03-25)

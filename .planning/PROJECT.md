@@ -2,24 +2,11 @@
 
 ## What This Is
 
-System do zarządzania wypożyczalnią samochodów składający się z aplikacji mobilnej cross-platform dla pracowników (Android + iOS), panelu webowego dla administratora, oraz prostego panelu klienta. Obsługuje pełny cykl wynajmu — od interaktywnej umowy z podpisem cyfrowym, przez dokumentację fotograficzną pojazdu, po przypomnienia SMS o zwrocie. Flota ~100 samochodów, ~10 pracowników.
+Production-ready system do zarządzania wypożyczalnią samochodów: aplikacja mobilna cross-platform (Expo/React Native) dla pracowników, panel webowy (Next.js) dla administratora, portal klienta, API backend (NestJS/Prisma). Pełny cykl wynajmu z podpisem cyfrowym, dokumentacją fotograficzną, weryfikacją CEPiK, powiadomieniami SMS/email. Gotowe do wdrożenia na Railway z CI/CD via GitHub Actions.
 
 ## Core Value
 
 Pracownik w terenie może w pełni obsłużyć wynajem — od wypełnienia umowy, przez zweryfikowanie uprawnień kierowcy, zrobienie zdjęć auta, po podpis klienta i wysyłkę PDF — bez papieru i bez powrotu do biura.
-
-## Current Milestone: v2.1 Fix All Audit Issues
-
-**Goal:** Naprawić wszystkie pozostałe problemy jakościowe znalezione w audycie kodu — bezpieczeństwo, bugi, brakująca walidacja, obsługa błędów, dostępność, wydajność, infrastruktura CI/CD, i jakość kodu we wszystkich komponentach (mobile, API, web, infra).
-
-**Target features:**
-- Security: osobny JWT secret dla portalu, gitignore dla .env, walidacja rozmiaru base64, SMTP auth, encryption key placeholder
-- API: race condition w numeracji umów, paginacja, walidacja DTO, logging, N+1 queries, retention guard, transaction handling
-- Mobile: 7 krytycznych bugów (duplikaty rental, hydration guard, SearchBar sync), state management, nawigacja, walidacja, safe area
-- Web: error handling na wszystkich stronach, form validation, error boundaries, paginacja, state management, responsive design
-- Accessibility: keyboard navigation, aria labels, screen reader support w mobile i web
-- Infra: Redis w CI, Puppeteer w Docker, prisma migrate w deploy, mobile w CI, coverage enforcement
-- Code Quality: dead code removal, type safety, shared types, consistent patterns
 
 ## Requirements
 
@@ -37,16 +24,17 @@ Pracownik w terenie może w pełni obsłużyć wynajem — od wypełnienia umowy
 - ✓ Auth z audit trailem — v1.0
 - ✓ Aplikacja cross-platform dla pracowników (Android + iOS) — v1.0
 - ✓ Panel webowy admina (desktop) — v1.0
+- ✓ Security hardening (portal JWT separation, env protection, input limits, rate limiting, CSV sanitization) — v2.1
+- ✓ Critical bug fixes (idempotent rental creation, contract number atomicity, hydration guards, retention safety) — v2.1
+- ✓ API validation & pagination (server-side pagination, UUID validation, N+1 fixes, structured logging) — v2.1
+- ✓ Mobile quality & UX (state persistence, safe area, accessibility, validation, diacritics) — v2.1
+- ✓ Web quality & accessibility (error handling, form validation, ARIA, responsive, shared components) — v2.1
+- ✓ Infrastructure & CI/CD (Redis in CI, Puppeteer Docker, migrations, health checks, coverage) — v2.1
+- ✓ Code quality (TypeScript any removal, shared types, dead code cleanup, DB indexes) — v2.1
 
 ### Active
 
-- [ ] Security: separate portal JWT secret, gitignore .env files, base64 size limits, SMTP auth, encryption key safety
-- [ ] API: contract number race condition, server-side pagination, DTO validation gaps, structured logging, N+1 query fixes
-- [ ] Mobile: critical bugs (duplicate rental, hydration guard, SearchBar sync), state persistence, safe area, validation
-- [ ] Web: error handling on all pages, form validation, error boundaries, responsive design, state management fixes
-- [ ] Accessibility: keyboard navigation, aria labels, screen reader support across mobile and web
-- [ ] Infra: Redis in CI, Puppeteer in Docker, prisma migrate in deploy, mobile CI, coverage enforcement
-- [ ] Code Quality: dead code removal, type safety improvements, shared type exports, pattern consistency
+(None — all milestones complete)
 
 ### Out of Scope
 
@@ -59,45 +47,31 @@ Pracownik w terenie może w pełni obsłużyć wynajem — od wypełnienia umowy
 
 - **Branża:** Wypożyczalnia samochodów, rynek polski
 - **Skala:** ~100 samochodów we flocie (±20%), ~10 pracowników (±50%)
-- **Wzór umowy:** Istnieje gotowy szablon umowy — do odwzorowania w generatorze PDF
-- **CEPiK 2.0:** API publiczne do weryfikacji uprawnień kierowców — wymaga zbadania warunków dostępu, kosztów i sposobu integracji
-- **SMS:** Integracja przez smsapi.pl (polski dostawca, gotowe API)
-- **Pracownik iOS:** Jeden pracownik korzysta z iOS — stąd decyzja o cross-platform zamiast natywnego Androida
-- **Hosting:** Brak istniejącej infrastruktury — do dobrania podczas researchu
-
-### Dane zbierane od klienta w umowie
-
-- Imię (imiona), Nazwisko
-- Nr telefonu, Adres, Adres email
-- Nr dowodu osobistego, Organ wydający + data wydania
-- PESEL
-- Prawo jazdy: kategoria, nr prawa jazdy, nr druku, organ wydający
-- Podpis cyfrowy (rysik/palec)
-
-### Dane wypełniane przez pracownika
-
-- Data najmu (od–do, data + godzina)
-- Pojazd (jaki samochód)
-- Nr rejestracyjny
+- **Tech stack:** Expo/React Native (mobile), Next.js (web), NestJS/Prisma (API), PostgreSQL, Redis, S3-compatible storage
+- **Hosting:** Railway (API+Web), Cloudflare R2 (storage), Neon DB, Upstash Redis
+- **CI/CD:** GitHub Actions with Redis service, mobile typecheck, E2E tests, coverage enforcement
+- **Shipped:** v1.0 MVP, v1.1 Quality & Polish, v2.0 Production Ready, v2.1 Fix All Audit Issues
 
 ## Constraints
 
-- **Tech stack mobilny:** Cross-platform (React Native lub Flutter — do ustalenia po researchu)
+- **Tech stack mobilny:** Expo/React Native (SDK 54)
 - **Język UI:** Polski
 - **SMS provider:** smsapi.pl (wymaganie biznesowe)
 - **Wzór umowy:** Musi odwzorować istniejący szablon PDF
-- **CEPiK:** Zależność od zewnętrznego API — może wymagać alternatywnego podejścia jeśli dostęp ograniczony
-- **Hosting:** Zewnętrzne platformy (Railway dla API+Web, Cloudflare R2 dla storage, Neon DB, Upstash Redis) — użytkownik ma tylko FTP, nie VPS
+- **CEPiK:** Zależność od zewnętrznego API
+- **Hosting:** Railway, Cloudflare R2, Neon DB, Upstash Redis
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Cross-platform zamiast natywnego Androida | Jeden pracownik na iOS — jedna baza kodu dla obu platform | — Pending (tech do ustalenia po researchu) |
-| Prosty panel klienta | Klient widzi swoje umowy i terminy, dostęp w mailu z umową | — Pending |
-| Auth z audit trailem | Potrzeba identyfikacji który pracownik wykonał daną akcję | — Pending |
-| CEPiK 2.0 API | Weryfikacja uprawnień kierowcy — wymaga zbadania dostępności i kosztów | — Pending |
-| smsapi.pl jako provider SMS | Wymaganie biznesowe — polski dostawca, sprawdzone API | — Pending |
+| React Native/Expo zamiast Flutter | Wspólny ekosystem JS z backendem, jeden język w monorepo | ✓ Good |
+| NestJS + Prisma na backend | TypeScript end-to-end, silne typowanie, DI framework | ✓ Good |
+| Monorepo z Turborepo + pnpm | Shared types, jednolite tooling, atomic commits | ✓ Good |
+| Railway + Cloudflare R2 | Brak VPS, zarządzane platformy, auto-scaling | ✓ Good |
+| Separate portal JWT secret | Izolacja bezpieczeństwa — kompromitacja jednego nie wpływa na drugi | ✓ Good (v2.1) |
+| Server-side pagination | Skalowanie przy rosnącej liczbie wynajmów/klientów | ✓ Good (v2.1) |
+| Shared types w monorepo | Jedna definicja RentalWithRelations, PaginatedResponse — brak duplikacji | ✓ Good (v2.1) |
 
 ---
-*Last updated: 2026-03-27 after v2.1 milestone start*
+*Last updated: 2026-03-28 after v2.1 milestone*
