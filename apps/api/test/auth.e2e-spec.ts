@@ -10,12 +10,16 @@ import { StorageService } from '../src/storage/storage.service';
 import { PdfService } from '../src/contracts/pdf/pdf.service';
 import { SmsService } from '../src/notifications/sms/sms.service';
 import { AuthService } from '../src/auth/auth.service';
+import { ThrottlerGuard } from '@nestjs/throttler';
 import { UserRole } from '@rentapp/shared';
 import Redis from 'ioredis';
 
 const ARGON2_OPTIONS = { memoryCost: 32768, timeCost: 3, parallelism: 1 };
 
 jest.setTimeout(30000);
+
+// Disable throttling for e2e tests to avoid 429 during rapid test execution
+jest.spyOn(ThrottlerGuard.prototype, 'canActivate').mockResolvedValue(true);
 
 describe('Auth (e2e)', () => {
   let app: INestApplication;
@@ -41,7 +45,7 @@ describe('Auth (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+    app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
     await app.init();
 
     prisma = app.get(PrismaService);

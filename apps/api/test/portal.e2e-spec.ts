@@ -9,10 +9,14 @@ import { StorageService } from '../src/storage/storage.service';
 import { PdfService } from '../src/contracts/pdf/pdf.service';
 import { SmsService } from '../src/notifications/sms/sms.service';
 import { PortalService } from '../src/portal/portal.service';
+import { ThrottlerGuard } from '@nestjs/throttler';
 import { UserRole, RentalStatus } from '@rentapp/shared';
 import Redis from 'ioredis';
 
 const ARGON2_OPTIONS = { memoryCost: 32768, timeCost: 3, parallelism: 1 };
+
+// Disable throttling for e2e tests to avoid 429 during rapid test execution
+jest.spyOn(ThrottlerGuard.prototype, 'canActivate').mockResolvedValue(true);
 
 describe('Customer Portal (e2e)', () => {
   let app: INestApplication;
