@@ -1,5 +1,8 @@
 FROM node:20-alpine AS base
 RUN corepack enable && corepack prepare pnpm@10.6.0 --activate
+RUN apk add --no-cache chromium
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 FROM base AS build
 WORKDIR /app
@@ -15,24 +18,22 @@ COPY apps/api/ apps/api/
 RUN pnpm --filter @rentapp/shared build
 RUN pnpm --filter @rentapp/api exec prisma generate
 RUN pnpm --filter @rentapp/api build
-# Dereference pnpm symlinks into a flat node_modules
-RUN cp -rL node_modules /tmp/node_modules_flat
 
-FROM node:20-alpine AS production
+FROM base AS production
 WORKDIR /app
-RUN apk add --no-cache chromium
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 RUN addgroup -g 1001 -S nodejs && adduser -S nestjs -u 1001
-
-COPY --from=build /tmp/node_modules_flat ./node_modules
-COPY --from=build /app/apps/api/dist ./dist
-COPY --from=build /app/apps/api/prisma ./prisma
-COPY --from=build /app/apps/api/package.json ./
-COPY --from=build /app/packages/shared/dist ./node_modules/@rentapp/shared/dist
-COPY --from=build /app/packages/shared/package.json ./node_modules/@rentapp/shared/
+# Copy entire workspace — pnpm symlinks stay intact
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/apps/api/node_modules ./apps/api/node_modules
+COPY --from=build /app/apps/api/dist ./apps/api/dist
+COPY --from=build /app/apps/api/prisma ./apps/api/prisma
+COPY --from=build /app/apps/api/package.json ./apps/api/
+COPY --from=build /app/packages/shared/dist ./packages/shared/dist
+COPY --from=build /app/packages/shared/package.json ./packages/shared/
+COPY --from=build /app/package.json ./
 
 USER nestjs
 EXPOSE 3000
 ENV NODE_ENV=production
+WORKDIR /app/apps/api
 CMD ["node", "dist/main.js"]
