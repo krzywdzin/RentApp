@@ -75,3 +75,21 @@ export interface PricingResult {
   totalPriceGross: number;
   vatRate: number;
 }
+
+/**
+ * Rental with eagerly-loaded vehicle and customer relations.
+ * Superset of fields used across all web views (list + detail).
+ */
+export interface RentalWithRelations extends RentalDto {
+  vehicle?: {
+    registration: string;
+    make: string;
+    model: string;
+    mileage?: number;
+  };
+  customer?: {
+    firstName: string;
+    lastName: string;
+    companyName?: string;
+  };
+}

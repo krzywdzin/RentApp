@@ -295,6 +295,7 @@ model Contract {
 
   @@index([rentalId])
   @@index([status])
+  @@index([createdById])
   @@map("contracts")
 }
 
@@ -417,6 +418,7 @@ model Notification {
   @@index([type, relatedEntityId, scheduledFor])
   @@index([status])
   @@index([recipientId])
+  @@index([createdAt])
   @@map("notifications")
 }
 
@@ -472,5 +474,6 @@ model CepikVerification {
 
   @@index([customerId])
   @@index([rentalId])
+  @@index([status])
   @@map("cepik_verifications")
 }
