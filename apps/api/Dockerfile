@@ -15,6 +15,8 @@ COPY apps/api/ apps/api/
 RUN pnpm --filter @rentapp/shared build
 RUN pnpm --filter @rentapp/api exec prisma generate
 RUN pnpm --filter @rentapp/api build
+# Dereference pnpm symlinks into a flat node_modules
+RUN cp -rL node_modules /tmp/node_modules_flat
 
 FROM node:20-alpine AS production
 WORKDIR /app
@@ -23,7 +25,7 @@ ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 RUN addgroup -g 1001 -S nodejs && adduser -S nestjs -u 1001
 
-COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /tmp/node_modules_flat ./node_modules
 COPY --from=build /app/apps/api/dist ./dist
 COPY --from=build /app/apps/api/prisma ./prisma
 COPY --from=build /app/apps/api/package.json ./
