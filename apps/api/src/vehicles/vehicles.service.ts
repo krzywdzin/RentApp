@@ -338,11 +338,11 @@ export class VehiclesService {
         imported++;
         // Track newly created registration to prevent intra-batch duplicates
         existingRegistrations.add(registration);
-      } catch (err: any) {
+      } catch (err: unknown) {
         skipped++;
         errors.push({
           row: rowNum,
-          reason: err.message || 'Unknown error',
+          reason: err instanceof Error ? err.message : 'Unknown error',
         });
       }
     }

@@ -227,10 +227,11 @@ export class ContractsService {
           });
         });
         break; // Success - exit retry loop
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const prismaError = error as { code?: string; meta?: { target?: string[] } };
         const isUniqueViolation =
-          error?.code === 'P2002' ||
-          error?.meta?.target?.includes('contractNumber');
+          prismaError?.code === 'P2002' ||
+          prismaError?.meta?.target?.includes('contractNumber');
         if (isUniqueViolation && attempt < MAX_RETRIES) {
           this.logger.warn(
             `Contract number collision on attempt ${attempt + 1}, retrying...`,
@@ -376,10 +377,10 @@ export class ContractsService {
         };
 
         pdfBuffer = await this.pdfService.generateContractPdf(pdfData);
-      } catch (pdfError: any) {
+      } catch (pdfError: unknown) {
         this.logger.error(
-          `PDF generation failed for contract ${contract.contractNumber}: ${pdfError.message}`,
-          pdfError.stack,
+          `PDF generation failed for contract ${contract.contractNumber}: ${pdfError instanceof Error ? pdfError.message : String(pdfError)}`,
+          pdfError instanceof Error ? pdfError.stack : undefined,
         );
         throw new InternalServerErrorException('PDF generation failed');
       }
@@ -410,9 +411,9 @@ export class ContractsService {
               rental.customerId,
             );
           }
-        } catch (error: any) {
+        } catch (error: unknown) {
           this.logger.error(
-            `Failed to generate portal token: ${error.message}`,
+            `Failed to generate portal token: ${error instanceof Error ? error.message : String(error)}`,
           );
         }
 
@@ -429,9 +430,9 @@ export class ContractsService {
           );
           updateData.emailSentAt = new Date();
           updateData.emailSentTo = customerEmail;
-        } catch (error: any) {
+        } catch (error: unknown) {
           this.logger.error(
-            `Failed to send contract email for ${contract.contractNumber}: ${error.message}`,
+            `Failed to send contract email for ${contract.contractNumber}: ${error instanceof Error ? error.message : String(error)}`,
           );
         }
       }
@@ -580,9 +581,9 @@ export class ContractsService {
       pdfKey = `contracts/${rentalId}/annexes/${annexId}.pdf`;
       await this.storageService.upload(pdfKey, pdfBuffer, 'application/pdf');
       pdfGeneratedAt = new Date();
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.logger.error(
-        `Failed to generate annex PDF for contract ${contract.id}: ${error.message}`,
+        `Failed to generate annex PDF for contract ${contract.id}: ${error instanceof Error ? error.message : String(error)}`,
       );
     }
 
@@ -601,9 +602,9 @@ export class ContractsService {
             pdfBuffer,
           );
           emailSentAt = new Date();
-        } catch (error: any) {
+        } catch (error: unknown) {
           this.logger.error(
-            `Failed to send annex email for ${contract.contractNumber}: ${error.message}`,
+            `Failed to send annex email for ${contract.contractNumber}: ${error instanceof Error ? error.message : String(error)}`,
           );
         }
       }

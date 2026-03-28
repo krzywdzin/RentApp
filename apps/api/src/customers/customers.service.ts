@@ -3,7 +3,7 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Customer, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   encrypt,
@@ -109,15 +109,15 @@ export class CustomersService {
   async update(
     id: string,
     dto: UpdateCustomerDto,
-  ): Promise<{ oldValues: Record<string, any>; customer: CustomerDto }> {
+  ): Promise<{ oldValues: Record<string, unknown>; customer: CustomerDto }> {
     const existing = await this.prisma.customer.findUnique({ where: { id } });
     if (!existing) {
       throw new NotFoundException(`Customer with id ${id} not found`);
     }
 
     // Build old values diff for audit
-    const oldValues: Record<string, any> = {};
-    const data: Record<string, any> = {};
+    const oldValues: Record<string, unknown> = {};
+    const data: Record<string, unknown> = {};
 
     // Non-sensitive fields
     const plainFields = [
@@ -133,7 +133,7 @@ export class CustomersService {
 
     for (const field of plainFields) {
       if (dto[field] !== undefined) {
-        oldValues[field] = { old: (existing as any)[field], new: dto[field] };
+        oldValues[field] = { old: existing[field], new: dto[field] };
         data[field] = dto[field];
       }
     }
@@ -185,7 +185,7 @@ export class CustomersService {
       throw new BadRequestException('At least one search criterion required');
     }
 
-    const where: any = { isArchived: false };
+    const where: Prisma.CustomerWhereInput = { isArchived: false };
 
     if (dto.pesel) {
       where.peselHmac = hmacIndex(dto.pesel.replace(/[\s-]/g, ''));
@@ -225,7 +225,7 @@ export class CustomersService {
     return this.toDto(updated);
   }
 
-  toDto(customer: any): CustomerDto {
+  toDto(customer: Customer): CustomerDto {
     return {
       id: customer.id,
       firstName: customer.firstName,

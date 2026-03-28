@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException, Logger } from '@nestjs/common';
+import { CepikVerification, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import type {
   CepikVerificationResult,
@@ -90,7 +91,7 @@ export class CepikService {
         customerId,
         rentalId: rentalId ?? null,
         status,
-        result: result as any,
+        result: result as unknown as Prisma.InputJsonValue,
         checkedById,
       },
     });
@@ -152,12 +153,12 @@ export class CepikService {
     return verification;
   }
 
-  private toDto(verification: any): CepikVerificationDto {
+  private toDto(verification: CepikVerification): CepikVerificationDto {
     return {
       id: verification.id,
       customerId: verification.customerId,
       rentalId: verification.rentalId,
-      status: verification.status as any,
+      status: verification.status as CepikVerificationStatus,
       result: verification.result as CepikVerificationResult | null,
       checkedById: verification.checkedById,
       overrideReason: verification.overrideReason,

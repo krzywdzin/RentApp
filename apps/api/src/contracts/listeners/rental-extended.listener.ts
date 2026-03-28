@@ -21,9 +21,9 @@ export class RentalExtendedListener {
         newEndDate: payload.newEndDate,
         createdById: payload.extendedBy,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.logger.error(
-        `Failed to create annex for rental ${payload.rentalId}: ${error.message}`,
+        `Failed to create annex for rental ${payload.rentalId}: ${error instanceof Error ? error.message : String(error)}`,
       );
       // Do not throw - annex failure should not block rental extension
     }

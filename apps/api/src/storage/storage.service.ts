@@ -44,8 +44,9 @@ export class StorageService implements OnModuleInit {
       );
       this.logger.log(`Bucket "${this.bucket}" exists`);
       this.s3Available = true;
-    } catch (error: any) {
-      if (error?.name === 'NotFound' || error?.$metadata?.httpStatusCode === 404) {
+    } catch (error: unknown) {
+      const s3Error = error as { name?: string; $metadata?: { httpStatusCode?: number } };
+      if (s3Error?.name === 'NotFound' || s3Error?.$metadata?.httpStatusCode === 404) {
         await this.client.send(
           new CreateBucketCommand({ Bucket: this.bucket }),
         );

@@ -25,9 +25,9 @@ export class RentalExtendedNotificationListener {
         payload.newEndDate,
         payload.rentalId,
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.logger.error(
-        `Failed to send extension SMS: ${error.message}`,
+        `Failed to send extension SMS: ${error instanceof Error ? error.message : String(error)}`,
       );
       // Non-blocking
     }

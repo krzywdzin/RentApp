@@ -46,9 +46,9 @@ export class AlertScannerService {
     for (const rental of rentals) {
       try {
         await this.notificationsService.enqueueReturnReminder(rental);
-      } catch (error: any) {
+      } catch (error: unknown) {
         this.logger.error(
-          `Failed to enqueue return reminder for rental ${rental.id}: ${error.message}`,
+          `Failed to enqueue return reminder for rental ${rental.id}: ${error instanceof Error ? error.message : String(error)}`,
         );
       }
     }
@@ -97,9 +97,9 @@ export class AlertScannerService {
           rental,
           existingCount,
         );
-      } catch (error: any) {
+      } catch (error: unknown) {
         this.logger.error(
-          `Failed to enqueue overdue alert for rental ${rental.id}: ${error.message}`,
+          `Failed to enqueue overdue alert for rental ${rental.id}: ${error instanceof Error ? error.message : String(error)}`,
         );
       }
     }
@@ -161,9 +161,9 @@ export class AlertScannerService {
           record.expiryDate,
           daysUntil,
         );
-      } catch (error: any) {
+      } catch (error: unknown) {
         this.logger.error(
-          `Failed to enqueue ${alertType} alert for vehicle ${record.vehicleId}: ${error.message}`,
+          `Failed to enqueue ${alertType} alert for vehicle ${record.vehicleId}: ${error instanceof Error ? error.message : String(error)}`,
         );
       }
     }

@@ -129,9 +129,9 @@ export class PortalService {
               contract.pdfKey,
               3600,
             );
-        } catch (error: any) {
+        } catch (error: unknown) {
           this.logger.error(
-            `Failed to generate presigned URL for ${contract.pdfKey}: ${error.message}`,
+            `Failed to generate presigned URL for ${contract.pdfKey}: ${error instanceof Error ? error.message : String(error)}`,
           );
         }
       }

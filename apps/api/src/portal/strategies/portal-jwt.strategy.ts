@@ -13,7 +13,7 @@ export class PortalJwtStrategy extends PassportStrategy(Strategy, 'portal-jwt') 
     });
   }
 
-  async validate(payload: any) {
+  async validate(payload: { sub: string; type: string; customerId?: string; iat?: number; exp?: number }) {
     // Only accept portal-type tokens
     if (payload.type !== 'portal') return null;
     return { customerId: payload.sub, type: 'portal' };

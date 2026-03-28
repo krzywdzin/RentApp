@@ -20,7 +20,7 @@ export class UsersController {
   }
 
   @Get('me')
-  getMe(@CurrentUser() user: any) {
+  getMe(@CurrentUser() user: { id: string; email: string; role: string; name: string }) {
     return user;
   }
 
