@@ -292,8 +292,10 @@ describe('Rentals (e2e)', () => {
         .set('Authorization', `Bearer ${adminToken}`)
         .expect(200);
 
-      expect(Array.isArray(res.body)).toBe(true);
-      expect(res.body.length).toBeGreaterThanOrEqual(1);
+      expect(res.body).toHaveProperty('data');
+      expect(res.body).toHaveProperty('total');
+      expect(Array.isArray(res.body.data)).toBe(true);
+      expect(res.body.data.length).toBeGreaterThanOrEqual(1);
     });
   });
 
@@ -325,7 +327,7 @@ describe('Rentals (e2e)', () => {
         .set('Authorization', `Bearer ${adminToken}`)
         .expect(200);
 
-      const rentalId = listRes.body[0].id;
+      const rentalId = listRes.body.data[0].id;
 
       const res = await request(app.getHttpServer())
         .get(`/rentals/${rentalId}`)

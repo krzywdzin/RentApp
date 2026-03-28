@@ -78,7 +78,7 @@ describe('Customers (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+    app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
     await app.init();
 
     prisma = app.get(PrismaService);
@@ -234,9 +234,13 @@ describe('Customers (e2e)', () => {
       .set('Authorization', `Bearer ${adminToken}`)
       .expect(200);
 
-    expect(Array.isArray(res.body)).toBe(true);
-    expect(res.body.length).toBe(1);
-    expect(res.body[0].pesel).toBe(VALID_PESEL);
+    expect(res.body).toHaveProperty('data');
+    expect(res.body).toHaveProperty('total');
+    expect(res.body).toHaveProperty('page');
+    expect(Array.isArray(res.body.data)).toBe(true);
+    expect(res.body.data.length).toBe(1);
+    expect(res.body.total).toBe(1);
+    expect(res.body.data[0].pesel).toBe(VALID_PESEL);
   });
 
   it('GET /customers/:id returns single customer with all fields decrypted', async () => {
