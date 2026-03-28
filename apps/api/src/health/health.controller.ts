@@ -32,7 +32,7 @@ export class HealthController {
     const [db, redis, storageResult] = await Promise.allSettled([
       this.prisma.$queryRaw`SELECT 1`,
       this.redis?.ping(),
-      Promise.resolve((this.storage as any).s3Available),
+      Promise.resolve(this.storage.isAvailable),
     ]);
 
     const dbOk = db.status === 'fulfilled';

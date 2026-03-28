@@ -20,6 +20,10 @@ export class StorageService implements OnModuleInit {
   private s3Available = false;
   private localStoragePath: string;
 
+  get isAvailable(): boolean {
+    return this.s3Available;
+  }
+
   constructor(private config: ConfigService) {
     this.bucket = this.config.get<string>('S3_BUCKET', 'rentapp');
     this.localStoragePath = path.join(process.cwd(), '.local-storage');
