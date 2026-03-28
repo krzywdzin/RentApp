@@ -1,6 +1,7 @@
 [build]
 builder = "dockerfile"
 dockerfilePath = "apps/api/Dockerfile"
+watchPatterns = ["apps/api/**", "packages/shared/**"]
 
 [deploy]
 startCommand = "npx prisma migrate deploy && node dist/main.js"
