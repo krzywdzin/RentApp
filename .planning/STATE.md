@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v2.3
 milestone_name: User Management, Login Overhaul & Feature Additions
 status: executing
-stopped_at: Completed 29-03-PLAN.md (mobile login overhaul)
-last_updated: "2026-03-29T17:22:23.556Z"
+stopped_at: Completed 29-02-PLAN.md (web admin login + worker creation)
+last_updated: "2026-03-29T17:22:38.272Z"
 last_activity: 2026-03-29 -- Completed 29-03 (mobile login from email to username)
 progress:
   total_phases: 5
@@ -50,6 +50,7 @@ Progress: [████████░░] 80%
 | Phase 28 P02 | 2min | 2 tasks | 8 files |
 | Phase 29 P01 | 4min | 2 tasks | 11 files |
 | Phase 29 P03 | 1min | 2 tasks | 3 files |
+| Phase 29 P02 | 2min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -73,6 +74,7 @@ Progress: [████████░░] 80%
 - [29-01]: Mobile tokens signed with JWT_MOBILE_SECRET, admin with JWT_ACCESS_SECRET -- separate secrets prevent cross-context reuse
 - [29-01]: Prisma schema User.email made nullable to support worker accounts without email
 - [29-01]: Worker fast-create: password provided = immediate hash, no email setup flow
+- [Phase 29-02]: UserDto.email made nullable to support worker accounts without email
 
 ### Pending Todos
 
@@ -84,6 +86,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-29T17:21:11Z
-Stopped at: Completed 29-03-PLAN.md (mobile login overhaul)
+Last session: 2026-03-29T17:22:38.270Z
+Stopped at: Completed 29-02-PLAN.md (web admin login + worker creation)
 Resume file: None

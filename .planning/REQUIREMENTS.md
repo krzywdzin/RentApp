@@ -17,13 +17,13 @@ Requirements for v2.3 milestone. Each maps to roadmap phases.
 - [x] **AUTH-01**: API User model has username field added via Prisma migration
 - [x] **AUTH-02**: API auth accepts username OR email for login
 - [x] **AUTH-03**: Existing admin@kitek.pl account gets username "admin" via data migration
-- [ ] **AUTH-04**: Web admin panel login uses username + password (not email)
+- [x] **AUTH-04**: Web admin panel login uses username + password (not email)
 - [x] **AUTH-05**: Mobile app login uses username + password (not email)
 - [x] **AUTH-06**: Admin panel credentials are separate from mobile app credentials (different auth context)
 
 ### User Management
 
-- [ ] **USER-01**: Admin can create worker accounts with username and temporary password in web panel
+- [x] **USER-01**: Admin can create worker accounts with username and temporary password in web panel
 - [x] **USER-02**: Worker creation stores proper passwordHash (not null)
 - [x] **USER-03**: Newly created worker can immediately log in to mobile app with set credentials
 - [x] **USER-04**: No email required for worker account creation
@@ -71,10 +71,10 @@ None deferred for this milestone.
 | AUTH-01 | Phase 28 | Complete |
 | AUTH-02 | Phase 28 | Complete |
 | AUTH-03 | Phase 28 | Complete |
-| AUTH-04 | Phase 29 | Pending |
+| AUTH-04 | Phase 29 | Complete |
 | AUTH-05 | Phase 29 | Complete |
 | AUTH-06 | Phase 29 | Complete |
-| USER-01 | Phase 29 | Pending |
+| USER-01 | Phase 29 | Complete |
 | USER-02 | Phase 29 | Complete |
 | USER-03 | Phase 29 | Complete |
 | USER-04 | Phase 29 | Complete |
