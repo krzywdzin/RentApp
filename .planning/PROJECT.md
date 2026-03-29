@@ -32,23 +32,20 @@ Pracownik w terenie może w pełni obsłużyć wynajem — od wypełnienia umowy
 - ✓ Infrastructure & CI/CD (Redis in CI, Puppeteer Docker, migrations, health checks, coverage) — v2.1
 - ✓ Code quality (TypeScript any removal, shared types, dead code cleanup, DB indexes) — v2.1
 
+- ✓ Working Android APK build via EAS Build preview profile — v2.2
+- ✓ Correct app.config.ts configuration for Android builds — v2.2
+- ✓ Valid eas.json preview profile for APK output — v2.2
+- ✓ All required assets (icon, splash, adaptive-icon) present — v2.2
+- ✓ Successful `eas build --platform android --profile preview` execution — v2.2
+
 ### Active
 
-- [ ] Working Android APK build via EAS Build preview profile
-- [ ] Correct app.config.ts configuration for Android builds
-- [ ] Valid eas.json preview profile for APK output
-- [ ] All required assets (icon, splash, adaptive-icon) present
-- [ ] Successful `eas build --platform android --profile preview` execution
+(No active requirements — planning next milestone)
 
-## Current Milestone: v2.2 Android APK Build Fix
+## Current State
 
-**Goal:** Fix failing Android APK build so the app can be installed on 9 Android devices.
-
-**Target features:**
-- Diagnose and fix Gradle build failure
-- Ensure correct EAS Build configuration
-- Generate missing assets if needed
-- Verify working APK build end-to-end
+**Shipped:** v2.2 Android APK Build Fix (2026-03-29)
+All milestones complete. System is production-ready with working Android APK build pipeline.
 
 ### Out of Scope
 
@@ -64,8 +61,7 @@ Pracownik w terenie może w pełni obsłużyć wynajem — od wypełnienia umowy
 - **Tech stack:** Expo/React Native (mobile), Next.js (web), NestJS/Prisma (API), PostgreSQL, Redis, S3-compatible storage
 - **Hosting:** Railway (API+Web), Cloudflare R2 (storage), Neon DB, Upstash Redis
 - **CI/CD:** GitHub Actions with Redis service, mobile typecheck, E2E tests, coverage enforcement
-- **Shipped:** v1.0 MVP, v1.1 Quality & Polish, v2.0 Production Ready, v2.1 Fix All Audit Issues
-- **In progress:** v2.2 Android APK Build Fix
+- **Shipped:** v1.0 MVP, v1.1 Quality & Polish, v2.0 Production Ready, v2.1 Fix All Audit Issues, v2.2 Android APK Build Fix
 
 ## Constraints
 
@@ -87,6 +83,7 @@ Pracownik w terenie może w pełni obsłużyć wynajem — od wypełnienia umowy
 | Separate portal JWT secret | Izolacja bezpieczeństwa — kompromitacja jednego nie wpływa na drugi | ✓ Good (v2.1) |
 | Server-side pagination | Skalowanie przy rosnącej liczbie wynajmów/klientów | ✓ Good (v2.1) |
 | Shared types w monorepo | Jedna definicja RentalWithRelations, PaginatedResponse — brak duplikacji | ✓ Good (v2.1) |
+| Disable Sentry upload for non-prod | EAS Build failed without SENTRY_AUTH_TOKEN — disable auto-upload for preview/dev/staging | ✓ Good (v2.2) |
 
 ---
-*Last updated: 2026-03-29 after v2.2 milestone start*
+*Last updated: 2026-03-29 after v2.2 milestone completion*

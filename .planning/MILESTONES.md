@@ -1,5 +1,14 @@
 # Milestones: RentApp
 
+## v2.2 Android APK Build Fix (Shipped: 2026-03-29)
+
+**Phases completed:** 1 phases, 2 plans, 0 tasks
+
+**Key accomplishments:**
+- (none recorded)
+
+---
+
 ## In Progress
 
 ### v2.2 -- Android APK Build Fix (2026-03-29 to ...)
