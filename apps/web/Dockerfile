@@ -15,8 +15,14 @@ COPY apps/web/ apps/web/
 RUN pnpm --filter @rentapp/shared build
 RUN pnpm --filter @rentapp/web build
 
+# Copy static assets into standalone directory
+RUN cp -r apps/web/.next/static apps/web/.next/standalone/apps/web/.next/static
+RUN if [ -d apps/web/public ]; then cp -r apps/web/public apps/web/.next/standalone/apps/web/public; fi
+
+# Cleanup
 RUN rm -rf apps/api apps/mobile packages/eslint-config packages/shared/src apps/web/src tsconfig.base.json
 
 EXPOSE 3001
 ENV PORT=3001 HOSTNAME=0.0.0.0 NODE_ENV=production
-CMD ["node", "apps/web/.next/standalone/apps/web/server.js"]
+WORKDIR /app/apps/web/.next/standalone
+CMD ["node", "apps/web/server.js"]
