@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -22,7 +22,7 @@ export default function LoginPage() {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ username, password }),
       });
 
       if (!res.ok) {
@@ -33,7 +33,7 @@ export default function LoginPage() {
       router.push('/');
     } catch (error) {
       if (error instanceof ApiError && error.status === 401) {
-        toast.error('Nieprawidlowy email lub haslo');
+        toast.error('Nieprawidlowa nazwa uzytkownika lub haslo');
       } else {
         toast.error('Wystapil blad serwera. Sprobuj ponownie za chwile.');
       }
@@ -48,14 +48,15 @@ export default function LoginPage() {
         <h1 className="mb-6 text-center text-2xl font-semibold text-foreground">RentApp</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="username">Nazwa uzytkownika</Label>
             <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              id="username"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
-              placeholder="admin@rentapp.pl"
+              autoComplete="username"
+              placeholder="admin"
             />
           </div>
           <div className="space-y-2">
