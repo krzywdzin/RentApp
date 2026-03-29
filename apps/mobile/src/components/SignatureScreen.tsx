@@ -36,8 +36,7 @@ export function SignatureScreen({
   const signatureRef = useRef<SignatureViewRef>(null);
   const { t } = useTranslation();
 
-  // Lock landscape on mount and each step change; restore portrait on unmount
-  // or when step changes (ensures cleanup fires even if Expo Router skips unmount)
+  // Lock landscape on mount; restore portrait on unmount
   useEffect(() => {
     ScreenOrientation.lockAsync(
       ScreenOrientation.OrientationLock.LANDSCAPE_LEFT,
@@ -48,6 +47,11 @@ export function SignatureScreen({
         ScreenOrientation.OrientationLock.PORTRAIT_UP,
       );
     };
+  }, []);
+
+  // Clear the canvas when moving to the next signature step
+  useEffect(() => {
+    signatureRef.current?.clearSignature();
   }, [stepLabel]);
 
   const handleClear = useCallback(() => {
