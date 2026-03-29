@@ -76,7 +76,7 @@ export class AuthService {
     }
   }
 
-  async login(userId: string, deviceId: string) {
+  async login(userId: string, deviceId: string, context: 'admin' | 'mobile' = 'admin') {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
     });
@@ -84,9 +84,12 @@ export class AuthService {
       throw new UnauthorizedException('User not found');
     }
 
-    const payload = { sub: userId, role: user.role };
+    const payload = { sub: userId, role: user.role, aud: context };
+    const secret = context === 'mobile'
+      ? this.config.get<string>('JWT_MOBILE_SECRET')
+      : this.config.get<string>('JWT_ACCESS_SECRET');
     const accessToken = this.jwtService.sign(payload, {
-      secret: this.config.get<string>('JWT_ACCESS_SECRET'),
+      secret,
       expiresIn: '30m',
     });
 
@@ -102,7 +105,7 @@ export class AuthService {
     return { accessToken, refreshToken: rawRefresh, deviceId };
   }
 
-  async refresh(userId: string, deviceId: string, rawToken: string) {
+  async refresh(userId: string, deviceId: string, rawToken: string, context: 'admin' | 'mobile' = 'admin') {
     const stored = await this.redis.get(`refresh:${userId}:${deviceId}`);
     if (!stored) {
       throw new UnauthorizedException('Session expired');
@@ -123,7 +126,7 @@ export class AuthService {
 
     // Delete old token and issue new pair
     await this.redis.del(`refresh:${userId}:${deviceId}`);
-    return this.login(userId, deviceId);
+    return this.login(userId, deviceId, context);
   }
 
   async setupPassword(token: string, password: string) {

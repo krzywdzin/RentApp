@@ -1,4 +1,4 @@
-import { IsString, IsUUID, MinLength } from 'class-validator';
+import { IsIn, IsOptional, IsString, IsUUID, MinLength } from 'class-validator';
 
 export class LoginDto {
   @IsString()
@@ -11,4 +11,8 @@ export class LoginDto {
 
   @IsUUID()
   deviceId!: string;
+
+  @IsOptional()
+  @IsIn(['admin', 'mobile'])
+  context?: 'admin' | 'mobile';
 }

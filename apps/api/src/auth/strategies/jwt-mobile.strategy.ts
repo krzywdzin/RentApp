@@ -6,7 +6,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { JwtPayload } from '@rentapp/shared';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class MobileJwtStrategy extends PassportStrategy(Strategy, 'jwt-mobile') {
   constructor(
     config: ConfigService,
     private prisma: PrismaService,
@@ -14,12 +14,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: config.get<string>('JWT_ACCESS_SECRET')!,
+      secretOrKey: config.get<string>('JWT_MOBILE_SECRET')!,
     });
   }
 
   async validate(payload: JwtPayload) {
-    if (payload.aud === 'mobile') {
+    if (payload.aud !== 'mobile') {
       throw new UnauthorizedException('Invalid token audience');
     }
     const user = await this.prisma.user.findUnique({

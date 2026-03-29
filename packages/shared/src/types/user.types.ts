@@ -23,6 +23,7 @@ export interface TokenPairDto {
 export interface JwtPayload {
   sub: string;
   role: UserRole;
+  aud?: 'admin' | 'mobile';
   iat?: number;
   exp?: number;
 }

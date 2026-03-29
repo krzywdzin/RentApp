@@ -32,7 +32,7 @@ export class AuthController {
   @Post('login')
   async login(@Body() dto: LoginDto) {
     const user = await this.authService.validateUser(dto.login, dto.password);
-    return this.authService.login(user.id, dto.deviceId);
+    return this.authService.login(user.id, dto.deviceId, dto.context ?? 'admin');
   }
 
   @Public()
@@ -42,8 +42,8 @@ export class AuthController {
     @Headers('authorization') authHeader: string,
   ) {
     // Decode JWT without verification since access token may be expired
-    const userId = this.extractUserIdFromExpiredToken(authHeader);
-    return this.authService.refresh(userId, dto.deviceId, dto.refreshToken);
+    const { userId, context } = this.extractFromExpiredToken(authHeader);
+    return this.authService.refresh(userId, dto.deviceId, dto.refreshToken, context);
   }
 
   @Public()
@@ -73,18 +73,18 @@ export class AuthController {
     return this.authService.logout(user.id, deviceId);
   }
 
-  private extractUserIdFromExpiredToken(authHeader: string): string {
+  private extractFromExpiredToken(authHeader: string): { userId: string; context: 'admin' | 'mobile' } {
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       throw new UnauthorizedException('Access token required for refresh');
     }
     const token = authHeader.replace('Bearer ', '');
     try {
       // Decode without verification -- token may be expired
-      const decoded = this.jwtService.decode(token) as { sub?: string };
+      const decoded = this.jwtService.decode(token) as { sub?: string; aud?: 'admin' | 'mobile' };
       if (!decoded?.sub) {
         throw new UnauthorizedException('Invalid token');
       }
-      return decoded.sub;
+      return { userId: decoded.sub, context: decoded.aud ?? 'admin' };
     } catch {
       throw new UnauthorizedException('Invalid token');
     }
