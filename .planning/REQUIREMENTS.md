@@ -9,8 +9,8 @@ Requirements for v2.3 milestone. Each maps to roadmap phases.
 
 ### Bug Fixes
 
-- [ ] **BUG-01**: Clicking "Uzytkownicy" tab in web admin panel no longer causes logout
-- [ ] **BUG-02**: Signature canvas clears properly between each of the 4 signature steps
+- [x] **BUG-01**: Clicking "Uzytkownicy" tab in web admin panel no longer causes logout
+- [x] **BUG-02**: Signature canvas clears properly between each of the 4 signature steps
 
 ### Authentication
 
@@ -66,8 +66,8 @@ None deferred for this milestone.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BUG-01 | Phase 28 | Pending |
-| BUG-02 | Phase 28 | Pending |
+| BUG-01 | Phase 28 | Complete |
+| BUG-02 | Phase 28 | Complete |
 | AUTH-01 | Phase 28 | Pending |
 | AUTH-02 | Phase 28 | Pending |
 | AUTH-03 | Phase 28 | Pending |

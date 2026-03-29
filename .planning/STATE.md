@@ -9,9 +9,9 @@ last_activity: 2026-03-29 -- Roadmap created for v2.3 (phases 28-32)
 progress:
   total_phases: 5
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  total_plans: 2
+  completed_plans: 1
+  percent: 10
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-29)
 ## Current Position
 
 Phase: 28 of 32 (Bug Fixes & Auth Foundation)
-Plan: 0 of ? in current phase
-Status: Ready to plan
-Last activity: 2026-03-29 -- Roadmap created for v2.3 milestone (5 phases, 24 requirements)
+Plan: 1 of 2 in current phase
+Status: Executing
+Last activity: 2026-03-29 -- Completed 28-01 (middleware refresh_token check + signature canvas fix)
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█░░░░░░░░░] 10%
 
 ## Performance Metrics
 
@@ -42,7 +42,7 @@ Progress: [░░░░░░░░░░] 0%
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 28 | 0/? | - | - |
+| 28 | 1/2 | 1min | 1min |
 | 29 | 0/? | - | - |
 | 30 | 0/? | - | - |
 | 31 | 0/? | - | - |
@@ -64,6 +64,8 @@ Progress: [░░░░░░░░░░] 0%
 - [v2.3]: Admin and mobile auth contexts kept separate (different JWT secrets from v2.1)
 - [v2.3]: No email required for worker accounts -- admin sets temporary password directly
 - [v2.3]: Phases 30, 31, 32 are independent and can execute in parallel after Phase 28
+- [28-01]: Middleware checks refresh_token alongside access_token to prevent premature logout during client-side token refresh
+- [28-01]: Split signature useEffect into two: orientation lock (mount-only) and canvas clear (step-dependent)
 
 ### Pending Todos
 
@@ -76,5 +78,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-03-29
-Stopped at: Roadmap created for v2.3 milestone, ready to plan Phase 28
+Stopped at: Completed 28-01-PLAN.md (middleware + signature fixes)
 Resume file: None
