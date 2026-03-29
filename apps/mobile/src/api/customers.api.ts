@@ -11,7 +11,7 @@ import apiClient from './client';
  * - Starts with +48 / digit-heavy string with optional separators → phone
  * - Otherwise → lastName
  */
-function detectSearchParam(
+export function detectSearchParam(
   query: string,
 ): { lastName?: string; phone?: string; pesel?: string } {
   const trimmed = query.trim();

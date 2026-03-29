@@ -33,10 +33,10 @@ describe('Customers (e2e)', () => {
   const employeePassword = 'CustEmployee1!';
   const deviceId = '00000000-0000-4000-a000-000000000003';
 
-  async function loginAs(email: string, password: string): Promise<string> {
+  async function loginAs(login: string, password: string): Promise<string> {
     const res = await request(app.getHttpServer())
       .post('/auth/login')
-      .send({ email, password, deviceId });
+      .send({ login, password, deviceId });
     return res.body.accessToken;
   }
 
