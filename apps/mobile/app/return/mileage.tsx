@@ -74,7 +74,7 @@ export default function ReturnMileageScreen() {
     }
     setError('');
     updateDraft({ returnMileage, step: 2 });
-    router.push('/return/checklist');
+    router.push('/return/damage-map');
   };
 
   return (

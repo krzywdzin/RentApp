@@ -47,6 +47,12 @@ export default function ReturnLayout() {
           }}
         />
         <Stack.Screen
+          name="damage-map"
+          listeners={{
+            beforeRemove: handleBeforeRemove,
+          }}
+        />
+        <Stack.Screen
           name="checklist"
           listeners={{
             beforeRemove: handleBeforeRemove,
