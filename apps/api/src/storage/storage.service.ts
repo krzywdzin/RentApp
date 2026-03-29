@@ -15,7 +15,7 @@ import * as path from 'path';
 @Injectable()
 export class StorageService implements OnModuleInit {
   private readonly logger = new Logger(StorageService.name);
-  private client: S3Client;
+  private client: S3Client | undefined;
   private bucket: string;
   private s3Available = false;
   private localStoragePath: string;
@@ -27,21 +27,32 @@ export class StorageService implements OnModuleInit {
   constructor(private config: ConfigService) {
     this.bucket = this.config.get<string>('S3_BUCKET', 'rentapp');
     this.localStoragePath = path.join(process.cwd(), '.local-storage');
-    this.client = new S3Client({
-      endpoint: this.config.get<string>(
-        'S3_ENDPOINT',
-        'http://localhost:9000',
-      ),
-      region: this.config.get<string>('S3_REGION', 'us-east-1'),
-      credentials: {
-        accessKeyId: this.config.get<string>('S3_ACCESS_KEY')!,
-        secretAccessKey: this.config.get<string>('S3_SECRET_KEY')!,
-      },
-      forcePathStyle: true,
-    });
+
+    const accessKey = this.config.get<string>('S3_ACCESS_KEY');
+    const secretKey = this.config.get<string>('S3_SECRET_KEY');
+    const endpoint = this.config.get<string>('S3_ENDPOINT');
+
+    // Only create S3 client if credentials are configured
+    if (accessKey && secretKey && endpoint) {
+      this.client = new S3Client({
+        endpoint,
+        region: this.config.get<string>('S3_REGION', 'us-east-1'),
+        credentials: {
+          accessKeyId: accessKey,
+          secretAccessKey: secretKey,
+        },
+        forcePathStyle: true,
+      });
+    }
   }
 
   async onModuleInit() {
+    if (!this.client) {
+      this.logger.warn('S3 credentials not configured — using local filesystem storage');
+      await fs.mkdir(this.localStoragePath, { recursive: true });
+      return;
+    }
+
     try {
       await this.client.send(
         new HeadBucketCommand({ Bucket: this.bucket }),
@@ -51,11 +62,16 @@ export class StorageService implements OnModuleInit {
     } catch (error: unknown) {
       const s3Error = error as { name?: string; $metadata?: { httpStatusCode?: number } };
       if (s3Error?.name === 'NotFound' || s3Error?.$metadata?.httpStatusCode === 404) {
-        await this.client.send(
-          new CreateBucketCommand({ Bucket: this.bucket }),
-        );
-        this.logger.log(`Bucket "${this.bucket}" created`);
-        this.s3Available = true;
+        try {
+          await this.client.send(
+            new CreateBucketCommand({ Bucket: this.bucket }),
+          );
+          this.logger.log(`Bucket "${this.bucket}" created`);
+          this.s3Available = true;
+        } catch {
+          this.logger.warn('Failed to create S3 bucket — falling back to local filesystem storage');
+          await fs.mkdir(this.localStoragePath, { recursive: true });
+        }
       } else {
         this.logger.warn(`S3/MinIO unavailable — falling back to local filesystem storage`);
         await fs.mkdir(this.localStoragePath, { recursive: true });
