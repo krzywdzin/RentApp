@@ -13,7 +13,7 @@ import {
   useReactTable,
   flexRender,
 } from '@tanstack/react-table';
-import { Plus, Download } from 'lucide-react';
+import { Plus, Download, Upload } from 'lucide-react';
 import type { VehicleDto, VehicleStatus } from '@rentapp/shared';
 import { Button } from '@/components/ui/button';
 import {
@@ -47,6 +47,7 @@ import {
 } from '@/hooks/queries/use-vehicles';
 import { getVehicleColumns } from './columns';
 import { VehicleFilterBar } from './filter-bar';
+import { ImportDialog } from './import-dialog';
 import { exportToCsv } from '@/lib/csv-export';
 
 export function VehiclesPage() {
@@ -61,6 +62,7 @@ export function VehiclesPage() {
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 });
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
+  const [importOpen, setImportOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<VehicleDto | null>(null);
   const [bulkStatusDialog, setBulkStatusDialog] = useState<{
     open: boolean;
@@ -163,12 +165,18 @@ export function VehiclesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Pojazdy</h1>
-        <Button asChild>
-          <Link href="/pojazdy/nowy">
-            <Plus className="h-4 w-4" />
-            Dodaj pojazd
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => setImportOpen(true)}>
+            <Upload className="h-4 w-4" />
+            Importuj
+          </Button>
+          <Button asChild>
+            <Link href="/pojazdy/nowy">
+              <Plus className="h-4 w-4" />
+              Dodaj pojazd
+            </Link>
+          </Button>
+        </div>
       </div>
 
       {isError && !isLoading && (
@@ -302,6 +310,9 @@ export function VehiclesPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Import dialog */}
+      <ImportDialog open={importOpen} onOpenChange={setImportOpen} />
 
       {/* Bulk status change confirmation */}
       <Dialog
