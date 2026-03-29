@@ -1,5 +1,14 @@
 # Milestones: RentApp
 
+## v2.3 User Management, Login Overhaul & Feature Additions (Shipped: 2026-03-29)
+
+**Phases completed:** 5 phases, 9 plans, 0 tasks
+
+**Key accomplishments:**
+- (none recorded)
+
+---
+
 ## In Progress
 
 ### v2.3 -- User Management, Login Overhaul & Feature Additions (2026-03-29 to ...)

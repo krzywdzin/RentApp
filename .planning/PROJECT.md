@@ -38,27 +38,17 @@ Pracownik w terenie może w pełni obsłużyć wynajem — od wypełnienia umowy
 - ✓ All required assets (icon, splash, adaptive-icon) present — v2.2
 - ✓ Successful `eas build --platform android --profile preview` execution — v2.2
 
+- ✓ Fix "Użytkownicy" tab logout bug (middleware refresh_token check) — v2.3
+- ✓ Signature canvas clearing between steps (split useEffect) — v2.3
+- ✓ Username-based login for web admin and mobile (separate JWT secrets + auth contexts) — v2.3
+- ✓ Worker account creation with immediate mobile login (no email required) — v2.3
+- ✓ Customer search by phone/PESEL/lastName verified end-to-end — v2.3
+- ✓ Vehicle bulk import from Excel/CSV in web admin panel — v2.3
+- ✓ Interactive SVG damage map replacing text checklist in mobile return wizard — v2.3
+
 ### Active
 
-- [ ] Fix "Użytkownicy" tab causing logout in web admin panel
-- [ ] Login overhaul: username/password instead of email (web + mobile, separate auth contexts)
-- [ ] Worker creation with immediate mobile login (fix null passwordHash)
-- [ ] Verify customer search (phone/PESEL/lastName) works end-to-end
-- [ ] Vehicle import from Excel/CSV in web admin panel
-- [ ] Interactive damage map (SVG car diagram replacing checklist)
-- [ ] Verify signature canvas resets between signatures
-
-## Current Milestone: v2.3 User Management, Login Overhaul & Feature Additions
-
-**Goal:** Fix auth bugs, overhaul login to username-based, enable worker management, and add vehicle import + interactive damage map.
-
-**Target features:**
-- Fix /uzytkownicy route logout bug
-- Username/password login (separate admin vs mobile auth)
-- Worker creation with immediate mobile access
-- Vehicle bulk import from Excel/CSV
-- Interactive SVG damage map
-- Verify existing fixes (customer search, signature canvas)
+(No active requirements — planning next milestone)
 
 ### Out of Scope
 
@@ -74,8 +64,7 @@ Pracownik w terenie może w pełni obsłużyć wynajem — od wypełnienia umowy
 - **Tech stack:** Expo/React Native (mobile), Next.js (web), NestJS/Prisma (API), PostgreSQL, Redis, S3-compatible storage
 - **Hosting:** Railway (API+Web), Cloudflare R2 (storage), Neon DB, Upstash Redis
 - **CI/CD:** GitHub Actions with Redis service, mobile typecheck, E2E tests, coverage enforcement
-- **Shipped:** v1.0 MVP, v1.1 Quality & Polish, v2.0 Production Ready, v2.1 Fix All Audit Issues, v2.2 Android APK Build Fix
-- **Current:** v2.3 User Management, Login Overhaul & Feature Additions
+- **Shipped:** v1.0 MVP, v1.1 Quality & Polish, v2.0 Production Ready, v2.1 Fix All Audit Issues, v2.2 Android APK Build Fix, v2.3 User Management & Login Overhaul
 
 ## Constraints
 
@@ -98,6 +87,15 @@ Pracownik w terenie może w pełni obsłużyć wynajem — od wypełnienia umowy
 | Server-side pagination | Skalowanie przy rosnącej liczbie wynajmów/klientów | ✓ Good (v2.1) |
 | Shared types w monorepo | Jedna definicja RentalWithRelations, PaginatedResponse — brak duplikacji | ✓ Good (v2.1) |
 | Disable Sentry upload for non-prod | EAS Build failed without SENTRY_AUTH_TOKEN — disable auto-upload for preview/dev/staging | ✓ Good (v2.2) |
+| Username-based login (not email) | Business requirement — workers don't have email, admin sets credentials | ✓ Good (v2.3) |
+| Separate JWT secrets (admin vs mobile) | Auth context isolation — compromising one doesn't affect the other | ✓ Good (v2.3) |
+| Multi-strategy JwtAuthGuard | Single guard tries both jwt and jwt-mobile strategies — simpler than per-controller guards | ✓ Good (v2.3) |
+| SVG damage map (top view only) | Single view sufficient for v2.3 — multi-view deferred | — Pending (v2.3) |
 
 ---
-*Last updated: 2026-03-29 after v2.3 milestone start*
+## Current State
+
+**Shipped:** v2.3 User Management, Login Overhaul & Feature Additions (2026-03-29)
+All milestones complete. System has username-based login, worker management, vehicle import, and interactive damage mapping.
+
+*Last updated: 2026-03-29 after v2.3 milestone completion*
