@@ -83,7 +83,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 28: Bug Fixes & Auth Foundation** - Fix critical bugs and add username field to auth system (completed 2026-03-29)
 - [x] **Phase 29: Auth Overhaul & User Management** - Username-based login across web/mobile with worker account creation (completed 2026-03-29)
-- [ ] **Phase 30: Customer Search Verification** - Verify customer search works end-to-end across all query types
+- [x] **Phase 30: Customer Search Verification** - Verify customer search works end-to-end across all query types (completed 2026-03-29)
 - [ ] **Phase 31: Vehicle Import** - Bulk vehicle import from Excel/CSV in admin panel
 - [ ] **Phase 32: Interactive Damage Map** - SVG-based car diagram for marking damage locations
 
@@ -127,7 +127,7 @@ Plans:
   1. Worker searches by phone number in mobile app and finds the correct customer
   2. Worker searches by PESEL in mobile app and finds the correct customer
   3. Worker searches by last name in mobile app and finds matching customers
-**Plans:** 1 plan
+**Plans:** 1/1 plans complete
 Plans:
 - [ ] 30-01-PLAN.md -- Verify and fix customer search across phone, PESEL, and lastName
 
@@ -172,6 +172,6 @@ v2.3: 28 -> 29 -> 30 & 31 & 32 (parallel after 28)
 | 27 | v2.2 | 2/2 | Complete | 2026-03-29 |
 | 28. Bug Fixes & Auth Foundation | 2/2 | Complete    | 2026-03-29 | - |
 | 29. Auth Overhaul & User Management | 3/3 | Complete    | 2026-03-29 | - |
-| 30. Customer Search Verification | v2.3 | 0/1 | Not started | - |
+| 30. Customer Search Verification | 1/1 | Complete   | 2026-03-29 | - |
 | 31. Vehicle Import | v2.3 | 0/? | Not started | - |
 | 32. Interactive Damage Map | v2.3 | 0/? | Not started | - |

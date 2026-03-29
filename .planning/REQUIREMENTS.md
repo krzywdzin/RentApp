@@ -30,9 +30,9 @@ Requirements for v2.3 milestone. Each maps to roadmap phases.
 
 ### Customer Search
 
-- [ ] **SRCH-01**: Customer search by phone number works end-to-end (mobile + API)
-- [ ] **SRCH-02**: Customer search by PESEL works end-to-end (mobile + API)
-- [ ] **SRCH-03**: Customer search by last name works end-to-end (mobile + API)
+- [x] **SRCH-01**: Customer search by phone number works end-to-end (mobile + API)
+- [x] **SRCH-02**: Customer search by PESEL works end-to-end (mobile + API)
+- [x] **SRCH-03**: Customer search by last name works end-to-end (mobile + API)
 
 ### Vehicle Import
 
@@ -78,9 +78,9 @@ None deferred for this milestone.
 | USER-02 | Phase 29 | Complete |
 | USER-03 | Phase 29 | Complete |
 | USER-04 | Phase 29 | Complete |
-| SRCH-01 | Phase 30 | Pending |
-| SRCH-02 | Phase 30 | Pending |
-| SRCH-03 | Phase 30 | Pending |
+| SRCH-01 | Phase 30 | Complete |
+| SRCH-02 | Phase 30 | Complete |
+| SRCH-03 | Phase 30 | Complete |
 | VIMP-01 | Phase 31 | Pending |
 | VIMP-02 | Phase 31 | Pending |
 | VIMP-03 | Phase 31 | Pending |
