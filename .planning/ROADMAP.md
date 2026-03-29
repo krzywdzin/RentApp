@@ -87,10 +87,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. app.config.ts contains the correct Android package name (pl.kitek.rental) and all required Android configuration fields
   4. eas.json preview profile is configured to produce an APK file (not an AAB bundle)
   5. All required Expo assets -- icon.png, splash.png, and adaptive-icon.png -- exist in the project at their correct dimensions
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 27-01: TBD
+- [ ] 27-01-PLAN.md -- Fix build dependencies, Metro config, and git tracking
+- [ ] 27-02-PLAN.md -- Trigger EAS Build and verify APK on device
 
 ## Progress
 
@@ -99,7 +100,7 @@ v1.0: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 9.1
 v1.1: 10 -> 11 -> 12 -> 13 -> 14
 v2.0: 15 -> 16 & 17 (parallel) -> 18 -> 19
 v2.1: 20 -> 21 -> 22 & 23 & 24 (parallel after 21) -> 25 (after 20) -> 26 (after all)
-v2.2: 27
+v2.2: 27 (01 -> 02)
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -107,4 +108,4 @@ v2.2: 27
 | 10-14 | v1.1 | 14/14 | Complete | 2026-03-25 |
 | 15-19 | v2.0 | 7/7 | Complete | 2026-03-27 |
 | 20-26 | v2.1 | 26/26 | Complete | 2026-03-28 |
-| 27. Android APK Build Fix | v2.2 | 0/? | Not started | - |
+| 27. Android APK Build Fix | v2.2 | 0/2 | Not started | - |
