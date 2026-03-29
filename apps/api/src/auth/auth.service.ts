@@ -27,44 +27,51 @@ export class AuthService {
     );
   }
 
-  async validateUser(email: string, password: string) {
-    const lockout = await this.redis.get(`lockout:${email}`);
+  async validateUser(login: string, password: string) {
+    const lockout = await this.redis.get(`lockout:${login}`);
     if (lockout) {
-      this.logger.warn(`Login rejected: account locked for ${email}`);
+      this.logger.warn(`Login rejected: account locked for ${login}`);
       throw new UnauthorizedException(
         'Account locked. Try again in 15 minutes.',
       );
     }
 
-    const user = await this.prisma.user.findUnique({ where: { email } });
+    const user = await this.prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: login },
+          { username: login },
+        ],
+      },
+    });
     if (!user || !user.passwordHash) {
-      await this.trackFailedAttempt(email);
+      await this.trackFailedAttempt(login);
       throw new UnauthorizedException('Invalid credentials');
     }
 
     const valid = await argon2.verify(user.passwordHash, password);
     if (!valid) {
-      await this.trackFailedAttempt(email);
+      await this.trackFailedAttempt(login);
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    await this.redis.del(`attempts:${email}`);
-    this.logger.log(`Login successful for ${email}`);
+    await this.redis.del(`attempts:${login}`);
+    this.logger.log(`Login successful for ${login}`);
 
     const { passwordHash, setupToken, setupTokenExpiry, ...result } = user;
     return result;
   }
 
-  private async trackFailedAttempt(email: string): Promise<void> {
-    const count = await this.redis.incr(`attempts:${email}`);
-    await this.redis.expire(`attempts:${email}`, LOCKOUT_TTL);
-    this.logger.warn(`Failed login attempt for ${email} (attempt ${count})`);
+  private async trackFailedAttempt(identifier: string): Promise<void> {
+    const count = await this.redis.incr(`attempts:${identifier}`);
+    await this.redis.expire(`attempts:${identifier}`, LOCKOUT_TTL);
+    this.logger.warn(`Failed login attempt for ${identifier} (attempt ${count})`);
 
     if (count >= MAX_FAILED_ATTEMPTS) {
-      await this.redis.setex(`lockout:${email}`, LOCKOUT_TTL, '1');
-      await this.redis.del(`attempts:${email}`);
+      await this.redis.setex(`lockout:${identifier}`, LOCKOUT_TTL, '1');
+      await this.redis.del(`attempts:${identifier}`);
       this.logger.warn(
-        `Account locked: ${email} after ${MAX_FAILED_ATTEMPTS} failed attempts`,
+        `Account locked: ${identifier} after ${MAX_FAILED_ATTEMPTS} failed attempts`,
       );
     }
   }

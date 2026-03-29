@@ -54,6 +54,7 @@ export class UsersService {
   private readonly userSelectFields = {
     id: true,
     email: true,
+    username: true,
     name: true,
     role: true,
     isActive: true,
