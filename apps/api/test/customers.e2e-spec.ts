@@ -356,6 +356,38 @@ describe('Customers (e2e)', () => {
     expect(res.body[0].phone).toBe('+48123456789');
   });
 
+  it('GET /customers/search?phone=123456789 finds customer by partial phone (without +48 prefix)', async () => {
+    await request(app.getHttpServer())
+      .post('/customers')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send(validCustomerDto)
+      .expect(201);
+
+    const res = await request(app.getHttpServer())
+      .get('/customers/search?phone=123456789')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(200);
+
+    expect(res.body.length).toBe(1);
+    expect(res.body[0].phone).toBe('+48123456789');
+  });
+
+  it('GET /customers/search?phone=48123456789 finds customer by phone without + prefix', async () => {
+    await request(app.getHttpServer())
+      .post('/customers')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send(validCustomerDto)
+      .expect(201);
+
+    const res = await request(app.getHttpServer())
+      .get('/customers/search?phone=48123456789')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .expect(200);
+
+    expect(res.body.length).toBe(1);
+    expect(res.body[0].phone).toBe('+48123456789');
+  });
+
   it('GET /customers/search with no params returns 400', async () => {
     await request(app.getHttpServer())
       .get('/customers/search')

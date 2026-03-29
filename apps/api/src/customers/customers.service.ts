@@ -194,7 +194,8 @@ export class CustomersService {
       where.lastName = { contains: dto.lastName, mode: 'insensitive' };
     }
     if (dto.phone) {
-      where.phone = dto.phone;
+      const normalized = dto.phone.replace(/[\s\-()]/g, '');
+      where.phone = { contains: normalized };
     }
 
     const customers = await this.prisma.customer.findMany({
