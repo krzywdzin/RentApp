@@ -36,8 +36,9 @@ import {
 import { getUserColumns } from './columns';
 
 const createUserSchema = z.object({
-  email: z.string().email('Nieprawidlowy adres email'),
+  username: z.string().min(3, 'Nazwa uzytkownika musi miec co najmniej 3 znaki'),
   name: z.string().min(2, 'Imie musi miec co najmniej 2 znaki'),
+  password: z.string().min(8, 'Haslo musi miec co najmniej 8 znakow'),
   role: z.enum(['ADMIN', 'EMPLOYEE'], { required_error: 'Wybierz role' }),
 });
 
@@ -45,8 +46,9 @@ type CreateUserForm = z.infer<typeof createUserSchema>;
 
 export default function UzytkownicyPage() {
   // Create user form state
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [name, setName] = useState('');
+  const [password, setPassword] = useState('');
   const [role, setRole] = useState<string>('');
   const [errors, setErrors] = useState<Partial<Record<keyof CreateUserForm, string>>>({});
   const [formOpen, setFormOpen] = useState(false);
@@ -110,7 +112,7 @@ export default function UzytkownicyPage() {
     e.preventDefault();
     setErrors({});
 
-    const result = createUserSchema.safeParse({ email, name, role: role || undefined });
+    const result = createUserSchema.safeParse({ username, name, password, role: role || undefined });
     if (!result.success) {
       const fieldErrors: Partial<Record<keyof CreateUserForm, string>> = {};
       for (const issue of result.error.issues) {
@@ -125,8 +127,9 @@ export default function UzytkownicyPage() {
 
     createUser.mutate(result.data, {
       onSuccess: () => {
-        setEmail('');
+        setUsername('');
         setName('');
+        setPassword('');
         setRole('');
       },
     });
@@ -171,8 +174,8 @@ export default function UzytkownicyPage() {
             <div>
               <CardTitle>Nowy uzytkownik</CardTitle>
               <CardDescription>
-                Utworz konto pracownika. Nowy uzytkownik otrzyma email z linkiem do ustawienia
-                hasla.
+                Utworz konto pracownika. Pracownik bedzie mogl od razu zalogowac sie w aplikacji
+                mobilnej.
               </CardDescription>
             </div>
             {formOpen ? (
@@ -186,15 +189,17 @@ export default function UzytkownicyPage() {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="username">Nazwa uzytkownika</Label>
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="jan@firma.pl"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  id="username"
+                  type="text"
+                  placeholder="jkowalski"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                 />
-                {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
+                {errors.username && (
+                  <p className="text-sm text-destructive">{errors.username}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -206,6 +211,20 @@ export default function UzytkownicyPage() {
                   onChange={(e) => setName(e.target.value)}
                 />
                 {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="password">Haslo tymczasowe</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Min. 8 znakow"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                {errors.password && (
+                  <p className="text-sm text-destructive">{errors.password}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -247,7 +266,7 @@ export default function UzytkownicyPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Edytuj uzytkownika</DialogTitle>
-            <DialogDescription>Zmien dane uzytkownika {editUser?.email}</DialogDescription>
+            <DialogDescription>Zmien dane uzytkownika {editUser?.username ?? editUser?.email ?? editUser?.name}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">

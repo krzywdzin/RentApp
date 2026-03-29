@@ -4,7 +4,8 @@ import { toast } from 'sonner';
 
 export interface UserDto {
   id: string;
-  email: string;
+  email: string | null;
+  username?: string;
   name: string;
   role: string;
   isActive: boolean;
@@ -68,14 +69,14 @@ export function useDeactivateUser() {
 export function useCreateUser() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: { name: string; email: string; role: string }) =>
+    mutationFn: (data: { name: string; username: string; password: string; role: string; email?: string }) =>
       apiClient<UserDto>('/users', {
         method: 'POST',
         body: JSON.stringify(data),
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.all });
-      toast.success('Uzytkownik utworzony. Email z linkiem do ustawienia hasla zostal wyslany.');
+      toast.success('Uzytkownik utworzony. Pracownik moze sie zalogowac podanymi danymi.');
     },
     onError: () => {
       toast.error('Nie udalo sie utworzyc uzytkownika');
