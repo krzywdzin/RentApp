@@ -1,7 +1,7 @@
 # Requirements: RentApp
 
 **Defined:** 2026-03-29
-**Core Value:** Pracownik w terenie może w pełni obsłużyć wynajem — od wypełnienia umowy, przez zweryfikowanie uprawnień kierowcy, zrobienie zdjęć auta, po podpis klienta i wysyłkę PDF — bez papieru i bez powrotu do biura.
+**Core Value:** Pracownik w terenie moze w pelni obsluzyc wynajem -- od wypelnienia umowy, przez zweryfikowanie uprawnien kierowcy, zrobienie zdjec auta, po podpis klienta i wysylke PDF -- bez papieru i bez powrotu do biura.
 
 ## v2.3 Requirements
 
@@ -9,7 +9,7 @@ Requirements for v2.3 milestone. Each maps to roadmap phases.
 
 ### Bug Fixes
 
-- [ ] **BUG-01**: Clicking "Użytkownicy" tab in web admin panel no longer causes logout
+- [ ] **BUG-01**: Clicking "Uzytkownicy" tab in web admin panel no longer causes logout
 - [ ] **BUG-02**: Signature canvas clears properly between each of the 4 signature steps
 
 ### Authentication
@@ -38,7 +38,7 @@ Requirements for v2.3 milestone. Each maps to roadmap phases.
 
 - [ ] **VIMP-01**: Web admin panel has upload interface for .xlsx and .csv vehicle files
 - [ ] **VIMP-02**: Import parses uploaded file and creates vehicle records
-- [ ] **VIMP-03**: Required fields are make, model, year, plate — all others optional
+- [ ] **VIMP-03**: Required fields are make, model, year, plate -- all others optional
 - [ ] **VIMP-04**: Missing optional fields are left empty (no validation errors)
 - [ ] **VIMP-05**: Import shows summary: X added, X skipped, X errors
 
@@ -57,45 +57,45 @@ None deferred for this milestone.
 
 | Feature | Reason |
 |---------|--------|
-| Password reset flow for workers | Not needed — admin sets temporary password, worker uses it directly |
+| Password reset flow for workers | Not needed -- admin sets temporary password, worker uses it directly |
 | Email-based worker notifications | Workers use mobile app, no email required |
-| Vehicle import validation beyond required fields | Keep import simple — missing optional fields are OK |
+| Vehicle import validation beyond required fields | Keep import simple -- missing optional fields are OK |
 | Multi-vehicle damage map (per-vehicle SVG customization) | Single generic car outline sufficient for v2.3 |
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BUG-01 | TBD | Pending |
-| BUG-02 | TBD | Pending |
-| AUTH-01 | TBD | Pending |
-| AUTH-02 | TBD | Pending |
-| AUTH-03 | TBD | Pending |
-| AUTH-04 | TBD | Pending |
-| AUTH-05 | TBD | Pending |
-| AUTH-06 | TBD | Pending |
-| USER-01 | TBD | Pending |
-| USER-02 | TBD | Pending |
-| USER-03 | TBD | Pending |
-| USER-04 | TBD | Pending |
-| SRCH-01 | TBD | Pending |
-| SRCH-02 | TBD | Pending |
-| SRCH-03 | TBD | Pending |
-| VIMP-01 | TBD | Pending |
-| VIMP-02 | TBD | Pending |
-| VIMP-03 | TBD | Pending |
-| VIMP-04 | TBD | Pending |
-| VIMP-05 | TBD | Pending |
-| DMAP-01 | TBD | Pending |
-| DMAP-02 | TBD | Pending |
-| DMAP-03 | TBD | Pending |
-| DMAP-04 | TBD | Pending |
+| BUG-01 | Phase 28 | Pending |
+| BUG-02 | Phase 28 | Pending |
+| AUTH-01 | Phase 28 | Pending |
+| AUTH-02 | Phase 28 | Pending |
+| AUTH-03 | Phase 28 | Pending |
+| AUTH-04 | Phase 29 | Pending |
+| AUTH-05 | Phase 29 | Pending |
+| AUTH-06 | Phase 29 | Pending |
+| USER-01 | Phase 29 | Pending |
+| USER-02 | Phase 29 | Pending |
+| USER-03 | Phase 29 | Pending |
+| USER-04 | Phase 29 | Pending |
+| SRCH-01 | Phase 30 | Pending |
+| SRCH-02 | Phase 30 | Pending |
+| SRCH-03 | Phase 30 | Pending |
+| VIMP-01 | Phase 31 | Pending |
+| VIMP-02 | Phase 31 | Pending |
+| VIMP-03 | Phase 31 | Pending |
+| VIMP-04 | Phase 31 | Pending |
+| VIMP-05 | Phase 31 | Pending |
+| DMAP-01 | Phase 32 | Pending |
+| DMAP-02 | Phase 32 | Pending |
+| DMAP-03 | Phase 32 | Pending |
+| DMAP-04 | Phase 32 | Pending |
 
 **Coverage:**
 - v2.3 requirements: 24 total
-- Mapped to phases: 0
-- Unmapped: 24 ⚠️
+- Mapped to phases: 24
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-29*
-*Last updated: 2026-03-29 after initial definition*
+*Last updated: 2026-03-29 after roadmap creation*

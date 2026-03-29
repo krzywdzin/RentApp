@@ -2,12 +2,12 @@
 gsd_state_version: 1.0
 milestone: v2.3
 milestone_name: User Management, Login Overhaul & Feature Additions
-status: defining_requirements
+status: ready_to_plan
 stopped_at: null
-last_updated: "2026-03-29T16:45:00.000Z"
-last_activity: 2026-03-29 -- Milestone v2.3 started
+last_updated: "2026-03-29T17:00:00.000Z"
+last_activity: 2026-03-29 -- Roadmap created for v2.3 (phases 28-32)
 progress:
-  total_phases: 0
+  total_phases: 5
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-29)
 
 **Core value:** Pracownik w terenie moze w pelni obsluzyc wynajem -- od wypelnienia umowy, przez zweryfikowanie uprawnien kierowcy, zrobienie zdjec auta, po podpis klienta i wysylke PDF -- bez papieru i bez powrotu do biura.
-**Current focus:** Milestone v2.3 -- User Management, Login Overhaul & Feature Additions
+**Current focus:** Phase 28 - Bug Fixes & Auth Foundation
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-03-29 — Milestone v2.3 started
+Phase: 28 of 32 (Bug Fixes & Auth Foundation)
+Plan: 0 of ? in current phase
+Status: Ready to plan
+Last activity: 2026-03-29 -- Roadmap created for v2.3 milestone (5 phases, 24 requirements)
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -37,6 +37,16 @@ Progress: [░░░░░░░░░░] 0%
 **Velocity:**
 - Total plans completed: 86 (37 v1.0 + 14 v1.1 + 7 v2.0 + 26 v2.1 + 2 v2.2)
 - Phases completed: 27 + 1 inserted (9.1)
+
+**By Phase (v2.3):**
+
+| Phase | Plans | Total | Avg/Plan |
+|-------|-------|-------|----------|
+| 28 | 0/? | - | - |
+| 29 | 0/? | - | - |
+| 30 | 0/? | - | - |
+| 31 | 0/? | - | - |
+| 32 | 0/? | - | - |
 
 ## Accumulated Context
 
@@ -50,10 +60,10 @@ Progress: [░░░░░░░░░░] 0%
 
 ### Decisions
 
-- [v2.0]: Deploy to Railway (API), Cloudflare R2 (storage), EAS Build (mobile), Railway (web)
-- [v2.2]: Android APK build fix -- single-phase milestone, all 8 requirements in Phase 27
-- [Phase 27]: Used npx expo install for SDK-compatible dependency versioning; spread metro watchFolders defaults
-- [Phase 27]: Disabled Sentry auto-upload for non-production EAS builds via SENTRY_DISABLE_AUTO_UPLOAD=true
+- [v2.3]: Username-based login replaces email login for both web and mobile
+- [v2.3]: Admin and mobile auth contexts kept separate (different JWT secrets from v2.1)
+- [v2.3]: No email required for worker accounts -- admin sets temporary password directly
+- [v2.3]: Phases 30, 31, 32 are independent and can execute in parallel after Phase 28
 
 ### Pending Todos
 
@@ -65,6 +75,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-29T16:45:00Z
-Stopped at: Starting milestone v2.3
+Last session: 2026-03-29
+Stopped at: Roadmap created for v2.3 milestone, ready to plan Phase 28
 Resume file: None
