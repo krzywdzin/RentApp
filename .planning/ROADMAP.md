@@ -98,7 +98,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Signature canvas clears properly between all 4 signature steps during contract signing
   3. API User model has a username field and existing admin account has username "admin"
   4. API login endpoint accepts username as a valid credential (alongside email for backward compatibility)
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 28-01-PLAN.md -- Fix middleware logout bug and signature canvas clearing
+- [ ] 28-02-PLAN.md -- Add username to User model, update login to accept username or email
 
 ### Phase 29: Auth Overhaul & User Management
 **Goal**: Admin and mobile login use username/password, and admin can create worker accounts that work immediately
@@ -161,7 +164,7 @@ v2.3: 28 -> 29 -> 30 & 31 & 32 (parallel after 28)
 | 15-19 | v2.0 | 7/7 | Complete | 2026-03-27 |
 | 20-26 | v2.1 | 26/26 | Complete | 2026-03-28 |
 | 27 | v2.2 | 2/2 | Complete | 2026-03-29 |
-| 28. Bug Fixes & Auth Foundation | v2.3 | 0/? | Not started | - |
+| 28. Bug Fixes & Auth Foundation | v2.3 | 0/2 | Not started | - |
 | 29. Auth Overhaul & User Management | v2.3 | 0/? | Not started | - |
 | 30. Customer Search Verification | v2.3 | 0/? | Not started | - |
 | 31. Vehicle Import | v2.3 | 0/? | Not started | - |
