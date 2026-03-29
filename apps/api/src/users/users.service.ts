@@ -14,6 +14,30 @@ export class UsersService {
   ) {}
 
   async createUser(dto: CreateUserDto, adminId: string) {
+    // Fast-create path: password provided directly (e.g., worker accounts)
+    if (dto.password) {
+      const passwordHash = await argon2.hash(dto.password, {
+        memoryCost: 32768,
+        timeCost: 3,
+        parallelism: 1,
+      });
+
+      const user = await this.prisma.user.create({
+        data: {
+          email: dto.email,
+          username: dto.username,
+          name: dto.name,
+          role: dto.role,
+          passwordHash,
+          setupToken: null,
+          setupTokenExpiry: null,
+        },
+      });
+
+      return { id: user.id, email: user.email, username: user.username, name: user.name, role: user.role };
+    }
+
+    // Email setup flow: generate setup token and send email
     const rawToken = crypto.randomBytes(32).toString('hex');
     const hashedToken = await argon2.hash(rawToken, {
       memoryCost: 32768,
@@ -26,6 +50,7 @@ export class UsersService {
     const user = await this.prisma.user.create({
       data: {
         email: dto.email,
+        username: dto.username,
         name: dto.name,
         role: dto.role,
         passwordHash: null,
@@ -34,13 +59,15 @@ export class UsersService {
       },
     });
 
-    await this.mailService.sendSetupPasswordEmail(
-      user.email,
-      user.name,
-      rawToken,
-    );
+    if (dto.email) {
+      await this.mailService.sendSetupPasswordEmail(
+        user.email!,
+        user.name,
+        rawToken,
+      );
+    }
 
-    return { id: user.id, email: user.email, name: user.name, role: user.role };
+    return { id: user.id, email: user.email, username: user.username, name: user.name, role: user.role };
   }
 
   async findByEmail(email: string) {
@@ -89,6 +116,9 @@ export class UsersService {
     const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user) {
       throw new NotFoundException('User not found');
+    }
+    if (!user.email) {
+      throw new NotFoundException('User has no email address for password reset');
     }
 
     const rawToken = crypto.randomBytes(32).toString('hex');
@@ -140,7 +170,7 @@ export class UsersService {
     });
 
     await this.mailService.sendResetPasswordEmail(
-      user.email,
+      user.email!,
       user.name,
       rawToken,
     );

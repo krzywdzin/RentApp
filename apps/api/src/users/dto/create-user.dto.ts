@@ -2,8 +2,9 @@ import { IsEmail, IsEnum, IsOptional, IsString, MinLength } from 'class-validato
 import { UserRole } from '@rentapp/shared';
 
 export class CreateUserDto {
+  @IsOptional()
   @IsEmail()
-  email!: string;
+  email?: string;
 
   @IsString()
   @MinLength(3)
@@ -16,4 +17,9 @@ export class CreateUserDto {
 
   @IsEnum(UserRole)
   role!: UserRole;
+
+  @IsOptional()
+  @IsString()
+  @MinLength(8)
+  password?: string;
 }
