@@ -18,7 +18,10 @@ export const customerKeys = {
 export function useCustomers() {
   return useQuery({
     queryKey: customerKeys.list(),
-    queryFn: () => apiClient<CustomerDto[]>('/customers'),
+    queryFn: async () => {
+      const res = await apiClient<{ data: CustomerDto[]; total: number; page: number; limit: number }>('/customers');
+      return res.data;
+    },
   });
 }
 

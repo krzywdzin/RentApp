@@ -19,6 +19,22 @@ async function proxyRequest(request: NextRequest) {
     body: ['GET', 'HEAD'].includes(request.method) ? undefined : await request.text(),
   });
 
+  const contentType = res.headers.get('content-type') ?? '';
+
+  // Pass through binary responses (PDF, images, etc.) without JSON parsing
+  if (!contentType.includes('application/json')) {
+    const body = await res.arrayBuffer();
+    return new NextResponse(body, {
+      status: res.status,
+      headers: {
+        'Content-Type': contentType,
+        ...(res.headers.get('content-disposition')
+          ? { 'Content-Disposition': res.headers.get('content-disposition')! }
+          : {}),
+      },
+    });
+  }
+
   const data = await res.json().catch(() => ({ error: 'Non-JSON response from backend', status: res.status }));
   return NextResponse.json(data, { status: res.status });
 }

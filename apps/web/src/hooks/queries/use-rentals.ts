@@ -31,7 +31,10 @@ export function useRentals(filters?: RentalFilters) {
   const query = params.toString();
   return useQuery({
     queryKey: rentalKeys.list(filters as Record<string, unknown> | undefined),
-    queryFn: () => apiClient<RentalDto[]>(`/rentals${query ? `?${query}` : ''}`),
+    queryFn: async () => {
+      const res = await apiClient<{ data: RentalDto[]; total: number; page: number; limit: number }>(`/rentals${query ? `?${query}` : ''}`);
+      return res.data;
+    },
   });
 }
 

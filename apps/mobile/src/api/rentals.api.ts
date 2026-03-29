@@ -30,10 +30,10 @@ export const rentalsApi = {
   getRentals: async (params?: {
     status?: string;
   }): Promise<RentalWithRelations[]> => {
-    const { data } = await apiClient.get<RentalWithRelations[]>('/rentals', {
+    const { data } = await apiClient.get<{ data: RentalWithRelations[]; total: number; page: number; limit: number }>('/rentals', {
       params,
     });
-    return data;
+    return data.data;
   },
 
   getRental: async (id: string): Promise<RentalWithRelations> => {

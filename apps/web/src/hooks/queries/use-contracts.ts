@@ -12,7 +12,10 @@ export const contractKeys = {
 export function useContracts() {
   return useQuery({
     queryKey: contractKeys.list(),
-    queryFn: () => apiClient<ContractDto[]>('/contracts'),
+    queryFn: async () => {
+      const res = await apiClient<{ data: ContractDto[]; total: number; page: number; limit: number }>('/contracts');
+      return res.data;
+    },
   });
 }
 
