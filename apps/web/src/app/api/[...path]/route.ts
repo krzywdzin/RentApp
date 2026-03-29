@@ -6,17 +6,32 @@ async function proxyRequest(request: NextRequest) {
   const path = request.nextUrl.pathname.replace(/^\/api/, '');
   const token = request.cookies.get('access_token')?.value;
 
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-  };
+  const incomingContentType = request.headers.get('content-type') ?? '';
+  const isMultipart = incomingContentType.startsWith('multipart/form-data');
+
+  const headers: HeadersInit = {};
+  if (isMultipart) {
+    headers['Content-Type'] = incomingContentType; // preserve boundary
+  } else {
+    headers['Content-Type'] = 'application/json';
+  }
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  let body: BodyInit | undefined;
+  if (['GET', 'HEAD'].includes(request.method)) {
+    body = undefined;
+  } else if (isMultipart) {
+    body = await request.arrayBuffer();
+  } else {
+    body = await request.text();
   }
 
   const res = await fetch(`${API_URL}${path}${request.nextUrl.search}`, {
     method: request.method,
     headers,
-    body: ['GET', 'HEAD'].includes(request.method) ? undefined : await request.text(),
+    body,
   });
 
   const contentType = res.headers.get('content-type') ?? '';

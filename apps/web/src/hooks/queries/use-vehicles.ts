@@ -83,6 +83,33 @@ export function useArchiveVehicle() {
   });
 }
 
+export interface ImportResult {
+  imported: number;
+  skipped: number;
+  errors: Array<{ row: number; field: string; message: string }>;
+}
+
+export function useImportVehicles() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (file: File) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      return apiClient<ImportResult>('/vehicles/import', {
+        method: 'POST',
+        body: formData,
+      });
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: vehicleKeys.all });
+      toast.success(`Import zakonczony: ${data.imported} dodanych`);
+    },
+    onError: () => {
+      toast.error('Wystapil blad podczas importu pojazdow');
+    },
+  });
+}
+
 export function useBulkUpdateVehicles() {
   const queryClient = useQueryClient();
   return useMutation({
