@@ -127,7 +127,9 @@ Plans:
   1. Worker searches by phone number in mobile app and finds the correct customer
   2. Worker searches by PESEL in mobile app and finds the correct customer
   3. Worker searches by last name in mobile app and finds matching customers
-**Plans**: TBD
+**Plans:** 1 plan
+Plans:
+- [ ] 30-01-PLAN.md -- Verify and fix customer search across phone, PESEL, and lastName
 
 ### Phase 31: Vehicle Import
 **Goal**: Admin can bulk-import vehicles from spreadsheet files instead of adding them one by one
@@ -170,6 +172,6 @@ v2.3: 28 -> 29 -> 30 & 31 & 32 (parallel after 28)
 | 27 | v2.2 | 2/2 | Complete | 2026-03-29 |
 | 28. Bug Fixes & Auth Foundation | 2/2 | Complete    | 2026-03-29 | - |
 | 29. Auth Overhaul & User Management | 3/3 | Complete    | 2026-03-29 | - |
-| 30. Customer Search Verification | v2.3 | 0/? | Not started | - |
+| 30. Customer Search Verification | v2.3 | 0/1 | Not started | - |
 | 31. Vehicle Import | v2.3 | 0/? | Not started | - |
 | 32. Interactive Damage Map | v2.3 | 0/? | Not started | - |
