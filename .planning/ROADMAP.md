@@ -140,7 +140,9 @@ Plans:
   2. Uploading a valid file creates vehicle records with make, model, year, and plate populated
   3. Vehicles with missing optional fields (e.g., VIN, color) import without errors
   4. After import completes, admin sees a summary showing how many vehicles were added, skipped, or had errors
-**Plans**: TBD
+**Plans:** 1 plan
+Plans:
+- [ ] 31-01-PLAN.md -- Fix BFF proxy for multipart uploads and build import UI dialog
 
 ### Phase 32: Interactive Damage Map
 **Goal**: Workers mark vehicle damage on a visual car diagram instead of selecting from a text checklist
@@ -173,5 +175,5 @@ v2.3: 28 -> 29 -> 30 & 31 & 32 (parallel after 28)
 | 28. Bug Fixes & Auth Foundation | 2/2 | Complete    | 2026-03-29 | - |
 | 29. Auth Overhaul & User Management | 3/3 | Complete    | 2026-03-29 | - |
 | 30. Customer Search Verification | 1/1 | Complete    | 2026-03-29 | - |
-| 31. Vehicle Import | v2.3 | 0/? | Not started | - |
+| 31. Vehicle Import | v2.3 | 0/1 | Not started | - |
 | 32. Interactive Damage Map | v2.3 | 0/? | Not started | - |
