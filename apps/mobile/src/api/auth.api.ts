@@ -3,14 +3,15 @@ import apiClient from './client';
 
 export const authApi = {
   login: async (
-    email: string,
+    login: string,
     password: string,
     deviceId: string,
   ): Promise<TokenPairDto> => {
     const { data } = await apiClient.post<TokenPairDto>('/auth/login', {
-      email,
+      login,
       password,
       deviceId,
+      context: 'mobile',
     });
     return data;
   },

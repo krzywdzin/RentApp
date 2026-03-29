@@ -20,14 +20,14 @@ export function useLogin() {
 
   return useMutation({
     mutationFn: async ({
-      email,
+      username,
       password,
     }: {
-      email: string;
+      username: string;
       password: string;
     }) => {
       const deviceId = await getOrCreateDeviceId();
-      const tokens = await authApi.login(email, password, deviceId);
+      const tokens = await authApi.login(username, password, deviceId);
 
       // Store tokens in SecureStore
       await SecureStore.setItemAsync(
