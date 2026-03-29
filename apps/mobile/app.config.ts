@@ -42,7 +42,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   extra: {
     apiUrl: process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000',
     eas: {
-      projectId: 'kitek-rental',
+      projectId: '45d87130-6df0-42eb-b0a9-8d2a30b81341',
     },
   },
 });

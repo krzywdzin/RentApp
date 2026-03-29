@@ -16,13 +16,13 @@
       },
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://staging-api.kitek.pl"
+        "EXPO_PUBLIC_API_URL": "https://api-production-977b.up.railway.app"
       }
     },
     "staging": {
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://staging-api.kitek.pl"
+        "EXPO_PUBLIC_API_URL": "https://api-production-977b.up.railway.app"
       }
     },
     "production": {
@@ -31,7 +31,7 @@
       },
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://api.kitek.pl"
+        "EXPO_PUBLIC_API_URL": "https://api-production-977b.up.railway.app"
       }
     }
   },
