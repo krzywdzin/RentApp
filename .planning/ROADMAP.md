@@ -82,7 +82,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 ### v2.3 User Management, Login Overhaul & Feature Additions (In Progress)
 
 - [x] **Phase 28: Bug Fixes & Auth Foundation** - Fix critical bugs and add username field to auth system (completed 2026-03-29)
-- [ ] **Phase 29: Auth Overhaul & User Management** - Username-based login across web/mobile with worker account creation
+- [x] **Phase 29: Auth Overhaul & User Management** - Username-based login across web/mobile with worker account creation (completed 2026-03-29)
 - [ ] **Phase 30: Customer Search Verification** - Verify customer search works end-to-end across all query types
 - [ ] **Phase 31: Vehicle Import** - Bulk vehicle import from Excel/CSV in admin panel
 - [ ] **Phase 32: Interactive Damage Map** - SVG-based car diagram for marking damage locations
@@ -113,7 +113,7 @@ Plans:
   3. Admin creates a new worker account in web panel with username and temporary password (no email required)
   4. Newly created worker can immediately open mobile app and log in with the credentials admin just set
   5. Admin panel and mobile app use separate auth contexts (compromising one does not affect the other)
-**Plans:** 1/3 plans executed
+**Plans:** 3/3 plans complete
 Plans:
 - [ ] 29-01-PLAN.md -- API auth context separation (JWT_MOBILE_SECRET, MobileJwtStrategy, worker creation with password)
 - [ ] 29-02-PLAN.md -- Web admin login overhaul and worker creation form with username/password
@@ -169,7 +169,7 @@ v2.3: 28 -> 29 -> 30 & 31 & 32 (parallel after 28)
 | 20-26 | v2.1 | 26/26 | Complete | 2026-03-28 |
 | 27 | v2.2 | 2/2 | Complete | 2026-03-29 |
 | 28. Bug Fixes & Auth Foundation | 2/2 | Complete    | 2026-03-29 | - |
-| 29. Auth Overhaul & User Management | 1/3 | In Progress|  | - |
+| 29. Auth Overhaul & User Management | 3/3 | Complete   | 2026-03-29 | - |
 | 30. Customer Search Verification | v2.3 | 0/? | Not started | - |
 | 31. Vehicle Import | v2.3 | 0/? | Not started | - |
 | 32. Interactive Damage Map | v2.3 | 0/? | Not started | - |

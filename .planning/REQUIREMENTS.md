@@ -18,7 +18,7 @@ Requirements for v2.3 milestone. Each maps to roadmap phases.
 - [x] **AUTH-02**: API auth accepts username OR email for login
 - [x] **AUTH-03**: Existing admin@kitek.pl account gets username "admin" via data migration
 - [ ] **AUTH-04**: Web admin panel login uses username + password (not email)
-- [ ] **AUTH-05**: Mobile app login uses username + password (not email)
+- [x] **AUTH-05**: Mobile app login uses username + password (not email)
 - [x] **AUTH-06**: Admin panel credentials are separate from mobile app credentials (different auth context)
 
 ### User Management
@@ -72,7 +72,7 @@ None deferred for this milestone.
 | AUTH-02 | Phase 28 | Complete |
 | AUTH-03 | Phase 28 | Complete |
 | AUTH-04 | Phase 29 | Pending |
-| AUTH-05 | Phase 29 | Pending |
+| AUTH-05 | Phase 29 | Complete |
 | AUTH-06 | Phase 29 | Complete |
 | USER-01 | Phase 29 | Pending |
 | USER-02 | Phase 29 | Complete |
