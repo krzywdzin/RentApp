@@ -113,7 +113,11 @@ Plans:
   3. Admin creates a new worker account in web panel with username and temporary password (no email required)
   4. Newly created worker can immediately open mobile app and log in with the credentials admin just set
   5. Admin panel and mobile app use separate auth contexts (compromising one does not affect the other)
-**Plans**: TBD
+**Plans:** 3 plans
+Plans:
+- [ ] 29-01-PLAN.md -- API auth context separation (JWT_MOBILE_SECRET, MobileJwtStrategy, worker creation with password)
+- [ ] 29-02-PLAN.md -- Web admin login overhaul and worker creation form with username/password
+- [ ] 29-03-PLAN.md -- Mobile app login overhaul from email to username
 
 ### Phase 30: Customer Search Verification
 **Goal**: Customer search works reliably across all three query types in mobile app
@@ -165,7 +169,7 @@ v2.3: 28 -> 29 -> 30 & 31 & 32 (parallel after 28)
 | 20-26 | v2.1 | 26/26 | Complete | 2026-03-28 |
 | 27 | v2.2 | 2/2 | Complete | 2026-03-29 |
 | 28. Bug Fixes & Auth Foundation | 2/2 | Complete    | 2026-03-29 | - |
-| 29. Auth Overhaul & User Management | v2.3 | 0/? | Not started | - |
+| 29. Auth Overhaul & User Management | v2.3 | 0/3 | Not started | - |
 | 30. Customer Search Verification | v2.3 | 0/? | Not started | - |
 | 31. Vehicle Import | v2.3 | 0/? | Not started | - |
 | 32. Interactive Damage Map | v2.3 | 0/? | Not started | - |
