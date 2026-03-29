@@ -172,6 +172,6 @@ v2.3: 28 -> 29 -> 30 & 31 & 32 (parallel after 28)
 | 27 | v2.2 | 2/2 | Complete | 2026-03-29 |
 | 28. Bug Fixes & Auth Foundation | 2/2 | Complete    | 2026-03-29 | - |
 | 29. Auth Overhaul & User Management | 3/3 | Complete    | 2026-03-29 | - |
-| 30. Customer Search Verification | 1/1 | Complete   | 2026-03-29 | - |
+| 30. Customer Search Verification | 1/1 | Complete    | 2026-03-29 | - |
 | 31. Vehicle Import | v2.3 | 0/? | Not started | - |
 | 32. Interactive Damage Map | v2.3 | 0/? | Not started | - |
