@@ -3,11 +3,13 @@ import { StyleSheet, View } from 'react-native';
 import { Tabs } from 'expo-router';
 import { Home, PlusCircle, List, User } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { OfflineBanner } from '@/components/OfflineBanner';
 
 export default function TabLayout() {
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
 
   return (
     <View style={styles.root}>
@@ -16,8 +18,8 @@ export default function TabLayout() {
         screenOptions={{
           headerShown: false,
           tabBarStyle: {
-            height: 64,
-            paddingBottom: 8,
+            height: 64 + insets.bottom,
+            paddingBottom: insets.bottom,
           },
           tabBarActiveTintColor: '#2563EB',
           tabBarInactiveTintColor: '#71717A',
