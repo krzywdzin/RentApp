@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v2.3
 milestone_name: User Management, Login Overhaul & Feature Additions
-status: ready_to_plan
-stopped_at: null
-last_updated: "2026-03-29T17:00:00.000Z"
-last_activity: 2026-03-29 -- Roadmap created for v2.3 (phases 28-32)
+status: executing
+stopped_at: Completed 28-02-PLAN.md (username auth foundation)
+last_updated: "2026-03-29T17:02:08.273Z"
+last_activity: 2026-03-29 -- Completed 28-02 (username field + dual email/username login)
 progress:
   total_phases: 5
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 2
-  completed_plans: 1
-  percent: 10
+  completed_plans: 2
+  percent: 100
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-29)
 ## Current Position
 
 Phase: 28 of 32 (Bug Fixes & Auth Foundation)
-Plan: 1 of 2 in current phase
+Plan: 2 of 2 in current phase (PHASE COMPLETE)
 Status: Executing
-Last activity: 2026-03-29 -- Completed 28-01 (middleware refresh_token check + signature canvas fix)
+Last activity: 2026-03-29 -- Completed 28-02 (username field + dual email/username login)
 
-Progress: [█░░░░░░░░░] 10%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -47,6 +47,7 @@ Progress: [█░░░░░░░░░] 10%
 | 30 | 0/? | - | - |
 | 31 | 0/? | - | - |
 | 32 | 0/? | - | - |
+| Phase 28 P02 | 2min | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -66,6 +67,7 @@ Progress: [█░░░░░░░░░] 10%
 - [v2.3]: Phases 30, 31, 32 are independent and can execute in parallel after Phase 28
 - [28-01]: Middleware checks refresh_token alongside access_token to prevent premature logout during client-side token refresh
 - [28-01]: Split signature useEffect into two: orientation lock (mount-only) and canvas clear (step-dependent)
+- [Phase 28]: Used findFirst with OR clause for dual email/username lookup instead of two sequential queries
 
 ### Pending Todos
 
@@ -77,6 +79,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-29
-Stopped at: Completed 28-01-PLAN.md (middleware + signature fixes)
+Last session: 2026-03-29T17:02:08.271Z
+Stopped at: Completed 28-02-PLAN.md (username auth foundation)
 Resume file: None

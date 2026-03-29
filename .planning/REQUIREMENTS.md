@@ -14,9 +14,9 @@ Requirements for v2.3 milestone. Each maps to roadmap phases.
 
 ### Authentication
 
-- [ ] **AUTH-01**: API User model has username field added via Prisma migration
-- [ ] **AUTH-02**: API auth accepts username OR email for login
-- [ ] **AUTH-03**: Existing admin@kitek.pl account gets username "admin" via data migration
+- [x] **AUTH-01**: API User model has username field added via Prisma migration
+- [x] **AUTH-02**: API auth accepts username OR email for login
+- [x] **AUTH-03**: Existing admin@kitek.pl account gets username "admin" via data migration
 - [ ] **AUTH-04**: Web admin panel login uses username + password (not email)
 - [ ] **AUTH-05**: Mobile app login uses username + password (not email)
 - [ ] **AUTH-06**: Admin panel credentials are separate from mobile app credentials (different auth context)
@@ -68,9 +68,9 @@ None deferred for this milestone.
 |-------------|-------|--------|
 | BUG-01 | Phase 28 | Complete |
 | BUG-02 | Phase 28 | Complete |
-| AUTH-01 | Phase 28 | Pending |
-| AUTH-02 | Phase 28 | Pending |
-| AUTH-03 | Phase 28 | Pending |
+| AUTH-01 | Phase 28 | Complete |
+| AUTH-02 | Phase 28 | Complete |
+| AUTH-03 | Phase 28 | Complete |
 | AUTH-04 | Phase 29 | Pending |
 | AUTH-05 | Phase 29 | Pending |
 | AUTH-06 | Phase 29 | Pending |
