@@ -5,10 +5,11 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
 
+import { DAMAGE_TYPE_LABELS } from '@rentapp/shared';
+
 import { useRental, useReturnRental } from '@/hooks/use-rentals';
 import { useReturnDraftStore, useReturnDraftHasHydrated } from '@/stores/return-draft.store';
 import { formatMileage } from '@/lib/format';
-import { CHECKLIST_ITEMS } from '@/lib/constants';
 import { WizardStepper } from '@/components/WizardStepper';
 import { LoadingSkeleton } from '@/components/LoadingSkeleton';
 import { AppCard } from '@/components/AppCard';
@@ -23,7 +24,7 @@ export default function ReturnConfirmScreen() {
 
   const rentalId = useReturnDraftStore((s) => s.rentalId);
   const returnMileage = useReturnDraftStore((s) => s.returnMileage);
-  const checklist = useReturnDraftStore((s) => s.checklist);
+  const damagePins = useReturnDraftStore((s) => s.damagePins);
   const notes = useReturnDraftStore((s) => s.notes);
   const clearDraft = useReturnDraftStore((s) => s.clearDraft);
 
@@ -54,26 +55,18 @@ export default function ReturnConfirmScreen() {
   const distanceDriven =
     returnMileage != null ? returnMileage - handoverMileage : 0;
 
-  const damagedItems = CHECKLIST_ITEMS.filter(
-    (item) => checklist[item.key]?.damaged,
-  );
-  const okItems = CHECKLIST_ITEMS.filter(
-    (item) => !checklist[item.key]?.damaged,
-  );
-
   const handleSubmit = () => {
     if (!rentalId || returnMileage == null) return;
 
-    // Build returnData for API (inspection format)
-    // Build checklist summary as general notes for inspection data
-    const checklistSummary = damagedItems
+    // Build damage pins summary as general notes
+    const damageSummary = damagePins
       .map(
-        (item) =>
-          `${item.label}: ${checklist[item.key]?.notes || 'uszkodzenie'}`,
+        (p) =>
+          `#${p.pinNumber} ${DAMAGE_TYPE_LABELS[p.damageType]}${p.note ? ': ' + p.note : ''}`,
       )
       .join('; ');
 
-    const generalNotes = [checklistSummary, notes]
+    const generalNotes = [damageSummary, notes]
       .filter(Boolean)
       .join('\n\n');
 
@@ -157,30 +150,30 @@ export default function ReturnConfirmScreen() {
           </View>
         </AppCard>
 
-        {/* Checklist summary */}
+        {/* Damage pins summary */}
         <AppCard cardStyle={s.mb12}>
           <Text style={s.sectionLabel}>{t('returnWizard.step3')}</Text>
 
-          {/* Items with damage */}
-          {damagedItems.map((item) => (
-            <View key={item.key} style={s.damageRow}>
-              <View style={s.redDot} />
-              <View style={s.flex1}>
-                <Text style={s.checkItemLabel}>{item.label}</Text>
-                {checklist[item.key]?.notes ? (
-                  <Text style={s.checkItemNotes}>{checklist[item.key].notes}</Text>
-                ) : null}
+          {damagePins.length > 0 ? (
+            damagePins.map((pin) => (
+              <View key={pin.pinNumber} style={s.damageRow}>
+                <View style={s.redDot} />
+                <View style={s.flex1}>
+                  <Text style={s.checkItemLabel}>
+                    #{pin.pinNumber} {DAMAGE_TYPE_LABELS[pin.damageType]}
+                  </Text>
+                  {pin.note ? (
+                    <Text style={s.checkItemNotes}>{pin.note}</Text>
+                  ) : null}
+                </View>
               </View>
-            </View>
-          ))}
-
-          {/* Items without damage */}
-          {okItems.map((item) => (
-            <View key={item.key} style={s.okRow}>
+            ))
+          ) : (
+            <View style={s.okRow}>
               <View style={s.greenDot} />
-              <Text style={s.checkItemLabel}>{item.label}</Text>
+              <Text style={s.checkItemLabel}>Brak uszkodzen</Text>
             </View>
-          ))}
+          )}
         </AppCard>
 
         {/* Notes */}
