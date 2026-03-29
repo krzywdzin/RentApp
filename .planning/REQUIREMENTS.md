@@ -44,10 +44,10 @@ Requirements for v2.3 milestone. Each maps to roadmap phases.
 
 ### Damage Map
 
-- [ ] **DMAP-01**: Interactive SVG car diagram replaces current damage checklist
-- [ ] **DMAP-02**: Worker can tap on car body part to mark damage location
-- [ ] **DMAP-03**: Each tap opens modal with damage type (scratch/dent/crack/other) + notes field
-- [ ] **DMAP-04**: Marked damage points display visually on car outline
+- [x] **DMAP-01**: Interactive SVG car diagram replaces current damage checklist
+- [x] **DMAP-02**: Worker can tap on car body part to mark damage location
+- [x] **DMAP-03**: Each tap opens modal with damage type (scratch/dent/crack/other) + notes field
+- [x] **DMAP-04**: Marked damage points display visually on car outline
 
 ## Future Requirements
 
@@ -86,10 +86,10 @@ None deferred for this milestone.
 | VIMP-03 | Phase 31 | Complete |
 | VIMP-04 | Phase 31 | Complete |
 | VIMP-05 | Phase 31 | Complete |
-| DMAP-01 | Phase 32 | Pending |
-| DMAP-02 | Phase 32 | Pending |
-| DMAP-03 | Phase 32 | Pending |
-| DMAP-04 | Phase 32 | Pending |
+| DMAP-01 | Phase 32 | Complete |
+| DMAP-02 | Phase 32 | Complete |
+| DMAP-03 | Phase 32 | Complete |
+| DMAP-04 | Phase 32 | Complete |
 
 **Coverage:**
 - v2.3 requirements: 24 total

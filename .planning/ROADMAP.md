@@ -153,7 +153,7 @@ Plans:
   2. Worker taps a body part on the car diagram and a modal opens for damage details
   3. Worker can select damage type (scratch/dent/crack/other) and add notes in the modal
   4. Marked damage points appear as visual indicators on the car outline after being saved
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 Plans:
 - [ ] 32-01-PLAN.md -- Create CarDamageMap SVG component, DamageDetailModal, damage API client, and extend store
 - [ ] 32-02-PLAN.md -- Wire damage map into return wizard, replace checklist, update confirm screen
@@ -179,4 +179,4 @@ v2.3: 28 -> 29 -> 30 & 31 & 32 (parallel after 28)
 | 29. Auth Overhaul & User Management | 3/3 | Complete    | 2026-03-29 | - |
 | 30. Customer Search Verification | 1/1 | Complete    | 2026-03-29 | - |
 | 31. Vehicle Import | 1/1 | Complete    | 2026-03-29 | - |
-| 32. Interactive Damage Map | v2.3 | 0/2 | Not started | - |
+| 32. Interactive Damage Map | 1/2 | In Progress|  | - |
