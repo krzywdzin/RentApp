@@ -17,7 +17,7 @@ const RENTAL_STATUS_LABELS: Record<string, string> = {
   DRAFT: 'Szkic',
   ACTIVE: 'Aktywny',
   EXTENDED: 'Przedluzony',
-  RETURNED: 'Zwrocony',
+  RETURNED: 'Zwrócony',
   CANCELLED: 'Anulowany',
 };
 

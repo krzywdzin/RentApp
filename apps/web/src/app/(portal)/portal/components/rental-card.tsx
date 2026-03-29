@@ -10,7 +10,7 @@ const STATUS_LABELS: Record<string, string> = {
   DRAFT: 'Szkic',
   ACTIVE: 'Aktywny',
   EXTENDED: 'Przedluzony',
-  RETURNED: 'Zwrocony',
+  RETURNED: 'Zwrócony',
 };
 
 const STATUS_VARIANTS: Record<string, string> = {

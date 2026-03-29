@@ -29,7 +29,7 @@ const statusOptions = [
   { value: RentalStatus.DRAFT, label: 'Szkic' },
   { value: RentalStatus.ACTIVE, label: 'Aktywny' },
   { value: RentalStatus.EXTENDED, label: 'Przedluzony' },
-  { value: RentalStatus.RETURNED, label: 'Zwrocony' },
+  { value: RentalStatus.RETURNED, label: 'Zwrócony' },
 ] as const;
 
 export function RentalFilterBar({

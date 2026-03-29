@@ -19,7 +19,7 @@ const statusConfig: Record<
   [RentalStatus.DRAFT]: { label: 'Szkic', variant: 'secondary' },
   [RentalStatus.ACTIVE]: { label: 'Aktywny', variant: 'success' },
   [RentalStatus.EXTENDED]: { label: 'Przedluzony', variant: 'warning' },
-  [RentalStatus.RETURNED]: { label: 'Zwrocony', variant: 'secondary' },
+  [RentalStatus.RETURNED]: { label: 'Zwrócony', variant: 'secondary' },
 };
 
 function isOverdue(rental: RentalDto): boolean {

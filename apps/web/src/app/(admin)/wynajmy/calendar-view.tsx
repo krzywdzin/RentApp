@@ -178,7 +178,7 @@ export function CalendarView() {
         </div>
         <div className="flex items-center gap-1.5">
           <div className="h-3 w-3 rounded-sm bg-zinc-500/50" />
-          <span>Zwrocony</span>
+          <span>Zwrócony</span>
         </div>
         <div className="flex items-center gap-1.5">
           <div className="h-3 w-3 rounded-sm border-2 border-red-500" />
