@@ -108,4 +108,4 @@ v2.2: 27 (01 -> 02)
 | 10-14 | v1.1 | 14/14 | Complete | 2026-03-25 |
 | 15-19 | v2.0 | 7/7 | Complete | 2026-03-27 |
 | 20-26 | v2.1 | 26/26 | Complete | 2026-03-28 |
-| 27. Android APK Build Fix | v2.2 | 0/2 | Not started | - |
+| 27. Android APK Build Fix | 1/2 | In Progress|  | - |

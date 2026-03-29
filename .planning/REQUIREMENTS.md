@@ -9,15 +9,15 @@ Requirements for Android APK build fix. Each maps to roadmap phases.
 
 ### Build Configuration
 
-- [ ] **BUILD-01**: EAS Build preview profile produces installable Android APK
-- [ ] **BUILD-02**: app.config.ts has correct Android package name (pl.kitek.rental) and configuration
-- [ ] **BUILD-03**: eas.json preview profile configured for APK (not AAB) output
+- [x] **BUILD-01**: EAS Build preview profile produces installable Android APK
+- [x] **BUILD-02**: app.config.ts has correct Android package name (pl.kitek.rental) and configuration
+- [x] **BUILD-03**: eas.json preview profile configured for APK (not AAB) output
 
 ### Assets
 
-- [ ] **ASSET-01**: Required app icon (icon.png) exists at correct dimensions
-- [ ] **ASSET-02**: Required splash screen (splash.png) exists at correct dimensions
-- [ ] **ASSET-03**: Required adaptive icon (adaptive-icon.png) exists at correct dimensions
+- [x] **ASSET-01**: Required app icon (icon.png) exists at correct dimensions
+- [x] **ASSET-02**: Required splash screen (splash.png) exists at correct dimensions
+- [x] **ASSET-03**: Required adaptive icon (adaptive-icon.png) exists at correct dimensions
 
 ### Verification
 
@@ -40,12 +40,12 @@ None — this is a focused fix milestone.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BUILD-01 | Phase 27 | Pending |
-| BUILD-02 | Phase 27 | Pending |
-| BUILD-03 | Phase 27 | Pending |
-| ASSET-01 | Phase 27 | Pending |
-| ASSET-02 | Phase 27 | Pending |
-| ASSET-03 | Phase 27 | Pending |
+| BUILD-01 | Phase 27 | Complete |
+| BUILD-02 | Phase 27 | Complete |
+| BUILD-03 | Phase 27 | Complete |
+| ASSET-01 | Phase 27 | Complete |
+| ASSET-02 | Phase 27 | Complete |
+| ASSET-03 | Phase 27 | Complete |
 | VERIFY-01 | Phase 27 | Pending |
 | VERIFY-02 | Phase 27 | Pending |
 

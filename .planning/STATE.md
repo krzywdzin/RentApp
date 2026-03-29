@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.2
 milestone_name: Android APK Build Fix
-status: active
-stopped_at: null
-last_updated: "2026-03-29T04:10:00Z"
+status: planning
+stopped_at: Completed 27-01-PLAN.md
+last_updated: "2026-03-29T02:20:27.284Z"
 last_activity: 2026-03-29 -- Roadmap created for v2.2
 progress:
   total_phases: 1
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_plans: 2
+  completed_plans: 1
   percent: 0
 ---
 
@@ -52,6 +52,7 @@ Progress: [░░░░░░░░░░] 0%
 
 - [v2.0]: Deploy to Railway (API), Cloudflare R2 (storage), EAS Build (mobile), Railway (web)
 - [v2.2]: Android APK build fix -- single-phase milestone, all 8 requirements in Phase 27
+- [Phase 27]: Used npx expo install for SDK-compatible dependency versioning; spread metro watchFolders defaults
 
 ### Pending Todos
 
@@ -63,6 +64,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-29T04:10:00Z
-Stopped at: Roadmap created, ready to plan Phase 27
+Last session: 2026-03-29T02:20:27.282Z
+Stopped at: Completed 27-01-PLAN.md
 Resume file: None
