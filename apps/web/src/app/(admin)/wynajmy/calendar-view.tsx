@@ -166,7 +166,7 @@ export function CalendarView() {
       <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
         <div className="flex items-center gap-1.5">
           <div className="h-3 w-3 rounded-sm bg-zinc-600" />
-          <span>Szkic</span>
+          <span>Wersja robocza</span>
         </div>
         <div className="flex items-center gap-1.5">
           <div className="h-3 w-3 rounded-sm bg-green-600" />

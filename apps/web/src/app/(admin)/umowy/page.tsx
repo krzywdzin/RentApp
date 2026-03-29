@@ -18,7 +18,7 @@ import { contractColumns } from './columns';
 
 const statusOptions = [
   { value: 'ALL', label: 'Wszystkie' },
-  { value: ContractStatus.DRAFT, label: 'Szkic' },
+  { value: ContractStatus.DRAFT, label: 'Wersja robocza' },
   { value: ContractStatus.PARTIALLY_SIGNED, label: 'Czesciowo podpisana' },
   { value: ContractStatus.SIGNED, label: 'Podpisana' },
   { value: ContractStatus.VOIDED, label: 'Uniewazniona' },

@@ -17,7 +17,7 @@ const statusConfig: Record<
     variant: 'default' | 'secondary' | 'destructive' | 'outline' | 'success' | 'warning';
   }
 > = {
-  [ContractStatus.DRAFT]: { label: 'Szkic', variant: 'secondary' },
+  [ContractStatus.DRAFT]: { label: 'Wersja robocza', variant: 'secondary' },
   [ContractStatus.PARTIALLY_SIGNED]: { label: 'Czesciowo podpisana', variant: 'warning' },
   [ContractStatus.SIGNED]: { label: 'Podpisana', variant: 'success' },
   [ContractStatus.VOIDED]: { label: 'Uniewazniona', variant: 'secondary' },

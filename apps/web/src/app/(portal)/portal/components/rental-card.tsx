@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { formatDate, formatCurrency } from '@/lib/format';
 
 const STATUS_LABELS: Record<string, string> = {
-  DRAFT: 'Szkic',
+  DRAFT: 'Wersja robocza',
   ACTIVE: 'Aktywny',
   EXTENDED: 'Przedluzony',
   RETURNED: 'Zwrócony',

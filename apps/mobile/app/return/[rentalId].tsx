@@ -14,7 +14,7 @@ import { StatusBadge } from '@/components/StatusBadge';
 import { LoadingSkeleton } from '@/components/LoadingSkeleton';
 
 const RENTAL_STATUS_LABELS: Record<string, string> = {
-  DRAFT: 'Szkic',
+  DRAFT: 'Wersja robocza',
   ACTIVE: 'Aktywny',
   EXTENDED: 'Przedluzony',
   RETURNED: 'Zwrócony',

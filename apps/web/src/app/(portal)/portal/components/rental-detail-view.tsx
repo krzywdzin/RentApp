@@ -8,7 +8,7 @@ import { formatDate, formatCurrency } from '@/lib/format';
 import { FileDown } from 'lucide-react';
 
 const STATUS_LABELS: Record<string, string> = {
-  DRAFT: 'Szkic',
+  DRAFT: 'Wersja robocza',
   ACTIVE: 'Aktywny',
   EXTENDED: 'Przedluzony',
   RETURNED: 'Zwrócony',

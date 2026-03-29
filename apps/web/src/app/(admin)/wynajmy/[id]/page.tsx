@@ -43,7 +43,7 @@ import Link from 'next/link';
 import { toast } from 'sonner';
 
 const contractStatusLabels: Record<ContractStatus, string> = {
-  [ContractStatus.DRAFT]: 'Szkic',
+  [ContractStatus.DRAFT]: 'Wersja robocza',
   [ContractStatus.PARTIALLY_SIGNED]: 'Czesciowo podpisana',
   [ContractStatus.SIGNED]: 'Podpisana',
   [ContractStatus.VOIDED]: 'Uniewazniona',

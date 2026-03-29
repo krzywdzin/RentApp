@@ -14,7 +14,7 @@ interface BadgeStyle {
 const STATUS_MAP: Record<string, BadgeStyle> = {
   ACTIVE: { bg: '#DCFCE7', fg: '#15803D', label: 'Aktywny' },
   RENTED: { bg: '#DCFCE7', fg: '#15803D', label: 'Aktywny' },
-  DRAFT: { bg: '#F4F4F5', fg: '#52525B', label: 'Szkic' },
+  DRAFT: { bg: '#F4F4F5', fg: '#52525B', label: 'Wersja robocza' },
   EXTENDED: { bg: '#FEF3C7', fg: '#B45309', label: 'Przedluzony' },
   RETURNED: { bg: '#E4E4E7', fg: '#52525B', label: 'Zwrócony' },
   OVERDUE: { bg: '#FEE2E2', fg: '#B91C1C', label: 'Przeterminowany' },
