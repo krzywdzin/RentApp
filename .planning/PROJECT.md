@@ -34,7 +34,21 @@ Pracownik w terenie może w pełni obsłużyć wynajem — od wypełnienia umowy
 
 ### Active
 
-(None — all milestones complete)
+- [ ] Working Android APK build via EAS Build preview profile
+- [ ] Correct app.config.ts configuration for Android builds
+- [ ] Valid eas.json preview profile for APK output
+- [ ] All required assets (icon, splash, adaptive-icon) present
+- [ ] Successful `eas build --platform android --profile preview` execution
+
+## Current Milestone: v2.2 Android APK Build Fix
+
+**Goal:** Fix failing Android APK build so the app can be installed on 9 Android devices.
+
+**Target features:**
+- Diagnose and fix Gradle build failure
+- Ensure correct EAS Build configuration
+- Generate missing assets if needed
+- Verify working APK build end-to-end
 
 ### Out of Scope
 
@@ -51,6 +65,7 @@ Pracownik w terenie może w pełni obsłużyć wynajem — od wypełnienia umowy
 - **Hosting:** Railway (API+Web), Cloudflare R2 (storage), Neon DB, Upstash Redis
 - **CI/CD:** GitHub Actions with Redis service, mobile typecheck, E2E tests, coverage enforcement
 - **Shipped:** v1.0 MVP, v1.1 Quality & Polish, v2.0 Production Ready, v2.1 Fix All Audit Issues
+- **In progress:** v2.2 Android APK Build Fix
 
 ## Constraints
 
@@ -74,4 +89,4 @@ Pracownik w terenie może w pełni obsłużyć wynajem — od wypełnienia umowy
 | Shared types w monorepo | Jedna definicja RentalWithRelations, PaginatedResponse — brak duplikacji | ✓ Good (v2.1) |
 
 ---
-*Last updated: 2026-03-28 after v2.1 milestone*
+*Last updated: 2026-03-29 after v2.2 milestone start*
