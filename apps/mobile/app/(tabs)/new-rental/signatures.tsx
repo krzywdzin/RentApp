@@ -1,6 +1,7 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import * as ScreenOrientation from 'expo-screen-orientation';
 import Toast from 'react-native-toast-message';
 import type { SignatureType } from '@rentapp/shared';
 
@@ -71,6 +72,15 @@ export default function SignaturesStep() {
   const currentIndex = draft.currentSignatureIndex;
 
   const currentStep = SIGNATURE_STEPS[currentIndex];
+
+  // Safety net: restore portrait when this screen unmounts
+  useEffect(() => {
+    return () => {
+      ScreenOrientation.lockAsync(
+        ScreenOrientation.OrientationLock.PORTRAIT_UP,
+      );
+    };
+  }, []);
 
   const doCreateRentalAndContract = useCallback(async (override: boolean) => {
     if (isCreatingRef.current) return { rentalId: rentalId!, contractId: contractId! };
@@ -253,6 +263,10 @@ export default function SignaturesStep() {
             type: 'success',
             text1: t('toasts.rentalCreated'),
           });
+          // Restore portrait before navigating away from signatures
+          await ScreenOrientation.lockAsync(
+            ScreenOrientation.OrientationLock.PORTRAIT_UP,
+          );
           router.replace({
             pathname: '/(tabs)/new-rental/success',
             params: {
@@ -280,10 +294,14 @@ export default function SignaturesStep() {
     // rentalId and contractId derived from draft store
   );
 
-  const handleBack = useCallback(() => {
+  const handleBack = useCallback(async () => {
     if (currentIndex > 0) {
       draft.updateDraft({ currentSignatureIndex: currentIndex - 1 });
     } else {
+      // Restore portrait before leaving signatures screen
+      await ScreenOrientation.lockAsync(
+        ScreenOrientation.OrientationLock.PORTRAIT_UP,
+      );
       router.back();
     }
   }, [currentIndex, draft, router]);

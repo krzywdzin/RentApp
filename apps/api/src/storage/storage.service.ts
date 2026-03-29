@@ -85,7 +85,7 @@ export class StorageService implements OnModuleInit {
     contentType: string,
   ): Promise<string> {
     if (this.s3Available) {
-      await this.client.send(
+      await this.client!.send(
         new PutObjectCommand({
           Bucket: this.bucket,
           Key: key,
@@ -110,7 +110,7 @@ export class StorageService implements OnModuleInit {
         Bucket: this.bucket,
         Key: key,
       });
-      return getSignedUrl(this.client, command, { expiresIn });
+      return getSignedUrl(this.client!, command, { expiresIn });
     }
     // Local fallback: serve via API
     return `/storage/${encodeURIComponent(key)}`;
@@ -118,7 +118,7 @@ export class StorageService implements OnModuleInit {
 
   async getBuffer(key: string): Promise<Buffer> {
     if (this.s3Available) {
-      const response = await this.client.send(
+      const response = await this.client!.send(
         new GetObjectCommand({
           Bucket: this.bucket,
           Key: key,
@@ -137,7 +137,7 @@ export class StorageService implements OnModuleInit {
 
   async delete(key: string): Promise<void> {
     if (this.s3Available) {
-      await this.client.send(
+      await this.client!.send(
         new DeleteObjectCommand({
           Bucket: this.bucket,
           Key: key,
