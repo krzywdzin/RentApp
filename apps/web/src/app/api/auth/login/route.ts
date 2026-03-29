@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     secure: isProduction,
     sameSite: 'lax',
     path: '/',
-    maxAge: 900, // 15 min
+    maxAge: 1800, // 30 min — matches JWT expiresIn
   });
 
   response.cookies.set('refresh_token', data.refreshToken, {
