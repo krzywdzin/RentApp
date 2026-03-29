@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import type { DamagePin } from '@rentapp/shared';
 
 interface ChecklistItem {
   damaged: boolean;
@@ -14,6 +15,8 @@ interface ReturnDraft {
   returnMileage: number | null;
   checklist: Record<string, ChecklistItem>;
   notes: string;
+  walkthroughId: string | null;
+  damagePins: DamagePin[];
 }
 
 interface ReturnDraftState extends ReturnDraft {
@@ -28,6 +31,8 @@ const initialDraft: ReturnDraft = {
   returnMileage: null,
   checklist: {},
   notes: '',
+  walkthroughId: null,
+  damagePins: [],
 };
 
 /**
