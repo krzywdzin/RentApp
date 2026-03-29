@@ -15,3 +15,9 @@ apps/mobile/.env
 
 # Next.js
 apps/web/.next/
+
+# Expo generated
+.expo/
+
+# iOS prebuild (non-CNG, regenerated)
+apps/mobile/ios/
