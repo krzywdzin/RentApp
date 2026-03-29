@@ -453,12 +453,16 @@ export class ContractsService {
       // h. Activate rental ONLY after PDF succeeded (idempotent guard)
       const rental = await this.prisma.rental.findUnique({
         where: { id: contract.rentalId },
-        select: { status: true },
+        select: { status: true, vehicleId: true },
       });
       if (rental && rental.status === 'DRAFT') {
         await this.prisma.rental.update({
           where: { id: contract.rentalId },
           data: { status: 'ACTIVE' },
+        });
+        await this.prisma.vehicle.update({
+          where: { id: rental.vehicleId },
+          data: { status: 'RENTED' },
         });
       }
     } else if (contract.status === 'DRAFT') {
