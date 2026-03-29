@@ -58,7 +58,7 @@ export default function ContractStep() {
         {t('wizard.step4')}
       </Text>
 
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={s.flex1}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={s.flex1}>
         <ScrollView
           style={s.scrollBody}
           contentContainerStyle={{ paddingBottom: 140 }}

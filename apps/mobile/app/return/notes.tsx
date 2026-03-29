@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -28,10 +28,12 @@ export default function ReturnNotesScreen() {
         <WizardStepper currentStep={4} totalSteps={5} />
       </View>
 
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={s.flex1}>
       <ScrollView
         style={s.flex1}
         contentContainerStyle={s.scrollContent}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
         <Text style={s.stepTitle}>{t('returnWizard.step4')}</Text>
 
@@ -46,6 +48,7 @@ export default function ReturnNotesScreen() {
           textAlignVertical="top"
         />
       </ScrollView>
+      </KeyboardAvoidingView>
 
       {/* Bottom button */}
       <View style={[s.bottomBar, { paddingBottom: Math.max(insets.bottom, 16) }]}>

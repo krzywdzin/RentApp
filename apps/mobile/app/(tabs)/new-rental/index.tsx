@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -203,8 +203,10 @@ export default function CustomerStep() {
               <Text style={s.modalClose}>Zamknij</Text>
             </TouchableOpacity>
           </View>
+          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={s.flex1}>
           <ScrollView
             contentContainerStyle={s.modalScroll}
+            keyboardShouldPersistTaps="handled"
           >
           <Text style={s.modalHeading}>
             {t('wizard.newCustomer')}
@@ -330,6 +332,7 @@ export default function CustomerStep() {
             containerStyle={s.mt8}
           />
           </ScrollView>
+          </KeyboardAvoidingView>
         </View>
       </Modal>
 
@@ -356,6 +359,7 @@ const s = StyleSheet.create({
   listContent: { paddingHorizontal: 16, paddingBottom: 100 },
   custName: { fontSize: 16, fontWeight: '600', color: '#18181B' },
   custSub: { marginTop: 4, fontSize: 13, color: '#71717A' },
+  flex1: { flex: 1 },
   modalRoot: { flex: 1, backgroundColor: '#FFFFFF' },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, borderBottomWidth: 1, borderBottomColor: '#E4E4E7' },
   modalTitle: { fontSize: 18, fontWeight: '600', color: '#18181B' },

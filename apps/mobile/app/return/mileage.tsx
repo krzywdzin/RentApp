@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -83,10 +83,12 @@ export default function ReturnMileageScreen() {
         <WizardStepper currentStep={2} totalSteps={5} />
       </View>
 
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={s.flex1}>
       <ScrollView
         style={s.flex1}
         contentContainerStyle={s.scrollContent}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
         <Text style={s.stepTitle}>{t('returnWizard.step2')}</Text>
 
@@ -132,6 +134,7 @@ export default function ReturnMileageScreen() {
           </AppCard>
         )}
       </ScrollView>
+      </KeyboardAvoidingView>
 
       {/* Bottom button */}
       <View style={[s.bottomBar, { paddingBottom: Math.max(insets.bottom, 16) }]}>
