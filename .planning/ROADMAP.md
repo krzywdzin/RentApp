@@ -84,7 +84,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 28: Bug Fixes & Auth Foundation** - Fix critical bugs and add username field to auth system (completed 2026-03-29)
 - [x] **Phase 29: Auth Overhaul & User Management** - Username-based login across web/mobile with worker account creation (completed 2026-03-29)
 - [x] **Phase 30: Customer Search Verification** - Verify customer search works end-to-end across all query types (completed 2026-03-29)
-- [ ] **Phase 31: Vehicle Import** - Bulk vehicle import from Excel/CSV in admin panel
+- [x] **Phase 31: Vehicle Import** - Bulk vehicle import from Excel/CSV in admin panel (completed 2026-03-29)
 - [ ] **Phase 32: Interactive Damage Map** - SVG-based car diagram for marking damage locations
 
 ## Phase Details
@@ -140,7 +140,7 @@ Plans:
   2. Uploading a valid file creates vehicle records with make, model, year, and plate populated
   3. Vehicles with missing optional fields (e.g., VIN, color) import without errors
   4. After import completes, admin sees a summary showing how many vehicles were added, skipped, or had errors
-**Plans:** 1 plan
+**Plans:** 1/1 plans complete
 Plans:
 - [ ] 31-01-PLAN.md -- Fix BFF proxy for multipart uploads and build import UI dialog
 
@@ -175,5 +175,5 @@ v2.3: 28 -> 29 -> 30 & 31 & 32 (parallel after 28)
 | 28. Bug Fixes & Auth Foundation | 2/2 | Complete    | 2026-03-29 | - |
 | 29. Auth Overhaul & User Management | 3/3 | Complete    | 2026-03-29 | - |
 | 30. Customer Search Verification | 1/1 | Complete    | 2026-03-29 | - |
-| 31. Vehicle Import | v2.3 | 0/1 | Not started | - |
+| 31. Vehicle Import | 1/1 | Complete   | 2026-03-29 | - |
 | 32. Interactive Damage Map | v2.3 | 0/? | Not started | - |

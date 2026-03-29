@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.3
 milestone_name: User Management, Login Overhaul & Feature Additions
 status: executing
-stopped_at: Completed 30-01-PLAN.md (customer search verification)
-last_updated: "2026-03-29T17:43:19.739Z"
+stopped_at: Completed 31-01-PLAN.md (vehicle import UI)
+last_updated: "2026-03-29T17:51:16.030Z"
 last_activity: 2026-03-29 -- Completed 30-01 (customer search verification)
 progress:
   total_phases: 5
-  completed_phases: 3
-  total_plans: 6
-  completed_plans: 6
+  completed_phases: 4
+  total_plans: 7
+  completed_plans: 7
   percent: 80
 ---
 
@@ -52,6 +52,7 @@ Progress: [████████░░] 80%
 | Phase 29 P03 | 1min | 2 tasks | 3 files |
 | Phase 29 P02 | 2min | 2 tasks | 4 files |
 | Phase 30 P01 | 9min | 2 tasks | 5 files |
+| Phase 31 P01 | 2min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -78,6 +79,8 @@ Progress: [████████░░] 80%
 - [Phase 29-02]: UserDto.email made nullable to support worker accounts without email
 - [30-01]: Phone search uses Prisma 'contains' with normalization instead of exact match, enabling partial number lookup
 - [30-01]: detectSearchParam exported from customers.api.ts for testability
+- [Phase 31]: BFF proxy uses arrayBuffer for multipart body to avoid binary corruption from text encoding
+- [Phase 31]: apiClient omits Content-Type for FormData to let browser set boundary automatically
 
 ### Pending Todos
 
@@ -89,6 +92,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-29T17:39:31Z
-Stopped at: Completed 30-01-PLAN.md (customer search verification)
+Last session: 2026-03-29T17:51:16.028Z
+Stopped at: Completed 31-01-PLAN.md (vehicle import UI)
 Resume file: None

@@ -36,11 +36,11 @@ Requirements for v2.3 milestone. Each maps to roadmap phases.
 
 ### Vehicle Import
 
-- [ ] **VIMP-01**: Web admin panel has upload interface for .xlsx and .csv vehicle files
-- [ ] **VIMP-02**: Import parses uploaded file and creates vehicle records
-- [ ] **VIMP-03**: Required fields are make, model, year, plate -- all others optional
-- [ ] **VIMP-04**: Missing optional fields are left empty (no validation errors)
-- [ ] **VIMP-05**: Import shows summary: X added, X skipped, X errors
+- [x] **VIMP-01**: Web admin panel has upload interface for .xlsx and .csv vehicle files
+- [x] **VIMP-02**: Import parses uploaded file and creates vehicle records
+- [x] **VIMP-03**: Required fields are make, model, year, plate -- all others optional
+- [x] **VIMP-04**: Missing optional fields are left empty (no validation errors)
+- [x] **VIMP-05**: Import shows summary: X added, X skipped, X errors
 
 ### Damage Map
 
@@ -81,11 +81,11 @@ None deferred for this milestone.
 | SRCH-01 | Phase 30 | Complete |
 | SRCH-02 | Phase 30 | Complete |
 | SRCH-03 | Phase 30 | Complete |
-| VIMP-01 | Phase 31 | Pending |
-| VIMP-02 | Phase 31 | Pending |
-| VIMP-03 | Phase 31 | Pending |
-| VIMP-04 | Phase 31 | Pending |
-| VIMP-05 | Phase 31 | Pending |
+| VIMP-01 | Phase 31 | Complete |
+| VIMP-02 | Phase 31 | Complete |
+| VIMP-03 | Phase 31 | Complete |
+| VIMP-04 | Phase 31 | Complete |
+| VIMP-05 | Phase 31 | Complete |
 | DMAP-01 | Phase 32 | Pending |
 | DMAP-02 | Phase 32 | Pending |
 | DMAP-03 | Phase 32 | Pending |
