@@ -40,12 +40,25 @@ Pracownik w terenie może w pełni obsłużyć wynajem — od wypełnienia umowy
 
 ### Active
 
-(No active requirements — planning next milestone)
+- [ ] Fix "Użytkownicy" tab causing logout in web admin panel
+- [ ] Login overhaul: username/password instead of email (web + mobile, separate auth contexts)
+- [ ] Worker creation with immediate mobile login (fix null passwordHash)
+- [ ] Verify customer search (phone/PESEL/lastName) works end-to-end
+- [ ] Vehicle import from Excel/CSV in web admin panel
+- [ ] Interactive damage map (SVG car diagram replacing checklist)
+- [ ] Verify signature canvas resets between signatures
 
-## Current State
+## Current Milestone: v2.3 User Management, Login Overhaul & Feature Additions
 
-**Shipped:** v2.2 Android APK Build Fix (2026-03-29)
-All milestones complete. System is production-ready with working Android APK build pipeline.
+**Goal:** Fix auth bugs, overhaul login to username-based, enable worker management, and add vehicle import + interactive damage map.
+
+**Target features:**
+- Fix /uzytkownicy route logout bug
+- Username/password login (separate admin vs mobile auth)
+- Worker creation with immediate mobile access
+- Vehicle bulk import from Excel/CSV
+- Interactive SVG damage map
+- Verify existing fixes (customer search, signature canvas)
 
 ### Out of Scope
 
@@ -62,6 +75,7 @@ All milestones complete. System is production-ready with working Android APK bui
 - **Hosting:** Railway (API+Web), Cloudflare R2 (storage), Neon DB, Upstash Redis
 - **CI/CD:** GitHub Actions with Redis service, mobile typecheck, E2E tests, coverage enforcement
 - **Shipped:** v1.0 MVP, v1.1 Quality & Polish, v2.0 Production Ready, v2.1 Fix All Audit Issues, v2.2 Android APK Build Fix
+- **Current:** v2.3 User Management, Login Overhaul & Feature Additions
 
 ## Constraints
 
@@ -86,4 +100,4 @@ All milestones complete. System is production-ready with working Android APK bui
 | Disable Sentry upload for non-prod | EAS Build failed without SENTRY_AUTH_TOKEN — disable auto-upload for preview/dev/staging | ✓ Good (v2.2) |
 
 ---
-*Last updated: 2026-03-29 after v2.2 milestone completion*
+*Last updated: 2026-03-29 after v2.3 milestone start*
