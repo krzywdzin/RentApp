@@ -18,7 +18,7 @@ import { AppInput } from '@/components/AppInput';
 import { useLogin } from '@/hooks/use-auth';
 
 const LoginFormSchema = z.object({
-  email: z.string().email('Nieprawidlowy adres email'),
+  username: z.string().min(3, 'Nazwa uzytkownika musi miec co najmniej 3 znaki'),
   password: z.string().min(8, 'Haslo musi miec min. 8 znakow'),
 });
 
@@ -35,14 +35,14 @@ export default function LoginScreen() {
   } = useForm<LoginFormValues>({
     resolver: zodResolver(LoginFormSchema),
     defaultValues: {
-      email: '',
+      username: '',
       password: '',
     },
   });
 
   const onSubmit = (data: LoginFormValues) => {
     loginMutation.mutate(
-      { email: data.email, password: data.password },
+      { username: data.username, password: data.password },
       {
         onError: (error: unknown) => {
           const err = error as { response?: { status?: number } };
@@ -85,18 +85,17 @@ export default function LoginScreen() {
         <View style={styles.form}>
           <Controller
             control={control}
-            name="email"
+            name="username"
             render={({ field: { onChange, onBlur, value } }) => (
               <AppInput
-                label="Email"
-                placeholder="jan@firma.pl"
-                keyboardType="email-address"
+                label="Nazwa uzytkownika"
+                placeholder="jkowalski"
                 autoCapitalize="none"
                 autoCorrect={false}
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
-                error={errors.email?.message}
+                error={errors.username?.message}
               />
             )}
           />
