@@ -164,7 +164,7 @@ v2.3: 28 -> 29 -> 30 & 31 & 32 (parallel after 28)
 | 15-19 | v2.0 | 7/7 | Complete | 2026-03-27 |
 | 20-26 | v2.1 | 26/26 | Complete | 2026-03-28 |
 | 27 | v2.2 | 2/2 | Complete | 2026-03-29 |
-| 28. Bug Fixes & Auth Foundation | 2/2 | Complete   | 2026-03-29 | - |
+| 28. Bug Fixes & Auth Foundation | 2/2 | Complete    | 2026-03-29 | - |
 | 29. Auth Overhaul & User Management | v2.3 | 0/? | Not started | - |
 | 30. Customer Search Verification | v2.3 | 0/? | Not started | - |
 | 31. Vehicle Import | v2.3 | 0/? | Not started | - |
