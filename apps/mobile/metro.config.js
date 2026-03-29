@@ -6,8 +6,8 @@ const monorepoRoot = path.resolve(projectRoot, '../..');
 
 const config = getDefaultConfig(projectRoot);
 
-// Monorepo support: watch all files in the monorepo
-config.watchFolders = [monorepoRoot];
+// Monorepo support: add monorepo root to default watchFolders (instead of overriding)
+config.watchFolders = [...(config.watchFolders || []), monorepoRoot];
 
 // Resolve modules from both local and root node_modules
 config.resolver.nodeModulesPaths = [
