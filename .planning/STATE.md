@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.3
 milestone_name: User Management, Login Overhaul & Feature Additions
 status: executing
-stopped_at: Completed 28-02-PLAN.md (username auth foundation)
-last_updated: "2026-03-29T17:05:06.038Z"
-last_activity: 2026-03-29 -- Completed 28-02 (username field + dual email/username login)
+stopped_at: Completed 29-01-PLAN.md (API auth context separation)
+last_updated: "2026-03-29T17:17:54Z"
+last_activity: 2026-03-29 -- Completed 29-01 (auth context separation + worker creation)
 progress:
   total_phases: 5
   completed_phases: 1
-  total_plans: 2
-  completed_plans: 2
+  total_plans: 3
+  completed_plans: 3
   percent: 100
 ---
 
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-29)
 
 **Core value:** Pracownik w terenie moze w pelni obsluzyc wynajem -- od wypelnienia umowy, przez zweryfikowanie uprawnien kierowcy, zrobienie zdjec auta, po podpis klienta i wysylke PDF -- bez papieru i bez powrotu do biura.
-**Current focus:** Phase 28 - Bug Fixes & Auth Foundation
+**Current focus:** Phase 29 - Auth Overhaul & User Management
 
 ## Current Position
 
-Phase: 28 of 32 (Bug Fixes & Auth Foundation)
-Plan: 2 of 2 in current phase (PHASE COMPLETE)
+Phase: 29 of 32 (Auth Overhaul & User Management)
+Plan: 1 of ? in current phase
 Status: Executing
-Last activity: 2026-03-29 -- Completed 28-02 (username field + dual email/username login)
+Last activity: 2026-03-29 -- Completed 29-01 (auth context separation + worker creation)
 
 Progress: [██████████] 100%
 
@@ -48,6 +48,7 @@ Progress: [██████████] 100%
 | 31 | 0/? | - | - |
 | 32 | 0/? | - | - |
 | Phase 28 P02 | 2min | 2 tasks | 8 files |
+| Phase 29 P01 | 4min | 2 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -68,6 +69,9 @@ Progress: [██████████] 100%
 - [28-01]: Middleware checks refresh_token alongside access_token to prevent premature logout during client-side token refresh
 - [28-01]: Split signature useEffect into two: orientation lock (mount-only) and canvas clear (step-dependent)
 - [Phase 28]: Used findFirst with OR clause for dual email/username lookup instead of two sequential queries
+- [29-01]: Mobile tokens signed with JWT_MOBILE_SECRET, admin with JWT_ACCESS_SECRET -- separate secrets prevent cross-context reuse
+- [29-01]: Prisma schema User.email made nullable to support worker accounts without email
+- [29-01]: Worker fast-create: password provided = immediate hash, no email setup flow
 
 ### Pending Todos
 
@@ -79,6 +83,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-29T17:02:08.271Z
-Stopped at: Completed 28-02-PLAN.md (username auth foundation)
+Last session: 2026-03-29T17:17:54Z
+Stopped at: Completed 29-01-PLAN.md (API auth context separation)
 Resume file: None

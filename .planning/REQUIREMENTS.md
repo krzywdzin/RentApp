@@ -19,14 +19,14 @@ Requirements for v2.3 milestone. Each maps to roadmap phases.
 - [x] **AUTH-03**: Existing admin@kitek.pl account gets username "admin" via data migration
 - [ ] **AUTH-04**: Web admin panel login uses username + password (not email)
 - [ ] **AUTH-05**: Mobile app login uses username + password (not email)
-- [ ] **AUTH-06**: Admin panel credentials are separate from mobile app credentials (different auth context)
+- [x] **AUTH-06**: Admin panel credentials are separate from mobile app credentials (different auth context)
 
 ### User Management
 
 - [ ] **USER-01**: Admin can create worker accounts with username and temporary password in web panel
-- [ ] **USER-02**: Worker creation stores proper passwordHash (not null)
-- [ ] **USER-03**: Newly created worker can immediately log in to mobile app with set credentials
-- [ ] **USER-04**: No email required for worker account creation
+- [x] **USER-02**: Worker creation stores proper passwordHash (not null)
+- [x] **USER-03**: Newly created worker can immediately log in to mobile app with set credentials
+- [x] **USER-04**: No email required for worker account creation
 
 ### Customer Search
 
@@ -73,11 +73,11 @@ None deferred for this milestone.
 | AUTH-03 | Phase 28 | Complete |
 | AUTH-04 | Phase 29 | Pending |
 | AUTH-05 | Phase 29 | Pending |
-| AUTH-06 | Phase 29 | Pending |
+| AUTH-06 | Phase 29 | Complete |
 | USER-01 | Phase 29 | Pending |
-| USER-02 | Phase 29 | Pending |
-| USER-03 | Phase 29 | Pending |
-| USER-04 | Phase 29 | Pending |
+| USER-02 | Phase 29 | Complete |
+| USER-03 | Phase 29 | Complete |
+| USER-04 | Phase 29 | Complete |
 | SRCH-01 | Phase 30 | Pending |
 | SRCH-02 | Phase 30 | Pending |
 | SRCH-03 | Phase 30 | Pending |
