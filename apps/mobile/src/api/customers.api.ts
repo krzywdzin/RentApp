@@ -5,6 +5,34 @@ import type {
 } from '@rentapp/shared';
 import apiClient from './client';
 
+/**
+ * Detect search query type based on input pattern.
+ * - 11 digits (with optional spaces/dashes) → PESEL
+ * - Starts with +48 / digit-heavy string with optional separators → phone
+ * - Otherwise → lastName
+ */
+function detectSearchParam(
+  query: string,
+): { lastName?: string; phone?: string; pesel?: string } {
+  const trimmed = query.trim();
+  const digitsOnly = trimmed.replace(/[\s\-()]/g, '');
+
+  // PESEL: exactly 11 digits
+  if (/^\d{11}$/.test(digitsOnly)) {
+    return { pesel: digitsOnly };
+  }
+
+  // Phone: starts with +48 or 0, or is 9+ digits (Polish mobile/landline)
+  if (
+    /^\+/.test(trimmed) ||
+    (digitsOnly.length >= 9 && /^\d+$/.test(digitsOnly))
+  ) {
+    return { phone: trimmed };
+  }
+
+  return { lastName: trimmed };
+}
+
 export const customersApi = {
   searchCustomers: async (
     query: string,
@@ -12,7 +40,7 @@ export const customersApi = {
     const { data } = await apiClient.get<CustomerSearchResultDto[]>(
       '/customers/search',
       {
-        params: { lastName: query },
+        params: detectSearchParam(query),
       },
     );
     return data;
