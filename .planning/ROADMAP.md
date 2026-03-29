@@ -73,7 +73,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 ### v2.2 Android APK Build Fix
 
-- [ ] **Phase 27: Android APK Build Fix** - Diagnose and fix EAS Build configuration, assets, and Gradle build to produce an installable APK
+- [x] **Phase 27: Android APK Build Fix** - Diagnose and fix EAS Build configuration, assets, and Gradle build to produce an installable APK (completed 2026-03-29)
 
 ## Phase Details
 
@@ -108,4 +108,4 @@ v2.2: 27 (01 -> 02)
 | 10-14 | v1.1 | 14/14 | Complete | 2026-03-25 |
 | 15-19 | v2.0 | 7/7 | Complete | 2026-03-27 |
 | 20-26 | v2.1 | 26/26 | Complete | 2026-03-28 |
-| 27. Android APK Build Fix | 1/2 | In Progress|  | - |
+| 27. Android APK Build Fix | 2/2 | Complete   | 2026-03-29 | - |

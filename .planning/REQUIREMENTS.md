@@ -21,8 +21,8 @@ Requirements for Android APK build fix. Each maps to roadmap phases.
 
 ### Verification
 
-- [ ] **VERIFY-01**: `eas build --platform android --profile preview` completes successfully
-- [ ] **VERIFY-02**: Built APK is installable on Android devices
+- [x] **VERIFY-01**: `eas build --platform android --profile preview` completes successfully
+- [x] **VERIFY-02**: Built APK is installable on Android devices
 
 ## Future Requirements
 
@@ -46,8 +46,8 @@ None — this is a focused fix milestone.
 | ASSET-01 | Phase 27 | Complete |
 | ASSET-02 | Phase 27 | Complete |
 | ASSET-03 | Phase 27 | Complete |
-| VERIFY-01 | Phase 27 | Pending |
-| VERIFY-02 | Phase 27 | Pending |
+| VERIFY-01 | Phase 27 | Complete |
+| VERIFY-02 | Phase 27 | Complete |
 
 **Coverage:**
 - v2.2 requirements: 8 total
