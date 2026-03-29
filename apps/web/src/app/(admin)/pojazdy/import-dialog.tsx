@@ -173,7 +173,6 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
                     <thead className="sticky top-0 bg-muted">
                       <tr>
                         <th className="px-3 py-2 text-left font-medium">Wiersz</th>
-                        <th className="px-3 py-2 text-left font-medium">Pole</th>
                         <th className="px-3 py-2 text-left font-medium">Powod</th>
                       </tr>
                     </thead>
@@ -181,8 +180,7 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
                       {result.errors.map((err, i) => (
                         <tr key={i} className="border-t">
                           <td className="px-3 py-2">{err.row}</td>
-                          <td className="px-3 py-2">{err.field}</td>
-                          <td className="px-3 py-2">{err.message}</td>
+                          <td className="px-3 py-2">{err.reason}</td>
                         </tr>
                       ))}
                     </tbody>

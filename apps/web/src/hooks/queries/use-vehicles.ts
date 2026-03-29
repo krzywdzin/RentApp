@@ -86,7 +86,7 @@ export function useArchiveVehicle() {
 export interface ImportResult {
   imported: number;
   skipped: number;
-  errors: Array<{ row: number; field: string; message: string }>;
+  errors: Array<{ row: number; reason: string }>;
 }
 
 export function useImportVehicles() {
