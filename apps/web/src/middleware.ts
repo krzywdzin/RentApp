@@ -8,14 +8,15 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const token = request.cookies.get('access_token');
+  const accessToken = request.cookies.get('access_token');
+  const refreshToken = request.cookies.get('refresh_token');
   const isLoginPage = pathname === '/login';
 
-  if (!token && !isLoginPage) {
+  if (!accessToken && !refreshToken && !isLoginPage) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  if (token && isLoginPage) {
+  if (accessToken && isLoginPage) {
     return NextResponse.redirect(new URL('/', request.url));
   }
 
