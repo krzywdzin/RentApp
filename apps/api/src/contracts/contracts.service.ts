@@ -323,7 +323,7 @@ export class ContractsService {
     });
 
     if (signatureCount >= ALL_SIGNATURE_TYPES.length) {
-      // All signatures collected - generate PDF
+      // All signatures collected — generate PDF BEFORE activating rental
       // a. Fetch all signature images as base64
       const signatures: Record<string, string> = {};
       for (const sigType of ALL_SIGNATURE_TYPES) {
@@ -347,7 +347,7 @@ export class ContractsService {
         damageSketch = sketchBuffer.toString('base64');
       }
 
-      // c. Generate PDF (wrapped in try/catch to avoid crashing the process)
+      // c. Generate PDF — must succeed before rental activation
       let pdfBuffer: Buffer;
       try {
         const pdfData: ContractPdfData = {
@@ -385,21 +385,28 @@ export class ContractsService {
         throw new InternalServerErrorException('PDF generation failed');
       }
 
-      // d. Upload PDF to MinIO
+      // d. Upload PDF to storage — must succeed before rental activation
       const pdfKey = `contracts/${contract.rentalId}/${contract.id}.pdf`;
-      await this.storageService.upload(pdfKey, pdfBuffer, 'application/pdf');
+      try {
+        await this.storageService.upload(pdfKey, pdfBuffer, 'application/pdf');
+      } catch (uploadError: unknown) {
+        this.logger.error(
+          `PDF upload failed for contract ${contract.contractNumber}: ${uploadError instanceof Error ? uploadError.message : String(uploadError)}`,
+          uploadError instanceof Error ? uploadError.stack : undefined,
+        );
+        throw new InternalServerErrorException('PDF upload failed');
+      }
 
-      // e. Update contract status, pdfKey, pdfGeneratedAt
+      // e. PDF generated and uploaded successfully — now update contract and activate rental
       const updateData: Prisma.ContractUpdateInput = {
         status: ContractStatus.SIGNED,
         pdfKey,
         pdfGeneratedAt: new Date(),
       };
 
-      // f. Email PDF to customer (with portal magic link)
+      // f. Email PDF to customer (with portal magic link) — non-blocking
       const customerEmail = frozenData.customer?.email;
       if (customerEmail) {
-        // Generate portal magic link for customer
         let portalUrl: string | undefined;
         try {
           const rental = await this.prisma.rental.findUnique({
@@ -437,12 +444,13 @@ export class ContractsService {
         }
       }
 
+      // g. Update contract status to SIGNED
       await this.prisma.contract.update({
         where: { id: contractId },
         data: updateData,
       });
 
-      // g. Activate the rental only if it is still in DRAFT status (idempotent guard)
+      // h. Activate rental ONLY after PDF succeeded (idempotent guard)
       const rental = await this.prisma.rental.findUnique({
         where: { id: contract.rentalId },
         select: { status: true },
