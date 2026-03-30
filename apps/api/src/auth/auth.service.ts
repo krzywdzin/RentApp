@@ -86,7 +86,7 @@ export class AuthService {
 
     const payload = { sub: userId, role: user.role, aud: context };
     const secret = context === 'mobile'
-      ? this.config.get<string>('JWT_MOBILE_SECRET')
+      ? (this.config.get<string>('JWT_MOBILE_SECRET') ?? this.config.get<string>('JWT_ACCESS_SECRET'))
       : this.config.get<string>('JWT_ACCESS_SECRET');
     const accessToken = this.jwtService.sign(payload, {
       secret,
