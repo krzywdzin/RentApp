@@ -32,9 +32,7 @@ export class PhotosService {
     });
 
     if (existing) {
-      throw new ConflictException(
-        `A ${dto.type} walkthrough already exists for this rental`,
-      );
+      return existing;
     }
 
     return this.prisma.photoWalkthrough.create({

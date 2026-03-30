@@ -35,6 +35,7 @@ export default function ReturnDamageMapScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedZone, setSelectedZone] = useState<{ zoneName: string; x: number; y: number } | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   // Hydration guard
@@ -46,30 +47,27 @@ export default function ReturnDamageMapScreen() {
 
   // Create walkthrough on mount if not already created
   const walkthroughCreatedRef = useRef(false);
+
+  const initWalkthrough = useCallback(async () => {
+    if (!rentalId) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await createWalkthrough(rentalId);
+      updateDraft({ walkthroughId: result.id });
+    } catch {
+      setError('Nie udalo sie zainicjowac inspekcji. Sprobuj ponownie.');
+      walkthroughCreatedRef.current = false;
+    } finally {
+      setLoading(false);
+    }
+  }, [rentalId, updateDraft]);
+
   useEffect(() => {
     if (!hasHydrated || !rentalId || walkthroughId || walkthroughCreatedRef.current) return;
-
     walkthroughCreatedRef.current = true;
-    let cancelled = false;
-    setLoading(true);
-    createWalkthrough(rentalId)
-      .then((result) => {
-        if (!cancelled) {
-          updateDraft({ walkthroughId: result.id });
-        }
-      })
-      .catch(() => {
-        walkthroughCreatedRef.current = false;
-        // Walkthrough creation failed — user can retry by re-entering screen
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [hasHydrated, rentalId, updateDraft]);
+    initWalkthrough();
+  }, [hasHydrated, rentalId, walkthroughId, initWalkthrough]);
 
   const handleZoneTap = useCallback((zoneName: string, x: number, y: number) => {
     setSelectedZone({ zoneName, x, y });
@@ -144,14 +142,22 @@ export default function ReturnDamageMapScreen() {
 
   if (!hasHydrated || !rentalId) return null;
 
-  if (loading) {
+  if (loading || error) {
     return (
       <SafeAreaView style={s.safeArea}>
         <View style={s.padWrap}>
           <WizardStepper currentStep={3} totalSteps={5} />
         </View>
         <View style={s.loadingWrap}>
-          <ActivityIndicator size="large" color="#3B82F6" />
+          {loading && <ActivityIndicator size="large" color="#3B82F6" />}
+          {error && (
+            <>
+              <Text style={s.errorText}>{error}</Text>
+              <View style={{ marginTop: 16, width: '60%' }}>
+                <AppButton title="Sprobuj ponownie" onPress={initWalkthrough} fullWidth />
+              </View>
+            </>
+          )}
         </View>
       </SafeAreaView>
     );
@@ -247,7 +253,8 @@ const s = StyleSheet.create({
   padWrap: { paddingHorizontal: 16, paddingTop: 8 },
   scrollContent: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 200 },
   stepTitle: { marginBottom: 16, fontSize: 20, fontWeight: '600', color: '#18181B' },
-  loadingWrap: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  loadingWrap: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32 },
+  errorText: { fontSize: 15, color: '#DC2626', textAlign: 'center' },
   pinList: { marginTop: 16 },
   pinListTitle: { marginBottom: 8, fontSize: 14, fontWeight: '600', color: '#18181B' },
   pinRow: {
