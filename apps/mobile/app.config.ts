@@ -40,7 +40,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-localization',
   ],
   extra: {
-    apiUrl: process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000',
+    apiUrl: process.env.EXPO_PUBLIC_API_URL ?? 'https://api-production-977b.up.railway.app',
     eas: {
       projectId: '45d87130-6df0-42eb-b0a9-8d2a30b81341',
     },
