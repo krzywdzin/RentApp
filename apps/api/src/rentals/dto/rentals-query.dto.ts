@@ -1,4 +1,4 @@
-import { IsOptional, IsInt, Min, Max, IsEnum, IsUUID } from 'class-validator';
+import { IsOptional, IsInt, Min, Max, IsEnum, IsUUID, IsIn } from 'class-validator';
 import { Type } from 'class-transformer';
 import { RentalStatus } from '@rentapp/shared';
 
@@ -27,4 +27,8 @@ export class RentalsQueryDto {
   @IsOptional()
   @IsUUID()
   vehicleId?: string;
+
+  @IsOptional()
+  @IsIn(['active', 'archived', 'all'])
+  filter?: 'active' | 'archived' | 'all' = 'active';
 }

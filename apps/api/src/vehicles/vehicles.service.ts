@@ -51,8 +51,13 @@ export class VehiclesService {
     });
   }
 
-  async findAll(includeArchived = false) {
-    const where = includeArchived ? {} : { isArchived: false };
+  async findAll(filter: 'active' | 'archived' | 'all' = 'active') {
+    const where =
+      filter === 'all'
+        ? {}
+        : filter === 'archived'
+          ? { isArchived: true }
+          : { isArchived: false };
     return this.prisma.vehicle.findMany({
       where,
       include: VEHICLE_INCLUDE,
@@ -152,6 +157,41 @@ export class VehiclesService {
       data: { isArchived: true, status: VehicleStatus.RETIRED },
       include: VEHICLE_INCLUDE,
     });
+  }
+
+  async unarchive(id: string) {
+    await this.findOne(id); // Ensure exists
+    return this.prisma.vehicle.update({
+      where: { id },
+      data: { isArchived: false, status: VehicleStatus.AVAILABLE },
+      include: VEHICLE_INCLUDE,
+    });
+  }
+
+  async hardDelete(id: string) {
+    const vehicle = await this.findOne(id);
+
+    // Check no active rentals reference this vehicle
+    const activeRentals = await this.prisma.rental.count({
+      where: {
+        vehicleId: id,
+        status: { in: ['ACTIVE', 'EXTENDED', 'DRAFT'] },
+      },
+    });
+    if (activeRentals > 0) {
+      throw new BadRequestException(
+        'Cannot delete vehicle with active rentals',
+      );
+    }
+
+    await this.prisma.$transaction(async (tx) => {
+      await tx.vehicleDocument.deleteMany({ where: { vehicleId: id } });
+      await tx.vehicleInsurance.deleteMany({ where: { vehicleId: id } });
+      await tx.vehicleInspection.deleteMany({ where: { vehicleId: id } });
+      await tx.vehicle.delete({ where: { id } });
+    });
+
+    return vehicle;
   }
 
   async uploadDocument(

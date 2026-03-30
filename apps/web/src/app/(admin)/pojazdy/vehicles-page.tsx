@@ -38,14 +38,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DataTablePagination } from '@/components/data-table/data-table-pagination';
+import { DataTable } from '@/components/data-table/data-table';
 import {
   useVehicles,
   useArchiveVehicle,
+  useDeleteVehicle,
+  useUnarchiveVehicle,
+  useArchivedVehicles,
   useBulkUpdateVehicles,
 } from '@/hooks/queries/use-vehicles';
-import { getVehicleColumns } from './columns';
+import { getVehicleColumns, getArchivedVehicleColumns } from './columns';
 import { VehicleFilterBar } from './filter-bar';
 import { ImportDialog } from './import-dialog';
 import { exportToCsv } from '@/lib/csv-export';
@@ -53,7 +58,10 @@ import { exportToCsv } from '@/lib/csv-export';
 export function VehiclesPage() {
   const router = useRouter();
   const { data: vehicles, isLoading, isError, refetch } = useVehicles();
+  const { data: archivedVehicles, isLoading: archivedLoading } = useArchivedVehicles();
   const archiveVehicle = useArchiveVehicle();
+  const deleteVehicle = useDeleteVehicle();
+  const unarchiveVehicle = useUnarchiveVehicle();
   const bulkUpdate = useBulkUpdateVehicles();
 
   const [search, setSearch] = useState('');
@@ -62,8 +70,13 @@ export function VehiclesPage() {
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 });
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
+  // Archived tab pagination
+  const [archivedPagination, setArchivedPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 });
+  const [archivedSorting, setArchivedSorting] = useState<SortingState>([]);
+
   const [importOpen, setImportOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<VehicleDto | null>(null);
+  const [hardDeleteTarget, setHardDeleteTarget] = useState<VehicleDto | null>(null);
   const [bulkStatusDialog, setBulkStatusDialog] = useState<{
     open: boolean;
     status: VehicleStatus | null;
@@ -86,9 +99,19 @@ export function VehiclesPage() {
       getVehicleColumns({
         onDetail: (id) => router.push(`/pojazdy/${id}`),
         onEdit: (id) => router.push(`/pojazdy/${id}/edytuj`),
-        onDelete: (vehicle) => setDeleteTarget(vehicle),
+        onDelete: (vehicle) => setHardDeleteTarget(vehicle),
+        onArchive: (vehicle) => archiveVehicle.mutate(vehicle.id),
       }),
-    [router],
+    [router, archiveVehicle],
+  );
+
+  const archivedColumns = useMemo(
+    () =>
+      getArchivedVehicleColumns({
+        onUnarchive: (vehicle) => unarchiveVehicle.mutate(vehicle.id),
+        onHardDelete: (vehicle) => setHardDeleteTarget(vehicle),
+      }),
+    [unarchiveVehicle],
   );
 
   const table = useReactTable({
@@ -107,12 +130,19 @@ export function VehiclesPage() {
   const selectedRows = table.getFilteredSelectedRowModel().rows;
   const selectedVehicles = selectedRows.map((r) => r.original);
 
-  const handleDelete = useCallback(() => {
-    if (!deleteTarget) return;
-    archiveVehicle.mutate(deleteTarget.id, {
-      onSuccess: () => setDeleteTarget(null),
+  const archivedPageCount = Math.ceil((archivedVehicles?.length ?? 0) / archivedPagination.pageSize);
+  const archivedPageData = useMemo(() => {
+    if (!archivedVehicles) return [];
+    const start = archivedPagination.pageIndex * archivedPagination.pageSize;
+    return archivedVehicles.slice(start, start + archivedPagination.pageSize);
+  }, [archivedVehicles, archivedPagination]);
+
+  const handleHardDelete = useCallback(() => {
+    if (!hardDeleteTarget) return;
+    deleteVehicle.mutate(hardDeleteTarget.id, {
+      onSuccess: () => setHardDeleteTarget(null),
     });
-  }, [deleteTarget, archiveVehicle]);
+  }, [hardDeleteTarget, deleteVehicle]);
 
   const handleBulkStatusChange = useCallback((status: VehicleStatus) => {
     setBulkStatusDialog({ open: true, status });
@@ -190,122 +220,153 @@ export function VehiclesPage() {
         </div>
       )}
 
-      {/* Filters */}
-      <VehicleFilterBar onSearchChange={handleSearchChange} onStatusChange={handleStatusChange} />
+      <Tabs defaultValue="aktywne">
+        <TabsList>
+          <TabsTrigger value="aktywne">Aktywne</TabsTrigger>
+          <TabsTrigger value="zarchiwizowane">Zarchiwizowane</TabsTrigger>
+        </TabsList>
 
-      {/* Bulk operations bar */}
-      {selectedVehicles.length > 0 && (
-        <div className="flex items-center gap-3 rounded-md border bg-muted/50 px-4 py-2">
-          <span className="text-sm text-muted-foreground">
-            Zaznaczono {selectedVehicles.length}{' '}
-            {selectedVehicles.length === 1 ? 'pojazd' : 'pojazdow'}
-          </span>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                Zmien status
+        <TabsContent value="aktywne" className="space-y-4">
+          {/* Filters */}
+          <VehicleFilterBar onSearchChange={handleSearchChange} onStatusChange={handleStatusChange} />
+
+          {/* Bulk operations bar */}
+          {selectedVehicles.length > 0 && (
+            <div className="flex items-center gap-3 rounded-md border bg-muted/50 px-4 py-2">
+              <span className="text-sm text-muted-foreground">
+                Zaznaczono {selectedVehicles.length}{' '}
+                {selectedVehicles.length === 1 ? 'pojazd' : 'pojazdow'}
+              </span>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    Zmien status
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem
+                    onClick={() => handleBulkStatusChange('AVAILABLE' as VehicleStatus)}
+                  >
+                    Dostepny
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleBulkStatusChange('SERVICE' as VehicleStatus)}>
+                    Serwis
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleBulkStatusChange('RETIRED' as VehicleStatus)}>
+                    Wycofany
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Button variant="outline" size="sm" onClick={handleExportCsv}>
+                <Download className="h-4 w-4" />
+                Eksportuj CSV
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem
-                onClick={() => handleBulkStatusChange('AVAILABLE' as VehicleStatus)}
-              >
-                Dostepny
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleBulkStatusChange('SERVICE' as VehicleStatus)}>
-                Serwis
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleBulkStatusChange('RETIRED' as VehicleStatus)}>
-                Wycofany
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <Button variant="outline" size="sm" onClick={handleExportCsv}>
-            <Download className="h-4 w-4" />
-            Eksportuj CSV
-          </Button>
-        </div>
-      )}
+            </div>
+          )}
 
-      {/* Table */}
-      <div className="space-y-4">
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(header.column.columnDef.header, header.getContext())}
-                    </TableHead>
+          {/* Table */}
+          <div className="space-y-4">
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <TableRow key={headerGroup.id}>
+                      {headerGroup.headers.map((header) => (
+                        <TableHead key={header.id}>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(header.column.columnDef.header, header.getContext())}
+                        </TableHead>
+                      ))}
+                    </TableRow>
                   ))}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {isLoading ? (
-                Array.from({ length: 5 }).map((_, i) => (
-                  <TableRow key={`skeleton-${i}`}>
-                    {columns.map((_, j) => (
-                      <TableCell key={`skeleton-${i}-${j}`}>
-                        <Skeleton className="h-5 w-full" />
+                </TableHeader>
+                <TableBody>
+                  {isLoading ? (
+                    Array.from({ length: 5 }).map((_, i) => (
+                      <TableRow key={`skeleton-${i}`}>
+                        {columns.map((_, j) => (
+                          <TableCell key={`skeleton-${i}-${j}`}>
+                            <Skeleton className="h-5 w-full" />
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))
+                  ) : table.getRowModel().rows.length ? (
+                    table.getRowModel().rows.map((row) => (
+                      <TableRow
+                        key={row.id}
+                        data-state={row.getIsSelected() && 'selected'}
+                        className="cursor-pointer"
+                        onClick={() => router.push(`/pojazdy/${row.original.id}`)}
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell key={cell.id}>
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell
+                        colSpan={columns.length}
+                        className="h-24 text-center text-muted-foreground"
+                      >
+                        Brak pojazdow
                       </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : table.getRowModel().rows.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && 'selected'}
-                    className="cursor-pointer"
-                    onClick={() => router.push(`/pojazdy/${row.original.id}`)}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center text-muted-foreground"
-                  >
-                    Brak pojazdow
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-        <DataTablePagination table={table} />
-      </div>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+            <DataTablePagination table={table} />
+          </div>
+        </TabsContent>
 
-      {/* Delete confirmation */}
-      <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <TabsContent value="zarchiwizowane" className="space-y-4">
+          {archivedVehicles && archivedVehicles.length === 0 && !archivedLoading ? (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <p className="text-lg font-medium">Brak zarchiwizowanych pojazdow</p>
+              <p className="text-sm text-muted-foreground">
+                Zarchiwizowane pojazdy pojawia sie tutaj.
+              </p>
+            </div>
+          ) : (
+            <DataTable
+              columns={archivedColumns}
+              data={archivedPageData}
+              pageCount={archivedPageCount}
+              pagination={archivedPagination}
+              onPaginationChange={setArchivedPagination}
+              sorting={archivedSorting}
+              onSortingChange={setArchivedSorting}
+              isLoading={archivedLoading}
+            />
+          )}
+        </TabsContent>
+      </Tabs>
+
+      {/* Hard delete confirmation */}
+      <Dialog open={!!hardDeleteTarget} onOpenChange={(open) => !open && setHardDeleteTarget(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Usunac pojazd?</DialogTitle>
+            <DialogTitle>Trwale usunac pojazd?</DialogTitle>
             <DialogDescription>
-              Pojazd {deleteTarget?.registration} zostanie trwale usuniety. Tej operacji nie mozna
+              Pojazd {hardDeleteTarget?.registration} zostanie trwale usuniety. Tej operacji nie mozna
               cofnac.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteTarget(null)}>
+            <Button variant="outline" onClick={() => setHardDeleteTarget(null)}>
               Anuluj
             </Button>
             <Button
               variant="destructive"
-              onClick={handleDelete}
-              disabled={archiveVehicle.isPending}
+              onClick={handleHardDelete}
+              disabled={deleteVehicle.isPending}
             >
-              {archiveVehicle.isPending ? 'Usuwanie...' : 'Usun pojazd'}
+              {deleteVehicle.isPending ? 'Usuwanie...' : 'Usun trwale'}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -122,6 +122,36 @@ export class RentalsController {
     return this.rentalsService.rollback(id, dto, userId);
   }
 
+  @Patch(':id/archive')
+  @Roles(UserRole.ADMIN, UserRole.EMPLOYEE)
+  async archive(@Param('id', ParseUUIDPipe) id: string) {
+    const rental = await this.rentalsService.archive(id);
+    return {
+      ...rental,
+      __audit: {
+        action: 'rental.archive',
+        entityType: 'Rental',
+        entityId: id,
+        changes: { isArchived: { old: false, new: true } },
+      },
+    };
+  }
+
+  @Patch(':id/unarchive')
+  @Roles(UserRole.ADMIN, UserRole.EMPLOYEE)
+  async unarchive(@Param('id', ParseUUIDPipe) id: string) {
+    const rental = await this.rentalsService.unarchive(id);
+    return {
+      ...rental,
+      __audit: {
+        action: 'rental.unarchive',
+        entityType: 'Rental',
+        entityId: id,
+        changes: { isArchived: { old: true, new: false } },
+      },
+    };
+  }
+
   @Delete(':id')
   @Roles(UserRole.ADMIN, UserRole.EMPLOYEE)
   async delete(

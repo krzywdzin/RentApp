@@ -20,10 +20,12 @@ export function getVehicleColumns({
   onDetail,
   onEdit,
   onDelete,
+  onArchive,
 }: {
   onDetail: (id: string) => void;
   onEdit: (id: string) => void;
   onDelete: (vehicle: VehicleDto) => void;
+  onArchive?: (vehicle: VehicleDto) => void;
 }): ColumnDef<VehicleDto, unknown>[] {
   return [
     {
@@ -103,8 +105,89 @@ export function getVehicleColumns({
               <DropdownMenuItem onClick={() => onDetail(vehicle.id)}>Szczegoly</DropdownMenuItem>
               <DropdownMenuItem onClick={() => onEdit(vehicle.id)}>Edytuj</DropdownMenuItem>
               <DropdownMenuSeparator />
+              {onArchive && (
+                <DropdownMenuItem onClick={() => onArchive(vehicle)}>
+                  Archiwizuj
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem className="text-destructive" onClick={() => onDelete(vehicle)}>
-                Usun
+                Usun trwale
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+      enableSorting: false,
+    },
+  ];
+}
+
+export function getArchivedVehicleColumns({
+  onUnarchive,
+  onHardDelete,
+}: {
+  onUnarchive: (vehicle: VehicleDto) => void;
+  onHardDelete: (vehicle: VehicleDto) => void;
+}): ColumnDef<VehicleDto, unknown>[] {
+  return [
+    {
+      accessorKey: 'registration',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Rejestracja" />,
+      cell: ({ row }) => <span className="font-medium">{row.getValue('registration')}</span>,
+    },
+    {
+      id: 'makeModel',
+      accessorFn: (row) => `${row.make} ${row.model}`,
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Marka / Model" />,
+    },
+    {
+      accessorKey: 'year',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Rok" />,
+    },
+    {
+      accessorKey: 'mileage',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Przebieg" />,
+      cell: ({ row }) => {
+        const mileage = row.getValue('mileage') as number;
+        return <span>{mileage.toLocaleString('pl-PL')} km</span>;
+      },
+    },
+    {
+      accessorKey: 'status',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
+      cell: ({ row }) => {
+        const status = row.getValue('status') as string;
+        const config = vehicleStatusConfig[status] ?? {
+          label: status,
+          variant: 'secondary' as const,
+        };
+        return <Badge variant={config.variant}>{config.label}</Badge>;
+      },
+    },
+    {
+      id: 'actions',
+      cell: ({ row }) => {
+        const vehicle = row.original;
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <MoreHorizontal className="h-4 w-4" />
+                <span className="sr-only">Menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => onUnarchive(vehicle)}>
+                Przywroc
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="text-destructive" onClick={() => onHardDelete(vehicle)}>
+                Usun trwale
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

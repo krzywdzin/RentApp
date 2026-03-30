@@ -82,6 +82,7 @@ model User {
   setupToken       String?
   setupTokenExpiry DateTime?
   isActive         Boolean   @default(true)
+  isArchived       Boolean   @default(false)
   failedAttempts   Int       @default(0)
   lockedUntil      DateTime?
   createdAt        DateTime  @default(now())
@@ -243,6 +244,7 @@ model Rental {
   returnMileage   Int?
   notes           String?
   overrodeConflict Boolean      @default(false)
+  isArchived      Boolean       @default(false)
 
   vehicle         Vehicle       @relation(fields: [vehicleId], references: [id])
   customer        Customer      @relation(fields: [customerId], references: [id])

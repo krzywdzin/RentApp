@@ -14,13 +14,13 @@ export interface UserDto {
 
 export const userKeys = {
   all: ['users'] as const,
-  list: () => [...userKeys.all, 'list'] as const,
+  list: (filters?: Record<string, unknown>) => [...userKeys.all, 'list', filters] as const,
 };
 
-export function useUsers() {
+export function useUsers(filter: 'active' | 'archived' | 'all' = 'active') {
   return useQuery({
-    queryKey: userKeys.list(),
-    queryFn: () => apiClient<UserDto[]>('/users'),
+    queryKey: userKeys.list({ filter }),
+    queryFn: () => apiClient<UserDto[]>(`/users?filter=${filter}`),
   });
 }
 
@@ -96,6 +96,57 @@ export function useResetPassword() {
     },
     onError: () => {
       toast.error('Nie udalo sie wyslac emaila z resetem hasla');
+    },
+  });
+}
+
+export function useArchiveUser() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) =>
+      apiClient<UserDto>(`/users/${id}/archive`, {
+        method: 'PATCH',
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
+      toast.success('Uzytkownik zarchiwizowany');
+    },
+    onError: () => {
+      toast.error('Wystapil blad podczas archiwizacji uzytkownika');
+    },
+  });
+}
+
+export function useUnarchiveUser() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) =>
+      apiClient<UserDto>(`/users/${id}/unarchive`, {
+        method: 'PATCH',
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
+      toast.success('Uzytkownik przywrocony');
+    },
+    onError: () => {
+      toast.error('Wystapil blad podczas przywracania uzytkownika');
+    },
+  });
+}
+
+export function useDeleteUser() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) =>
+      apiClient<void>(`/users/${id}`, {
+        method: 'DELETE',
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
+      toast.success('Uzytkownik trwale usuniety');
+    },
+    onError: () => {
+      toast.error('Wystapil blad podczas usuwania uzytkownika');
     },
   });
 }

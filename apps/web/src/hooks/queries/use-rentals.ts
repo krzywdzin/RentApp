@@ -21,6 +21,7 @@ interface RentalFilters {
   status?: RentalStatus;
   customerId?: string;
   vehicleId?: string;
+  filter?: 'active' | 'archived' | 'all';
 }
 
 export function useRentals(filters?: RentalFilters) {
@@ -28,6 +29,7 @@ export function useRentals(filters?: RentalFilters) {
   if (filters?.status) params.set('status', filters.status);
   if (filters?.customerId) params.set('customerId', filters.customerId);
   if (filters?.vehicleId) params.set('vehicleId', filters.vehicleId);
+  if (filters?.filter) params.set('filter', filters.filter);
   const query = params.toString();
   return useQuery({
     queryKey: rentalKeys.list(filters as Record<string, unknown> | undefined),
@@ -36,6 +38,10 @@ export function useRentals(filters?: RentalFilters) {
       return res.data;
     },
   });
+}
+
+export function useArchivedRentals() {
+  return useRentals({ filter: 'archived' });
 }
 
 export function useRental(id: string) {
@@ -153,6 +159,57 @@ export function useRollbackRental(id: string) {
     },
     onError: () => {
       toast.error('Nie udalo sie cofnac statusu');
+    },
+  });
+}
+
+export function useArchiveRental() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) =>
+      apiClient<RentalDto>(`/rentals/${id}/archive`, {
+        method: 'PATCH',
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: rentalKeys.all });
+      toast.success('Wynajem zarchiwizowany');
+    },
+    onError: () => {
+      toast.error('Wystapil blad podczas archiwizacji wynajmu');
+    },
+  });
+}
+
+export function useUnarchiveRental() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) =>
+      apiClient<RentalDto>(`/rentals/${id}/unarchive`, {
+        method: 'PATCH',
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: rentalKeys.all });
+      toast.success('Wynajem przywrocony');
+    },
+    onError: () => {
+      toast.error('Wystapil blad podczas przywracania wynajmu');
+    },
+  });
+}
+
+export function useDeleteRental() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) =>
+      apiClient<void>(`/rentals/${id}`, {
+        method: 'DELETE',
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: rentalKeys.all });
+      toast.success('Wynajem trwale usuniety');
+    },
+    onError: () => {
+      toast.error('Wystapil blad podczas usuwania wynajmu');
     },
   });
 }

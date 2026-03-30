@@ -14,11 +14,15 @@ export const vehicleKeys = {
   detail: (id: string) => [...vehicleKeys.all, 'detail', id] as const,
 };
 
-export function useVehicles() {
+export function useVehicles(filter: 'active' | 'archived' | 'all' = 'active') {
   return useQuery({
-    queryKey: vehicleKeys.list(),
-    queryFn: () => apiClient<VehicleDto[]>('/vehicles'),
+    queryKey: vehicleKeys.list({ filter }),
+    queryFn: () => apiClient<VehicleDto[]>(`/vehicles?filter=${filter}`),
   });
+}
+
+export function useArchivedVehicles() {
+  return useVehicles('archived');
 }
 
 export function useVehicle(id: string) {
@@ -75,7 +79,41 @@ export function useArchiveVehicle() {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: vehicleKeys.all });
-      toast.success('Pojazd usuniety');
+      toast.success('Pojazd zarchiwizowany');
+    },
+    onError: () => {
+      toast.error('Wystapil blad podczas archiwizacji pojazdu');
+    },
+  });
+}
+
+export function useUnarchiveVehicle() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) =>
+      apiClient<VehicleDto>(`/vehicles/${id}/unarchive`, {
+        method: 'PATCH',
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: vehicleKeys.all });
+      toast.success('Pojazd przywrocony');
+    },
+    onError: () => {
+      toast.error('Wystapil blad podczas przywracania pojazdu');
+    },
+  });
+}
+
+export function useDeleteVehicle() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) =>
+      apiClient<void>(`/vehicles/${id}`, {
+        method: 'DELETE',
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: vehicleKeys.all });
+      toast.success('Pojazd trwale usuniety');
     },
     onError: () => {
       toast.error('Wystapil blad podczas usuwania pojazdu');

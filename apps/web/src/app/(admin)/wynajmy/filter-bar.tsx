@@ -26,7 +26,7 @@ interface FilterBarProps {
 
 const statusOptions = [
   { value: 'ALL', label: 'Wszystkie' },
-  { value: RentalStatus.DRAFT, label: 'Szkic' },
+  { value: RentalStatus.DRAFT, label: 'Wersja robocza' },
   { value: RentalStatus.ACTIVE, label: 'Aktywny' },
   { value: RentalStatus.EXTENDED, label: 'Przedluzony' },
   { value: RentalStatus.RETURNED, label: 'Zwrócony' },

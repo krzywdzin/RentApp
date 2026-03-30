@@ -73,7 +73,7 @@ Each task was committed atomically:
 1. **Task 1: Fix rental form and extend/return dialog validations** - `607ba04` (feat)
 2. **Task 2: Fix user edit validation, numeric 0-values, and user creation mutation** - `feafc2c` (feat)
 
-**Plan metadata:** [pending] (docs: complete plan)
+**Plan metadata:** `17c1c22` (docs: complete plan)
 
 ## Files Created/Modified
 - `apps/web/src/app/(admin)/wynajmy/nowy/page.tsx` - Made dailyRateNet required with min(1) and Polish required_error

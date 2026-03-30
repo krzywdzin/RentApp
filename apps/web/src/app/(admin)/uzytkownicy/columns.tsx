@@ -23,10 +23,14 @@ export function getUserColumns({
   onEdit,
   onToggleActive,
   onResetPassword,
+  onArchive,
+  onDelete,
 }: {
   onEdit: (user: UserDto) => void;
   onToggleActive: (user: UserDto) => void;
   onResetPassword: (user: UserDto) => void;
+  onArchive?: (user: UserDto) => void;
+  onDelete?: (user: UserDto) => void;
 }): ColumnDef<UserDto, unknown>[] {
   return [
     {
@@ -91,6 +95,83 @@ export function getUserColumns({
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => onToggleActive(user)}>
                 {user.isActive ? 'Dezaktywuj' : 'Aktywuj'}
+              </DropdownMenuItem>
+              {onArchive && (
+                <DropdownMenuItem onClick={() => onArchive(user)}>
+                  Archiwizuj
+                </DropdownMenuItem>
+              )}
+              {onDelete && (
+                <DropdownMenuItem className="text-destructive" onClick={() => onDelete(user)}>
+                  Usun trwale
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+      enableSorting: false,
+    },
+  ];
+}
+
+export function getArchivedUserColumns({
+  onUnarchive,
+  onHardDelete,
+}: {
+  onUnarchive: (user: UserDto) => void;
+  onHardDelete: (user: UserDto) => void;
+}): ColumnDef<UserDto, unknown>[] {
+  return [
+    {
+      accessorKey: 'name',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Imie i nazwisko" />,
+      cell: ({ row }) => <span className="font-medium">{row.getValue('name')}</span>,
+    },
+    {
+      accessorKey: 'email',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Email" />,
+    },
+    {
+      accessorKey: 'role',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Rola" />,
+      cell: ({ row }) => {
+        const role = row.getValue('role') as string;
+        return <span>{roleLabels[role] ?? role}</span>;
+      },
+    },
+    {
+      accessorKey: 'createdAt',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Utworzono" />,
+      cell: ({ row }) => {
+        const date = new Date(row.getValue('createdAt') as string);
+        return <span>{date.toLocaleDateString('pl-PL')}</span>;
+      },
+    },
+    {
+      id: 'actions',
+      cell: ({ row }) => {
+        const user = row.original;
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <MoreHorizontal className="h-4 w-4" />
+                <span className="sr-only">Menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => onUnarchive(user)}>
+                Przywroc
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="text-destructive" onClick={() => onHardDelete(user)}>
+                Usun trwale
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import * as argon2 from 'argon2';
 import * as crypto from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -85,11 +85,19 @@ export class UsersService {
     name: true,
     role: true,
     isActive: true,
+    isArchived: true,
     createdAt: true,
   } as const;
 
-  async findAll() {
+  async findAll(filter: 'active' | 'archived' | 'all' = 'active') {
+    const where =
+      filter === 'all'
+        ? {}
+        : filter === 'archived'
+          ? { isArchived: true }
+          : { isArchived: false };
     return this.prisma.user.findMany({
+      where,
       select: this.userSelectFields,
       orderBy: { createdAt: 'desc' },
     });
@@ -110,6 +118,66 @@ export class UsersService {
       },
       select: this.userSelectFields,
     });
+  }
+
+  async archive(id: string) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return this.prisma.user.update({
+      where: { id },
+      data: { isArchived: true, isActive: false },
+      select: this.userSelectFields,
+    });
+  }
+
+  async unarchive(id: string) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return this.prisma.user.update({
+      where: { id },
+      data: { isArchived: false, isActive: true },
+      select: this.userSelectFields,
+    });
+  }
+
+  async hardDelete(id: string) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Check no active rentals reference this user as createdBy
+    const activeRentals = await this.prisma.rental.count({
+      where: {
+        createdById: id,
+        status: { in: ['ACTIVE', 'EXTENDED', 'DRAFT'] },
+      },
+    });
+    if (activeRentals > 0) {
+      throw new BadRequestException(
+        'Cannot delete user with active rentals',
+      );
+    }
+
+    await this.prisma.$transaction(async (tx) => {
+      // Nullify audit log references
+      await tx.auditLog.updateMany({
+        where: { actorId: id },
+        data: { actorId: null },
+      });
+
+      // Delete in-app notifications
+      await tx.inAppNotification.deleteMany({ where: { userId: id } });
+
+      // Delete user
+      await tx.user.delete({ where: { id } });
+    });
+
+    return { id: user.id, name: user.name, email: user.email };
   }
 
   async resetPasswordByAdmin(id: string): Promise<void> {

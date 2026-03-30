@@ -3,11 +3,11 @@ import Constants from 'expo-constants';
 // Production Railway API URL - hardcoded as bulletproof fallback
 const RAILWAY_API_URL = 'https://api-production-977b.up.railway.app';
 
-// API URL resolution order:
-// 1. EXPO_PUBLIC_API_URL env var (embedded by Metro at build time)
-// 2. Constants.expoConfig.extra.apiUrl (from app.config.ts)
-// 3. Railway URL as fallback (NEVER localhost in production builds)
 const resolveApiUrl = (): string => {
+  // In production builds always use Railway
+  if (!__DEV__) {
+    return RAILWAY_API_URL;
+  }
   // Metro embeds EXPO_PUBLIC_* vars at build time - most reliable source
   const envUrl = process.env.EXPO_PUBLIC_API_URL;
   if (envUrl) {

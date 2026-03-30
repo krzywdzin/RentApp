@@ -143,8 +143,16 @@ export class RentalsService {
   }
 
   async findAll(query: RentalsQueryDto): Promise<{ data: RentalWithRelations[]; total: number; page: number; limit: number }> {
-    const { page = 1, limit = 20, status, customerId, vehicleId } = query;
+    const { page = 1, limit = 20, status, customerId, vehicleId, filter = 'active' } = query;
     const where: Prisma.RentalWhereInput = {};
+
+    if (filter === 'archived') {
+      where.isArchived = true;
+    } else if (filter === 'active') {
+      where.isArchived = false;
+    }
+    // filter === 'all' => no isArchived constraint
+
     if (status) {
       where.status = status;
     }
@@ -533,23 +541,92 @@ export class RentalsService {
       throw new NotFoundException(`Rental with ID "${id}" not found`);
     }
 
-    if (rental.status !== RentalStatus.DRAFT) {
-      throw new BadRequestException('Only DRAFT rentals can be deleted');
+    if (rental.status !== RentalStatus.DRAFT && rental.status !== RentalStatus.RETURNED) {
+      throw new BadRequestException('Only DRAFT or RETURNED rentals can be deleted');
     }
 
     await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+      // Delete damage reports via walkthroughs
+      const walkthroughs = await tx.photoWalkthrough.findMany({
+        where: { rentalId: id },
+        select: { id: true },
+      });
+      const walkthroughIds = walkthroughs.map((w) => w.id);
+
+      if (walkthroughIds.length > 0) {
+        await tx.damageReport.deleteMany({
+          where: { walkthroughId: { in: walkthroughIds } },
+        });
+        await tx.walkthroughPhoto.deleteMany({
+          where: { walkthroughId: { in: walkthroughIds } },
+        });
+        await tx.photoWalkthrough.deleteMany({
+          where: { rentalId: id },
+        });
+      }
+
+      // Delete notifications related to this rental
+      await tx.notification.deleteMany({
+        where: { relatedEntityType: 'Rental', relatedEntityId: id },
+      });
+
+      // Delete CEPIK verifications
+      await tx.cepikVerification.deleteMany({
+        where: { rentalId: id },
+      });
+
+      // Delete contract signatures, annexes, then contracts
       await tx.contractSignature.deleteMany({
+        where: { contract: { rentalId: id } },
+      });
+      await tx.contractAnnex.deleteMany({
         where: { contract: { rentalId: id } },
       });
       await tx.contract.deleteMany({
         where: { rentalId: id },
       });
+
       await tx.rental.delete({
         where: { id },
       });
     });
 
     return rental;
+  }
+
+  async archive(id: string): Promise<RentalWithRelations> {
+    const rental = await this.prisma.rental.findUnique({
+      where: { id },
+      include: RENTAL_INCLUDE,
+    });
+    if (!rental) {
+      throw new NotFoundException(`Rental with ID "${id}" not found`);
+    }
+    if (rental.status !== RentalStatus.RETURNED) {
+      throw new BadRequestException('Only RETURNED rentals can be archived');
+    }
+
+    return this.prisma.rental.update({
+      where: { id },
+      data: { isArchived: true },
+      include: RENTAL_INCLUDE,
+    });
+  }
+
+  async unarchive(id: string): Promise<RentalWithRelations> {
+    const rental = await this.prisma.rental.findUnique({
+      where: { id },
+      include: RENTAL_INCLUDE,
+    });
+    if (!rental) {
+      throw new NotFoundException(`Rental with ID "${id}" not found`);
+    }
+
+    return this.prisma.rental.update({
+      where: { id },
+      data: { isArchived: false },
+      include: RENTAL_INCLUDE,
+    });
   }
 
   async checkOverlap(

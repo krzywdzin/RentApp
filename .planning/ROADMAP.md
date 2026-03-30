@@ -108,3 +108,13 @@ v2.3: 28 -> 29 -> 30 & 31 & 32 (parallel after 28)
 | 20-26 | v2.1 | 26/26 | Complete | 2026-03-28 |
 | 27 | v2.2 | 2/2 | Complete | 2026-03-29 |
 | 28-32 | v2.3 | 9/9 | Complete | 2026-03-29 |
+
+### Phase 1: Mobile & API Bug Fixes
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 0
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 1 to break down)

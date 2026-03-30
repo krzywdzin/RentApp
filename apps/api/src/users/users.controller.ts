@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Patch, Param, Body, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Delete, Param, Body, Query, ParseUUIDPipe } from '@nestjs/common';
 import { UserRole } from '@rentapp/shared';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -26,8 +26,12 @@ export class UsersController {
 
   @Get()
   @Roles(UserRole.ADMIN)
-  async findAll() {
-    return this.usersService.findAll();
+  async findAll(@Query('filter') filter?: string) {
+    const validFilters = ['active', 'archived', 'all'] as const;
+    const f = validFilters.includes(filter as typeof validFilters[number])
+      ? (filter as 'active' | 'archived' | 'all')
+      : 'active';
+    return this.usersService.findAll(f);
   }
 
   @Patch(':id')
@@ -44,5 +48,49 @@ export class UsersController {
   async resetPassword(@Param('id', ParseUUIDPipe) id: string) {
     await this.usersService.resetPasswordByAdmin(id);
     return { success: true };
+  }
+
+  @Patch(':id/archive')
+  @Roles(UserRole.ADMIN)
+  async archive(@Param('id', ParseUUIDPipe) id: string) {
+    const user = await this.usersService.archive(id);
+    return {
+      ...user,
+      __audit: {
+        action: 'user.archive',
+        entityType: 'User',
+        entityId: id,
+        changes: { isArchived: { old: false, new: true }, isActive: { old: true, new: false } },
+      },
+    };
+  }
+
+  @Patch(':id/unarchive')
+  @Roles(UserRole.ADMIN)
+  async unarchive(@Param('id', ParseUUIDPipe) id: string) {
+    const user = await this.usersService.unarchive(id);
+    return {
+      ...user,
+      __audit: {
+        action: 'user.unarchive',
+        entityType: 'User',
+        entityId: id,
+        changes: { isArchived: { old: true, new: false }, isActive: { old: false, new: true } },
+      },
+    };
+  }
+
+  @Delete(':id')
+  @Roles(UserRole.ADMIN)
+  async delete(@Param('id', ParseUUIDPipe) id: string) {
+    const result = await this.usersService.hardDelete(id);
+    return {
+      ...result,
+      __audit: {
+        action: 'user.delete',
+        entityType: 'User',
+        entityId: id,
+      },
+    };
   }
 }

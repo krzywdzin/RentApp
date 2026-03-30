@@ -120,12 +120,22 @@ describe('VehiclesService', () => {
     );
   });
 
-  it('findAll(true) does NOT filter by isArchived', async () => {
-    await service.findAll(true);
+  it('findAll("all") does NOT filter by isArchived', async () => {
+    await service.findAll('all');
 
     expect(prisma.vehicle.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: {},
+      }),
+    );
+  });
+
+  it('findAll("archived") filters by isArchived: true', async () => {
+    await service.findAll('archived');
+
+    expect(prisma.vehicle.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { isArchived: true },
       }),
     );
   });

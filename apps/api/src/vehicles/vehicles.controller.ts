@@ -3,6 +3,7 @@ import {
   Post,
   Get,
   Patch,
+  Delete,
   Param,
   Body,
   Query,
@@ -39,8 +40,12 @@ export class VehiclesController {
 
   @Get()
   @Roles(UserRole.ADMIN, UserRole.EMPLOYEE)
-  async findAll(@Query('includeArchived') includeArchived?: string) {
-    return this.vehiclesService.findAll(includeArchived === 'true');
+  async findAll(@Query('filter') filter?: string) {
+    const validFilters = ['active', 'archived', 'all'] as const;
+    const f = validFilters.includes(filter as typeof validFilters[number])
+      ? (filter as 'active' | 'archived' | 'all')
+      : 'active';
+    return this.vehiclesService.findAll(f);
   }
 
   @Post('import')
@@ -117,6 +122,35 @@ export class VehiclesController {
         entityType: 'Vehicle',
         entityId: id,
         changes: { isArchived: { old: false, new: true } },
+      },
+    };
+  }
+
+  @Patch(':id/unarchive')
+  @Roles(UserRole.ADMIN)
+  async unarchive(@Param('id', ParseUUIDPipe) id: string) {
+    const vehicle = await this.vehiclesService.unarchive(id);
+    return {
+      ...vehicle,
+      __audit: {
+        action: 'vehicle.unarchive',
+        entityType: 'Vehicle',
+        entityId: id,
+        changes: { isArchived: { old: true, new: false } },
+      },
+    };
+  }
+
+  @Delete(':id')
+  @Roles(UserRole.ADMIN)
+  async delete(@Param('id', ParseUUIDPipe) id: string) {
+    const vehicle = await this.vehiclesService.hardDelete(id);
+    return {
+      ...vehicle,
+      __audit: {
+        action: 'vehicle.delete',
+        entityType: 'Vehicle',
+        entityId: id,
       },
     };
   }
