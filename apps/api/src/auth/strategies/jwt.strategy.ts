@@ -20,7 +20,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: JwtPayload) {
     if (payload.aud === 'mobile') {
-      throw new UnauthorizedException('Invalid token audience');
+      // Mobile tokens are handled by jwt-mobile strategy
+      return false;
     }
     const user = await this.prisma.user.findUnique({
       where: { id: payload.sub },
