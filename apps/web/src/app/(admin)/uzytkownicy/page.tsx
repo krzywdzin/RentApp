@@ -23,6 +23,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DataTable } from '@/components/data-table/data-table';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import {
@@ -31,9 +32,12 @@ import {
   useUpdateUser,
   useDeactivateUser,
   useResetPassword,
+  useArchiveUser,
+  useUnarchiveUser,
+  useDeleteUser,
   type UserDto,
 } from '@/hooks/queries/use-users';
-import { getUserColumns } from './columns';
+import { getUserColumns, getArchivedUserColumns } from './columns';
 
 const createUserSchema = z.object({
   username: z.string().min(3, 'Nazwa uzytkownika musi miec co najmniej 3 znaki'),
@@ -57,17 +61,28 @@ export default function UzytkownicyPage() {
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 });
   const [sorting, setSorting] = useState<SortingState>([]);
 
+  // Archived tab state
+  const [archivedPagination, setArchivedPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 });
+  const [archivedSorting, setArchivedSorting] = useState<SortingState>([]);
+
   // Edit dialog state
   const [editUser, setEditUser] = useState<UserDto | null>(null);
   const [editName, setEditName] = useState('');
   const [editRole, setEditRole] = useState('');
 
+  // Delete confirmation dialog
+  const [deleteTarget, setDeleteTarget] = useState<UserDto | null>(null);
+
   // Queries & mutations
   const { data: users, isLoading } = useUsers();
+  const { data: archivedUsers, isLoading: archivedLoading } = useUsers('archived');
   const createUser = useCreateUser();
   const updateUser = useUpdateUser();
   const deactivateUser = useDeactivateUser();
   const resetPassword = useResetPassword();
+  const archiveUser = useArchiveUser();
+  const unarchiveUser = useUnarchiveUser();
+  const deleteUser = useDeleteUser();
 
   const columns = useMemo(
     () =>
@@ -83,11 +98,27 @@ export default function UzytkownicyPage() {
         onResetPassword: (user) => {
           resetPassword.mutate(user.id);
         },
+        onArchive: (user) => {
+          archiveUser.mutate(user.id);
+        },
+        onDelete: (user) => {
+          setDeleteTarget(user);
+        },
       }),
-    [deactivateUser, resetPassword],
+    [deactivateUser, resetPassword, archiveUser],
+  );
+
+  const archivedColumns = useMemo(
+    () =>
+      getArchivedUserColumns({
+        onUnarchive: (user) => unarchiveUser.mutate(user.id),
+        onHardDelete: (user) => setDeleteTarget(user),
+      }),
+    [unarchiveUser],
   );
 
   const pageCount = Math.ceil((users?.length ?? 0) / pagination.pageSize);
+  const archivedPageCount = Math.ceil((archivedUsers?.length ?? 0) / archivedPagination.pageSize);
 
   // Client-side pagination/sorting for the simple list
   const paginatedData = useMemo(() => {
@@ -107,6 +138,12 @@ export default function UzytkownicyPage() {
     const start = pagination.pageIndex * pagination.pageSize;
     return sorted.slice(start, start + pagination.pageSize);
   }, [users, sorting, pagination]);
+
+  const archivedPageData = useMemo(() => {
+    if (!archivedUsers) return [];
+    const start = archivedPagination.pageIndex * archivedPagination.pageSize;
+    return archivedUsers.slice(start, start + archivedPagination.pageSize);
+  }, [archivedUsers, archivedPagination]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -150,6 +187,13 @@ export default function UzytkownicyPage() {
       { onSuccess: () => setEditUser(null) },
     );
   }
+
+  const handleDelete = () => {
+    if (!deleteTarget) return;
+    deleteUser.mutate(deleteTarget.id, {
+      onSuccess: () => setDeleteTarget(null),
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -249,17 +293,48 @@ export default function UzytkownicyPage() {
         )}
       </Card>
 
-      {/* User DataTable */}
-      <DataTable
-        columns={columns}
-        data={paginatedData}
-        pageCount={pageCount}
-        pagination={pagination}
-        onPaginationChange={setPagination}
-        sorting={sorting}
-        onSortingChange={setSorting}
-        isLoading={isLoading}
-      />
+      {/* Users with Tabs */}
+      <Tabs defaultValue="aktywni">
+        <TabsList>
+          <TabsTrigger value="aktywni">Aktywni</TabsTrigger>
+          <TabsTrigger value="zarchiwizowani">Zarchiwizowani</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="aktywni">
+          <DataTable
+            columns={columns}
+            data={paginatedData}
+            pageCount={pageCount}
+            pagination={pagination}
+            onPaginationChange={setPagination}
+            sorting={sorting}
+            onSortingChange={setSorting}
+            isLoading={isLoading}
+          />
+        </TabsContent>
+
+        <TabsContent value="zarchiwizowani">
+          {archivedUsers && archivedUsers.length === 0 && !archivedLoading ? (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <p className="text-lg font-medium">Brak zarchiwizowanych uzytkownikow</p>
+              <p className="text-sm text-muted-foreground">
+                Zarchiwizowani uzytkownicy pojawia sie tutaj.
+              </p>
+            </div>
+          ) : (
+            <DataTable
+              columns={archivedColumns}
+              data={archivedPageData}
+              pageCount={archivedPageCount}
+              pagination={archivedPagination}
+              onPaginationChange={setArchivedPagination}
+              sorting={archivedSorting}
+              onSortingChange={setArchivedSorting}
+              isLoading={archivedLoading}
+            />
+          )}
+        </TabsContent>
+      </Tabs>
 
       {/* Edit User Dialog */}
       <Dialog open={!!editUser} onOpenChange={(open) => !open && setEditUser(null)}>
@@ -296,6 +371,30 @@ export default function UzytkownicyPage() {
             </Button>
             <Button onClick={handleEditSave} disabled={updateUser.isPending}>
               {updateUser.isPending ? 'Zapisywanie...' : 'Zapisz'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete confirmation dialog */}
+      <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Trwale usunac uzytkownika?</DialogTitle>
+            <DialogDescription>
+              Uzytkownik {deleteTarget?.name} zostanie trwale usuniety. Tej operacji nie mozna cofnac.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteTarget(null)}>
+              Anuluj
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={deleteUser.isPending}
+            >
+              {deleteUser.isPending ? 'Usuwanie...' : 'Usun trwale'}
             </Button>
           </DialogFooter>
         </DialogContent>
