@@ -250,7 +250,10 @@ export class RentalsService {
 
       await tx.vehicle.update({
         where: { id: rental.vehicleId },
-        data: { status: 'AVAILABLE' },
+        data: {
+          status: 'AVAILABLE',
+          mileage: dto.returnMileage,
+        },
       });
     });
 

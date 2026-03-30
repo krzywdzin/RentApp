@@ -78,23 +78,21 @@ export default function DatesStep() {
   const handleStartDateChange = useCallback(
     (_event: DateTimePickerEvent, date?: Date) => {
       if (Platform.OS === 'android') setShowStartPicker(false);
-      if (date) {
-        setValue('startDate', date);
-        // If end date is before new start, push it forward
-        if (date >= watch('endDate')) {
-          setValue('endDate', new Date(date.getTime() + ONE_DAY_MS));
-        }
+      if (!date || isNaN(date.getTime())) return;
+      setValue('startDate', date);
+      // If end date is before new start, push it forward
+      if (date >= endDate) {
+        setValue('endDate', new Date(date.getTime() + ONE_DAY_MS));
       }
     },
-    [setValue, watch],
+    [setValue, endDate],
   );
 
   const handleEndDateChange = useCallback(
     (_event: DateTimePickerEvent, date?: Date) => {
       if (Platform.OS === 'android') setShowEndPicker(false);
-      if (date) {
-        setValue('endDate', date);
-      }
+      if (!date || isNaN(date.getTime())) return;
+      setValue('endDate', date);
     },
     [setValue],
   );

@@ -9,6 +9,7 @@ import {
   returnReminderSms,
   overdueSms,
   extensionSms,
+  rentalCreatedSms,
 } from './constants/sms-templates';
 import { NotificationQueryDto } from './dto/notification-query.dto';
 
@@ -109,6 +110,54 @@ export class NotificationsService {
     });
 
     this.logger.log(`Extension SMS enqueued for rental ${rentalId}`);
+  }
+
+  async sendRentalCreatedSms(rental: {
+    id: string;
+    startDate: Date | string;
+    endDate: Date | string;
+    customer: { id: string; phone: string | null };
+    vehicle: { registration: string };
+  }): Promise<void> {
+    if (!rental.customer.phone) {
+      this.logger.warn(
+        `Cannot send rental created SMS: customer ${rental.customer.id} has no phone`,
+      );
+      return;
+    }
+
+    const start = formatDateWarsaw(rental.startDate);
+    const end = formatDateWarsaw(rental.endDate);
+    const message = rentalCreatedSms({
+      vehicleRegistration: rental.vehicle.registration,
+      startDate: start.date,
+      startTime: start.time,
+      endDate: end.date,
+      endTime: end.time,
+      companyPhone: this.companyPhone,
+    });
+
+    const notification = await this.prisma.notification.create({
+      data: {
+        type: 'RENTAL_CREATED',
+        channel: 'SMS',
+        recipientId: rental.customer.id,
+        recipientPhone: rental.customer.phone,
+        relatedEntityType: 'Rental',
+        relatedEntityId: rental.id,
+        status: 'PENDING',
+        scheduledFor: new Date(),
+        message,
+      },
+    });
+
+    await this.smsQueue.add({
+      notificationId: notification.id,
+      phone: rental.customer.phone,
+      message,
+    });
+
+    this.logger.log(`Rental created SMS enqueued for rental ${rental.id}`);
   }
 
   async enqueueReturnReminder(rental: {

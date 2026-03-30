@@ -209,7 +209,7 @@
     <div class="signatures-row">
       <div class="signature-block">
         {{#if signatures.employeePage1}}
-        <img class="signature-img" src="data:image/png;base64,{{signatures.employeePage1}}" />
+        <img class="signature-img" src="{{signatures.employeePage1}}" />
         {{/if}}
         <div class="signature-line">
           <span class="signature-label">(Podpis Wynajmujacego)</span>
@@ -217,7 +217,7 @@
       </div>
       <div class="signature-block">
         {{#if signatures.customerPage1}}
-        <img class="signature-img" src="data:image/png;base64,{{signatures.customerPage1}}" />
+        <img class="signature-img" src="{{signatures.customerPage1}}" />
         {{/if}}
         <div class="signature-line">
           <span class="signature-label">(Podpis Klienta - Kierowcy)</span>
@@ -259,7 +259,7 @@
     <div class="damage-sketch">
       <div class="damage-sketch-title">Uwagi uszkodzen pojazdu:</div>
       {{#if damageSketch}}
-      <img src="data:image/png;base64,{{damageSketch}}" />
+      <img src="{{damageSketch}}" />
       {{else}}
       <div style="height: 60mm; border: 1px dashed rgb(180, 180, 180); display: flex; align-items: center; justify-content: center; color: rgb(150, 150, 150);">
         Brak rysunku uszkodzen
@@ -282,7 +282,7 @@
     <div class="signatures-row">
       <div class="signature-block">
         {{#if signatures.employeePage2}}
-        <img class="signature-img" src="data:image/png;base64,{{signatures.employeePage2}}" />
+        <img class="signature-img" src="{{signatures.employeePage2}}" />
         {{/if}}
         <div class="signature-line">
           <span class="signature-label">(Podpis Wynajmujacego)</span>
@@ -290,7 +290,7 @@
       </div>
       <div class="signature-block">
         {{#if signatures.customerPage2}}
-        <img class="signature-img" src="data:image/png;base64,{{signatures.customerPage2}}" />
+        <img class="signature-img" src="{{signatures.customerPage2}}" />
         {{/if}}
         <div class="signature-line">
           <span class="signature-label">(Podpis Najemcy)</span>

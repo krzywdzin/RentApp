@@ -21,3 +21,14 @@ export function extensionSms(params: {
 }): string {
   return `Wynajem zostal przedluzony. Nowy termin zwrotu: ${params.newReturnDate} do godz. ${params.newReturnTime}. Kontakt: ${params.companyPhone}`;
 }
+
+export function rentalCreatedSms(params: {
+  vehicleRegistration: string;
+  startDate: string;
+  startTime: string;
+  endDate: string;
+  endTime: string;
+  companyPhone: string;
+}): string {
+  return `Potwierdzenie wynajmu pojazdu ${params.vehicleRegistration}. Okres: ${params.startDate} ${params.startTime} - ${params.endDate} ${params.endTime}. Kontakt: ${params.companyPhone}`;
+}

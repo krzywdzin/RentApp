@@ -10,6 +10,7 @@ import { EmailNotificationService } from './email/email-notification.service';
 import { NotificationsService } from './notifications.service';
 import { NotificationsController } from './notifications.controller';
 import { RentalActivatedNotificationListener } from './listeners/rental-activated.listener';
+import { RentalCreatedNotificationListener } from './listeners/rental-created.listener';
 import { RentalExtendedNotificationListener } from './listeners/rental-extended.listener';
 import { AlertScannerService } from './cron/alert-scanner.service';
 import { NOTIFICATION_QUEUES } from './constants/notification-types';
@@ -42,6 +43,7 @@ import { NOTIFICATION_QUEUES } from './constants/notification-types';
     EmailNotificationService,
     NotificationsService,
     RentalActivatedNotificationListener,
+    RentalCreatedNotificationListener,
     RentalExtendedNotificationListener,
     AlertScannerService,
   ],

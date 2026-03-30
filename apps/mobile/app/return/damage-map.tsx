@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -45,9 +45,11 @@ export default function ReturnDamageMapScreen() {
   }, [hasHydrated, rentalId, router]);
 
   // Create walkthrough on mount if not already created
+  const walkthroughCreatedRef = useRef(false);
   useEffect(() => {
-    if (!hasHydrated || !rentalId || walkthroughId) return;
+    if (!hasHydrated || !rentalId || walkthroughId || walkthroughCreatedRef.current) return;
 
+    walkthroughCreatedRef.current = true;
     let cancelled = false;
     setLoading(true);
     createWalkthrough(rentalId)
@@ -57,6 +59,7 @@ export default function ReturnDamageMapScreen() {
         }
       })
       .catch(() => {
+        walkthroughCreatedRef.current = false;
         // Walkthrough creation failed — user can retry by re-entering screen
       })
       .finally(() => {
@@ -66,7 +69,7 @@ export default function ReturnDamageMapScreen() {
     return () => {
       cancelled = true;
     };
-  }, [hasHydrated, rentalId, walkthroughId, updateDraft]);
+  }, [hasHydrated, rentalId, updateDraft]);
 
   const handleZoneTap = useCallback((zoneName: string, x: number, y: number) => {
     setSelectedZone({ zoneName, x, y });
@@ -221,6 +224,7 @@ export default function ReturnDamageMapScreen() {
             variant="secondary"
             fullWidth
             loading={submitting}
+            disabled={!walkthroughId}
             onPress={handleNoDamage}
           />
         )}
@@ -229,6 +233,7 @@ export default function ReturnDamageMapScreen() {
           title={t('common.next')}
           fullWidth
           loading={submitting}
+          disabled={!walkthroughId}
           onPress={handleNext}
         />
       </View>
