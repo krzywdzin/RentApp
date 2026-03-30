@@ -1,7 +1,37 @@
 import Constants from 'expo-constants';
 
-export const API_URL =
-  Constants.expoConfig?.extra?.apiUrl ?? 'http://localhost:3000';
+// Production Railway API URL - hardcoded as bulletproof fallback
+const RAILWAY_API_URL = 'https://api-production-977b.up.railway.app';
+
+// API URL resolution order:
+// 1. EXPO_PUBLIC_API_URL env var (embedded by Metro at build time)
+// 2. Constants.expoConfig.extra.apiUrl (from app.config.ts)
+// 3. Railway URL as fallback (NEVER localhost in production builds)
+const resolveApiUrl = (): string => {
+  // Metro embeds EXPO_PUBLIC_* vars at build time - most reliable source
+  const envUrl = process.env.EXPO_PUBLIC_API_URL;
+  if (envUrl) {
+    return envUrl;
+  }
+
+  // Try expo-constants (may be undefined in EAS builds)
+  const extraUrl = Constants.expoConfig?.extra?.apiUrl;
+  if (extraUrl) {
+    return extraUrl;
+  }
+
+  // Fallback to Railway URL - localhost is never acceptable in production
+  return RAILWAY_API_URL;
+};
+
+export const API_URL = resolveApiUrl();
+
+// Log API URL on startup for debugging (only in development or when debugging builds)
+if (__DEV__) {
+  console.log('[constants] API_URL resolved to:', API_URL);
+  console.log('[constants] Source: process.env.EXPO_PUBLIC_API_URL =', process.env.EXPO_PUBLIC_API_URL);
+  console.log('[constants] Source: Constants.expoConfig?.extra?.apiUrl =', Constants.expoConfig?.extra?.apiUrl);
+}
 
 export const APP_VERSION = Constants.expoConfig?.version ?? '1.0.0';
 
