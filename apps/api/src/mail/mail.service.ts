@@ -14,6 +14,9 @@ export class MailService {
       host: this.config.get('MAIL_HOST'),
       port: this.config.get<number>('MAIL_PORT'),
       secure: false,
+      connectionTimeout: 5000,
+      greetingTimeout: 5000,
+      socketTimeout: 10000,
       ...(mailUser && mailPass ? { auth: { user: mailUser, pass: mailPass } } : {}),
     });
   }
