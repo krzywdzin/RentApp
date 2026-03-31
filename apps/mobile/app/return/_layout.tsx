@@ -5,6 +5,7 @@ import { useReturnDraftStore } from '@/stores/return-draft.store';
 import { ConfirmationDialog } from '@/components/ConfirmationDialog';
 import { OfflineBanner } from '@/components/OfflineBanner';
 import { useTranslation } from 'react-i18next';
+import { colors, fonts } from '@/lib/theme';
 
 export default function ReturnLayout() {
   const { t } = useTranslation();
@@ -32,6 +33,10 @@ export default function ReturnLayout() {
           headerShown: false,
           animation: 'slide_from_right',
           presentation: 'modal',
+          headerStyle: { backgroundColor: colors.cream, elevation: 0, shadowOpacity: 0 },
+          headerTitleStyle: { fontFamily: fonts.display, fontSize: 20, fontWeight: '600', color: colors.charcoal },
+          headerTintColor: colors.forestGreen,
+          headerShadowVisible: false,
         }}
       >
         <Stack.Screen

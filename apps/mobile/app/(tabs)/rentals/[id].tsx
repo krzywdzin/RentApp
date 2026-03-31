@@ -11,6 +11,7 @@ import { AppCard } from '@/components/AppCard';
 import { AppButton } from '@/components/AppButton';
 import { StatusBadge } from '@/components/StatusBadge';
 import { LoadingSkeleton } from '@/components/LoadingSkeleton';
+import { colors, fonts, spacing } from '@/lib/theme';
 
 export default function RentalDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -82,7 +83,7 @@ export default function RentalDetailScreen() {
           </View>
 
           {/* Customer */}
-          <AppCard cardStyle={s.mb12}>
+          <AppCard cardStyle={[s.mb12, s.cardSage]}>
             <Text style={s.sectionLabel}>Klient</Text>
             <Text style={s.mainText}>
               {rental.customer.firstName} {rental.customer.lastName}
@@ -96,7 +97,7 @@ export default function RentalDetailScreen() {
           </AppCard>
 
           {/* Vehicle */}
-          <AppCard cardStyle={s.mb12}>
+          <AppCard cardStyle={[s.mb12, s.cardSage]}>
             <Text style={s.sectionLabel}>Pojazd</Text>
             <Text style={s.mainText}>{rental.vehicle.registration}</Text>
             <Text style={s.subText}>
@@ -127,7 +128,7 @@ export default function RentalDetailScreen() {
           </AppCard>
 
           {/* Pricing */}
-          <AppCard cardStyle={s.mb12}>
+          <AppCard cardStyle={[s.mb12, s.cardStone]}>
             <Text style={s.sectionLabel}>Ceny</Text>
             <View style={s.priceRow}>
               <Text style={s.smallLabel}>Stawka dzienna netto</Text>
@@ -135,7 +136,7 @@ export default function RentalDetailScreen() {
             </View>
             <View style={s.priceTotalRow}>
               <Text style={s.mainText}>Razem brutto</Text>
-              <Text style={s.mainText}>{formatCurrency(rental.totalPriceGross)}</Text>
+              <Text style={s.grossTotal}>{formatCurrency(rental.totalPriceGross)}</Text>
             </View>
           </AppCard>
 
@@ -181,35 +182,38 @@ export default function RentalDetailScreen() {
 }
 
 const s = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#FFFFFF' },
+  root: { flex: 1, backgroundColor: colors.cream },
   flex1: { flex: 1 },
-  loadingWrap: { flex: 1, backgroundColor: '#FFFFFF', paddingHorizontal: 16, paddingTop: 16 },
-  scrollContent: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 128 },
-  statusRow: { marginBottom: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  regTitle: { fontSize: 20, fontWeight: '600', color: '#18181B' },
-  mb12: { marginBottom: 12 },
-  sectionLabel: { marginBottom: 8, fontSize: 13, fontWeight: '500', color: '#71717A' },
-  mainText: { fontSize: 16, fontWeight: '600', color: '#18181B' },
-  subText: { marginTop: 4, fontSize: 13, color: '#71717A' },
-  smallLabel: { fontSize: 13, color: '#71717A' },
-  dateText: { fontSize: 16, color: '#18181B' },
+  loadingWrap: { flex: 1, backgroundColor: colors.cream, paddingHorizontal: spacing.base, paddingTop: spacing.base },
+  scrollContent: { paddingHorizontal: spacing.base, paddingTop: spacing.base, paddingBottom: 128 },
+  statusRow: { marginBottom: spacing.base, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  regTitle: { fontFamily: fonts.display, fontSize: 20, fontWeight: '600', color: colors.charcoal },
+  mb12: { marginBottom: spacing.md },
+  sectionLabel: { marginBottom: 8, fontFamily: fonts.body, fontSize: 13, fontWeight: '500', color: colors.warmGray },
+  mainText: { fontFamily: fonts.body, fontSize: 16, fontWeight: '600', color: colors.charcoal },
+  subText: { marginTop: 4, fontFamily: fonts.body, fontSize: 13, color: colors.warmGray },
+  smallLabel: { fontFamily: fonts.body, fontSize: 13, color: colors.warmGray },
+  dateText: { fontFamily: fonts.data, fontSize: 16, color: colors.charcoal },
   datesRow: { flexDirection: 'row', justifyContent: 'space-between' },
-  durationText: { marginTop: 8, fontSize: 13, color: '#71717A' },
+  durationText: { marginTop: 8, fontFamily: fonts.body, fontSize: 13, color: colors.warmGray },
   priceRow: { flexDirection: 'row', justifyContent: 'space-between' },
   priceTotalRow: { marginTop: 8, flexDirection: 'row', justifyContent: 'space-between' },
-  errorCenter: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32, backgroundColor: '#FFFFFF' },
-  errorTitle: { marginTop: 16, fontSize: 18, fontWeight: '600', color: '#18181B', textAlign: 'center' },
-  errorSub: { marginTop: 8, fontSize: 14, color: '#71717A', textAlign: 'center' },
-  mt16: { marginTop: 16 },
+  errorCenter: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32, backgroundColor: colors.cream },
+  errorTitle: { marginTop: 16, fontFamily: fonts.body, fontSize: 18, fontWeight: '600', color: colors.charcoal, textAlign: 'center' },
+  errorSub: { marginTop: 8, fontFamily: fonts.body, fontSize: 14, color: colors.warmGray, textAlign: 'center' },
+  cardSage: { backgroundColor: colors.sageWash },
+  cardStone: { backgroundColor: colors.warmStone },
+  grossTotal: { fontFamily: fonts.display, color: colors.forestGreen, fontWeight: '500', fontSize: 16 },
+  mt16: { marginTop: spacing.base },
   bottomBar: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     borderTopWidth: 1,
-    borderTopColor: '#E4E4E7',
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: 16,
-    paddingTop: 16,
+    borderTopColor: colors.sand,
+    backgroundColor: colors.cream,
+    paddingHorizontal: spacing.base,
+    paddingTop: spacing.base,
   },
 });

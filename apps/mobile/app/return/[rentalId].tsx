@@ -12,6 +12,7 @@ import { AppCard } from '@/components/AppCard';
 import { AppButton } from '@/components/AppButton';
 import { StatusBadge } from '@/components/StatusBadge';
 import { LoadingSkeleton } from '@/components/LoadingSkeleton';
+import { colors, fonts, spacing } from '@/lib/theme';
 
 const RENTAL_STATUS_LABELS: Record<string, string> = {
   DRAFT: 'Wersja robocza',
@@ -142,22 +143,22 @@ export default function ReturnConfirmRentalScreen() {
 }
 
 const s = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  safeArea: { flex: 1, backgroundColor: colors.cream },
   flex1: { flex: 1 },
-  padWrap: { paddingHorizontal: 16, paddingTop: 16 },
-  padWrapSmall: { paddingHorizontal: 16, paddingTop: 8 },
-  scrollContent: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 128 },
-  errorCenter: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 16 },
-  errorText: { textAlign: 'center', fontSize: 16, color: '#71717A' },
-  mt16: { marginTop: 16 },
-  mb12: { marginBottom: 12 },
-  stepTitle: { marginBottom: 16, fontSize: 20, fontWeight: '600', color: '#18181B' },
-  sectionLabel: { marginBottom: 8, fontSize: 13, fontWeight: '500', color: '#71717A' },
-  sectionLabelInline: { fontSize: 13, fontWeight: '500', color: '#71717A' },
-  mainText: { fontSize: 16, fontWeight: '600', color: '#18181B' },
-  subText: { marginTop: 4, fontSize: 13, color: '#71717A' },
-  smallLabel: { fontSize: 13, color: '#71717A' },
-  dateText: { fontSize: 16, color: '#18181B' },
+  padWrap: { paddingHorizontal: spacing.base, paddingTop: spacing.base },
+  padWrapSmall: { paddingHorizontal: spacing.base, paddingTop: 8 },
+  scrollContent: { paddingHorizontal: spacing.base, paddingTop: spacing.base, paddingBottom: 128 },
+  errorCenter: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing.base },
+  errorText: { fontFamily: fonts.body, textAlign: 'center', fontSize: 16, color: colors.warmGray },
+  mt16: { marginTop: spacing.base },
+  mb12: { marginBottom: spacing.md },
+  stepTitle: { marginBottom: spacing.base, fontFamily: fonts.display, fontSize: 20, fontWeight: '600', color: colors.charcoal },
+  sectionLabel: { marginBottom: 8, fontFamily: fonts.body, fontSize: 13, fontWeight: '500', color: colors.warmGray },
+  sectionLabelInline: { fontFamily: fonts.body, fontSize: 13, fontWeight: '500', color: colors.warmGray },
+  mainText: { fontFamily: fonts.body, fontSize: 16, fontWeight: '600', color: colors.charcoal },
+  subText: { marginTop: 4, fontFamily: fonts.body, fontSize: 13, color: colors.warmGray },
+  smallLabel: { fontFamily: fonts.body, fontSize: 13, color: colors.warmGray },
+  dateText: { fontFamily: fonts.data, fontSize: 16, color: colors.charcoal },
   datesRow: { flexDirection: 'row', justifyContent: 'space-between' },
   statusRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   bottomBar: {
@@ -166,9 +167,9 @@ const s = StyleSheet.create({
     left: 0,
     right: 0,
     borderTopWidth: 1,
-    borderTopColor: '#E4E4E7',
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: 16,
-    paddingTop: 16,
+    borderTopColor: colors.sand,
+    backgroundColor: colors.cream,
+    paddingHorizontal: spacing.base,
+    paddingTop: spacing.base,
   },
 });

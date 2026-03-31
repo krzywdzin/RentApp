@@ -20,6 +20,7 @@ import { CarDamageMap } from '@/components/CarDamageMap';
 import { DamageDetailModal } from '@/components/DamageDetailModal';
 import { WizardStepper } from '@/components/WizardStepper';
 import { AppButton } from '@/components/AppButton';
+import { colors, fonts, spacing } from '@/lib/theme';
 
 export default function ReturnDamageMapScreen() {
   const { t } = useTranslation();
@@ -149,7 +150,7 @@ export default function ReturnDamageMapScreen() {
           <WizardStepper currentStep={3} totalSteps={5} />
         </View>
         <View style={s.loadingWrap}>
-          {loading && <ActivityIndicator size="large" color="#3B82F6" />}
+          {loading && <ActivityIndicator size="large" color={colors.forestGreen} />}
           {error && (
             <>
               <Text style={s.errorText}>{error}</Text>
@@ -248,57 +249,55 @@ export default function ReturnDamageMapScreen() {
 }
 
 const s = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  safeArea: { flex: 1, backgroundColor: colors.cream },
   flex1: { flex: 1 },
-  padWrap: { paddingHorizontal: 16, paddingTop: 8 },
-  scrollContent: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 200 },
-  stepTitle: { marginBottom: 16, fontSize: 20, fontWeight: '600', color: '#18181B' },
-  loadingWrap: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32 },
-  errorText: { fontSize: 15, color: '#DC2626', textAlign: 'center' },
-  pinList: { marginTop: 16 },
-  pinListTitle: { marginBottom: 8, fontSize: 14, fontWeight: '600', color: '#18181B' },
+  padWrap: { paddingHorizontal: spacing.base, paddingTop: 8 },
+  scrollContent: { paddingHorizontal: spacing.base, paddingTop: spacing.base, paddingBottom: 200 },
+  stepTitle: { marginBottom: spacing.base, fontFamily: fonts.display, fontSize: 20, fontWeight: '600', color: colors.charcoal },
+  loadingWrap: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing.xxl },
+  errorText: { fontFamily: fonts.body, fontSize: 15, color: colors.terracotta, textAlign: 'center' },
+  pinList: { marginTop: spacing.base },
+  pinListTitle: { marginBottom: 8, fontFamily: fonts.body, fontSize: 14, fontWeight: '500', color: colors.charcoal },
   pinRow: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 8,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#E4E4E7',
-    backgroundColor: '#FAFAFA',
-    padding: 12,
+    borderRadius: 8,
+    backgroundColor: colors.warmStone,
+    padding: spacing.md,
   },
   pinBadge: {
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: '#DC2626',
+    backgroundColor: colors.terracotta,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 10,
   },
-  pinBadgeText: { color: '#FFFFFF', fontSize: 13, fontWeight: '700' },
-  pinLabel: { fontSize: 15, color: '#18181B' },
-  pinNote: { marginTop: 2, fontSize: 13, color: '#71717A' },
+  pinBadgeText: { fontFamily: fonts.data, color: colors.cream, fontSize: 13 },
+  pinLabel: { fontFamily: fonts.body, fontSize: 15, color: colors.charcoal },
+  pinNote: { marginTop: 2, fontFamily: fonts.body, fontSize: 13, color: colors.warmGray },
   deleteBtn: {
     marginLeft: 8,
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: '#FEE2E2',
+    backgroundColor: colors.terracotta,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  deleteBtnText: { fontSize: 13, fontWeight: '700', color: '#DC2626' },
+  deleteBtnText: { fontFamily: fonts.data, fontSize: 13, color: colors.cream },
   bottomBar: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     borderTopWidth: 1,
-    borderTopColor: '#E4E4E7',
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: 16,
-    paddingTop: 16,
+    borderTopColor: colors.sand,
+    backgroundColor: colors.cream,
+    paddingHorizontal: spacing.base,
+    paddingTop: spacing.base,
   },
   buttonSpacer: { height: 8 },
 });

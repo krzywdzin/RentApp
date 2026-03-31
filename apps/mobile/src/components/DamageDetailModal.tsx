@@ -14,6 +14,7 @@ import {
   type DamageType,
 } from '@rentapp/shared';
 import { AppButton } from './AppButton';
+import { colors, fonts, spacing } from '@/lib/theme';
 
 /** Polish labels for zone IDs */
 const ZONE_LABELS: Record<string, string> = {
@@ -61,12 +62,13 @@ export function DamageDetailModal({
     <Modal
       visible={visible}
       transparent
-      animationType="fade"
+      animationType="slide"
       statusBarTranslucent
       onRequestClose={handleCancel}
     >
       <View style={styles.overlay}>
         <View style={styles.dialog}>
+          <View style={styles.handleBar} />
           <Text style={styles.title}>
             {ZONE_LABELS[zoneName] ?? zoneName}
           </Text>
@@ -103,7 +105,7 @@ export function DamageDetailModal({
           <TextInput
             style={styles.input}
             placeholder="Dodaj opis uszkodzenia..."
-            placeholderTextColor="#A1A1AA"
+            placeholderTextColor={colors.warmGray}
             value={note}
             onChangeText={setNote}
             multiline
@@ -139,30 +141,40 @@ export function DamageDetailModal({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    paddingHorizontal: 24,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.4)',
   },
   dialog: {
     width: '100%',
-    borderRadius: 16,
-    backgroundColor: '#FFFFFF',
-    padding: 24,
-    maxHeight: '80%',
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    backgroundColor: colors.sageWash,
+    padding: spacing.lg,
+    paddingBottom: 32,
+    maxHeight: '85%',
+  },
+  handleBar: {
+    width: 40,
+    height: 4,
+    backgroundColor: colors.sand,
+    borderRadius: 2,
+    alignSelf: 'center',
+    marginBottom: spacing.md,
   },
   title: {
+    fontFamily: fonts.display,
     fontSize: 18,
     fontWeight: '600',
-    color: '#18181B',
+    color: colors.charcoal,
   },
   subtitle: {
     marginTop: 4,
+    fontFamily: fonts.body,
     fontSize: 14,
-    color: '#71717A',
+    color: colors.warmGray,
   },
   chipContainer: {
-    marginTop: 16,
+    marginTop: spacing.base,
     maxHeight: 180,
   },
   chipContent: {
@@ -175,30 +187,31 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#E4E4E7',
-    backgroundColor: '#FAFAFA',
+    borderColor: colors.sand,
+    backgroundColor: colors.cream,
   },
   chipSelected: {
-    borderColor: '#3B82F6',
-    backgroundColor: '#EFF6FF',
+    borderColor: colors.forestGreen,
+    backgroundColor: colors.sageTint,
   },
   chipText: {
+    fontFamily: fonts.body,
     fontSize: 14,
-    color: '#3F3F46',
+    color: colors.warmGray,
   },
   chipTextSelected: {
-    color: '#3B82F6',
-    fontWeight: '600',
+    fontFamily: fonts.body,
+    color: colors.forestGreen,
+    fontWeight: '500',
   },
   input: {
-    marginTop: 16,
-    borderWidth: 1,
-    borderColor: '#E4E4E7',
-    borderRadius: 12,
-    paddingHorizontal: 14,
+    marginTop: spacing.base,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.sand,
     paddingVertical: 10,
+    fontFamily: fonts.body,
     fontSize: 15,
-    color: '#18181B',
+    color: colors.charcoal,
     minHeight: 80,
   },
   buttonRow: {

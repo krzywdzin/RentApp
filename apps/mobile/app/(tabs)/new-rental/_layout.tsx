@@ -3,6 +3,7 @@ import { Stack, useRouter } from 'expo-router';
 import { useRentalDraftStore } from '@/stores/rental-draft.store';
 import { ConfirmationDialog } from '@/components/ConfirmationDialog';
 import { useTranslation } from 'react-i18next';
+import { colors, fonts } from '@/lib/theme';
 
 export default function NewRentalLayout() {
   const { t } = useTranslation();
@@ -28,6 +29,10 @@ export default function NewRentalLayout() {
         screenOptions={{
           headerShown: false,
           animation: 'slide_from_right',
+          headerStyle: { backgroundColor: colors.cream, elevation: 0, shadowOpacity: 0 },
+          headerTitleStyle: { fontFamily: fonts.display, fontSize: 20, fontWeight: '600', color: colors.charcoal },
+          headerTintColor: colors.forestGreen,
+          headerShadowVisible: false,
         }}
       >
         <Stack.Screen

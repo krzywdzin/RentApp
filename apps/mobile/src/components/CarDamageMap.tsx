@@ -10,6 +10,7 @@ import Svg, {
   Text as SvgText,
 } from 'react-native-svg';
 import type { DamagePin } from '@rentapp/shared';
+import { colors, fonts } from '@/lib/theme';
 
 interface CarDamageMapProps {
   pins: DamagePin[];
@@ -136,40 +137,40 @@ export function CarDamageMap({ pins, onZoneTap }: CarDamageMapProps) {
           preserveAspectRatio="xMidYMid meet"
         >
           {/* Car shadow */}
-          <Ellipse cx={100} cy={222} rx={72} ry={210} fill="#F1F5F9" />
+          <Ellipse cx={100} cy={222} rx={72} ry={210} fill={colors.warmStone} />
 
           {/* Wheels */}
-          <Path d={WHEEL_FL} fill="#475569" />
-          <Path d={WHEEL_FR} fill="#475569" />
-          <Path d={WHEEL_RL} fill="#475569" />
-          <Path d={WHEEL_RR} fill="#475569" />
+          <Path d={WHEEL_FL} fill={colors.charcoal} />
+          <Path d={WHEEL_FR} fill={colors.charcoal} />
+          <Path d={WHEEL_RL} fill={colors.charcoal} />
+          <Path d={WHEEL_RR} fill={colors.charcoal} />
 
           {/* Main body */}
-          <Path d={CAR_BODY} fill="#CBD5E1" stroke="#64748B" strokeWidth={1.5} />
+          <Path d={CAR_BODY} fill={colors.sageWash} stroke={colors.charcoal} strokeWidth={1.5} />
 
           {/* Windshield + rear window */}
-          <Path d={WINDSHIELD} fill="#93C5FD" stroke="#64748B" strokeWidth={0.8} opacity={0.7} />
-          <Path d={REAR_WINDOW} fill="#93C5FD" stroke="#64748B" strokeWidth={0.8} opacity={0.7} />
+          <Path d={WINDSHIELD} fill={colors.softTeal} stroke={colors.charcoal} strokeWidth={0.8} opacity={0.5} />
+          <Path d={REAR_WINDOW} fill={colors.softTeal} stroke={colors.charcoal} strokeWidth={0.8} opacity={0.5} />
 
           {/* Door lines */}
-          <Line x1={42} y1={130} x2={42} y2={300} stroke="#94A3B8" strokeWidth={0.8} />
-          <Line x1={158} y1={130} x2={158} y2={300} stroke="#94A3B8" strokeWidth={0.8} />
+          <Line x1={42} y1={130} x2={42} y2={300} stroke={colors.sand} strokeWidth={0.8} />
+          <Line x1={158} y1={130} x2={158} y2={300} stroke={colors.sand} strokeWidth={0.8} />
           {/* Front/rear door separator */}
-          <Line x1={42} y1={210} x2={60} y2={210} stroke="#94A3B8" strokeWidth={0.6} />
-          <Line x1={140} y1={210} x2={158} y2={210} stroke="#94A3B8" strokeWidth={0.6} />
+          <Line x1={42} y1={210} x2={60} y2={210} stroke={colors.sand} strokeWidth={0.6} />
+          <Line x1={140} y1={210} x2={158} y2={210} stroke={colors.sand} strokeWidth={0.6} />
           {/* Center line (roof) */}
-          <Line x1={100} y1={130} x2={100} y2={310} stroke="#94A3B8" strokeWidth={0.4} strokeDasharray="4,4" />
+          <Line x1={100} y1={130} x2={100} y2={310} stroke={colors.sand} strokeWidth={0.4} strokeDasharray="4,4" />
 
           {/* Headlights */}
-          <Ellipse cx={78} cy={22} rx={8} ry={4} fill="#FDE68A" opacity={0.6} />
-          <Ellipse cx={122} cy={22} rx={8} ry={4} fill="#FDE68A" opacity={0.6} />
+          <Ellipse cx={78} cy={22} rx={8} ry={4} fill={colors.amberGlow} opacity={0.6} />
+          <Ellipse cx={122} cy={22} rx={8} ry={4} fill={colors.amberGlow} opacity={0.6} />
           {/* Taillights */}
-          <Ellipse cx={78} cy={420} rx={8} ry={4} fill="#FCA5A5" opacity={0.6} />
-          <Ellipse cx={122} cy={420} rx={8} ry={4} fill="#FCA5A5" opacity={0.6} />
+          <Ellipse cx={78} cy={420} rx={8} ry={4} fill={colors.terracotta} opacity={0.5} />
+          <Ellipse cx={122} cy={420} rx={8} ry={4} fill={colors.terracotta} opacity={0.5} />
 
           {/* Side mirrors */}
-          <Ellipse cx={28} cy={115} rx={6} ry={4} fill="#94A3B8" />
-          <Ellipse cx={172} cy={115} rx={6} ry={4} fill="#94A3B8" />
+          <Ellipse cx={28} cy={115} rx={6} ry={4} fill={colors.warmGray} />
+          <Ellipse cx={172} cy={115} rx={6} ry={4} fill={colors.warmGray} />
 
           {/* Zone labels */}
           {ZONES.map((zone) => {
@@ -182,7 +183,7 @@ export function CarDamageMap({ pins, onZoneTap }: CarDamageMapProps) {
                 y={cy}
                 textAnchor="middle"
                 fontSize={8}
-                fill="#64748B"
+                fill={colors.warmGray}
                 fontWeight="500"
               >
                 {zone.shortLabel}
@@ -197,14 +198,14 @@ export function CarDamageMap({ pins, onZoneTap }: CarDamageMapProps) {
               const { sx, sy } = toSvg(pin.x, pin.y);
               return (
                 <G key={`pin-${pin.pinNumber}`}>
-                  <Circle cx={sx} cy={sy} r={12} fill="#DC2626" opacity={0.9} />
+                  <Circle cx={sx} cy={sy} r={12} fill={colors.terracotta} opacity={0.9} />
                   <SvgText
                     x={sx}
                     y={sy + 4}
                     textAnchor="middle"
                     fontSize={10}
                     fontWeight="bold"
-                    fill="#FFFFFF"
+                    fill={colors.cream}
                   >
                     {pin.pinNumber}
                   </SvgText>
@@ -240,23 +241,24 @@ const styles = StyleSheet.create({
   container: {
     width: '80%',
     aspectRatio: 200 / 440,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.cream,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: colors.sand,
     overflow: 'hidden',
   },
   touchOverlay: {
     position: 'absolute',
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: 'rgba(59, 130, 246, 0.15)',
-    backgroundColor: 'rgba(59, 130, 246, 0.05)',
+    borderColor: 'rgba(27, 67, 50, 0.1)',
+    backgroundColor: 'rgba(27, 67, 50, 0.04)',
   },
   hint: {
     marginTop: 8,
+    fontFamily: fonts.body,
     fontSize: 13,
-    color: '#94A3B8',
+    color: colors.warmGray,
     textAlign: 'center',
   },
 });

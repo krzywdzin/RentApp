@@ -14,6 +14,7 @@ import { WizardStepper } from '@/components/WizardStepper';
 import { LoadingSkeleton } from '@/components/LoadingSkeleton';
 import { AppCard } from '@/components/AppCard';
 import { AppButton } from '@/components/AppButton';
+import { colors, fonts, spacing } from '@/lib/theme';
 
 export default function ReturnConfirmScreen() {
   const { t } = useTranslation();
@@ -117,7 +118,7 @@ export default function ReturnConfirmScreen() {
 
         {/* Rental info */}
         {rental && (
-          <AppCard cardStyle={s.mb12}>
+          <AppCard cardStyle={[s.mb12, s.cardStone]}>
             <Text style={s.sectionLabel}>Wynajem</Text>
             <Text style={s.mainText}>
               {rental.customer.firstName} {rental.customer.lastName}
@@ -130,7 +131,7 @@ export default function ReturnConfirmScreen() {
         )}
 
         {/* Mileage summary */}
-        <AppCard cardStyle={s.mb12}>
+        <AppCard cardStyle={[s.mb12, s.cardStone]}>
           <Text style={s.sectionLabel}>{t('returnWizard.step2')}</Text>
           <View style={s.mileageRow}>
             <View>
@@ -151,7 +152,7 @@ export default function ReturnConfirmScreen() {
         </AppCard>
 
         {/* Damage pins summary */}
-        <AppCard cardStyle={s.mb12}>
+        <AppCard cardStyle={[s.mb12, s.cardStone]}>
           <Text style={s.sectionLabel}>{t('returnWizard.step3')}</Text>
 
           {damagePins.length > 0 ? (
@@ -177,7 +178,7 @@ export default function ReturnConfirmScreen() {
         </AppCard>
 
         {/* Notes */}
-        <AppCard cardStyle={s.mb12}>
+        <AppCard cardStyle={[s.mb12, s.cardStone]}>
           <Text style={s.sectionLabel}>{t('returnWizard.step4')}</Text>
           <Text style={s.valueText}>{notes || 'Brak uwag'}</Text>
         </AppCard>
@@ -197,35 +198,36 @@ export default function ReturnConfirmScreen() {
 }
 
 const s = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  safeArea: { flex: 1, backgroundColor: colors.cream },
   flex1: { flex: 1 },
-  padWrap: { paddingHorizontal: 16, paddingTop: 8 },
-  scrollContent: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 128 },
-  stepTitle: { marginBottom: 16, fontSize: 20, fontWeight: '600', color: '#18181B' },
-  mb12: { marginBottom: 12 },
-  sectionLabel: { marginBottom: 8, fontSize: 13, fontWeight: '500', color: '#71717A' },
-  mainText: { fontSize: 16, fontWeight: '600', color: '#18181B' },
-  subText: { marginTop: 4, fontSize: 13, color: '#71717A' },
-  smallLabel: { fontSize: 13, color: '#71717A' },
-  valueText: { fontSize: 16, color: '#18181B' },
+  padWrap: { paddingHorizontal: spacing.base, paddingTop: 8 },
+  scrollContent: { paddingHorizontal: spacing.base, paddingTop: spacing.base, paddingBottom: 128 },
+  stepTitle: { marginBottom: spacing.base, fontFamily: fonts.display, fontSize: 20, fontWeight: '600', color: colors.charcoal },
+  mb12: { marginBottom: spacing.md },
+  sectionLabel: { marginBottom: 8, fontFamily: fonts.body, fontSize: 13, fontWeight: '500', color: colors.warmGray },
+  mainText: { fontFamily: fonts.body, fontSize: 16, fontWeight: '600', color: colors.charcoal },
+  subText: { marginTop: 4, fontFamily: fonts.body, fontSize: 13, color: colors.warmGray },
+  smallLabel: { fontFamily: fonts.body, fontSize: 13, color: colors.warmGray },
+  valueText: { fontFamily: fonts.data, fontSize: 16, color: colors.charcoal },
   mileageRow: { flexDirection: 'row', justifyContent: 'space-between' },
-  distanceWrap: { marginTop: 8, borderTopWidth: 1, borderTopColor: '#F4F4F5', paddingTop: 8 },
-  distanceValue: { fontSize: 16, fontWeight: '600', color: '#3B82F6' },
+  distanceWrap: { marginTop: 8, borderTopWidth: 1, borderTopColor: colors.sand, paddingTop: 8 },
+  distanceValue: { fontFamily: fonts.data, fontSize: 16, color: colors.charcoal },
   damageRow: { marginBottom: 8, flexDirection: 'row', alignItems: 'flex-start' },
-  redDot: { marginRight: 8, marginTop: 6, height: 12, width: 12, borderRadius: 6, backgroundColor: '#EF4444' },
-  greenDot: { marginRight: 8, height: 12, width: 12, borderRadius: 6, backgroundColor: '#22C55E' },
+  redDot: { marginRight: 8, marginTop: 6, height: 12, width: 12, borderRadius: 6, backgroundColor: colors.terracotta },
+  greenDot: { marginRight: 8, height: 12, width: 12, borderRadius: 6, backgroundColor: colors.forestGreen },
   okRow: { marginBottom: 4, flexDirection: 'row', alignItems: 'center' },
-  checkItemLabel: { fontSize: 16, color: '#18181B' },
-  checkItemNotes: { marginTop: 2, fontSize: 13, color: '#71717A' },
+  checkItemLabel: { fontFamily: fonts.body, fontSize: 16, color: colors.charcoal },
+  checkItemNotes: { marginTop: 2, fontFamily: fonts.body, fontSize: 13, color: colors.warmGray },
+  cardStone: { backgroundColor: colors.warmStone },
   bottomBar: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     borderTopWidth: 1,
-    borderTopColor: '#E4E4E7',
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: 16,
-    paddingTop: 16,
+    borderTopColor: colors.sand,
+    backgroundColor: colors.cream,
+    paddingHorizontal: spacing.base,
+    paddingTop: spacing.base,
   },
 });

@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { AppButton } from '@/components/AppButton';
 import { AppInput } from '@/components/AppInput';
 import { useLogin } from '@/hooks/use-auth';
+import { colors, fonts, spacing } from '@/lib/theme';
 
 const LoginFormSchema = z.object({
   username: z.string().min(3, 'Nazwa uzytkownika musi miec co najmniej 3 znaki'),
@@ -134,26 +135,28 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.cream,
   },
   scrollContent: {
     flexGrow: 1,
-    justifyContent: 'center',
     paddingHorizontal: 24,
+    paddingTop: '25%',
   },
   branding: {
     marginBottom: 48,
     alignItems: 'center',
   },
   brandTitle: {
-    fontSize: 36,
-    fontWeight: '700',
-    color: '#3B82F6',
+    fontFamily: fonts.display,
+    fontSize: 28,
+    fontWeight: '600',
+    color: colors.forestGreen,
   },
   brandSub: {
     marginTop: 8,
+    fontFamily: fonts.body,
     fontSize: 16,
-    color: '#71717A',
+    color: colors.warmGray,
   },
   form: {},
   submitWrap: {

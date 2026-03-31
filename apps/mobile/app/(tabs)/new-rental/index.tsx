@@ -19,6 +19,7 @@ import { ConfirmationDialog } from '@/components/ConfirmationDialog';
 import { useRentalDraftStore, useRentalDraftHasHydrated } from '@/stores/rental-draft.store';
 import { useCustomerSearch, useCreateCustomer } from '@/hooks/use-customers';
 import { RENTAL_WIZARD_LABELS } from '@/lib/constants';
+import { colors, fonts, spacing } from '@/lib/theme';
 
 export default function CustomerStep() {
   const { t } = useTranslation();
@@ -141,7 +142,7 @@ export default function CustomerStep() {
       )}
       {isFetching && searchQuery.length >= 2 && (
         <View style={s.spinnerRow}>
-          <ActivityIndicator size="small" color="#2563EB" />
+          <ActivityIndicator size="small" color={colors.forestGreen} />
           <Text style={s.spinnerText}>Szukanie...</Text>
         </View>
       )}
@@ -350,23 +351,23 @@ export default function CustomerStep() {
 }
 
 const s = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
-  stepTitle: { marginTop: 16, paddingHorizontal: 16, fontSize: 20, fontWeight: '600', color: '#18181B' },
-  mt16: { marginTop: 16 },
-  mt8: { marginTop: 8 },
-  mb12: { marginBottom: 12 },
-  list: { marginTop: 16, flex: 1 },
-  listContent: { paddingHorizontal: 16, paddingBottom: 100 },
-  custName: { fontSize: 16, fontWeight: '600', color: '#18181B' },
-  custSub: { marginTop: 4, fontSize: 13, color: '#71717A' },
+  safeArea: { flex: 1, backgroundColor: colors.cream },
+  stepTitle: { marginTop: spacing.base, paddingHorizontal: spacing.base, fontFamily: fonts.display, fontSize: 20, fontWeight: '600', color: colors.charcoal },
+  mt16: { marginTop: spacing.base },
+  mt8: { marginTop: spacing.sm },
+  mb12: { marginBottom: spacing.md },
+  list: { marginTop: spacing.base, flex: 1 },
+  listContent: { paddingHorizontal: spacing.base, paddingBottom: 100 },
+  custName: { fontFamily: fonts.body, fontSize: 16, fontWeight: '500', color: colors.charcoal },
+  custSub: { marginTop: 4, fontFamily: fonts.body, fontSize: 13, color: colors.warmGray },
   flex1: { flex: 1 },
-  modalRoot: { flex: 1, backgroundColor: '#FFFFFF' },
-  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, borderBottomWidth: 1, borderBottomColor: '#E4E4E7' },
-  modalTitle: { fontSize: 18, fontWeight: '600', color: '#18181B' },
-  modalClose: { color: '#3B82F6', fontSize: 16 },
-  modalScroll: { padding: 16, paddingBottom: 40 },
-  modalHeading: { marginBottom: 16, fontSize: 20, fontWeight: '600', color: '#18181B' },
-  searchHint: { paddingHorizontal: 16, marginTop: 8, fontSize: 13, color: '#A1A1AA' },
-  spinnerRow: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, marginTop: 8, gap: 8 },
-  spinnerText: { fontSize: 13, color: '#71717A' },
+  modalRoot: { flex: 1, backgroundColor: colors.cream },
+  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: spacing.base, borderBottomWidth: 1, borderBottomColor: colors.sand },
+  modalTitle: { fontFamily: fonts.display, fontSize: 18, fontWeight: '600', color: colors.charcoal },
+  modalClose: { fontFamily: fonts.body, color: colors.forestGreen, fontSize: 16 },
+  modalScroll: { padding: spacing.base, paddingBottom: 40 },
+  modalHeading: { marginBottom: spacing.base, fontFamily: fonts.display, fontSize: 20, fontWeight: '600', color: colors.charcoal },
+  searchHint: { paddingHorizontal: spacing.base, marginTop: spacing.sm, fontFamily: fonts.body, fontSize: 13, color: colors.warmGray },
+  spinnerRow: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.base, marginTop: spacing.sm, gap: 8 },
+  spinnerText: { fontFamily: fonts.body, fontSize: 13, color: colors.warmGray },
 });

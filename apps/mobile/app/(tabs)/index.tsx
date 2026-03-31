@@ -23,6 +23,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { LoadingSkeleton } from '@/components/LoadingSkeleton';
 import type { RentalWithRelations } from '@/api/rentals.api';
 import { UPCOMING_RETURN_THRESHOLD_DAYS } from '@/lib/constants';
+import { colors, fonts, spacing } from '@/lib/theme';
 
 function isOverdue(rental: RentalWithRelations): boolean {
   if (rental.status !== 'ACTIVE' && rental.status !== 'EXTENDED') return false;
@@ -99,22 +100,21 @@ export default function DashboardScreen() {
 
   const renderUpcomingItem = useCallback(
     ({ item }: { item: RentalWithRelations }) => (
-      <AppCard cardStyle={s.upcomingCard} onPress={() => handleRentalPress(item.id)}>
+      <Pressable style={s.upcomingItem} onPress={() => handleRentalPress(item.id)}>
         <View style={s.cardRow}>
           <View style={s.flex1}>
             <Text style={s.cardName}>
               {item.customer.firstName} {item.customer.lastName}
             </Text>
             <Text style={s.cardSub}>
-              {item.vehicle.registration} {item.vehicle.make} {item.vehicle.model}
+              <Text style={s.cardPlate}>{item.vehicle.registration}</Text>
+              {' '}{item.vehicle.make} {item.vehicle.model}
             </Text>
-            <Text style={s.cardSub}>
-              {formatDate(item.endDate)}
-            </Text>
+            <Text style={s.cardDate}>{formatDate(item.endDate)}</Text>
           </View>
           <StatusBadge status={item.status} />
         </View>
-      </AppCard>
+      </Pressable>
     ),
     [handleRentalPress],
   );
@@ -143,7 +143,7 @@ export default function DashboardScreen() {
           <RefreshControl
             refreshing={isRefetching}
             onRefresh={refetch}
-            tintColor="#2563EB"
+            tintColor={colors.forestGreen}
           />
         }
         showsVerticalScrollIndicator={false}
@@ -161,61 +161,56 @@ export default function DashboardScreen() {
               onPress={() => router.push('/rentals')}
               style={s.mt16}
             >
-              <AppCard cardStyle={s.overdueCard}>
-                <View style={s.overdueRow}>
-                  <AlertTriangle size={20} color="#DC2626" />
-                  <Text style={s.overdueText}>
-                    {t('dashboard.overdue', { count: stats.overdue })}
-                  </Text>
-                </View>
-              </AppCard>
+              <View style={s.overdueBar}>
+                <AlertTriangle size={18} color={colors.terracotta} />
+                <Text style={s.overdueText}>
+                  {t('dashboard.overdue', { count: stats.overdue })}
+                </Text>
+              </View>
             </Pressable>
           )}
 
-          {/* Stat Cards */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={s.mt24}
-            contentContainerStyle={s.statsContent}
-          >
-            <AppCard cardStyle={s.statCard}>
+          {/* Stat Row */}
+          <View style={s.statsRow}>
+            <View
+              style={[s.statCell, s.statDivider]}
+              accessible={true}
+              accessibilityRole="text"
+              accessibilityLabel={`${t('dashboard.activeRentals')}: ${stats.active}`}
+            >
+              <Text style={s.statValue}>{stats.active}</Text>
+              <Text style={s.statLabel}>{t('dashboard.activeRentals')}</Text>
+            </View>
+            <View
+              style={[s.statCell, s.statDivider]}
+              accessible={true}
+              accessibilityRole="text"
+              accessibilityLabel={`${t('dashboard.todayPickups')}: ${stats.pickups}`}
+            >
+              <Text style={s.statValue}>{stats.pickups}</Text>
+              <Text style={s.statLabel}>{t('dashboard.todayPickups')}</Text>
+            </View>
+            <View
+              style={[s.statCell, s.statDivider]}
+              accessible={true}
+              accessibilityRole="text"
+              accessibilityLabel={`${t('dashboard.todayReturns')}: ${stats.returns}`}
+            >
+              <Text style={s.statValue}>{stats.returns}</Text>
+              <Text style={s.statLabel}>{t('dashboard.todayReturns')}</Text>
+            </View>
+            {stats.overdue > 0 && (
               <View
+                style={s.statCell}
                 accessible={true}
                 accessibilityRole="text"
-                accessibilityLabel={`${t('dashboard.activeRentals')}: ${stats.active}`}
+                accessibilityLabel={`Overdue: ${stats.overdue}`}
               >
-                <Text style={s.statLabel}>
-                  {t('dashboard.activeRentals')}
-                </Text>
-                <Text style={s.statValue}>{stats.active}</Text>
+                <Text style={s.statValueOverdue}>{stats.overdue}</Text>
+                <Text style={s.statLabel}>Zalegajace</Text>
               </View>
-            </AppCard>
-            <AppCard cardStyle={s.statCard}>
-              <View
-                accessible={true}
-                accessibilityRole="text"
-                accessibilityLabel={`${t('dashboard.todayPickups')}: ${stats.pickups}`}
-              >
-                <Text style={s.statLabel}>
-                  {t('dashboard.todayPickups')}
-                </Text>
-                <Text style={s.statValue}>{stats.pickups}</Text>
-              </View>
-            </AppCard>
-            <AppCard cardStyle={s.statCard}>
-              <View
-                accessible={true}
-                accessibilityRole="text"
-                accessibilityLabel={`${t('dashboard.todayReturns')}: ${stats.returns}`}
-              >
-                <Text style={s.statLabel}>
-                  {t('dashboard.todayReturns')}
-                </Text>
-                <Text style={s.statValue}>{stats.returns}</Text>
-              </View>
-            </AppCard>
-          </ScrollView>
+            )}
+          </View>
 
           {/* Quick Actions */}
           <View style={s.actionsWrap}>
@@ -261,29 +256,39 @@ export default function DashboardScreen() {
 }
 
 const s = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  safeArea: { flex: 1, backgroundColor: colors.cream },
   flex1: { flex: 1 },
-  loadingWrap: { flex: 1, paddingHorizontal: 16, paddingTop: 16 },
-  statsRowLoading: { marginTop: 24, flexDirection: 'row', gap: 12 },
-  mt24: { marginTop: 24 },
-  mt16: { marginTop: 16 },
-  mt12: { marginTop: 12 },
-  padH16pt16: { paddingHorizontal: 16, paddingTop: 16 },
-  greeting: { fontSize: 20, fontWeight: '600', color: '#18181B' },
-  todayText: { marginTop: 4, fontSize: 16, color: '#71717A' },
-  overdueCard: { borderColor: '#DC2626' },
-  overdueRow: { flexDirection: 'row', alignItems: 'center' },
-  overdueText: { marginLeft: 8, flex: 1, fontSize: 16, fontWeight: '600', color: '#DC2626' },
-  statsContent: { gap: 12 },
-  statCard: { width: 128 },
-  statLabel: { fontSize: 13, color: '#71717A' },
-  statValue: { marginTop: 4, fontSize: 28, fontWeight: '600', color: '#18181B' },
-  actionsWrap: { marginTop: 24 },
-  sectionHeading: { marginTop: 32, fontSize: 20, fontWeight: '600', color: '#18181B' },
-  emptyWrap: { marginTop: 16, paddingHorizontal: 16 },
-  upcomingList: { marginTop: 16, paddingBottom: 32 },
-  upcomingCard: { marginHorizontal: 16, marginBottom: 12 },
+  loadingWrap: { flex: 1, paddingHorizontal: spacing.base, paddingTop: spacing.base },
+  statsRowLoading: { marginTop: spacing.xl, flexDirection: 'row', gap: 12 },
+  mt24: { marginTop: spacing.xl },
+  mt16: { marginTop: spacing.base },
+  mt12: { marginTop: spacing.md },
+  padH16pt16: { paddingHorizontal: spacing.base, paddingTop: spacing.base },
+  greeting: { fontFamily: fonts.display, fontSize: 20, fontWeight: '500', color: colors.charcoal },
+  todayText: { marginTop: 4, fontFamily: fonts.body, fontSize: 16, color: colors.warmGray },
+  overdueBar: {
+    borderLeftWidth: 4,
+    borderLeftColor: colors.terracotta,
+    backgroundColor: colors.amberTint,
+    padding: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  overdueText: { marginLeft: 8, flex: 1, fontFamily: fonts.body, fontSize: 15, color: colors.terracotta },
+  statsRow: { marginTop: spacing.xl, flexDirection: 'row', borderTopWidth: 1, borderTopColor: colors.sand, borderBottomWidth: 1, borderBottomColor: colors.sand, paddingVertical: 16 },
+  statCell: { flex: 1, alignItems: 'center' },
+  statDivider: { borderRightWidth: 1, borderRightColor: colors.sand },
+  statLabel: { fontFamily: fonts.body, fontSize: 12, color: colors.warmGray, textAlign: 'center' },
+  statValue: { fontFamily: fonts.display, fontWeight: '600', fontSize: 28, color: colors.forestGreen, textAlign: 'center' },
+  statValueOverdue: { fontFamily: fonts.display, fontWeight: '600', fontSize: 28, color: colors.terracotta, textAlign: 'center' },
+  actionsWrap: { marginTop: spacing.xl },
+  sectionHeading: { marginTop: spacing.xxl, fontFamily: fonts.display, fontWeight: '500', fontSize: 20, color: colors.charcoal },
+  emptyWrap: { marginTop: spacing.base, paddingHorizontal: spacing.base },
+  upcomingList: { marginTop: spacing.base, paddingBottom: 32 },
+  upcomingItem: { paddingHorizontal: spacing.base, paddingVertical: spacing.md, borderBottomWidth: 1, borderBottomColor: colors.sand },
   cardRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  cardName: { fontSize: 16, fontWeight: '600', color: '#18181B' },
-  cardSub: { marginTop: 4, fontSize: 13, color: '#71717A' },
+  cardName: { fontFamily: fonts.body, fontSize: 16, fontWeight: '500', color: colors.charcoal },
+  cardSub: { marginTop: 4, fontFamily: fonts.body, fontSize: 13, color: colors.warmGray },
+  cardPlate: { fontFamily: fonts.data, color: colors.charcoal },
+  cardDate: { marginTop: 4, fontFamily: fonts.data, fontSize: 13, color: colors.warmGray },
 });
