@@ -230,6 +230,7 @@ export default function SignaturesStep() {
                     type: 'image/jpeg',
                   } as any);
                   formData.append('position', position);
+                  formData.append('capturedAt', new Date().toISOString());
                   await apiClient.post(
                     `/walkthroughs/${walkthrough.data.id}/photos`,
                     formData,
