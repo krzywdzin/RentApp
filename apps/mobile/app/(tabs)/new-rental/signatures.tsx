@@ -218,7 +218,7 @@ export default function SignaturesStep() {
               for (const [position, uri] of Object.entries(draft.photoUris)) {
                 try {
                   const formData = new FormData();
-                  formData.append('photo', {
+                  formData.append('file', {
                     uri,
                     name: `${position}.jpg`,
                     type: 'image/jpeg',
