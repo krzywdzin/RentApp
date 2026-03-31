@@ -86,12 +86,9 @@ export function SignatureScreen({
         <Text style={styles.headerStep}>{stepLabel}</Text>
       </View>
 
-      {/* Instruction */}
-      {instruction && (
-        <Text style={styles.instruction}>{instruction}</Text>
-      )}
-
-      {/* Canvas */}
+      {/* Canvas — instruction is rendered as an overlay inside the canvas so
+          the WebView layout is not shifted by the instruction text height,
+          which would cause the signature to draw below the finger */}
       <View style={styles.canvas}>
         <SignatureCanvas
           ref={signatureRef}
@@ -107,6 +104,13 @@ export function SignatureScreen({
           trimWhitespace={false}
           style={{ flex: 1 }}
         />
+
+        {/* Instruction overlay — positioned above drawing area, does not affect canvas layout */}
+        {instruction && (
+          <View style={styles.instructionOverlay} pointerEvents="none">
+            <Text style={styles.instructionText}>{instruction}</Text>
+          </View>
+        )}
 
         {/* Loading overlay */}
         {loading && (
@@ -156,12 +160,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#71717A',
   },
-  instruction: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    fontSize: 13,
-    color: '#71717A',
-  },
   canvas: {
     marginHorizontal: 16,
     flex: 1,
@@ -170,6 +168,19 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E4E4E7',
     position: 'relative',
+  },
+  instructionOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: 'rgba(255,255,255,0.85)',
+  },
+  instructionText: {
+    fontSize: 13,
+    color: '#71717A',
   },
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,
