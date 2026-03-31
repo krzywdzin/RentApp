@@ -79,22 +79,18 @@ export default function DatesStep() {
   const handleStartDateChange = useCallback(
     (_event: DateTimePickerEvent, date?: Date) => {
       if (Platform.OS === 'android') setShowStartPicker(false);
-      if (!date || isNaN(date.getTime())) return;
-
-      // Validate: start date cannot be in the past (iOS lacks minimumDate due to crash bug)
-      const now = new Date();
-      if (date < now) {
-        Toast.show({
-          type: 'error',
-          text1: 'Data rozpoczecia nie moze byc w przeszlosci',
-        });
-        return;
-      }
-
-      setValue('startDate', date);
-      // If end date is before new start, push it forward
-      if (date >= endDate) {
-        setValue('endDate', new Date(date.getTime() + ONE_DAY_MS));
+      if (!date) return;
+      try {
+        if (isNaN(date.getTime())) return;
+        const newDate = new Date(date);
+        setValue('startDate', newDate);
+        // If end date is before new start, push it forward
+        const currentEnd = endDate instanceof Date && !isNaN(endDate.getTime()) ? endDate : new Date();
+        if (newDate >= currentEnd) {
+          setValue('endDate', new Date(newDate.getTime() + ONE_DAY_MS));
+        }
+      } catch {
+        // ignore invalid date
       }
     },
     [setValue, endDate],
@@ -103,19 +99,14 @@ export default function DatesStep() {
   const handleEndDateChange = useCallback(
     (_event: DateTimePickerEvent, date?: Date) => {
       if (Platform.OS === 'android') setShowEndPicker(false);
-      if (!date || isNaN(date.getTime())) return;
-
-      // Validate: end date must be at least 1 hour after start date (iOS lacks minimumDate due to crash bug)
-      const minEndDate = new Date(startDate.getTime() + 3600000);
-      if (date < minEndDate) {
-        Toast.show({
-          type: 'error',
-          text1: 'Data zakonczenia musi byc co najmniej 1h po rozpoczeciu',
-        });
-        return;
+      if (!date) return;
+      try {
+        if (isNaN(date.getTime())) return;
+        const newDate = new Date(date);
+        setValue('endDate', newDate);
+      } catch {
+        // ignore invalid date
       }
-
-      setValue('endDate', date);
     },
     [setValue, startDate],
   );
