@@ -362,29 +362,47 @@ export default function RentalDetailPage() {
         </TabsContent>
 
         <TabsContent value="inspekcja">
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Wydanie pojazdu</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {rental.handoverData ? (
+                    <InspectionDisplay data={rental.handoverData} />
+                  ) : (
+                    <p className="text-sm text-muted-foreground">Brak danych inspekcji wydania</p>
+                  )}
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Zwrot pojazdu</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {rental.returnData ? (
+                    <InspectionDisplay data={rental.returnData} />
+                  ) : (
+                    <p className="text-sm text-muted-foreground">Brak danych inspekcji zwrotu</p>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
             <Card>
-              <CardHeader>
-                <CardTitle>Wydanie pojazdu</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {rental.handoverData ? (
-                  <InspectionDisplay data={rental.handoverData} />
-                ) : (
-                  <p className="text-sm text-muted-foreground">Brak danych inspekcji wydania</p>
-                )}
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Zwrot pojazdu</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {rental.returnData ? (
-                  <InspectionDisplay data={rental.returnData} />
-                ) : (
-                  <p className="text-sm text-muted-foreground">Brak danych inspekcji zwrotu</p>
-                )}
+              <CardContent className="py-4 flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium">Dokumentacja fotograficzna</p>
+                  <p className="text-xs text-muted-foreground">
+                    Zdjecia pojazdu i mapa uszkodzen z obchodu fotograficznego
+                  </p>
+                </div>
+                <Button variant="outline" size="sm" asChild>
+                  <Link href={`/wynajmy/${id}/dokumentacja`}>
+                    <Camera className="mr-2 h-4 w-4" />
+                    Zobacz dokumentacje
+                  </Link>
+                </Button>
               </CardContent>
             </Card>
           </div>
