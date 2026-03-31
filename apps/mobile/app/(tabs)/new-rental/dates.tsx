@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -20,8 +20,6 @@ import { RENTAL_WIZARD_LABELS, VAT_MULTIPLIER, ONE_DAY_MS } from '@/lib/constant
 import { colors, fonts, spacing } from '@/lib/theme';
 
 const DatesSchema = z.object({
-  startDate: z.date(),
-  endDate: z.date(),
   dailyRateNet: z.string()
     .min(1, 'Stawka dzienna jest wymagana')
     .regex(/^\d+([.,]\d{1,2})?$/, 'Nieprawidlowy format stawki (np. 150 lub 150.00)'),
@@ -45,8 +43,6 @@ export default function DatesStep() {
   const { control, handleSubmit, watch, setValue, formState: { errors } } = useForm<DatesFormValues>({
     resolver: zodResolver(DatesSchema),
     defaultValues: {
-      startDate: defaultStartDate,
-      endDate: defaultEndDate,
       dailyRateNet: draft.dailyRateNet
         ? String(draft.dailyRateNet / 100)
         : '',
@@ -55,9 +51,9 @@ export default function DatesStep() {
 
   const [showStartPicker, setShowStartPicker] = useState(false);
   const [showEndPicker, setShowEndPicker] = useState(false);
-
-  const startDate = watch('startDate');
-  const endDate = watch('endDate');
+  // Keep dates in local state to avoid react-hook-form/zod crashes with DateTimePicker
+  const [startDate, setStartDate] = useState(defaultStartDate);
+  const [endDate, setEndDate] = useState(defaultEndDate);
   const dailyRateStr = watch('dailyRateNet');
 
   const pricing = useMemo(() => {
@@ -77,45 +73,31 @@ export default function DatesStep() {
   }, [startDate, endDate, dailyRateStr]);
 
   const handleStartDateChange = useCallback(
-    (event: DateTimePickerEvent, date?: Date) => {
-      if (Platform.OS === 'android') setShowStartPicker(false);
-      if (event.type === 'dismissed') return;
+    (_event: DateTimePickerEvent, date?: Date) => {
+      // Delay unmount to avoid crash on Android when native dialog closes
+      setTimeout(() => setShowStartPicker(false), 0);
       if (!date) return;
-      try {
-        const t = date.getTime();
-        if (!isFinite(t)) return;
-        const newDate = new Date(t);
-        setValue('startDate', newDate, { shouldValidate: false });
-        const currentEnd = endDate instanceof Date && isFinite(endDate.getTime()) ? endDate : new Date();
-        if (newDate >= currentEnd) {
-          setValue('endDate', new Date(t + ONE_DAY_MS), { shouldValidate: false });
-        }
-      } catch {
-        // ignore
+      const d = new Date(date);
+      setStartDate(d);
+      if (d >= endDate) {
+        setEndDate(new Date(d.getTime() + ONE_DAY_MS));
       }
     },
-    [setValue, endDate],
+    [endDate],
   );
 
   const handleEndDateChange = useCallback(
-    (event: DateTimePickerEvent, date?: Date) => {
-      if (Platform.OS === 'android') setShowEndPicker(false);
-      if (event.type === 'dismissed') return;
+    (_event: DateTimePickerEvent, date?: Date) => {
+      setTimeout(() => setShowEndPicker(false), 0);
       if (!date) return;
-      try {
-        const t = date.getTime();
-        if (!isFinite(t)) return;
-        setValue('endDate', new Date(t), { shouldValidate: false });
-      } catch {
-        // ignore
-      }
+      setEndDate(new Date(date));
     },
-    [setValue, startDate],
+    [],
   );
 
   const handleNext = useCallback(
     (data: DatesFormValues) => {
-      if (data.endDate <= data.startDate) {
+      if (endDate <= startDate) {
         Toast.show({
           type: 'error',
           text1: 'Data zakonczenia musi byc pozniejsza niz data rozpoczecia',
@@ -133,14 +115,14 @@ export default function DatesStep() {
       }
 
       draft.updateDraft({
-        startDate: data.startDate.toISOString(),
-        endDate: data.endDate.toISOString(),
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
         dailyRateNet: rateGrosze,
         step: 3,
       });
       router.push('/(tabs)/new-rental/contract');
     },
-    [draft, router],
+    [draft, router, startDate, endDate],
   );
 
   return (
@@ -225,24 +207,18 @@ export default function DatesStep() {
       {showStartPicker && (
         <DateTimePicker
           value={startDate}
-          mode="datetime"
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          mode="date"
+          display="default"
           onChange={handleStartDateChange}
-          // minimumDate crashes iOS with datetimepicker 8.4.x (GitHub issue #996)
-          // Validation moved to handleStartDateChange; Android keeps the prop for UX
-          minimumDate={Platform.OS === 'android' ? new Date() : undefined}
         />
       )}
 
       {showEndPicker && (
         <DateTimePicker
           value={endDate}
-          mode="datetime"
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          mode="date"
+          display="default"
           onChange={handleEndDateChange}
-          // minimumDate crashes iOS with datetimepicker 8.4.x (GitHub issue #996)
-          // Validation moved to handleEndDateChange; Android keeps the prop for UX
-          minimumDate={Platform.OS === 'android' ? new Date(startDate.getTime() + 3600000) : undefined}
         />
       )}
 
