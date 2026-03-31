@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import * as Haptics from 'expo-haptics';
@@ -35,14 +35,29 @@ export function SignatureScreen({
 }: SignatureScreenProps) {
   const signatureRef = useRef<SignatureViewRef>(null);
   const { t } = useTranslation();
+  const [isLandscape, setIsLandscape] = useState(false);
 
   // Lock landscape on mount; restore portrait on unmount
+  // Only render SignatureCanvas AFTER orientation is confirmed to avoid
+  // canvas coordinate offset caused by resizeCanvas() running with wrong dimensions
   useEffect(() => {
-    ScreenOrientation.lockAsync(
-      ScreenOrientation.OrientationLock.LANDSCAPE_LEFT,
-    );
+    let mounted = true;
+
+    async function initOrientation() {
+      await ScreenOrientation.lockAsync(
+        ScreenOrientation.OrientationLock.LANDSCAPE_LEFT,
+      );
+      // Small delay to ensure layout has stabilized after rotation
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      if (mounted) {
+        setIsLandscape(true);
+      }
+    }
+
+    initOrientation();
 
     return () => {
+      mounted = false;
       ScreenOrientation.lockAsync(
         ScreenOrientation.OrientationLock.PORTRAIT_UP,
       );
@@ -90,20 +105,25 @@ export function SignatureScreen({
           the WebView layout is not shifted by the instruction text height,
           which would cause the signature to draw below the finger */}
       <View style={styles.canvas}>
-        <SignatureCanvas
-          ref={signatureRef}
-          onOK={handleOK}
-          onEmpty={handleEmpty}
-          webStyle={SIGNATURE_WEB_STYLE}
-          penColor="black"
-          minWidth={2}
-          maxWidth={3}
-          backgroundColor="white"
-          dotSize={3}
-          androidHardwareAccelerationDisabled={true}
-          trimWhitespace={false}
-          style={{ flex: 1 }}
-        />
+        {/* Only render SignatureCanvas after orientation is confirmed landscape.
+            This prevents the canvas from initializing with portrait dimensions,
+            which causes touch coordinates to be offset from drawing position. */}
+        {isLandscape && (
+          <SignatureCanvas
+            ref={signatureRef}
+            onOK={handleOK}
+            onEmpty={handleEmpty}
+            webStyle={SIGNATURE_WEB_STYLE}
+            penColor="black"
+            minWidth={2}
+            maxWidth={3}
+            backgroundColor="white"
+            dotSize={3}
+            androidHardwareAccelerationDisabled={true}
+            trimWhitespace={false}
+            style={{ flex: 1 }}
+          />
+        )}
 
         {/* Instruction overlay — positioned above drawing area, does not affect canvas layout */}
         {instruction && (
@@ -112,8 +132,8 @@ export function SignatureScreen({
           </View>
         )}
 
-        {/* Loading overlay */}
-        {loading && (
+        {/* Loading overlay - shown while waiting for orientation or during upload */}
+        {(!isLandscape || loading) && (
           <View style={styles.loadingOverlay}>
             <ActivityIndicator size="large" color="#2563EB" />
           </View>
