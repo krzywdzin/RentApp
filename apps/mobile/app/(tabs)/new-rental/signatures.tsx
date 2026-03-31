@@ -133,6 +133,10 @@ export default function SignaturesStep() {
     async (base64Png: string) => {
       setIsUploading(true);
 
+      // Snapshot photo URIs immediately before any async operations so they
+      // cannot be wiped by draft.clearDraft() in a race condition
+      const snapshotPhotoUris = { ...draft.photoUris };
+
       try {
         // On the first signature, create rental + contract
         let activeRentalId = rentalId;
@@ -145,10 +149,12 @@ export default function SignaturesStep() {
             activeContractId = result.contractId;
           } catch (err: any) {
             console.error('Rental creation error:', JSON.stringify(err?.response?.data ?? err?.message ?? err));
+            const errMsg = JSON.stringify(err?.response?.data ?? err?.message ?? 'Unknown');
             Toast.show({
               type: 'error',
-              text1: t('errors.rentalCreationFailed'),
-              text2: err?.response?.data?.message ?? err?.message ?? 'Unknown error',
+              text1: 'Blad tworzenia najmu',
+              text2: errMsg.slice(0, 200),
+              visibilityTime: 15000,
             });
             setIsUploading(false);
             return;
@@ -208,14 +214,14 @@ export default function SignaturesStep() {
           setIsSubmitting(true);
 
           // Upload walkthrough photos (non-blocking, per-photo error tracking)
-          if (activeRentalId && Object.keys(draft.photoUris).length > 0) {
+          if (activeRentalId && Object.keys(snapshotPhotoUris).length > 0) {
             try {
               const walkthrough = await apiClient.post('/walkthroughs', {
                 rentalId: activeRentalId,
                 type: 'HANDOVER',
               });
               const photoFailures: Record<string, string> = {};
-              for (const [position, uri] of Object.entries(draft.photoUris)) {
+              for (const [position, uri] of Object.entries(snapshotPhotoUris)) {
                 try {
                   const formData = new FormData();
                   formData.append('file', {
@@ -227,7 +233,7 @@ export default function SignaturesStep() {
                   await apiClient.post(
                     `/walkthroughs/${walkthrough.data.id}/photos`,
                     formData,
-                    { headers: { 'Content-Type': 'multipart/form-data' } },
+                    { headers: { 'Content-Type': 'multipart/form-data' }, transformRequest: (data) => data },
                   );
                 } catch (photoError) {
                   console.warn(`Photo upload failed for ${position}:`, photoError);
@@ -242,6 +248,10 @@ export default function SignaturesStep() {
                 });
               } else {
                 await apiClient.post(`/walkthroughs/${walkthrough.data.id}/submit`);
+                Toast.show({
+                  type: 'success',
+                  text1: t('toasts.photosUploaded'),
+                });
               }
             } catch (walkthroughError) {
               console.warn('Walkthrough creation failed:', walkthroughError);

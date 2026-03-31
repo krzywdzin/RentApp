@@ -90,6 +90,8 @@
     "rentalCreationFailed": "Nie udało się utworzyć wynajmu. Spróbuj ponownie.",
     "returnFailed": "Nie udało się zarejestrować zwrotu. Spróbuj ponownie.",
     "vehicleUnavailable": "Ten pojazd jest już zarezerwowany w wybranym terminie.",
+    "vehicleConflictTitle": "Konflikt terminu",
+    "vehicleConflictBody": "Pojazd jest już zarezerwowany w wybranym terminie. Czy chcesz kontynuować?",
     "accountLocked": "Konto zablokowane. Spróbuj ponownie za 15 minut.",
     "offline": "Brak połączenia z internetem. Niektóre funkcje są niedostępne.",
     "biometricFailed": "Uwierzytelnianie biometryczne nie powiodło się. Użyj hasła."
@@ -108,12 +110,14 @@
     "next": "Dalej",
     "back": "Wstecz",
     "cancel": "Anuluj",
+    "confirm": "Potwierdź",
     "save": "Zapisz",
     "loading": "Ładowanie..."
   },
   "toasts": {
     "rentalCreated": "Wynajem utworzony pomyślnie",
     "returnSubmitted": "Zwrot zarejestrowany",
-    "draftResumed": "Wznowiono szkic wynajmu"
+    "draftResumed": "Wznowiono szkic wynajmu",
+    "photosUploaded": "Zdjęcia wysłane pomyślnie"
   }
 }
