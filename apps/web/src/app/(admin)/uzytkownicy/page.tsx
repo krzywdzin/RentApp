@@ -74,7 +74,7 @@ export default function UzytkownicyPage() {
   const [deleteTarget, setDeleteTarget] = useState<UserDto | null>(null);
 
   // Queries & mutations
-  const { data: users, isLoading } = useUsers();
+  const { data: users, isLoading, isError, refetch } = useUsers();
   const { data: archivedUsers, isLoading: archivedLoading } = useUsers('archived');
   const createUser = useCreateUser();
   const updateUser = useUpdateUser();
@@ -200,6 +200,19 @@ export default function UzytkownicyPage() {
       <h1 className="font-display font-semibold text-2xl text-charcoal">
         Zarzadzanie uzytkownikami
       </h1>
+
+      {isError && !isLoading && (
+        <Card className="border-destructive">
+          <CardContent className="flex items-center justify-between py-4">
+            <p className="text-sm text-destructive">
+              Nie udalo sie zaladowac listy uzytkownikow. Sprawdz polaczenie i sprobuj ponownie.
+            </p>
+            <Button variant="outline" size="sm" onClick={() => refetch()}>
+              Ponow
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Collapsible Create User Form */}
       <Card className="max-w-lg">

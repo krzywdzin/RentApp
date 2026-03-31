@@ -29,7 +29,7 @@ function formatAction(entry: AuditLogEntry): string {
 }
 
 export function ActivityFeed() {
-  const { data, isLoading } = useAudit({ limit: 5, offset: 0 });
+  const { data, isLoading, isError, refetch } = useAudit({ limit: 5, offset: 0 });
 
   return (
     <Card>
@@ -48,6 +48,17 @@ export function ActivityFeed() {
                 </div>
               </div>
             ))}
+          </div>
+        ) : isError ? (
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">Nie udalo sie zaladowac aktywnosci</p>
+            <button
+              type="button"
+              onClick={() => refetch()}
+              className="text-xs text-forest-green hover:underline"
+            >
+              Ponow
+            </button>
           </div>
         ) : !data?.data.length ? (
           <p className="text-sm text-muted-foreground">Brak aktywnosci</p>
