@@ -93,9 +93,11 @@ export class AuthService {
       this.logger.warn(`Access denied: ${user.email} (${user.role}) attempted admin context login`);
       throw new ForbiddenException('Access denied: Admin panel requires administrator role');
     }
-    if (context === 'mobile' && user.role === UserRole.ADMIN) {
-      this.logger.warn(`Access denied: ${user.email} (ADMIN) attempted mobile context login`);
-      throw new ForbiddenException('Access denied: Mobile app is for employees only');
+    // ADMIN can access both web and mobile
+    // EMPLOYEE can only access mobile
+    if (context === 'admin' && user.role !== UserRole.ADMIN) {
+      this.logger.warn(`Access denied: ${user.email} (${user.role}) attempted admin context login`);
+      throw new ForbiddenException('Access denied: Web admin panel is for administrators only');
     }
 
     const payload = { sub: userId, role: user.role, aud: context };
