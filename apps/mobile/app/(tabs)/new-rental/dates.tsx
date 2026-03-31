@@ -77,35 +77,37 @@ export default function DatesStep() {
   }, [startDate, endDate, dailyRateStr]);
 
   const handleStartDateChange = useCallback(
-    (_event: DateTimePickerEvent, date?: Date) => {
+    (event: DateTimePickerEvent, date?: Date) => {
       if (Platform.OS === 'android') setShowStartPicker(false);
+      if (event.type === 'dismissed') return;
       if (!date) return;
       try {
-        if (isNaN(date.getTime())) return;
-        const newDate = new Date(date);
-        setValue('startDate', newDate);
-        // If end date is before new start, push it forward
-        const currentEnd = endDate instanceof Date && !isNaN(endDate.getTime()) ? endDate : new Date();
+        const t = date.getTime();
+        if (!isFinite(t)) return;
+        const newDate = new Date(t);
+        setValue('startDate', newDate, { shouldValidate: false });
+        const currentEnd = endDate instanceof Date && isFinite(endDate.getTime()) ? endDate : new Date();
         if (newDate >= currentEnd) {
-          setValue('endDate', new Date(newDate.getTime() + ONE_DAY_MS));
+          setValue('endDate', new Date(t + ONE_DAY_MS), { shouldValidate: false });
         }
       } catch {
-        // ignore invalid date
+        // ignore
       }
     },
     [setValue, endDate],
   );
 
   const handleEndDateChange = useCallback(
-    (_event: DateTimePickerEvent, date?: Date) => {
+    (event: DateTimePickerEvent, date?: Date) => {
       if (Platform.OS === 'android') setShowEndPicker(false);
+      if (event.type === 'dismissed') return;
       if (!date) return;
       try {
-        if (isNaN(date.getTime())) return;
-        const newDate = new Date(date);
-        setValue('endDate', newDate);
+        const t = date.getTime();
+        if (!isFinite(t)) return;
+        setValue('endDate', new Date(t), { shouldValidate: false });
       } catch {
-        // ignore invalid date
+        // ignore
       }
     },
     [setValue, startDate],
