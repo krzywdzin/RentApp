@@ -97,7 +97,7 @@ export function CustomersPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Klienci</h1>
+        <h1 className="font-display font-semibold text-2xl text-charcoal">Klienci</h1>
         <Button asChild>
           <Link href="/klienci/nowy">
             <Plus className="h-4 w-4" />

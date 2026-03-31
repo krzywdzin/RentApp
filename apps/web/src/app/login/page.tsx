@@ -43,9 +43,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="w-full max-w-sm rounded-xl border border-border bg-card p-8">
-        <h1 className="mb-6 text-center text-2xl font-semibold text-foreground">RentApp</h1>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background">
+      <h1 className="font-display font-semibold text-4xl text-forest-green mb-1">KITEK</h1>
+      <p className="font-body text-sm text-warm-gray mb-6">Wynajem Pojazdów</p>
+      <div className="bg-card shadow-inner-soft rounded-md border border-sand border-t-2 border-t-forest-green max-w-sm w-full p-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="username">Nazwa uzytkownika</Label>

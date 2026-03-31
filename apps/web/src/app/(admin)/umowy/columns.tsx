@@ -32,7 +32,9 @@ export const contractColumns: ColumnDef<ContractDto, unknown>[] = [
   {
     accessorKey: 'contractNumber',
     header: ({ column }) => <DataTableColumnHeader column={column} title="Nr umowy" />,
-    cell: ({ row }) => <span className="font-medium">{row.original.contractNumber}</span>,
+    cell: ({ row }) => (
+      <span className="font-data text-sm font-medium">{row.original.contractNumber}</span>
+    ),
   },
   {
     accessorKey: 'status',
@@ -43,7 +45,9 @@ export const contractColumns: ColumnDef<ContractDto, unknown>[] = [
   {
     accessorKey: 'createdAt',
     header: ({ column }) => <DataTableColumnHeader column={column} title="Data utworzenia" />,
-    cell: ({ row }) => formatDate(row.original.createdAt),
+    cell: ({ row }) => (
+      <span className="font-data text-sm">{formatDate(row.original.createdAt)}</span>
+    ),
   },
   {
     id: 'pdf',

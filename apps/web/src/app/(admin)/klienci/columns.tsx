@@ -27,7 +27,9 @@ export function getCustomerColumns({
     {
       accessorKey: 'lastName',
       header: ({ column }) => <DataTableColumnHeader column={column} title="Nazwisko" />,
-      cell: ({ row }) => <span className="font-medium">{row.getValue('lastName')}</span>,
+      cell: ({ row }) => (
+        <span className="font-body text-sm font-medium">{row.getValue('lastName')}</span>
+      ),
     },
     {
       accessorKey: 'firstName',
@@ -48,7 +50,9 @@ export function getCustomerColumns({
     {
       accessorKey: 'createdAt',
       header: ({ column }) => <DataTableColumnHeader column={column} title="Data dodania" />,
-      cell: ({ row }) => formatDate(row.getValue('createdAt')),
+      cell: ({ row }) => (
+        <span className="font-data text-sm">{formatDate(row.getValue('createdAt'))}</span>
+      ),
     },
     {
       id: 'actions',

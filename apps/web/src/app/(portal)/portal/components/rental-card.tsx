@@ -13,37 +13,35 @@ const STATUS_LABELS: Record<string, string> = {
   RETURNED: 'Zwrócony',
 };
 
-const STATUS_VARIANTS: Record<string, string> = {
-  DRAFT: 'bg-gray-100 text-gray-700',
-  ACTIVE: 'bg-green-100 text-green-700',
-  EXTENDED: 'bg-yellow-100 text-yellow-700',
-  RETURNED: 'bg-blue-100 text-blue-700',
-};
-
 interface RentalCardProps {
   rental: PortalRentalDto;
 }
 
 export function RentalCard({ rental }: RentalCardProps) {
+  const isActive = rental.status === 'ACTIVE' || rental.status === 'EXTENDED';
   return (
     <Link href={`/portal/${rental.id}`}>
-      <Card className="transition-shadow hover:shadow-md">
+      <Card
+        className={`bg-card shadow-inner-soft rounded-md border border-sand transition-shadow hover:shadow-md ${
+          isActive ? 'border-l-[3px] border-l-forest-green' : ''
+        }`}
+      >
         <CardContent className="p-4">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0 flex-1 space-y-1">
-              <h3 className="font-semibold">
+              <h3 className="font-display font-medium text-base text-charcoal">
                 {rental.vehicleMake} {rental.vehicleModel}
               </h3>
-              <p className="text-sm text-muted-foreground">{rental.vehicleRegistration}</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="font-data text-sm text-warm-gray">{rental.vehicleRegistration}</p>
+              <p className="font-body text-sm text-warm-gray">
                 {formatDate(rental.startDate)} - {formatDate(rental.endDate)}
               </p>
             </div>
             <div className="flex flex-col items-end gap-2">
-              <Badge className={STATUS_VARIANTS[rental.status] ?? 'bg-gray-100 text-gray-700'}>
-                {STATUS_LABELS[rental.status] ?? rental.status}
-              </Badge>
-              <span className="text-sm font-medium">{formatCurrency(rental.totalPriceGross)}</span>
+              <Badge variant="secondary">{STATUS_LABELS[rental.status] ?? rental.status}</Badge>
+              <span className="font-data text-sm font-medium">
+                {formatCurrency(rental.totalPriceGross)}
+              </span>
             </div>
           </div>
         </CardContent>

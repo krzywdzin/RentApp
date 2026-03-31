@@ -14,7 +14,7 @@ export default function AuditPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Audyt</h1>
+      <h1 className="font-display font-semibold text-2xl text-charcoal">Audyt</h1>
 
       <AuditFilterBar values={filters} onChange={setFilters} />
 

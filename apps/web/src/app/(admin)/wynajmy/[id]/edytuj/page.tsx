@@ -129,7 +129,7 @@ export default function EditRentalPage() {
         ]}
       />
 
-      <h1 className="text-2xl font-semibold">Edytuj wynajem</h1>
+      <h1 className="font-display font-semibold text-2xl text-charcoal">Edytuj wynajem</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <Card>

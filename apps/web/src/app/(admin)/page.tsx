@@ -63,7 +63,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-[28px] font-semibold">Pulpit</h1>
+      <h1 className="font-display font-semibold text-2xl text-charcoal">Pulpit</h1>
 
       {hasError && !isLoading && (
         <Card className="border-destructive">
@@ -93,31 +93,52 @@ export default function DashboardPage() {
         </div>
       ) : stats ? (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <StatCard
-            title="Aktywne wynajmy"
-            value={stats.activeCount}
-            subtitle={`${stats.activeCount} pojazdow w uzyciu`}
-            icon={CalendarClock}
-          />
-          <StatCard
-            title="Dostepne pojazdy"
-            value={stats.availableCount}
-            subtitle={`${stats.availableCount} z ${stats.totalVehicles} w flocie`}
-            icon={Car}
-          />
-          <StatCard
-            title="Dzisiejsze zwroty"
-            value={stats.todayReturnsCount}
-            subtitle={`${stats.todayReturnsCount} zaplanowanych`}
-            icon={Clock}
-          />
-          <StatCard
-            title="Przeterminowane"
-            value={stats.overdueCount}
-            subtitle={`${stats.overdueCount} wymaga uwagi`}
-            icon={AlertTriangle}
-            variant={stats.overdueCount > 0 ? 'destructive' : 'default'}
-          />
+          {[
+            {
+              title: 'Aktywne wynajmy',
+              value: stats.activeCount,
+              subtitle: `${stats.activeCount} pojazdow w uzyciu`,
+              icon: CalendarClock,
+              tintClassName: 'bg-[#F0F7F4]',
+            },
+            {
+              title: 'Dostepne pojazdy',
+              value: stats.availableCount,
+              subtitle: `${stats.availableCount} z ${stats.totalVehicles} w flocie`,
+              icon: Car,
+              tintClassName: 'bg-amber-tint',
+            },
+            {
+              title: 'Dzisiejsze zwroty',
+              value: stats.todayReturnsCount,
+              subtitle: `${stats.todayReturnsCount} zaplanowanych`,
+              icon: Clock,
+              tintClassName: 'bg-[#F0F7F7]',
+            },
+            {
+              title: 'Przeterminowane',
+              value: stats.overdueCount,
+              subtitle: `${stats.overdueCount} wymaga uwagi`,
+              icon: AlertTriangle,
+              variant: (stats.overdueCount > 0 ? 'destructive' : 'default') as 'default' | 'destructive',
+              tintClassName: 'bg-[#FDF5F3]',
+            },
+          ].map((card, index) => (
+            <div
+              key={card.title}
+              className="animate-[fadeInUp_300ms_ease-out_both]"
+              style={{ animationDelay: `${index * 80}ms` }}
+            >
+              <StatCard
+                title={card.title}
+                value={card.value}
+                subtitle={card.subtitle}
+                icon={card.icon}
+                variant={card.variant}
+                tintClassName={card.tintClassName}
+              />
+            </div>
+          ))}
         </div>
       ) : null}
 

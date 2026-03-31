@@ -85,7 +85,7 @@ export default function EditCustomerPage() {
         ]}
       />
 
-      <h1 className="text-2xl font-semibold">Edytuj klienta</h1>
+      <h1 className="font-display font-semibold text-2xl text-charcoal">Edytuj klienta</h1>
 
       <Card>
         <CardHeader>

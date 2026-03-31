@@ -52,22 +52,24 @@ export function ActivityFeed() {
         ) : !data?.data.length ? (
           <p className="text-sm text-muted-foreground">Brak aktywnosci</p>
         ) : (
-          <div className="space-y-4">
+          <div className="divide-y divide-sand">
             {data.data.map((entry) => (
-              <div key={entry.id} className="flex items-center gap-3">
-                <Avatar className="h-8 w-8">
-                  <AvatarFallback className="text-xs">
+              <div key={entry.id} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
+                <Avatar className="h-8 w-8 bg-forest-green text-cream font-display shrink-0">
+                  <AvatarFallback className="text-xs bg-forest-green text-cream font-display">
                     {entry.actor ? getInitials(entry.actor.name) : 'S'}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm">
+                  <p className="font-body text-sm text-charcoal">
                     <span className="font-medium">{entry.actor?.name ?? 'System'}</span>{' '}
                     {formatAction(entry)}
                   </p>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span className="font-mono">{entry.entityId.slice(0, 8)}</span>
-                    <span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-data text-xs text-warm-gray">
+                      {entry.entityId.slice(0, 8)}
+                    </span>
+                    <span className="font-data text-xs text-warm-gray">
                       {formatDistanceToNow(new Date(entry.createdAt), {
                         addSuffix: true,
                         locale: pl,

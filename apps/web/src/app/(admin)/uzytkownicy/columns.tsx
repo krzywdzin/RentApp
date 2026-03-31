@@ -67,7 +67,7 @@ export function getUserColumns({
       header: ({ column }) => <DataTableColumnHeader column={column} title="Utworzono" />,
       cell: ({ row }) => {
         const date = new Date(row.getValue('createdAt') as string);
-        return <span>{date.toLocaleDateString('pl-PL')}</span>;
+        return <span className="font-data text-sm">{date.toLocaleDateString('pl-PL')}</span>;
       },
     },
     {
@@ -145,7 +145,7 @@ export function getArchivedUserColumns({
       header: ({ column }) => <DataTableColumnHeader column={column} title="Utworzono" />,
       cell: ({ row }) => {
         const date = new Date(row.getValue('createdAt') as string);
-        return <span>{date.toLocaleDateString('pl-PL')}</span>;
+        return <span className="font-data text-sm">{date.toLocaleDateString('pl-PL')}</span>;
       },
     },
     {

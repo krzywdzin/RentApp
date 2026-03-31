@@ -113,7 +113,7 @@ export default function NewRentalPage() {
     <div className="space-y-6">
       <Breadcrumbs items={[{ label: 'Wynajmy', href: '/wynajmy' }, { label: 'Nowy wynajem' }]} />
 
-      <h1 className="text-2xl font-semibold">Nowy wynajem</h1>
+      <h1 className="font-display font-semibold text-2xl text-charcoal">Nowy wynajem</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <Card>

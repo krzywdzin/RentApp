@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { formatDate, formatCurrency } from '@/lib/format';
-import { Eye, MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal } from 'lucide-react';
 import Link from 'next/link';
 
 const statusConfig: Record<
@@ -56,7 +56,7 @@ export function getRentalColumns({
       accessorKey: 'id',
       header: ({ column }) => <DataTableColumnHeader column={column} title="Nr" />,
       cell: ({ row }) => (
-        <span className="font-mono text-xs text-muted-foreground">{row.original.id.slice(0, 8)}</span>
+        <span className="font-data text-xs text-warm-gray">{row.original.id.slice(0, 8)}</span>
       ),
       enableSorting: false,
     },
@@ -66,7 +66,7 @@ export function getRentalColumns({
       cell: ({ row }) => {
         const vehicle = row.original.vehicle;
         return (
-          <span className="text-sm">
+          <span className="font-data text-sm uppercase">
             {vehicle?.registration || row.original.vehicleId.slice(0, 8)}
           </span>
         );
@@ -79,7 +79,7 @@ export function getRentalColumns({
       cell: ({ row }) => {
         const customer = row.original.customer;
         return (
-          <span className="text-sm">
+          <span className="font-body text-sm">
             {customer
               ? `${customer.firstName} ${customer.lastName}`
               : row.original.customerId.slice(0, 8)}
@@ -91,17 +91,25 @@ export function getRentalColumns({
     {
       accessorKey: 'startDate',
       header: ({ column }) => <DataTableColumnHeader column={column} title="Data od" />,
-      cell: ({ row }) => formatDate(row.original.startDate),
+      cell: ({ row }) => (
+        <span className="font-data text-sm">{formatDate(row.original.startDate)}</span>
+      ),
     },
     {
       accessorKey: 'endDate',
       header: ({ column }) => <DataTableColumnHeader column={column} title="Data do" />,
-      cell: ({ row }) => formatDate(row.original.endDate),
+      cell: ({ row }) => (
+        <span className="font-data text-sm">{formatDate(row.original.endDate)}</span>
+      ),
     },
     {
       accessorKey: 'totalPriceGross',
       header: ({ column }) => <DataTableColumnHeader column={column} title="Kwota brutto" />,
-      cell: ({ row }) => formatCurrency(row.original.totalPriceGross),
+      cell: ({ row }) => (
+        <span className="font-data text-sm text-right">
+          {formatCurrency(row.original.totalPriceGross)}
+        </span>
+      ),
     },
     {
       accessorKey: 'status',
@@ -162,7 +170,7 @@ export function getArchivedRentalColumns({
       accessorKey: 'id',
       header: ({ column }) => <DataTableColumnHeader column={column} title="Nr" />,
       cell: ({ row }) => (
-        <span className="font-mono text-xs text-muted-foreground">{row.original.id.slice(0, 8)}</span>
+        <span className="font-data text-xs text-warm-gray">{row.original.id.slice(0, 8)}</span>
       ),
       enableSorting: false,
     },
@@ -172,7 +180,7 @@ export function getArchivedRentalColumns({
       cell: ({ row }) => {
         const vehicle = row.original.vehicle;
         return (
-          <span className="text-sm">
+          <span className="font-data text-sm uppercase">
             {vehicle?.registration || row.original.vehicleId.slice(0, 8)}
           </span>
         );
@@ -185,7 +193,7 @@ export function getArchivedRentalColumns({
       cell: ({ row }) => {
         const customer = row.original.customer;
         return (
-          <span className="text-sm">
+          <span className="font-body text-sm">
             {customer
               ? `${customer.firstName} ${customer.lastName}`
               : row.original.customerId.slice(0, 8)}
@@ -197,17 +205,25 @@ export function getArchivedRentalColumns({
     {
       accessorKey: 'startDate',
       header: ({ column }) => <DataTableColumnHeader column={column} title="Data od" />,
-      cell: ({ row }) => formatDate(row.original.startDate),
+      cell: ({ row }) => (
+        <span className="font-data text-sm">{formatDate(row.original.startDate)}</span>
+      ),
     },
     {
       accessorKey: 'endDate',
       header: ({ column }) => <DataTableColumnHeader column={column} title="Data do" />,
-      cell: ({ row }) => formatDate(row.original.endDate),
+      cell: ({ row }) => (
+        <span className="font-data text-sm">{formatDate(row.original.endDate)}</span>
+      ),
     },
     {
       accessorKey: 'totalPriceGross',
       header: ({ column }) => <DataTableColumnHeader column={column} title="Kwota brutto" />,
-      cell: ({ row }) => formatCurrency(row.original.totalPriceGross),
+      cell: ({ row }) => (
+        <span className="font-data text-sm text-right">
+          {formatCurrency(row.original.totalPriceGross)}
+        </span>
+      ),
     },
     {
       id: 'actions',

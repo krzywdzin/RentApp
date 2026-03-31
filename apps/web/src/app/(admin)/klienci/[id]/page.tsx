@@ -64,7 +64,7 @@ export default function CustomerDetailPage() {
 
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">
+        <h1 className="font-display font-semibold text-2xl text-charcoal">
           {customer.lastName} {customer.firstName}
         </h1>
         <div className="flex items-center gap-2">

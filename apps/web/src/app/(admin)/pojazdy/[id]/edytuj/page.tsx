@@ -83,7 +83,7 @@ export default function EditVehiclePage() {
         ]}
       />
 
-      <h1 className="text-2xl font-semibold">Edytuj pojazd</h1>
+      <h1 className="font-display font-semibold text-2xl text-charcoal">Edytuj pojazd</h1>
 
       <Card>
         <CardHeader>
