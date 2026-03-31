@@ -8,10 +8,10 @@ export default function GlobalError({
   reset: () => void;
 }) {
   return (
-    <html lang="pl" className="dark">
+    <html lang="pl">
       <body className="min-h-screen bg-background text-foreground flex items-center justify-center">
         <div className="text-center space-y-6 p-8 max-w-md">
-          <h1 className="text-2xl font-semibold">Cos poszlo nie tak</h1>
+          <h1 className="text-2xl font-display font-semibold text-charcoal">Cos poszlo nie tak</h1>
           <p className="text-sm text-muted-foreground">{error.message}</p>
           <div className="flex flex-col gap-3 items-center">
             <button
