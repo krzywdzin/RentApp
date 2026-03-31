@@ -69,7 +69,9 @@ export default function VehicleDetailPage() {
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex min-w-0 flex-1 items-center gap-3">
-          <h1 className="font-display font-semibold text-2xl text-charcoal">{vehicle.registration}</h1>
+          <h1 className="font-display font-semibold text-2xl text-charcoal">
+            {vehicle.registration}
+          </h1>
           <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -99,7 +101,9 @@ export default function VehicleDetailPage() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  <h3 className="font-display font-medium text-base text-charcoal">Informacje podstawowe</h3>
+                  <h3 className="font-display font-medium text-base text-charcoal">
+                    Informacje podstawowe
+                  </h3>
                   <div className="w-10 h-px bg-sand mt-1 mb-4" />
                 </CardTitle>
               </CardHeader>

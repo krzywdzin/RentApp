@@ -50,7 +50,9 @@ async function proxyRequest(request: NextRequest) {
     });
   }
 
-  const data = await res.json().catch(() => ({ error: 'Non-JSON response from backend', status: res.status }));
+  const data = await res
+    .json()
+    .catch(() => ({ error: 'Non-JSON response from backend', status: res.status }));
   return NextResponse.json(data, { status: res.status });
 }
 

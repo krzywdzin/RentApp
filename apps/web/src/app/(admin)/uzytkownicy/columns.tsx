@@ -97,9 +97,7 @@ export function getUserColumns({
                 {user.isActive ? 'Dezaktywuj' : 'Aktywuj'}
               </DropdownMenuItem>
               {onArchive && (
-                <DropdownMenuItem onClick={() => onArchive(user)}>
-                  Archiwizuj
-                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onArchive(user)}>Archiwizuj</DropdownMenuItem>
               )}
               {onDelete && (
                 <DropdownMenuItem className="text-destructive" onClick={() => onDelete(user)}>
@@ -166,9 +164,7 @@ export function getArchivedUserColumns({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => onUnarchive(user)}>
-                Przywroc
-              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onUnarchive(user)}>Przywroc</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="text-destructive" onClick={() => onHardDelete(user)}>
                 Usun trwale

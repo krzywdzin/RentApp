@@ -142,9 +142,7 @@ export function getRentalColumns({
               {isReturned && (
                 <>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => onArchive(rental)}>
-                    Archiwizuj
-                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => onArchive(rental)}>Archiwizuj</DropdownMenuItem>
                   <DropdownMenuItem className="text-destructive" onClick={() => onDelete(rental)}>
                     Usun trwale
                   </DropdownMenuItem>
@@ -243,9 +241,7 @@ export function getArchivedRentalColumns({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => onUnarchive(rental)}>
-                Przywroc
-              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onUnarchive(rental)}>Przywroc</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="text-destructive" onClick={() => onHardDelete(rental)}>
                 Usun trwale

@@ -12,9 +12,7 @@ export function exportToCsv<T>(
         const str = val === null || val === undefined ? '' : String(val);
         // Sanitize CSV formula injection
         const FORMULA_PREFIXES = ['=', '+', '-', '@', '\t', '\r'];
-        const sanitized = FORMULA_PREFIXES.some((p) => str.startsWith(p))
-          ? `'${str}`
-          : str;
+        const sanitized = FORMULA_PREFIXES.some((p) => str.startsWith(p)) ? `'${str}` : str;
         // Escape quotes and wrap in quotes if contains delimiter or quotes
         if (sanitized.includes(';') || sanitized.includes('"') || sanitized.includes('\n')) {
           return `"${sanitized.replace(/"/g, '""')}"`;

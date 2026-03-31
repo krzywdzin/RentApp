@@ -62,7 +62,10 @@ export default function UzytkownicyPage() {
   const [sorting, setSorting] = useState<SortingState>([]);
 
   // Archived tab state
-  const [archivedPagination, setArchivedPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 });
+  const [archivedPagination, setArchivedPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
   const [archivedSorting, setArchivedSorting] = useState<SortingState>([]);
 
   // Edit dialog state
@@ -149,7 +152,12 @@ export default function UzytkownicyPage() {
     e.preventDefault();
     setErrors({});
 
-    const result = createUserSchema.safeParse({ username, name, password, role: role || undefined });
+    const result = createUserSchema.safeParse({
+      username,
+      name,
+      password,
+      role: role || undefined,
+    });
     if (!result.success) {
       const fieldErrors: Partial<Record<keyof CreateUserForm, string>> = {};
       for (const issue of result.error.issues) {
@@ -256,9 +264,7 @@ export default function UzytkownicyPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                 />
-                {errors.username && (
-                  <p className="text-sm text-destructive">{errors.username}</p>
-                )}
+                {errors.username && <p className="text-sm text-destructive">{errors.username}</p>}
               </div>
 
               <div className="space-y-2">
@@ -281,9 +287,7 @@ export default function UzytkownicyPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
-                {errors.password && (
-                  <p className="text-sm text-destructive">{errors.password}</p>
-                )}
+                {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
               </div>
 
               <div className="space-y-2">
@@ -356,7 +360,9 @@ export default function UzytkownicyPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Edytuj uzytkownika</DialogTitle>
-            <DialogDescription>Zmien dane uzytkownika {editUser?.username ?? editUser?.email ?? editUser?.name}</DialogDescription>
+            <DialogDescription>
+              Zmien dane uzytkownika {editUser?.username ?? editUser?.email ?? editUser?.name}
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
@@ -397,18 +403,15 @@ export default function UzytkownicyPage() {
           <DialogHeader>
             <DialogTitle>Trwale usunac uzytkownika?</DialogTitle>
             <DialogDescription>
-              Uzytkownik {deleteTarget?.name} zostanie trwale usuniety. Tej operacji nie mozna cofnac.
+              Uzytkownik {deleteTarget?.name} zostanie trwale usuniety. Tej operacji nie mozna
+              cofnac.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteTarget(null)}>
               Anuluj
             </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDelete}
-              disabled={deleteUser.isPending}
-            >
+            <Button variant="destructive" onClick={handleDelete} disabled={deleteUser.isPending}>
               {deleteUser.isPending ? 'Usuwanie...' : 'Usun trwale'}
             </Button>
           </DialogFooter>

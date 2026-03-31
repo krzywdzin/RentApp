@@ -53,7 +53,9 @@ export function getVehicleColumns({
     {
       accessorKey: 'registration',
       header: ({ column }) => <DataTableColumnHeader column={column} title="Rejestracja" />,
-      cell: ({ row }) => <span className="font-data uppercase font-medium">{row.getValue('registration')}</span>,
+      cell: ({ row }) => (
+        <span className="font-data uppercase font-medium">{row.getValue('registration')}</span>
+      ),
     },
     {
       id: 'makeModel',
@@ -106,9 +108,7 @@ export function getVehicleColumns({
               <DropdownMenuItem onClick={() => onEdit(vehicle.id)}>Edytuj</DropdownMenuItem>
               <DropdownMenuSeparator />
               {onArchive && (
-                <DropdownMenuItem onClick={() => onArchive(vehicle)}>
-                  Archiwizuj
-                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onArchive(vehicle)}>Archiwizuj</DropdownMenuItem>
               )}
               <DropdownMenuItem className="text-destructive" onClick={() => onDelete(vehicle)}>
                 Usun trwale
@@ -133,7 +133,9 @@ export function getArchivedVehicleColumns({
     {
       accessorKey: 'registration',
       header: ({ column }) => <DataTableColumnHeader column={column} title="Rejestracja" />,
-      cell: ({ row }) => <span className="font-data uppercase font-medium">{row.getValue('registration')}</span>,
+      cell: ({ row }) => (
+        <span className="font-data uppercase font-medium">{row.getValue('registration')}</span>
+      ),
     },
     {
       id: 'makeModel',
@@ -182,9 +184,7 @@ export function getArchivedVehicleColumns({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => onUnarchive(vehicle)}>
-                Przywroc
-              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onUnarchive(vehicle)}>Przywroc</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="text-destructive" onClick={() => onHardDelete(vehicle)}>
                 Usun trwale

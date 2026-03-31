@@ -205,19 +205,15 @@ export default function RentalsPage() {
           <DialogHeader>
             <DialogTitle>Trwale usunac wynajem?</DialogTitle>
             <DialogDescription>
-              Wynajem #{deleteTarget?.id.slice(0, 8)} zostanie trwale usuniety. Tej operacji nie mozna
-              cofnac.
+              Wynajem #{deleteTarget?.id.slice(0, 8)} zostanie trwale usuniety. Tej operacji nie
+              mozna cofnac.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteTarget(null)}>
               Anuluj
             </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDelete}
-              disabled={deleteRental.isPending}
-            >
+            <Button variant="destructive" onClick={handleDelete} disabled={deleteRental.isPending}>
               {deleteRental.isPending ? 'Usuwanie...' : 'Usun trwale'}
             </Button>
           </DialogFooter>

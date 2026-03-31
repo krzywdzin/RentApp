@@ -131,10 +131,7 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
               <Button variant="outline" onClick={() => handleOpenChange(false)}>
                 Anuluj
               </Button>
-              <Button
-                onClick={handleImport}
-                disabled={!selectedFile || importVehicles.isPending}
-              >
+              <Button onClick={handleImport} disabled={!selectedFile || importVehicles.isPending}>
                 {importVehicles.isPending ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />

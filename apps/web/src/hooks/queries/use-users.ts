@@ -69,7 +69,13 @@ export function useDeactivateUser() {
 export function useCreateUser() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: { name: string; username: string; password: string; role: string; email?: string }) =>
+    mutationFn: (data: {
+      name: string;
+      username: string;
+      password: string;
+      role: string;
+      email?: string;
+    }) =>
       apiClient<UserDto>('/users', {
         method: 'POST',
         body: JSON.stringify(data),

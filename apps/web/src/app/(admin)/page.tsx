@@ -120,7 +120,9 @@ export default function DashboardPage() {
               value: stats.overdueCount,
               subtitle: `${stats.overdueCount} wymaga uwagi`,
               icon: AlertTriangle,
-              variant: (stats.overdueCount > 0 ? 'destructive' : 'default') as 'default' | 'destructive',
+              variant: (stats.overdueCount > 0 ? 'destructive' : 'default') as
+                | 'default'
+                | 'destructive',
               tintClassName: 'bg-[#FDF5F3]',
             },
           ].map((card, index) => (

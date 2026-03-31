@@ -19,7 +19,12 @@ export function useCustomers() {
   return useQuery({
     queryKey: customerKeys.list(),
     queryFn: async () => {
-      const res = await apiClient<{ data: CustomerDto[]; total: number; page: number; limit: number }>('/customers');
+      const res = await apiClient<{
+        data: CustomerDto[];
+        total: number;
+        page: number;
+        limit: number;
+      }>('/customers');
       return res.data;
     },
   });
