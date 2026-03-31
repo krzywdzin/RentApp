@@ -45,7 +45,7 @@
     "employeeContract": "Podpis pracownika - umowa",
     "customerConditions": "Podpis klienta - warunki",
     "employeeConditions": "Podpis pracownika - warunki",
-    "stepCounter": "{{current}} z 4",
+    "stepCounter": "{{current}} z 2",
     "instruction": "Proszę złożyć podpis w wyznaczonym polu",
     "clear": "Wyczyść podpis",
     "confirm": "Zatwierdź podpis",

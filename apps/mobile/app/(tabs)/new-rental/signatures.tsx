@@ -15,29 +15,22 @@ import { DEFAULT_VAT_RATE } from '@/lib/constants';
 
 interface SignatureStep {
   titleKey: string;
-  signatureType: SignatureType;
+  // The two signatureTypes to upload for this step (page1 + page2 reuse same signature)
+  signatureTypes: [SignatureType, SignatureType];
   signerRole: 'customer' | 'employee';
 }
 
+// Reduced to 2 user-facing steps. Each signature is uploaded twice (page1 + page2)
+// so the backend receives all 4 required types and generates the PDF correctly.
 const SIGNATURE_STEPS: SignatureStep[] = [
   {
     titleKey: 'signatures.customerContract',
-    signatureType: 'customer_page1',
+    signatureTypes: ['customer_page1', 'customer_page2'],
     signerRole: 'customer',
   },
   {
     titleKey: 'signatures.employeeContract',
-    signatureType: 'employee_page1',
-    signerRole: 'employee',
-  },
-  {
-    titleKey: 'signatures.customerConditions',
-    signatureType: 'customer_page2',
-    signerRole: 'customer',
-  },
-  {
-    titleKey: 'signatures.employeeConditions',
-    signatureType: 'employee_page2',
+    signatureTypes: ['employee_page1', 'employee_page2'],
     signerRole: 'employee',
   },
 ];
@@ -171,34 +164,36 @@ export default function SignaturesStep() {
           return;
         }
 
-        // Upload signature with retry
-        let uploaded = false;
-        for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-          try {
-            await signContract.mutateAsync({
-              contractId: activeContractId,
-              data: {
-                signatureType: currentStep.signatureType,
-                signatureBase64: base64Png,
-                deviceInfo: 'mobile-app',
-              },
-            });
-            uploaded = true;
-            break;
-          } catch {
-            if (attempt < MAX_RETRIES - 1) {
-              await sleep(RETRY_DELAYS[attempt]);
+        // Upload both signature types for this step (page1 + page2 reuse the same signature)
+        for (const sigType of currentStep.signatureTypes) {
+          let uploaded = false;
+          for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+            try {
+              await signContract.mutateAsync({
+                contractId: activeContractId,
+                data: {
+                  signatureType: sigType,
+                  signatureBase64: base64Png,
+                  deviceInfo: 'mobile-app',
+                },
+              });
+              uploaded = true;
+              break;
+            } catch {
+              if (attempt < MAX_RETRIES - 1) {
+                await sleep(RETRY_DELAYS[attempt]);
+              }
             }
           }
-        }
 
-        if (!uploaded) {
-          Toast.show({
-            type: 'error',
-            text1: t('errors.signatureUploadFailed'),
-          });
-          setIsUploading(false);
-          return;
+          if (!uploaded) {
+            Toast.show({
+              type: 'error',
+              text1: t('errors.signatureUploadFailed'),
+            });
+            setIsUploading(false);
+            return;
+          }
         }
 
         // Store signature reference
