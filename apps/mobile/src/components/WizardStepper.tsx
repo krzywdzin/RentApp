@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Check } from 'lucide-react-native';
+import { colors, fonts } from '@/lib/theme';
 
 interface WizardStepperProps {
   currentStep: number;
@@ -13,17 +13,9 @@ export function WizardStepper({
   totalSteps,
   labels,
 }: WizardStepperProps) {
-  const progress = totalSteps > 0 ? (currentStep / totalSteps) * 100 : 0;
-
   return (
     <View style={styles.wrapper}>
-      {/* Progress bar */}
-      <View style={styles.track}>
-        <View style={[styles.fill, { width: `${progress}%` as any }]} />
-      </View>
-
-      {/* Step dots */}
-      <View style={styles.dotsRow}>
+      <View style={styles.stepsRow}>
         {Array.from({ length: totalSteps }, (_, i) => {
           const stepNum = i + 1;
           const isCompleted = stepNum < currentStep;
@@ -31,31 +23,27 @@ export function WizardStepper({
 
           return (
             <View key={stepNum} style={styles.stepCol}>
-              <View
+              <Text
                 style={[
-                  styles.dot,
+                  styles.stepNumber,
                   isCompleted
-                    ? styles.dotCompleted
+                    ? styles.stepCompleted
                     : isActive
-                      ? styles.dotActive
-                      : styles.dotDefault,
+                      ? styles.stepActive
+                      : styles.stepFuture,
                 ]}
               >
-                {isCompleted ? (
-                  <Check size={16} color="#FFFFFF" />
-                ) : (
-                  <Text
-                    style={[
-                      styles.dotText,
-                      isActive ? styles.dotTextActive : styles.dotTextDefault,
-                    ]}
-                  >
-                    {stepNum}
-                  </Text>
-                )}
-              </View>
+                {isCompleted ? '✓' : stepNum}
+              </Text>
               {labels?.[i] && (
-                <Text style={styles.stepLabel}>{labels[i]}</Text>
+                <Text
+                  style={[
+                    styles.stepLabel,
+                    isActive ? styles.stepLabelActive : styles.stepLabelDefault,
+                  ]}
+                >
+                  {labels[i]}
+                </Text>
               )}
             </View>
           );
@@ -70,54 +58,40 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     paddingHorizontal: 16,
   },
-  track: {
-    height: 4,
-    borderRadius: 9999,
-    backgroundColor: '#E4E4E7',
-  },
-  fill: {
-    height: 4,
-    borderRadius: 9999,
-    backgroundColor: '#3B82F6',
-  },
-  dotsRow: {
-    marginTop: 12,
+  stepsRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    gap: 16,
   },
   stepCol: {
     alignItems: 'center',
   },
-  dot: {
-    height: 32,
-    width: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 16,
-  },
-  dotCompleted: {
-    backgroundColor: '#16A34A',
-  },
-  dotActive: {
-    backgroundColor: '#3B82F6',
-  },
-  dotDefault: {
-    backgroundColor: '#E4E4E7',
-  },
-  dotText: {
+  stepNumber: {
+    fontFamily: fonts.data,
     fontSize: 14,
+  },
+  stepActive: {
+    color: colors.forestGreen,
+    fontFamily: fonts.display,
     fontWeight: '600',
   },
-  dotTextActive: {
-    color: '#FFFFFF',
+  stepCompleted: {
+    color: colors.sage,
   },
-  dotTextDefault: {
-    color: '#71717A',
+  stepFuture: {
+    color: colors.sand,
   },
   stepLabel: {
     marginTop: 4,
     fontSize: 11,
-    color: '#71717A',
+  },
+  stepLabelActive: {
+    fontFamily: fonts.body,
+    color: colors.forestGreen,
+    fontWeight: '600',
+  },
+  stepLabelDefault: {
+    fontFamily: fonts.body,
+    color: colors.warmGray,
   },
 });

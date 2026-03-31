@@ -7,6 +7,7 @@ import {
   type PressableProps,
   type ViewStyle,
 } from 'react-native';
+import { colors, fonts, radii } from '@/lib/theme';
 
 type ButtonVariant = 'primary' | 'secondary' | 'destructive';
 
@@ -20,15 +21,15 @@ interface AppButtonProps extends Omit<PressableProps, 'children'> {
 }
 
 const variantBg: Record<ButtonVariant, ViewStyle> = {
-  primary: { backgroundColor: '#3B82F6' },
-  secondary: { backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E4E4E7' },
-  destructive: { backgroundColor: '#DC2626' },
+  primary: { backgroundColor: colors.forestGreen },
+  secondary: { backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.forestGreen },
+  destructive: { backgroundColor: colors.terracotta },
 };
 
-const variantText: Record<ButtonVariant, { color: string }> = {
-  primary: { color: '#FFFFFF' },
-  secondary: { color: '#18181B' },
-  destructive: { color: '#FFFFFF' },
+const variantText: Record<ButtonVariant, { color: string; fontFamily: string }> = {
+  primary: { color: colors.cream, fontFamily: fonts.body },
+  secondary: { color: colors.forestGreen, fontFamily: fonts.body },
+  destructive: { color: colors.cream, fontFamily: fonts.body },
 };
 
 export function AppButton({
@@ -57,7 +58,7 @@ export function AppButton({
     >
       {loading ? (
         <ActivityIndicator
-          color={variant === 'secondary' ? '#71717A' : '#FFFFFF'}
+          color={variant === 'secondary' ? colors.forestGreen : colors.cream}
           size="small"
         />
       ) : (
@@ -79,20 +80,20 @@ const styles = StyleSheet.create({
     minHeight: 48,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 12,
+    borderRadius: radii.md,
     paddingHorizontal: 24,
   },
   fullWidth: {
     width: '100%',
   },
   disabledBg: {
-    backgroundColor: '#F4F4F5',
+    backgroundColor: colors.sand,
   },
   text: {
     fontSize: 16,
     fontWeight: '600',
   },
   disabledText: {
-    color: '#A1A1AA',
+    color: colors.warmGray,
   },
 });

@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { colors, fonts } from '@/lib/theme';
 import { AppButton } from './AppButton';
 
 interface EmptyStateProps {
@@ -20,7 +21,7 @@ export function EmptyState({ icon, heading, body, action }: EmptyStateProps) {
       <Text style={styles.body}>{body}</Text>
       {action && (
         <View style={styles.actionWrap}>
-          <AppButton title={action.label} onPress={action.onPress} />
+          <AppButton title={action.label} onPress={action.onPress} variant="secondary" />
         </View>
       )}
     </View>
@@ -33,6 +34,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 32,
+    backgroundColor: colors.cream,
   },
   iconWrap: {
     marginBottom: 16,
@@ -40,14 +42,16 @@ const styles = StyleSheet.create({
   heading: {
     textAlign: 'center',
     fontSize: 18,
-    fontWeight: '600',
-    color: '#18181B',
+    fontFamily: fonts.display,
+    fontWeight: '500',
+    color: colors.charcoal,
   },
   body: {
     marginTop: 8,
     textAlign: 'center',
     fontSize: 16,
-    color: '#71717A',
+    fontFamily: fonts.body,
+    color: colors.warmGray,
   },
   actionWrap: {
     marginTop: 24,

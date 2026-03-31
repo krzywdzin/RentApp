@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, View, type ViewStyle } from 'react-native';
+import { colors } from '@/lib/theme';
 
 type SkeletonVariant = 'card' | 'list-item' | 'stat' | 'text';
 
@@ -9,10 +10,10 @@ interface LoadingSkeletonProps {
 }
 
 const variantStyles: Record<SkeletonVariant, ViewStyle> = {
-  card: { height: 96, width: '100%', borderRadius: 12, backgroundColor: '#E4E4E7' },
-  'list-item': { height: 64, width: '100%', borderRadius: 8, backgroundColor: '#E4E4E7' },
-  stat: { height: 80, width: 112, borderRadius: 12, backgroundColor: '#E4E4E7' },
-  text: { height: 16, width: '100%', borderRadius: 4, backgroundColor: '#E4E4E7' },
+  card: { height: 96, width: '100%', borderRadius: 12, backgroundColor: colors.sand },
+  'list-item': { height: 64, width: '100%', borderRadius: 8, backgroundColor: colors.sand },
+  stat: { height: 80, width: 112, borderRadius: 12, backgroundColor: colors.sand },
+  text: { height: 16, width: '100%', borderRadius: 4, backgroundColor: colors.sand },
 };
 
 function PulsingBlock({ variant }: { variant: SkeletonVariant }) {
