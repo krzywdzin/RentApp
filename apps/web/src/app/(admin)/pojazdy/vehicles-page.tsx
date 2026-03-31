@@ -71,7 +71,10 @@ export function VehiclesPage() {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   // Archived tab pagination
-  const [archivedPagination, setArchivedPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 });
+  const [archivedPagination, setArchivedPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
   const [archivedSorting, setArchivedSorting] = useState<SortingState>([]);
 
   const [importOpen, setImportOpen] = useState(false);
@@ -95,7 +98,7 @@ export function VehiclesPage() {
 
   const handleArchive = useCallback(
     (vehicle: VehicleDto) => archiveVehicle.mutate(vehicle.id),
-    [archiveVehicle.mutate],
+    [archiveVehicle],
   );
 
   const columns = useMemo(
@@ -134,7 +137,9 @@ export function VehiclesPage() {
   const selectedRows = table.getFilteredSelectedRowModel().rows;
   const selectedVehicles = selectedRows.map((r) => r.original);
 
-  const archivedPageCount = Math.ceil((archivedVehicles?.length ?? 0) / archivedPagination.pageSize);
+  const archivedPageCount = Math.ceil(
+    (archivedVehicles?.length ?? 0) / archivedPagination.pageSize,
+  );
   const archivedPageData = useMemo(() => {
     if (!archivedVehicles) return [];
     const start = archivedPagination.pageIndex * archivedPagination.pageSize;
@@ -232,7 +237,10 @@ export function VehiclesPage() {
 
         <TabsContent value="aktywne" className="space-y-4">
           {/* Filters */}
-          <VehicleFilterBar onSearchChange={handleSearchChange} onStatusChange={handleStatusChange} />
+          <VehicleFilterBar
+            onSearchChange={handleSearchChange}
+            onStatusChange={handleStatusChange}
+          />
 
           {/* Bulk operations bar */}
           {selectedVehicles.length > 0 && (
@@ -253,10 +261,14 @@ export function VehiclesPage() {
                   >
                     Dostepny
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleBulkStatusChange('SERVICE' as VehicleStatus)}>
+                  <DropdownMenuItem
+                    onClick={() => handleBulkStatusChange('SERVICE' as VehicleStatus)}
+                  >
                     Serwis
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleBulkStatusChange('RETIRED' as VehicleStatus)}>
+                  <DropdownMenuItem
+                    onClick={() => handleBulkStatusChange('RETIRED' as VehicleStatus)}
+                  >
                     Wycofany
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -357,8 +369,8 @@ export function VehiclesPage() {
           <DialogHeader>
             <DialogTitle>Trwale usunac pojazd?</DialogTitle>
             <DialogDescription>
-              Pojazd {hardDeleteTarget?.registration} zostanie trwale usuniety. Tej operacji nie mozna
-              cofnac.
+              Pojazd {hardDeleteTarget?.registration} zostanie trwale usuniety. Tej operacji nie
+              mozna cofnac.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
