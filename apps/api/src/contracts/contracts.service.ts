@@ -424,24 +424,26 @@ export class ContractsService {
           );
         }
 
-        try {
-          const customerName = `${frozenData.customer.firstName} ${frozenData.customer.lastName}`;
-          const vehicleReg = frozenData.vehicle.registration;
-          await this.mailService.sendContractEmail(
+        // Fire and forget — do NOT await, never block contract signing
+        const customerName = `${frozenData.customer.firstName} ${frozenData.customer.lastName}`;
+        const vehicleReg = frozenData.vehicle.registration;
+        const contractNumber = contract.contractNumber;
+        setImmediate(() => {
+          this.mailService.sendContractEmail(
             customerEmail,
             customerName,
             vehicleReg,
-            contract.contractNumber,
+            contractNumber,
             pdfBuffer,
             portalUrl,
-          );
-          updateData.emailSentAt = new Date();
-          updateData.emailSentTo = customerEmail;
-        } catch (error: unknown) {
-          this.logger.error(
-            `Failed to send contract email for ${contract.contractNumber}: ${error instanceof Error ? error.message : String(error)}`,
-          );
-        }
+          ).then(() => {
+            this.logger.log(`Contract email sent for ${contractNumber}`);
+          }).catch((error: unknown) => {
+            this.logger.error(
+              `Failed to send contract email for ${contractNumber}: ${error instanceof Error ? error.message : String(error)}`,
+            );
+          });
+        });
       }
 
       // g. Update contract status to SIGNED
