@@ -155,16 +155,6 @@ export default function DatesStep() {
           <Text style={s.dateFieldText}>{formatDateTime(startDate)}</Text>
         </Pressable>
 
-        {showStartPicker && (
-          <DateTimePicker
-            value={startDate}
-            mode="datetime"
-            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-            onChange={handleStartDateChange}
-            minimumDate={new Date()}
-          />
-        )}
-
         {/* End Date */}
         <Text style={s.fieldLabel}>Data zakonczenia</Text>
         <Pressable
@@ -173,16 +163,6 @@ export default function DatesStep() {
         >
           <Text style={s.dateFieldText}>{formatDateTime(endDate)}</Text>
         </Pressable>
-
-        {showEndPicker && (
-          <DateTimePicker
-            value={endDate}
-            mode="datetime"
-            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-            onChange={handleEndDateChange}
-            minimumDate={new Date(startDate.getTime() + 3600000)}
-          />
-        )}
 
         {/* Daily Rate */}
         <Controller
@@ -225,6 +205,28 @@ export default function DatesStep() {
           </View>
         </View>
       </ScrollView>
+
+      {/* Date pickers rendered outside ScrollView to avoid iOS crash with inline spinner */}
+      {showStartPicker && (
+        <DateTimePicker
+          value={startDate}
+          mode="datetime"
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          onChange={handleStartDateChange}
+          minimumDate={new Date()}
+        />
+      )}
+
+      {showEndPicker && (
+        <DateTimePicker
+          value={endDate}
+          mode="datetime"
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          onChange={handleEndDateChange}
+          minimumDate={new Date(startDate.getTime() + 3600000)}
+        />
+      )}
+
       </KeyboardAvoidingView>
 
       {/* Bottom CTA */}
