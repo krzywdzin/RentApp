@@ -19,7 +19,7 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
   return (
     <div className="flex items-center justify-between px-2">
       <div className="flex items-center gap-2">
-        <p className="text-sm text-muted-foreground">Wierszy na strone</p>
+        <p className="font-body text-sm text-warm-gray">Wierszy na strone</p>
         <Select
           value={`${table.getState().pagination.pageSize}`}
           onValueChange={(value) => {
@@ -38,24 +38,24 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
           </SelectContent>
         </Select>
       </div>
-      <div className="flex items-center gap-4">
-        <p className="text-sm text-muted-foreground">
+      <div className="flex items-center gap-3">
+        <p className="font-body text-sm text-warm-gray">
           Strona {table.getState().pagination.pageIndex + 1} z {table.getPageCount() || 1}
         </p>
         <div className="flex items-center gap-1">
           <Button
-            variant="outline"
+            variant="ghost"
             size="icon"
-            className="h-8 w-8"
+            className="h-8 w-8 text-warm-gray hover:text-forest-green transition-colors"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <Button
-            variant="outline"
+            variant="ghost"
             size="icon"
-            className="h-8 w-8"
+            className="h-8 w-8 text-warm-gray hover:text-forest-green transition-colors"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >

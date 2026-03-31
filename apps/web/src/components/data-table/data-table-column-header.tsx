@@ -16,24 +16,35 @@ export function DataTableColumnHeader<TData, TValue>({
   className,
 }: DataTableColumnHeaderProps<TData, TValue>) {
   if (!column.getCanSort()) {
-    return <div className={cn(className)}>{title}</div>;
+    return (
+      <div
+        className={cn(
+          'font-body font-medium text-xs uppercase tracking-wider text-warm-gray',
+          className,
+        )}
+      >
+        {title}
+      </div>
+    );
   }
+
+  const isSorted = column.getIsSorted();
 
   return (
     <div className={cn('flex items-center gap-2', className)}>
       <Button
         variant="ghost"
         size="sm"
-        className="-ml-3 h-8 data-[state=open]:bg-accent"
+        className="-ml-3 h-8 font-body font-medium text-xs uppercase tracking-wider text-warm-gray hover:text-charcoal data-[state=open]:bg-accent"
         onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
       >
-        <span>{title}</span>
-        {column.getIsSorted() === 'desc' ? (
-          <ArrowDown className="ml-1 h-4 w-4" />
-        ) : column.getIsSorted() === 'asc' ? (
-          <ArrowUp className="ml-1 h-4 w-4" />
+        <span className={cn(isSorted ? 'text-charcoal' : 'text-warm-gray')}>{title}</span>
+        {isSorted === 'desc' ? (
+          <ArrowDown className="ml-1 h-3.5 w-3.5 text-charcoal" />
+        ) : isSorted === 'asc' ? (
+          <ArrowUp className="ml-1 h-3.5 w-3.5 text-charcoal" />
         ) : (
-          <ArrowUpDown className="ml-1 h-4 w-4" />
+          <ArrowUpDown className="ml-1 h-3.5 w-3.5 text-warm-gray/30" />
         )}
       </Button>
     </div>

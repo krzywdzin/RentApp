@@ -18,7 +18,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Skeleton } from '@/components/ui/skeleton';
 import { DataTablePagination } from './data-table-pagination';
 
 interface DataTableProps<TData, TValue> {
@@ -67,7 +66,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-md border">
+      <div className="rounded-md overflow-hidden">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -88,7 +87,7 @@ export function DataTable<TData, TValue>({
                 <TableRow key={`skeleton-${i}`}>
                   {columns.map((_, j) => (
                     <TableCell key={`skeleton-${i}-${j}`}>
-                      <Skeleton className="h-5 w-full" />
+                      <div className="animate-shimmer h-5 w-full rounded" />
                     </TableCell>
                   ))}
                 </TableRow>
@@ -112,7 +111,7 @@ export function DataTable<TData, TValue>({
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center text-muted-foreground"
+                  className="h-24 text-center font-body text-sm text-warm-gray"
                 >
                   Brak danych
                 </TableCell>
