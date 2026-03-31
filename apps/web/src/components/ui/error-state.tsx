@@ -1,4 +1,3 @@
-import { AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -12,10 +11,10 @@ export function ErrorState({
   onRetry,
 }: ErrorStateProps) {
   return (
-    <Card className="border-destructive">
+    <Card className="border-t-2 border-t-destructive">
       <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-        <AlertCircle className="h-10 w-10 text-destructive mb-4" />
-        <p className="text-sm text-muted-foreground mb-4">{message}</p>
+        <h4 className="font-display font-medium text-lg text-destructive mb-2">Blad</h4>
+        <p className="font-body text-sm text-muted-foreground mb-4">{message}</p>
         {onRetry && (
           <Button variant="outline" onClick={onRetry}>
             Ponow probe
