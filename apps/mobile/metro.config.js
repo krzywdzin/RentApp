@@ -6,6 +6,9 @@ const monorepoRoot = path.resolve(projectRoot, '../..');
 
 const config = getDefaultConfig(projectRoot);
 
+// Ensure Metro resolves from the mobile app root, not monorepo root
+config.projectRoot = projectRoot;
+
 // Monorepo support: add monorepo root to default watchFolders (instead of overriding)
 config.watchFolders = [...(config.watchFolders || []), monorepoRoot];
 
