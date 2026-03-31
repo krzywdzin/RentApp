@@ -47,6 +47,7 @@
 | `--terracotta` | `#C75D3A` | `oklch(0.560 0.150 40)` | Destructive, overdue, attention |
 | `--amber-glow` | `#D4A853` | `oklch(0.740 0.120 80)` | Warnings, extended status |
 | `--soft-teal` | `#5B9A8B` | `oklch(0.620 0.060 170)` | Info states, links, chart accents |
+| `--portal-cream` | `#FDF9F3` | `oklch(0.982 0.010 80)` | Portal-specific background (warmer) |
 
 **Stat card tints (dashboard):**
 - Sage tint: `#F0F7F4` (active rentals)
@@ -296,7 +297,7 @@ Same wizard stepper as new rental.
 ### Status Label System
 
 All three apps use identical status rendering:
-- Satoshi 600, 11px (web) / 11px (mobile), uppercase
+- Satoshi 600, 11px (web) / 12px (mobile), uppercase
 - Text color + 8% opacity background tint (not colored pills)
 - AKTYWNY/WYNAJĘTY → sage
 - SZKIC → warm-gray
@@ -321,7 +322,370 @@ All three apps use identical status rendering:
 
 ---
 
-## 7. Implementation Constraints
+## 7. Login Pages
+
+### 7.1 Web Login (`apps/web/src/app/login/page.tsx`)
+
+- Full-viewport centered layout on cream background with noise grain
+- KITEK wordmark in Fraunces 600, 36px, forest green, centered above the form
+- Tagline below: "Wynajem Pojazdów" in Satoshi 400, warm-gray, 14px
+- Login card: warm-stone background, inner shadow, border-radius 6px, max-width 380px
+- Card top-edge: 2px forest green
+- Form inputs: same as Section 3.6 (full border, sand, green on focus)
+- "Zaloguj się" button: full-width primary (forest green)
+- Error message: terracotta text below form, Satoshi 400, 13px
+- Account locked state: terracotta top-edge card accent instead of green, with amber-glow warning icon
+
+### 7.2 Mobile Login (`apps/mobile/app/login.tsx`)
+
+- Cream background, KITEK wordmark centered (Fraunces 600, 28px, forest green)
+- Form in upper-third of screen (not dead-center — more natural position)
+- Inputs: bottom-border style (same as wizard forms)
+- Login button: full-width primary, forest green
+- Error states: terracotta text below input fields
+- Biometric prompt: forest green icon, Satoshi text
+
+---
+
+## 8. Utility States & Overlays
+
+### 8.1 Empty States
+
+**Web (`empty-state.tsx`):**
+- Centered in the content area, vertical stack
+- Illustration: none (no generic SVG blobs). Instead: the section heading in Fraunces 500 at 48px, warm-gray at 15% opacity, as a watermark behind the message
+- Message: Satoshi 400, 14px, warm-gray
+- Action button (if any): secondary button style (forest green outline)
+
+**Mobile (`EmptyState.tsx`):**
+- Centered vertically in available space
+- Message: Satoshi 400, 16px, warm-gray
+- Action button: secondary style
+- No icons or illustrations
+
+### 8.2 Error States
+
+**Web (`error-state.tsx`):**
+- Card with terracotta top-edge (2px), warm-stone background, inner shadow
+- Heading: Fraunces 500, 18px, terracotta
+- Message: Satoshi 400, 14px, charcoal
+- Retry button: secondary style (forest green outline)
+- No AlertCircle icon — terracotta accent is sufficient signal
+
+**Mobile (`ErrorBoundary.tsx`):**
+- Cream background, centered content
+- Heading: Fraunces 500, 20px, terracotta
+- Message: Satoshi 400, 16px, charcoal
+- Retry button: primary style
+
+### 8.3 Loading Skeletons
+
+**Web (`skeleton.tsx`):**
+- Skeleton color: sand (`#E8DFD5`) with shimmer animation
+- Shimmer: left-to-right gradient sweep (sand → warm-stone → sand), 1.5s infinite, ease-in-out
+- Shapes match the component they replace (row height 52px for tables, card dimensions for cards)
+- No pulse animation — shimmer only
+
+**Mobile (`LoadingSkeleton.tsx`):**
+- Same sand shimmer approach
+- Adapted to mobile component shapes (stat row, list items, cards)
+
+### 8.4 Toast Notifications (Sonner)
+
+- Background: charcoal (`#2C2C2C`), text: cream
+- Border-radius: 6px, no border
+- Typography: Satoshi 400, 13px
+- **Success variant:** forest green left-edge 3px bar
+- **Error variant:** terracotta left-edge 3px bar
+- **Info variant:** soft-teal left-edge 3px bar
+- Animation: slide in from bottom-right, 250ms ease-out
+- No icons in toasts — the colored bar differentiates
+
+### 8.5 Dialogs & Modals
+
+**Web (`dialog.tsx`):**
+- Overlay: charcoal at 40% opacity, backdrop-blur 4px
+- Dialog: warm-stone background, inner shadow, border-radius 6px, max-width 480px
+- Header: Fraunces 500, 18px, charcoal. No close X — actions are in the footer.
+- Body: Satoshi 400, 14px
+- Footer: right-aligned buttons (secondary + primary), 12px gap
+- Confirmation dialogs (delete/archive): terracotta top-edge accent on the dialog
+
+**Mobile (`ConfirmationDialog.tsx`):**
+- Overlay: charcoal at 50% opacity
+- Dialog: warm-stone bg, border-radius 8px, centered, 90% width
+- Header: Fraunces 500, 18px. Body: Satoshi 400, 16px.
+- Buttons: stacked full-width (destructive on top if applicable, secondary below)
+
+**Mobile Bottom Sheets (damage detail, etc.):**
+- Handle bar: 40px wide, 4px height, sand color, centered at top with 8px margin
+- Background: sage-wash
+- Corner radius: 12px top-left/top-right only
+- Overlay: charcoal at 30% opacity
+- Slide-up animation: 300ms ease-out
+
+### 8.6 Dropdown Menus (`dropdown-menu.tsx`)
+
+- Background: warm-stone, 1px sand border, border-radius 6px
+- Inner shadow: same as cards
+- Item: Satoshi 400, 14px, charcoal. Hover: sage-wash background.
+- Destructive item: terracotta text. Hover: terracotta at 8% opacity background.
+- Separator: 1px sand line
+- No icons in menu items unless the existing codebase uses them
+
+### 8.7 Offline Banner (Mobile)
+
+- Full-width bar at top of screen, below status bar
+- Background: amber-glow at 15% opacity
+- Text: "Brak połączenia" in Satoshi 500, amber-glow color, 13px, centered
+- Height: 28px
+- Appears with slide-down 200ms, disappears with slide-up 200ms
+
+---
+
+## 9. Form Components (Extended)
+
+### 9.1 Select Inputs (`select.tsx`)
+
+- Same as text input: full border, 1px sand, 6px radius
+- Chevron icon: warm-gray, rotates on open (180deg, 150ms)
+- Focus: forest green border + glow ring
+- Dropdown: same styling as dropdown menu (warm-stone, inner shadow)
+- Selected option: sage-wash background in the dropdown list
+
+### 9.2 Checkboxes (`checkbox.tsx`)
+
+- Unchecked: 16px square, 1px sand border, 3px radius, warm-stone fill
+- Checked: forest green fill, cream checkmark icon, 150ms transition
+- Focus: forest green glow ring
+- Disabled: sand fill, no border change, 50% opacity
+
+### 9.3 Textarea (`textarea.tsx`)
+
+- Same border treatment as text input (sand, green on focus)
+- Min-height: 100px
+- Resize: vertical only
+- Font: Satoshi 400, 14px (web), 16px (mobile)
+
+### 9.4 Date Picker / Calendar (`calendar.tsx`)
+
+- Calendar popover: warm-stone background, inner shadow, 6px radius
+- Day cells: Satoshi 400, charcoal. Hover: sage-wash.
+- Selected day: forest green background, cream text, 4px radius
+- Today: underlined with forest green (no background)
+- Range selection: sage-wash fill between start and end
+- Navigation arrows: warm-gray, hover forest green
+- Month/year header: Fraunces 500, charcoal
+
+### 9.5 Tabs (`tabs.tsx`)
+
+- Tab list: no background, sand border-bottom 1px
+- Active tab: forest green text, Satoshi 600, 2px forest green border-bottom (overlays the sand line)
+- Inactive tab: warm-gray text, Satoshi 400
+- Hover: sage text, 150ms transition
+- No pill/background treatment on tabs
+
+### 9.6 Disabled States (all components)
+
+- Opacity: 0.5
+- Cursor: not-allowed
+- No color changes — just opacity reduction
+- Applies to buttons, inputs, selects, checkboxes
+
+### 9.7 Tooltips (`tooltip.tsx`)
+
+- Background: charcoal, text: cream, Satoshi 400, 12px
+- Border-radius: 4px, padding: 6px 10px
+- Arrow: 6px charcoal triangle
+- Animation: fade-in 150ms
+
+---
+
+## 10. Remaining Admin Pages
+
+### 10.1 Audit Trail (`audyt/page.tsx`)
+
+Standard table pattern (Section 3.3) with:
+- Columns: timestamp (Plex Mono), user (Satoshi), action (Satoshi), entity (Satoshi + Plex Mono for IDs)
+- No special treatment — apply standard table design
+- Filter bar: same input/select styling from Sections 3.6 and 9.1
+
+### 10.2 Users Management (`uzytkownicy/page.tsx`)
+
+Standard table pattern with:
+- User avatar: Fraunces initial in forest green circle (consistent with top-bar and mobile profile)
+- Role badge: same typographic label system as status badges
+- Archive/delete actions: dropdown menu (Section 8.6)
+
+### 10.3 Contracts List (`umowy/page.tsx`, `umowy/[id]/page.tsx`)
+
+- List: standard table pattern
+- Detail: standard detail page pattern (Section 3.8) with PDF download link as forest green ghost button
+
+### 10.4 Calendar View (`wynajmy/calendar-view.tsx`)
+
+- Calendar grid: warm-stone cell backgrounds, 1px sand borders
+- Today cell: cream background with forest green left-edge 2px bar
+- Rental blocks on calendar: sage fill (active), warm-gray fill (returned), terracotta fill (overdue)
+- Text inside blocks: Satoshi 400, 11px, charcoal
+
+### 10.5 Edit & Create Forms
+
+All edit (`edytuj/`) and create (`nowy/`) pages use the standard form component styling from Sections 3.6 and 9:
+- Page title: Fraunces 600, "Edytuj [entity]" or "Nowy [entity]"
+- Form layout: single-column, max-width 640px
+- Submit button: primary style, right-aligned
+- Cancel: ghost button left of submit
+
+### 10.6 Rental Documentation (`wynajmy/[id]/dokumentacja/page.tsx`)
+
+Standard detail page pattern. Photo comparison components:
+- Photo containers: 1px sand border, 6px radius, warm-stone background
+- Side-by-side layout (split view)
+- Damage pins: terracotta dots with white numbers (matching mobile pattern)
+
+### 10.7 Filter Bars (vehicles, rentals, customers, audit)
+
+- Inline with page content, below the page title
+- Inputs/selects: same form component styling, arranged horizontally
+- Active filters: forest green text with small X to clear, sage-wash pill background
+- "Wyczyść filtry" reset link: ghost button style
+
+### 10.8 Import Dialog (`pojazdy/import-dialog.tsx`)
+
+Standard dialog styling (Section 8.5) with:
+- File drop zone: dashed sand border, warm-stone background, sage-wash on drag-over
+- Upload button: secondary style
+
+---
+
+## 11. Mobile Sub-Flows (Extended)
+
+### 11.1 Rental Detail (`rentals/[id].tsx`)
+
+- Screen title: vehicle make/model in Fraunces 600
+- Status label inline with title
+- Content sections with 24px spacing:
+  - Customer card: sage-wash bg, name in Satoshi 500, phone/email in Satoshi 400 warm-gray
+  - Vehicle card: registration in Plex Mono, details in Satoshi
+  - Dates: Plex Mono values, duration in warm-gray aside
+  - Pricing: right-aligned Plex Mono, gross total in Fraunces forest green
+- "Rozpocznij zwrot" button: full-width primary at bottom (if ACTIVE/EXTENDED)
+- Return data section (if returned): warm-stone background card with data in Plex Mono
+
+### 11.2 New Rental — Photos Screen
+
+- Photo grid: 2x2, each cell a rounded (8px) warm-stone rectangle
+- Empty cell: dashed sand border, camera icon in warm-gray center
+- Captured photo: fills the cell, 1px sand border
+- Retake: small terracotta "X" circle at top-right corner of captured photo
+- "Pomiń" skip link: ghost style at bottom
+
+### 11.3 New Rental — Signatures Screen
+
+- Landscape orientation
+- Signature canvas: cream background with 1px sand border, full available width
+- Label above: Satoshi 500, warm-gray ("Podpis klienta — strona 1")
+- Clear button: ghost style (terracotta text)
+- Confirm button: primary style
+- Page indicator: Plex Mono "1/4" in warm-gray
+
+### 11.4 New Rental — Contract Review
+
+- Summary card: warm-stone background, inner shadow
+- Key-value pairs: label (Satoshi 500, warm-gray) + value (Satoshi 400 or Plex Mono, charcoal)
+- RODO checkbox: redesigned checkbox (Section 9.2) with Satoshi 400 label text
+- "Dalej" button: primary, full-width
+
+### 11.5 New Rental — Success Screen
+
+- Centered layout on cream
+- Checkmark: large (64px) forest green circle with cream check inside
+- Heading: Fraunces 600, 22px, "Wynajęcie utworzone pomyślnie"
+- Two buttons stacked: "Nowe wynajęcie" (primary) + "Strona główna" (secondary)
+
+### 11.6 Return — Mileage Screen
+
+- Current mileage display: Plex Mono, 18px, warm-gray label above
+- Input: large (24px Plex Mono) bottom-border style, centered
+- Distance calculated: displayed below in Satoshi 400, forest green if reasonable, amber-glow if >10,000km warning
+- Warning banner: same style as overdue alert (amber tint bg, amber-glow text)
+
+### 11.7 Return — Notes Screen
+
+- Textarea: full-width, bottom-border style matching form inputs, min-height 120px
+- "Opcjonalne" label in warm-gray italic
+- Continue button: primary, full-width at bottom
+
+### 11.8 Return — Confirm Screen
+
+- Summary card (same pattern as contract review)
+- All entered data displayed: mileage (Plex Mono), damage count, notes preview
+- "Zatwierdź zwrot" button: primary, full-width
+- Loading state: button shows spinner, disabled
+
+---
+
+## 12. Responsive Behavior & Dark Mode
+
+### 12.1 Responsive Breakpoints (Web)
+
+- **>=1280px:** Full layout — expanded sidebar (240px) + content
+- **1024–1279px:** Sidebar auto-collapses to 56px strip. Content fills remaining space.
+- **768–1023px:** Sidebar hidden, hamburger icon in top-bar to toggle overlay sidebar. Tables scroll horizontally.
+- **<768px:** Not a primary target (mobile app covers this), but portal should be usable: single-column, stacked cards.
+
+### 12.2 Dark Mode
+
+Dark mode is **deferred** — not in scope for this redesign. The current dark theme is being replaced by the light "Boutique Fintech" theme. All dark class references will be removed. A dark variant may be designed as a future milestone.
+
+---
+
+## 13. Texture Specifications
+
+### 13.1 Noise Grain Overlay
+
+Applied as a `::before` pseudo-element on `body`:
+```css
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+```
+
+### 13.2 Sidebar Linen Texture (Collapsed State)
+
+```css
+.sidebar-collapsed {
+  background-color: var(--forest-green);
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255,255,255,0.03) 0px,
+      rgba(255,255,255,0.03) 1px,
+      transparent 1px,
+      transparent 3px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255,255,255,0.02) 0px,
+      rgba(255,255,255,0.02) 1px,
+      transparent 1px,
+      transparent 5px
+    );
+}
+```
+
+---
+
+## 14. Implementation Constraints (unchanged from original)
 
 - **No backend changes** — all changes are CSS, component markup, and styling
 - **No functionality changes** — every button, form, table, and interaction keeps its current behavior
@@ -333,7 +697,7 @@ All three apps use identical status rendering:
 
 ---
 
-## 8. Files Affected (Estimated)
+## 15. Files Affected (Estimated)
 
 ### Web Admin Panel
 - `apps/web/src/app/globals.css` — complete theme token overhaul
