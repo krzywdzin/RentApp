@@ -56,7 +56,12 @@ export function AuditTrail({ entityType, entityId, actorId, dateFrom, dateTo }: 
   const [offset, setOffset] = useState(0);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
-  const { data: response, isLoading } = useAudit({
+  const {
+    data: response,
+    isLoading,
+    isError,
+    refetch,
+  } = useAudit({
     entityType,
     entityId,
     actorId,
@@ -130,6 +135,20 @@ export function AuditTrail({ entityType, entityId, actorId, dateFrom, dateTo }: 
             </TableBody>
           </Table>
         </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center py-16 text-center">
+        <p className="text-lg font-medium">Nie udalo sie zaladowac danych audytu</p>
+        <p className="text-sm text-muted-foreground mt-1">
+          Wystapil blad podczas pobierania historii zmian.
+        </p>
+        <Button variant="outline" size="sm" onClick={() => refetch()} className="mt-4">
+          Sprobuj ponownie
+        </Button>
       </div>
     );
   }
