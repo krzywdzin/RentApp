@@ -1,10 +1,11 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException, ForbiddenException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as argon2 from 'argon2';
 import * as crypto from 'crypto';
 import Redis from 'ioredis';
 import { PrismaService } from '../prisma/prisma.service';
+import { UserRole } from '@rentapp/shared';
 
 const ARGON2_OPTIONS = { memoryCost: 32768, timeCost: 3, parallelism: 1 };
 const MAX_FAILED_ATTEMPTS = 5;
@@ -82,6 +83,19 @@ export class AuthService {
     });
     if (!user) {
       throw new UnauthorizedException('User not found');
+    }
+
+    // Validate role matches context
+    // ADMIN -> can only login to 'admin' context (web panel)
+    // EMPLOYEE -> can only login to 'mobile' context (mobile app)
+    // CUSTOMER -> can only login to 'mobile' context (future customer portal)
+    if (context === 'admin' && user.role !== UserRole.ADMIN) {
+      this.logger.warn(`Access denied: ${user.email} (${user.role}) attempted admin context login`);
+      throw new ForbiddenException('Access denied: Admin panel requires administrator role');
+    }
+    if (context === 'mobile' && user.role === UserRole.ADMIN) {
+      this.logger.warn(`Access denied: ${user.email} (ADMIN) attempted mobile context login`);
+      throw new ForbiddenException('Access denied: Mobile app is for employees only');
     }
 
     const payload = { sub: userId, role: user.role, aud: context };
