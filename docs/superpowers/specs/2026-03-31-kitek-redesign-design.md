@@ -499,6 +499,54 @@ All three apps use identical status rendering:
 - Arrow: 6px charcoal triangle
 - Animation: fade-in 150ms
 
+### 9.8 Badge Component (`badge.tsx`)
+
+The badge component is restyled to match the typographic status label system:
+- **Status badges:** Satoshi 600, uppercase, text color + 8% opacity tint background. No pill shape — use border-radius 4px, not `rounded-full`.
+- **Role badges** (ADMIN, USER, etc.): same treatment. ADMIN → forest green, USER → warm-gray, MANAGER → soft-teal.
+- The `badge.tsx` component stays but its variants are overhauled to use the new color/shape system.
+
+### 9.9 Scrollbar Styling (`scroll-area.tsx`)
+
+- Track: transparent (no visible track)
+- Thumb: sand color, 6px width, border-radius 3px
+- Thumb hover: warm-gray
+- Minimum thumb height: 40px
+
+### 9.10 Popover (`popover.tsx`)
+
+Same chrome as dropdown menu: warm-stone background, 1px sand border, inner shadow, 6px radius. Animation: scale from 0.95 + fade-in, 150ms ease-out.
+
+### 9.11 Form Subcomponents (`form.tsx`)
+
+- `FormLabel`: Satoshi 500, warm-gray (same as input labels in 3.6). On error: terracotta.
+- `FormDescription`: Satoshi 400, 12px, warm-gray
+- `FormMessage` (error): Satoshi 400, 13px, terracotta
+
+### 9.12 Button Loading Spinner
+
+- CSS border spinner: 16px diameter, 2px border
+- On forest green button: cream border, cream-transparent top (spinning segment)
+- On secondary/ghost button: forest green border, transparent top
+- Animation: rotate 360deg, 600ms linear infinite
+- Replaces button text during loading (not alongside it)
+
+### 9.13 Table Sort Indicators
+
+- Inactive sort: warm-gray chevron (8px), 30% opacity
+- Active ascending: charcoal up-chevron, 100% opacity
+- Active descending: charcoal down-chevron, 100% opacity
+- Positioned right of column header text, 4px gap
+
+### 9.14 Info Row Component (`info-row.tsx`)
+
+Restyled to horizontal layout (label left, value right):
+- Label: Satoshi 500, 12px, warm-gray, uppercase, letter-spacing 0.05em — left-aligned
+- Value: Satoshi 400 or Plex Mono (for data), 14px, charcoal — right-aligned
+- Row: flex row, justify-between, align-baseline, min-height 36px
+- Separator: none between rows (whitespace sufficient at 8px gap)
+- This is a structural change from the current vertical stack layout.
+
 ---
 
 ## 10. Remaining Admin Pages
@@ -527,7 +575,10 @@ Standard table pattern with:
 - Calendar grid: warm-stone cell backgrounds, 1px sand borders
 - Today cell: cream background with forest green left-edge 2px bar
 - Rental blocks on calendar: sage fill (active), warm-gray fill (returned), terracotta fill (overdue)
-- Text inside blocks: Satoshi 400, 11px, charcoal
+- Block height: 22px, border-radius 3px, 2px vertical gap between stacked blocks
+- Text inside blocks: Satoshi 400, 11px, charcoal, truncated with ellipsis if overflow
+- Overlapping rentals: stacked vertically within the cell. If >3 blocks, show 2 + "+N więcej" link in warm-gray 10px
+- Block click: navigates to rental detail (existing behavior)
 
 ### 10.5 Edit & Create Forms
 
@@ -573,7 +624,17 @@ Standard dialog styling (Section 8.5) with:
 - "Rozpocznij zwrot" button: full-width primary at bottom (if ACTIVE/EXTENDED)
 - Return data section (if returned): warm-stone background card with data in Plex Mono
 
-### 11.2 New Rental — Photos Screen
+### 11.2 New Rental — Dates & Pricing Screen (`dates.tsx`)
+
+- Start/end date inputs: tappable rows that open the **native DateTimePicker** (iOS/Android platform pickers — not a custom calendar). Row shows label (Satoshi 500, warm-gray) left, selected date (Plex Mono, charcoal) right, with a sand bottom-border.
+- Daily rate input: bottom-border style (same as other wizard inputs), Plex Mono for the value, "zł/dzień" suffix in warm-gray Satoshi
+- Pricing summary below: calculated dynamically
+  - Days: Plex Mono, warm-gray
+  - Net total: Plex Mono, charcoal
+  - Gross total (with VAT): Fraunces 500, forest green, larger (20px)
+- Layout: label-value pairs stacked vertically with 16px spacing
+
+### 11.3 New Rental — Photos Screen
 
 - Photo grid: 2x2, each cell a rounded (8px) warm-stone rectangle
 - Empty cell: dashed sand border, camera icon in warm-gray center
@@ -623,6 +684,24 @@ Standard dialog styling (Section 8.5) with:
 - All entered data displayed: mileage (Plex Mono), damage count, notes preview
 - "Zatwierdź zwrot" button: primary, full-width
 - Loading state: button shows spinner, disabled
+
+---
+
+### 11.10 Portal — Token Exchange (`token-exchange.tsx`)
+
+- Centered on portal-cream background, max-width 400px
+- Loading state: sand shimmer skeleton mimicking a rental card shape
+- Error state (invalid/expired token): terracotta accent card (same as web error-state in 8.2), message: "Link wygasł lub jest nieprawidłowy" in Satoshi 400
+- Success: seamless redirect — no visible component (current behavior preserved)
+
+### 11.11 Web — Vehicle Detail Page (`pojazdy/[id]/page.tsx`)
+
+Standard detail page pattern (Section 3.8) with these specific sections:
+- **Hero area:** vehicle make/model in Fraunces 600 28px, registration in Plex Mono 18px, status label inline
+- **Info card:** two-column info-row layout (Section 9.14) — year, fuel type, mileage, VIN, etc.
+- **Photo gallery** (if photos exist): horizontal scroll of thumbnails, 1px sand border, 6px radius, 80px height. Tap/click opens full-size in a dialog (Section 8.5 styling).
+- **Rental history card:** mini table (standard table pattern) showing past/current rentals for this vehicle
+- **Damage history** (if exists): list of damage records with terracotta pin markers, matching the mobile damage map visual language
 
 ---
 
