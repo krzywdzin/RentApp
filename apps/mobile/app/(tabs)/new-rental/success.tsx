@@ -9,6 +9,7 @@ import Toast from 'react-native-toast-message';
 import { AppButton } from '@/components/AppButton';
 import { useRentalDraftStore } from '@/stores/rental-draft.store';
 import { contractsApi } from '@/api/contracts.api';
+import { colors, fonts, spacing } from '@/lib/theme';
 
 export default function SuccessScreen() {
   const { t } = useTranslation();
@@ -82,19 +83,19 @@ export default function SuccessScreen() {
 }
 
 const s = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32 },
+  safeArea: { flex: 1, backgroundColor: colors.cream },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing.xxl },
   checkCircle: {
     height: 64,
     width: 64,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 32,
-    backgroundColor: '#16A34A',
+    backgroundColor: colors.forestGreen,
   },
-  heading: { marginTop: 24, fontSize: 20, fontWeight: '600', color: '#18181B' },
-  body: { marginTop: 8, textAlign: 'center', fontSize: 16, color: '#71717A' },
-  pdfLink: { marginTop: 16, fontSize: 16, fontWeight: '600', color: '#3B82F6' },
-  bottomWrap: { paddingHorizontal: 16, paddingBottom: 16 },
-  mb12: { marginBottom: 12 },
+  heading: { marginTop: 24, fontFamily: fonts.display, fontWeight: '600', fontSize: 22, color: colors.charcoal, textAlign: 'center' },
+  body: { marginTop: 8, fontFamily: fonts.body, textAlign: 'center', fontSize: 16, color: colors.warmGray },
+  pdfLink: { marginTop: 16, fontFamily: fonts.body, fontSize: 16, fontWeight: '600', color: colors.forestGreen },
+  bottomWrap: { paddingHorizontal: spacing.base, paddingBottom: spacing.base },
+  mb12: { marginBottom: spacing.md },
 });

@@ -71,7 +71,9 @@ export default function ContractDetailPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-semibold">{contract.contractNumber}</h1>
+          <h1 className="font-display font-semibold text-2xl text-charcoal">
+            {contract.contractNumber}
+          </h1>
           {getContractStatusBadge(contract.status)}
         </div>
         {contract.pdfKey && (

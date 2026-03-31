@@ -197,7 +197,9 @@ export default function UzytkownicyPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold tracking-tight">Zarzadzanie uzytkownikami</h1>
+      <h1 className="font-display font-semibold text-2xl text-charcoal">
+        Zarzadzanie uzytkownikami
+      </h1>
 
       {/* Collapsible Create User Form */}
       <Card className="max-w-lg">

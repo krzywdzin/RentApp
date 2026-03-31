@@ -12,6 +12,7 @@ import { LoadingSkeleton } from '@/components/LoadingSkeleton';
 import { AppCard } from '@/components/AppCard';
 import { AppButton } from '@/components/AppButton';
 import { AppInput } from '@/components/AppInput';
+import { colors, fonts, spacing } from '@/lib/theme';
 
 export default function ReturnMileageScreen() {
   const { t } = useTranslation();
@@ -145,26 +146,26 @@ export default function ReturnMileageScreen() {
 }
 
 const s = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  safeArea: { flex: 1, backgroundColor: colors.cream },
   flex1: { flex: 1 },
-  padWrap: { paddingHorizontal: 16, paddingTop: 8 },
-  scrollContent: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 128 },
-  stepTitle: { marginBottom: 16, fontSize: 20, fontWeight: '600', color: '#18181B' },
-  mb16: { marginBottom: 16 },
-  cardLabel: { fontSize: 13, color: '#71717A' },
-  cardValue: { marginTop: 4, fontSize: 18, fontWeight: '600', color: '#18181B' },
-  distanceValue: { marginTop: 4, fontSize: 18, fontWeight: '600', color: '#3B82F6' },
-  acknowledgeLink: { marginTop: -8, marginBottom: 16, paddingVertical: 4 },
-  acknowledgeLinkText: { fontSize: 13, color: '#3B82F6', textDecorationLine: 'underline' },
+  padWrap: { paddingHorizontal: spacing.base, paddingTop: 8 },
+  scrollContent: { paddingHorizontal: spacing.base, paddingTop: spacing.base, paddingBottom: 128 },
+  stepTitle: { marginBottom: spacing.base, fontFamily: fonts.display, fontSize: 20, fontWeight: '600', color: colors.charcoal },
+  mb16: { marginBottom: spacing.base },
+  cardLabel: { fontFamily: fonts.body, fontSize: 13, color: colors.warmGray },
+  cardValue: { marginTop: 4, fontFamily: fonts.data, fontSize: 18, color: colors.charcoal },
+  distanceValue: { marginTop: 4, fontFamily: fonts.body, fontSize: 18, color: colors.forestGreen },
+  acknowledgeLink: { marginTop: -8, marginBottom: spacing.base, paddingVertical: 4 },
+  acknowledgeLinkText: { fontFamily: fonts.body, fontSize: 13, color: colors.forestGreen, textDecorationLine: 'underline' },
   bottomBar: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     borderTopWidth: 1,
-    borderTopColor: '#E4E4E7',
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: 16,
-    paddingTop: 16,
+    borderTopColor: colors.sand,
+    backgroundColor: colors.cream,
+    paddingHorizontal: spacing.base,
+    paddingTop: spacing.base,
   },
 });

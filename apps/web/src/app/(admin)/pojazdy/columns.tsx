@@ -53,7 +53,7 @@ export function getVehicleColumns({
     {
       accessorKey: 'registration',
       header: ({ column }) => <DataTableColumnHeader column={column} title="Rejestracja" />,
-      cell: ({ row }) => <span className="font-medium">{row.getValue('registration')}</span>,
+      cell: ({ row }) => <span className="font-data uppercase font-medium">{row.getValue('registration')}</span>,
     },
     {
       id: 'makeModel',
@@ -69,7 +69,7 @@ export function getVehicleColumns({
       header: ({ column }) => <DataTableColumnHeader column={column} title="Przebieg" />,
       cell: ({ row }) => {
         const mileage = row.getValue('mileage') as number;
-        return <span>{mileage.toLocaleString('pl-PL')} km</span>;
+        return <span className="font-data text-sm">{mileage.toLocaleString('pl-PL')} km</span>;
       },
     },
     {
@@ -133,7 +133,7 @@ export function getArchivedVehicleColumns({
     {
       accessorKey: 'registration',
       header: ({ column }) => <DataTableColumnHeader column={column} title="Rejestracja" />,
-      cell: ({ row }) => <span className="font-medium">{row.getValue('registration')}</span>,
+      cell: ({ row }) => <span className="font-data uppercase font-medium">{row.getValue('registration')}</span>,
     },
     {
       id: 'makeModel',
@@ -149,7 +149,7 @@ export function getArchivedVehicleColumns({
       header: ({ column }) => <DataTableColumnHeader column={column} title="Przebieg" />,
       cell: ({ row }) => {
         const mileage = row.getValue('mileage') as number;
-        return <span>{mileage.toLocaleString('pl-PL')} km</span>;
+        return <span className="font-data text-sm">{mileage.toLocaleString('pl-PL')} km</span>;
       },
     },
     {

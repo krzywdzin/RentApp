@@ -3,7 +3,6 @@
 import { useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { usePortalAuth } from '@/hooks/use-portal-auth';
-import { Loader2 } from 'lucide-react';
 
 export function TokenExchange() {
   const searchParams = useSearchParams();
@@ -33,17 +32,20 @@ export function TokenExchange() {
 
   if (error) {
     return (
-      <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-center text-red-700">
-        {error}
+      <div className="rounded-md border border-destructive/20 bg-destructive/5 p-4 text-center">
+        <p className="font-body text-destructive">{error}</p>
       </div>
     );
   }
 
   if (hasTokenParams && isLoading) {
     return (
-      <div className="flex items-center justify-center gap-2 py-8 text-muted-foreground">
-        <Loader2 className="h-5 w-5 animate-spin" />
-        <span>Uwierzytelnianie...</span>
+      <div className="bg-card shadow-inner-soft border border-sand rounded-md p-8 flex items-center justify-center gap-2">
+        <div className="h-8 w-8 rounded-md bg-sand animate-pulse" />
+        <div className="space-y-2 flex-1 max-w-[200px]">
+          <div className="h-3 rounded bg-sand animate-pulse" />
+          <div className="h-3 rounded bg-sand animate-pulse w-3/4" />
+        </div>
       </div>
     );
   }

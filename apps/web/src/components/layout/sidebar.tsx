@@ -54,21 +54,34 @@ export function Sidebar() {
     <TooltipProvider delayDuration={0}>
       <aside
         className={cn(
-          'flex h-screen flex-col border-r border-border bg-card transition-all duration-200',
-          collapsed ? 'w-16' : 'w-64',
+          'hidden md:flex h-screen flex-col transition-all duration-[250ms] ease-out',
+          collapsed ? 'w-14' : 'w-60',
         )}
+        style={
+          collapsed
+            ? {
+                backgroundColor: 'var(--color-forest-green)',
+                backgroundImage: `repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 3px), repeating-linear-gradient(90deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 5px)`,
+              }
+            : undefined
+        }
       >
+        {/* Logo */}
         <div
           className={cn(
-            'flex h-14 items-center border-b border-border px-4',
-            collapsed && 'justify-center',
+            'flex h-14 items-center border-b border-sand px-4 bg-warm-stone',
+            collapsed && 'justify-center border-b border-white/10',
+            collapsed ? 'bg-transparent' : 'bg-warm-stone',
           )}
         >
-          {!collapsed && <span className="text-lg font-semibold text-foreground">RentApp</span>}
-          {collapsed && <span className="text-lg font-semibold text-foreground">R</span>}
+          {!collapsed && (
+            <span className="font-display font-semibold text-xl text-forest-green">KITEK</span>
+          )}
+          {collapsed && <span className="font-display font-semibold text-xl text-cream">K</span>}
         </div>
 
-        <nav className="flex-1 space-y-1 p-2">
+        {/* Nav */}
+        <nav className={cn('flex-1 space-y-1 p-2', collapsed ? 'bg-transparent' : 'bg-warm-stone')}>
           {navItems.map((item) => {
             const active = isActive(item.href);
             const Icon = item.icon;
@@ -78,14 +91,27 @@ export function Sidebar() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                  active
-                    ? 'border-l-[3px] border-primary bg-muted text-foreground'
-                    : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground',
-                  collapsed && 'justify-center px-0',
+                  'flex items-center gap-3 px-3 py-2 text-sm transition-colors duration-150',
+                  !collapsed && 'font-body font-medium text-charcoal rounded-r-md',
+                  !collapsed && active
+                    ? 'bg-forest-green text-cream border-l-[3px] border-l-forest-green rounded-r-md'
+                    : !collapsed
+                      ? 'hover:bg-sage-wash'
+                      : undefined,
+                  collapsed && 'justify-center px-0 rounded-md',
+                  collapsed && active
+                    ? 'bg-cream/20 rounded-md'
+                    : collapsed
+                      ? 'hover:bg-cream/10'
+                      : undefined,
                 )}
               >
-                <Icon className="h-5 w-5 shrink-0" />
+                <Icon
+                  className={cn(
+                    'h-5 w-5 shrink-0',
+                    collapsed ? 'text-cream' : active ? 'text-cream' : 'text-charcoal',
+                  )}
+                />
                 {!collapsed && <span>{item.label}</span>}
               </Link>
             );
@@ -103,8 +129,40 @@ export function Sidebar() {
           })}
         </nav>
 
-        <div className="border-t border-border p-2">
-          <Button variant="ghost" size="icon" className="w-full" onClick={toggle}>
+        {/* Quick Pulse (expanded only) */}
+        {!collapsed && (
+          <div className="bg-warm-stone border-t border-sand mt-auto pt-3 px-3 pb-2">
+            <p className="text-xs text-warm-gray font-body mb-2 uppercase tracking-wider">
+              Quick Pulse
+            </p>
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <div className="text-xs text-warm-gray font-body">Aktywne wynajmy</div>
+                <div className="text-sm font-data text-forest-green">—</div>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="text-xs text-warm-gray font-body">Pojazdy wolne</div>
+                <div className="text-sm font-data text-forest-green">—</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Collapse toggle */}
+        <div
+          className={cn('p-2', collapsed ? 'bg-transparent' : 'bg-warm-stone border-t border-sand')}
+        >
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn(
+              'w-full',
+              collapsed
+                ? 'text-cream hover:text-cream/80 hover:bg-cream/10'
+                : 'text-warm-gray hover:text-charcoal',
+            )}
+            onClick={toggle}
+          >
             {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
           </Button>
         </div>

@@ -1,6 +1,6 @@
 import React, { Component, type ErrorInfo, type ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { AlertTriangle } from 'lucide-react-native';
+import { colors, fonts } from '@/lib/theme';
 
 import { AppButton } from './AppButton';
 
@@ -38,13 +38,13 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         <View style={styles.container}>
-          <AlertTriangle size={48} color="#DC2626" />
           <Text style={styles.title}>Cos poszlo nie tak</Text>
           <Text style={styles.message}>
             Wystapil nieoczekiwany blad. Sprobuj ponownie.
           </Text>
           <AppButton
             title="Sprobuj ponownie"
+            variant="primary"
             onPress={this.handleRetry}
             containerStyle={styles.button}
           />
@@ -63,7 +63,7 @@ export class ErrorBoundary extends Component<Props, State> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.cream,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 32,
@@ -71,16 +71,18 @@ const styles = StyleSheet.create({
   title: {
     marginTop: 16,
     fontSize: 20,
-    fontWeight: '600',
-    color: '#18181B',
+    fontFamily: fonts.display,
+    fontWeight: '500',
+    color: colors.terracotta,
     textAlign: 'center',
   },
   message: {
     marginTop: 8,
-    fontSize: 14,
-    color: '#71717A',
+    fontSize: 16,
+    fontFamily: fonts.body,
+    color: colors.charcoal,
     textAlign: 'center',
-    lineHeight: 20,
+    lineHeight: 24,
   },
   button: {
     marginTop: 24,

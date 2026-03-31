@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useIsOffline } from '@/lib/network';
+import { colors, fonts } from '@/lib/theme';
 
 export function OfflineBanner() {
   const isOffline = useIsOffline();
@@ -12,7 +13,7 @@ export function OfflineBanner() {
   if (!isOffline) return null;
 
   return (
-    <View style={[styles.banner, { paddingTop: insets.top + 8 }]}>
+    <View style={[styles.banner, { paddingTop: insets.top + 4 }]}>
       <Text style={styles.text}>{t('errors.offline')}</Text>
     </View>
   );
@@ -20,13 +21,17 @@ export function OfflineBanner() {
 
 const styles = StyleSheet.create({
   banner: {
-    backgroundColor: '#F59E0B',
+    backgroundColor: colors.amberGlow + '26',
     paddingHorizontal: 16,
-    paddingBottom: 8,
+    paddingBottom: 4,
+    height: 28,
+    justifyContent: 'flex-end',
   },
   text: {
     textAlign: 'center',
-    fontSize: 14,
-    color: '#FFFFFF',
+    fontFamily: fonts.body,
+    fontWeight: '500',
+    fontSize: 13,
+    color: colors.amberGlow,
   },
 });

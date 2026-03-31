@@ -36,10 +36,12 @@ if (__DEV__) {
 export const APP_VERSION = Constants.expoConfig?.version ?? '1.0.0';
 
 export const RENTAL_STATUS_COLORS: Record<string, string> = {
-  DRAFT: '#D4D4D8', // zinc-300
-  ACTIVE: '#16A34A', // green-600
-  EXTENDED: '#F59E0B', // amber-500
-  RETURNED: '#71717A', // zinc-500
+  DRAFT: '#7A746D',
+  ACTIVE: '#2D6A4F',
+  RENTED: '#2D6A4F',
+  EXTENDED: '#D4A853',
+  RETURNED: '#7A746D',
+  OVERDUE: '#C75D3A',
 };
 
 export const CHECKLIST_ITEMS = [

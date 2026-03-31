@@ -15,6 +15,7 @@ import { LoadingSkeleton } from '@/components/LoadingSkeleton';
 import { useRentalDraftStore } from '@/stores/rental-draft.store';
 import { useVehicles } from '@/hooks/use-vehicles';
 import { RENTAL_WIZARD_LABELS } from '@/lib/constants';
+import { colors, fonts, spacing } from '@/lib/theme';
 
 export default function VehicleStep() {
   const { t } = useTranslation();
@@ -96,8 +97,8 @@ export default function VehicleStep() {
         <Switch
           value={availableOnly}
           onValueChange={setAvailableOnly}
-          trackColor={{ false: '#D4D4D8', true: '#93C5FD' }}
-          thumbColor={availableOnly ? '#2563EB' : '#A1A1AA'}
+          trackColor={{ false: colors.sand, true: colors.forestGreen }}
+          thumbColor={colors.cream}
         />
       </View>
 
@@ -141,18 +142,18 @@ export default function VehicleStep() {
 }
 
 const s = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
-  stepTitle: { marginTop: 16, paddingHorizontal: 16, fontSize: 20, fontWeight: '600', color: '#18181B' },
-  mt16: { marginTop: 16 },
-  mb12: { marginBottom: 12 },
-  switchRow: { marginHorizontal: 16, marginTop: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  switchLabel: { fontSize: 16, color: '#18181B' },
-  list: { marginTop: 12, flex: 1 },
-  listContent: { paddingHorizontal: 16, paddingBottom: 32 },
+  safeArea: { flex: 1, backgroundColor: colors.cream },
+  stepTitle: { marginTop: spacing.base, paddingHorizontal: spacing.base, fontFamily: fonts.display, fontSize: 20, fontWeight: '600', color: colors.charcoal },
+  mt16: { marginTop: spacing.base },
+  mb12: { marginBottom: spacing.md },
+  switchRow: { marginHorizontal: spacing.base, marginTop: spacing.md, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  switchLabel: { fontFamily: fonts.body, fontSize: 16, color: colors.charcoal },
+  list: { marginTop: spacing.md, flex: 1 },
+  listContent: { paddingHorizontal: spacing.base, paddingBottom: 32 },
   flex1: { flex: 1 },
   itemRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  vehReg: { fontSize: 16, fontWeight: '600', color: '#18181B' },
-  vehSub: { marginTop: 4, fontSize: 13, color: '#71717A' },
+  vehReg: { fontFamily: fonts.data, fontSize: 16, color: colors.charcoal },
+  vehSub: { marginTop: 4, fontFamily: fonts.body, fontSize: 13, color: colors.warmGray },
   dimmed: { opacity: 0.5 },
-  loadingWrap: { paddingHorizontal: 16, paddingTop: 24 },
+  loadingWrap: { paddingHorizontal: spacing.base, paddingTop: 24 },
 });

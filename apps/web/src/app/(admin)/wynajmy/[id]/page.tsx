@@ -168,7 +168,9 @@ export default function RentalDetailPage() {
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex min-w-0 flex-1 items-center gap-3">
-          <h1 className="text-2xl font-semibold">Wynajem #{id.slice(0, 8)}</h1>
+          <h1 className="font-display font-semibold text-2xl text-charcoal">
+            Wynajem <span className="font-data">#{id.slice(0, 8)}</span>
+          </h1>
           {getRentalStatusBadge(rental)}
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -234,62 +236,70 @@ export default function RentalDetailPage() {
             <CardContent>
               <dl className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <dt className="text-sm text-muted-foreground">Pojazd</dt>
-                  <dd className="text-sm">
+                  <dt className="font-body text-sm text-warm-gray">Pojazd</dt>
+                  <dd className="font-data text-sm uppercase">
                     {(rental as RentalWithRelations).vehicle?.registration || rental.vehicleId}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-sm text-muted-foreground">Klient</dt>
-                  <dd className="text-sm">
+                  <dt className="font-body text-sm text-warm-gray">Klient</dt>
+                  <dd className="font-body text-sm">
                     {(rental as RentalWithRelations).customer
                       ? `${(rental as RentalWithRelations).customer?.firstName} ${(rental as RentalWithRelations).customer?.lastName}`
                       : rental.customerId}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-sm text-muted-foreground">Data od</dt>
-                  <dd className="text-sm">{formatDateTime(rental.startDate)}</dd>
+                  <dt className="font-body text-sm text-warm-gray">Data od</dt>
+                  <dd className="font-data text-sm">{formatDateTime(rental.startDate)}</dd>
                 </div>
                 <div>
-                  <dt className="text-sm text-muted-foreground">Data do</dt>
-                  <dd className="text-sm">{formatDateTime(rental.endDate)}</dd>
+                  <dt className="font-body text-sm text-warm-gray">Data do</dt>
+                  <dd className="font-data text-sm">{formatDateTime(rental.endDate)}</dd>
                 </div>
                 <div>
-                  <dt className="text-sm text-muted-foreground">Stawka dzienna netto</dt>
-                  <dd className="text-sm">{formatCurrency(rental.dailyRateNet)}</dd>
+                  <dt className="font-body text-sm text-warm-gray">Stawka dzienna netto</dt>
+                  <dd className="font-data text-sm text-right">
+                    {formatCurrency(rental.dailyRateNet)}
+                  </dd>
                 </div>
                 <div>
-                  <dt className="text-sm text-muted-foreground">Suma netto</dt>
-                  <dd className="text-sm">{formatCurrency(rental.totalPriceNet)}</dd>
+                  <dt className="font-body text-sm text-warm-gray">Suma netto</dt>
+                  <dd className="font-data text-sm text-right">
+                    {formatCurrency(rental.totalPriceNet)}
+                  </dd>
                 </div>
                 <div>
-                  <dt className="text-sm text-muted-foreground">Suma brutto</dt>
-                  <dd className="text-sm font-medium">{formatCurrency(rental.totalPriceGross)}</dd>
+                  <dt className="font-body text-sm text-warm-gray">Suma brutto</dt>
+                  <dd className="font-data text-sm font-medium text-right">
+                    {formatCurrency(rental.totalPriceGross)}
+                  </dd>
                 </div>
                 <div>
-                  <dt className="text-sm text-muted-foreground">VAT</dt>
-                  <dd className="text-sm">{rental.vatRate}%</dd>
+                  <dt className="font-body text-sm text-warm-gray">VAT</dt>
+                  <dd className="font-data text-sm">{rental.vatRate}%</dd>
                 </div>
                 {rental.returnMileage != null && (
                   <div>
-                    <dt className="text-sm text-muted-foreground">Przebieg przy zwrocie</dt>
-                    <dd className="text-sm">{rental.returnMileage.toLocaleString('pl-PL')} km</dd>
+                    <dt className="font-body text-sm text-warm-gray">Przebieg przy zwrocie</dt>
+                    <dd className="font-data text-sm">
+                      {rental.returnMileage.toLocaleString('pl-PL')} km
+                    </dd>
                   </div>
                 )}
                 {rental.notes && (
                   <div className="col-span-full">
-                    <dt className="text-sm text-muted-foreground">Notatki</dt>
-                    <dd className="text-sm whitespace-pre-wrap">{rental.notes}</dd>
+                    <dt className="font-body text-sm text-warm-gray">Notatki</dt>
+                    <dd className="font-body text-sm whitespace-pre-wrap">{rental.notes}</dd>
                   </div>
                 )}
                 <div>
-                  <dt className="text-sm text-muted-foreground">Utworzono</dt>
-                  <dd className="text-sm">{formatDateTime(rental.createdAt)}</dd>
+                  <dt className="font-body text-sm text-warm-gray">Utworzono</dt>
+                  <dd className="font-data text-sm">{formatDateTime(rental.createdAt)}</dd>
                 </div>
                 <div>
-                  <dt className="text-sm text-muted-foreground">Zaktualizowano</dt>
-                  <dd className="text-sm">{formatDateTime(rental.updatedAt)}</dd>
+                  <dt className="font-body text-sm text-warm-gray">Zaktualizowano</dt>
+                  <dd className="font-data text-sm">{formatDateTime(rental.updatedAt)}</dd>
                 </div>
               </dl>
             </CardContent>

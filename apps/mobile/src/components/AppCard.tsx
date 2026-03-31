@@ -1,5 +1,6 @@
 import React from 'react';
 import { Platform, Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { colors, radii } from '@/lib/theme';
 
 interface AppCardProps {
   children: React.ReactNode;
@@ -23,20 +24,20 @@ export const AppCard = React.memo(function AppCard({ children, cardStyle, onPres
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 12,
+    borderRadius: radii.md,
     borderWidth: 1,
-    borderColor: '#E4E4E7',
-    backgroundColor: '#FFFFFF',
+    borderColor: colors.sand,
+    backgroundColor: colors.warmStone,
     padding: 16,
     ...Platform.select({
       ios: {
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.05,
-        shadowRadius: 2,
+        shadowOpacity: 0.04,
+        shadowRadius: 1.5,
       },
       android: {
-        elevation: 1,
+        elevation: 0,
       },
     }),
   },

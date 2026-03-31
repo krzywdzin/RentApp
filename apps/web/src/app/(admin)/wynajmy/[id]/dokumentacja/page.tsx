@@ -37,7 +37,9 @@ export default function DokumentacjaPage() {
         ]}
       />
 
-      <h1 className="text-2xl font-semibold">Dokumentacja fotograficzna</h1>
+      <h1 className="font-display font-semibold text-2xl text-charcoal">
+        Dokumentacja fotograficzna
+      </h1>
 
       <Tabs defaultValue="photos">
         <TabsList>

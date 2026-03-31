@@ -1,40 +1,64 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme inline {
-  --color-background: oklch(0.145 0.014 285.823);
-  --color-foreground: oklch(0.985 0 0);
-  --color-card: oklch(0.205 0.014 285.823);
-  --color-card-foreground: oklch(0.985 0 0);
-  --color-popover: oklch(0.205 0.014 285.823);
-  --color-popover-foreground: oklch(0.985 0 0);
-  --color-primary: oklch(0.985 0 0);
-  --color-primary-foreground: oklch(0.205 0.014 285.823);
-  --color-secondary: oklch(0.274 0.006 286.033);
-  --color-secondary-foreground: oklch(0.985 0 0);
-  --color-muted: oklch(0.274 0.006 286.033);
-  --color-muted-foreground: oklch(0.708 0.014 285.823);
-  --color-accent: oklch(0.274 0.006 286.033);
-  --color-accent-foreground: oklch(0.985 0 0);
-  --color-destructive: oklch(0.596 0.241 27.325);
-  --color-destructive-foreground: oklch(0.985 0 0);
-  --color-border: oklch(0.274 0.006 286.033);
-  --color-input: oklch(0.274 0.006 286.033);
-  --color-ring: oklch(0.871 0.006 286.029);
-  --color-chart-1: oklch(0.646 0.222 41.116);
-  --color-chart-2: oklch(0.6 0.118 184.704);
-  --color-chart-3: oklch(0.398 0.07 227.392);
-  --color-chart-4: oklch(0.828 0.189 84.429);
-  --color-chart-5: oklch(0.769 0.188 70.08);
-  --color-sidebar: oklch(0.205 0.014 285.823);
-  --color-sidebar-foreground: oklch(0.985 0 0);
-  --color-sidebar-primary: oklch(0.985 0 0);
-  --color-sidebar-primary-foreground: oklch(0.205 0.014 285.823);
-  --color-sidebar-accent: oklch(0.274 0.006 286.033);
-  --color-sidebar-accent-foreground: oklch(0.985 0 0);
-  --color-sidebar-border: oklch(0.274 0.006 286.033);
-  --color-sidebar-ring: oklch(0.871 0.006 286.029);
-  --color-success: oklch(0.527 0.154 150.069);
-  --color-warning: oklch(0.769 0.188 70.08);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --font-data: var(--font-data);
+
+  --color-cream: oklch(0.984 0.008 80);
+  --color-warm-stone: oklch(0.946 0.012 75);
+  --color-sage-wash: oklch(0.975 0.01 160);
+  --color-amber-tint: oklch(0.973 0.012 85);
+  --color-sand: oklch(0.9 0.014 70);
+  --color-charcoal: oklch(0.25 0 0);
+  --color-warm-gray: oklch(0.53 0.01 65);
+  --color-forest-green: oklch(0.33 0.06 160);
+  --color-sage: oklch(0.44 0.07 160);
+  --color-terracotta: oklch(0.56 0.15 40);
+  --color-amber-glow: oklch(0.74 0.12 80);
+  --color-soft-teal: oklch(0.62 0.06 170);
+  --color-portal-cream: oklch(0.982 0.01 80);
+
+  --color-sage-tint: #f0f7f4;
+  --color-teal-tint: #f0f7f7;
+  --color-terracotta-tint: #fdf5f3;
+
+  --color-background: var(--color-cream);
+  --color-foreground: var(--color-charcoal);
+  --color-card: var(--color-warm-stone);
+  --color-card-foreground: var(--color-charcoal);
+  --color-popover: var(--color-warm-stone);
+  --color-popover-foreground: var(--color-charcoal);
+  --color-primary: var(--color-forest-green);
+  --color-primary-foreground: var(--color-cream);
+  --color-secondary: var(--color-sage-wash);
+  --color-secondary-foreground: var(--color-forest-green);
+  --color-muted: var(--color-warm-stone);
+  --color-muted-foreground: var(--color-warm-gray);
+  --color-accent: var(--color-sage-wash);
+  --color-accent-foreground: var(--color-forest-green);
+  --color-destructive: var(--color-terracotta);
+  --color-destructive-foreground: var(--color-cream);
+  --color-border: var(--color-sand);
+  --color-input: var(--color-sand);
+  --color-ring: var(--color-forest-green);
+  --color-chart-1: var(--color-forest-green);
+  --color-chart-2: var(--color-sage);
+  --color-chart-3: var(--color-soft-teal);
+  --color-chart-4: var(--color-amber-glow);
+  --color-chart-5: var(--color-terracotta);
+  --color-success: var(--color-sage);
+  --color-warning: var(--color-amber-glow);
+
+  --color-sidebar: var(--color-warm-stone);
+  --color-sidebar-foreground: var(--color-charcoal);
+  --color-sidebar-primary: var(--color-forest-green);
+  --color-sidebar-primary-foreground: var(--color-cream);
+  --color-sidebar-accent: var(--color-sage-wash);
+  --color-sidebar-accent-foreground: var(--color-forest-green);
+  --color-sidebar-border: var(--color-sand);
+  --color-sidebar-ring: var(--color-forest-green);
+
   --radius-sm: 0.25rem;
   --radius-md: 0.375rem;
   --radius-lg: 0.5rem;
@@ -42,11 +66,81 @@
 }
 
 @layer base {
-  * {
-    @apply border-border;
+  *,
+  *::before,
+  *::after {
+    border-color: var(--color-border);
   }
+
   body {
-    @apply bg-background text-foreground;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display), ui-serif, Georgia, serif;
+  }
+  .font-body {
+    font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  }
+  .font-data {
+    font-family: var(--font-data), ui-monospace, monospace;
+  }
+  .animate-shimmer {
+    background: linear-gradient(
+      90deg,
+      var(--color-sand) 25%,
+      var(--color-warm-stone) 50%,
+      var(--color-sand) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite ease-in-out;
+  }
+  .shadow-inner-soft {
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+  .focus-ring-green {
+    box-shadow: 0 0 0 3px rgba(27, 67, 50, 0.12);
   }
 }

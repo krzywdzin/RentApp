@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { OfflineBanner } from '@/components/OfflineBanner';
 import { useRentals } from '@/hooks/use-rentals';
+import { colors, fonts } from '@/lib/theme';
 
 export default function TabLayout() {
   const { t } = useTranslation();
@@ -32,12 +33,22 @@ export default function TabLayout() {
           tabBarStyle: {
             height: 64 + insets.bottom,
             paddingBottom: insets.bottom,
+            backgroundColor: colors.cream,
+            borderTopWidth: 1,
+            borderTopColor: colors.sand,
+            elevation: 0,
+            shadowOpacity: 0,
           },
-          tabBarActiveTintColor: '#2563EB',
-          tabBarInactiveTintColor: '#71717A',
+          tabBarActiveTintColor: colors.forestGreen,
+          tabBarInactiveTintColor: colors.warmGray,
           tabBarLabelStyle: {
             fontSize: 13,
+            fontFamily: fonts.body,
           },
+          headerStyle: { backgroundColor: colors.cream, elevation: 0, shadowOpacity: 0 },
+          headerTitleStyle: { fontFamily: fonts.display, fontSize: 20, fontWeight: '600', color: colors.charcoal },
+          headerTintColor: colors.forestGreen,
+          headerShadowVisible: false,
         }}
       >
         <Tabs.Screen

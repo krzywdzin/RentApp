@@ -58,7 +58,7 @@ export default function NewVehiclePage() {
     <div className="space-y-6">
       <Breadcrumbs items={[{ label: 'Pojazdy', href: '/pojazdy' }, { label: 'Nowy pojazd' }]} />
 
-      <h1 className="text-2xl font-semibold">Nowy pojazd</h1>
+      <h1 className="font-display font-semibold text-2xl text-charcoal">Nowy pojazd</h1>
 
       <Card>
         <CardHeader>

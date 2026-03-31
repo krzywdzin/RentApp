@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { Search, X } from 'lucide-react-native';
+import { colors, fonts, radii } from '@/lib/theme';
 
 interface SearchBarProps {
   value: string;
@@ -43,19 +44,19 @@ export function SearchBar({ value, onChangeText, placeholder, accessibilityLabel
 
   return (
     <View style={styles.container} accessibilityRole="search">
-      <Search size={20} color="#A1A1AA" />
+      <Search size={20} color={colors.warmGray} />
       <TextInput
         style={styles.input}
         value={localValue}
         onChangeText={handleChange}
         placeholder={placeholder}
-        placeholderTextColor="#A1A1AA"
+        placeholderTextColor={colors.warmGray}
         returnKeyType="search"
         accessibilityLabel={accessibilityLabel ?? placeholder ?? 'Szukaj'}
       />
       {localValue.length > 0 && (
         <Pressable onPress={handleClear} hitSlop={8} accessibilityLabel="Wyczysc wyszukiwanie">
-          <X size={20} color="#A1A1AA" />
+          <X size={20} color={colors.warmGray} />
         </Pressable>
       )}
     </View>
@@ -68,14 +69,17 @@ const styles = StyleSheet.create({
     height: 48,
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 12,
-    backgroundColor: '#F4F4F5',
+    borderRadius: radii.lg,
+    borderWidth: 1,
+    borderColor: colors.sand,
+    backgroundColor: colors.cream,
     paddingHorizontal: 16,
   },
   input: {
     marginLeft: 8,
     flex: 1,
     fontSize: 16,
-    color: '#18181B',
+    fontFamily: fonts.body,
+    color: colors.charcoal,
   },
 });

@@ -52,7 +52,7 @@ export default function ContractsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Umowy</h1>
+      <h1 className="font-display font-semibold text-2xl text-charcoal">Umowy</h1>
 
       <div className="flex items-center gap-3">
         <Select

@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useReturnDraftStore } from '@/stores/return-draft.store';
 import { WizardStepper } from '@/components/WizardStepper';
 import { AppButton } from '@/components/AppButton';
+import { colors, fonts, spacing } from '@/lib/theme';
 
 export default function ReturnNotesScreen() {
   const { t } = useTranslation();
@@ -40,7 +41,7 @@ export default function ReturnNotesScreen() {
         <TextInput
           style={s.textArea}
           placeholder={t('returnWizard.notesPlaceholder')}
-          placeholderTextColor="#A1A1AA"
+          placeholderTextColor={colors.warmGray}
           value={notes}
           onChangeText={setNotes}
           multiline
@@ -59,19 +60,20 @@ export default function ReturnNotesScreen() {
 }
 
 const s = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  safeArea: { flex: 1, backgroundColor: colors.cream },
   flex1: { flex: 1 },
-  padWrap: { paddingHorizontal: 16, paddingTop: 8 },
-  scrollContent: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 128 },
-  stepTitle: { marginBottom: 16, fontSize: 20, fontWeight: '600', color: '#18181B' },
+  padWrap: { paddingHorizontal: spacing.base, paddingTop: 8 },
+  scrollContent: { paddingHorizontal: spacing.base, paddingTop: spacing.base, paddingBottom: 128 },
+  stepTitle: { marginBottom: spacing.base, fontFamily: fonts.display, fontSize: 20, fontWeight: '600', color: colors.charcoal },
   textArea: {
     minHeight: 160,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E4E4E7',
-    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.sand,
+    paddingVertical: 12,
+    paddingHorizontal: 0,
+    fontFamily: fonts.body,
     fontSize: 16,
-    color: '#18181B',
+    color: colors.charcoal,
   },
   bottomBar: {
     position: 'absolute',
@@ -79,9 +81,9 @@ const s = StyleSheet.create({
     left: 0,
     right: 0,
     borderTopWidth: 1,
-    borderTopColor: '#E4E4E7',
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: 16,
-    paddingTop: 16,
+    borderTopColor: colors.sand,
+    backgroundColor: colors.cream,
+    paddingHorizontal: spacing.base,
+    paddingTop: spacing.base,
   },
 });

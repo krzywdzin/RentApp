@@ -19,6 +19,7 @@ import { StatusBadge } from '@/components/StatusBadge';
 import { EmptyState } from '@/components/EmptyState';
 import { LoadingSkeleton } from '@/components/LoadingSkeleton';
 import type { RentalWithRelations } from '@/api/rentals.api';
+import { colors, fonts, spacing } from '@/lib/theme';
 
 type StatusFilter = 'ALL' | 'ACTIVE' | 'DRAFT' | 'RETURNED';
 
@@ -70,26 +71,25 @@ export default function RentalsListScreen() {
 
   const renderItem = useCallback(
     ({ item }: { item: RentalWithRelations }) => (
-      <AppCard
-        cardStyle={s.itemCard}
+      <Pressable
+        style={s.itemRow}
         onPress={() => router.push(`/rentals/${item.id}`)}
+        accessibilityRole="button"
       >
-        <View style={s.itemRow}>
-          <View style={s.flex1}>
-            <Text style={s.itemName}>
-              {item.customer.firstName} {item.customer.lastName}
-            </Text>
-            <Text style={s.itemSub}>
-              {item.vehicle.registration} {item.vehicle.make}{' '}
-              {item.vehicle.model}
-            </Text>
-            <Text style={s.itemSub}>
-              {formatDate(item.startDate)} - {formatDate(item.endDate)}
-            </Text>
-          </View>
-          <StatusBadge status={item.status} />
+        <View style={s.flex1}>
+          <Text style={s.itemName}>
+            {item.customer.firstName} {item.customer.lastName}
+          </Text>
+          <Text style={s.itemSub}>
+            <Text style={s.itemPlate}>{item.vehicle.registration}</Text>
+            {' '}{item.vehicle.make} {item.vehicle.model}
+          </Text>
+          <Text style={s.itemDate}>
+            {formatDate(item.startDate)} – {formatDate(item.endDate)}
+          </Text>
         </View>
-      </AppCard>
+        <StatusBadge status={item.status} />
+      </Pressable>
     ),
     [router],
   );
@@ -141,6 +141,7 @@ export default function RentalsListScreen() {
                   {t(filter.labelKey)}
                 </Text>
               </Pressable>
+
             );
           })}
         </View>
@@ -166,7 +167,7 @@ export default function RentalsListScreen() {
             <RefreshControl
               refreshing={isRefetching}
               onRefresh={refetch}
-              tintColor="#2563EB"
+              tintColor={colors.forestGreen}
             />
           }
         />
@@ -176,21 +177,22 @@ export default function RentalsListScreen() {
 }
 
 const s = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  safeArea: { flex: 1, backgroundColor: colors.cream },
   flex1: { flex: 1 },
-  loadingWrap: { flex: 1, paddingHorizontal: 16, paddingTop: 16 },
-  searchWrap: { paddingTop: 16 },
-  filterWrap: { paddingHorizontal: 16, paddingTop: 12, paddingBottom: 8 },
-  filterRow: { flexDirection: 'row', gap: 8 },
-  chip: { borderRadius: 9999, paddingHorizontal: 16, paddingVertical: 8 },
-  chipActive: { backgroundColor: '#3B82F6' },
-  chipInactive: { backgroundColor: '#F4F4F5' },
-  chipText: { fontSize: 13, fontWeight: '500' },
-  chipTextActive: { color: '#FFFFFF' },
-  chipTextInactive: { color: '#18181B' },
-  listContent: { paddingTop: 8, paddingBottom: 32 },
-  itemCard: { marginHorizontal: 16, marginBottom: 12 },
-  itemRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  itemName: { fontSize: 16, fontWeight: '600', color: '#18181B' },
-  itemSub: { marginTop: 4, fontSize: 13, color: '#71717A' },
+  loadingWrap: { flex: 1, paddingHorizontal: spacing.base, paddingTop: spacing.base },
+  searchWrap: { paddingTop: spacing.base },
+  filterWrap: { paddingHorizontal: spacing.base, paddingTop: 12, paddingBottom: 0, borderBottomWidth: 1, borderBottomColor: colors.sand },
+  filterRow: { flexDirection: 'row', gap: 0 },
+  chip: { paddingHorizontal: 14, paddingVertical: 10 },
+  chipActive: { borderBottomWidth: 2, borderBottomColor: colors.forestGreen },
+  chipInactive: { borderBottomWidth: 2, borderBottomColor: 'transparent' },
+  chipText: { fontFamily: fonts.body, fontSize: 13 },
+  chipTextActive: { color: colors.forestGreen, fontWeight: '500' },
+  chipTextInactive: { color: colors.warmGray },
+  listContent: { paddingTop: 0, paddingBottom: 32 },
+  itemRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: spacing.base, paddingVertical: spacing.md, borderBottomWidth: 1, borderBottomColor: colors.sand },
+  itemName: { fontFamily: fonts.body, fontSize: 16, fontWeight: '500', color: colors.charcoal },
+  itemSub: { marginTop: 4, fontFamily: fonts.body, fontSize: 13, color: colors.warmGray },
+  itemPlate: { fontFamily: fonts.data, color: colors.charcoal },
+  itemDate: { marginTop: 4, fontFamily: fonts.data, fontSize: 13, color: colors.warmGray },
 });

@@ -8,37 +8,33 @@ interface StatCardProps {
   subtitle: string;
   icon: LucideIcon;
   variant?: 'default' | 'destructive';
+  tintClassName?: string;
 }
 
 export function StatCard({
   title,
   value,
   subtitle,
-  icon: Icon,
+  icon: _icon,
   variant = 'default',
+  tintClassName,
 }: StatCardProps) {
   return (
-    <Card
-      className={cn(
-        'relative overflow-hidden',
-        variant === 'destructive' && Number(value) > 0 && 'border-l-[3px] border-l-destructive',
-      )}
-    >
+    <Card className={cn('shadow-inner-soft border border-sand rounded-md', tintClassName)}>
       <CardContent className="p-6">
-        <div className="flex items-start justify-between">
-          <div className="space-y-1">
-            <p className="text-sm text-muted-foreground">{title}</p>
-            <p
-              className={cn(
-                'text-[28px] font-semibold leading-tight',
-                variant === 'destructive' && Number(value) > 0 && 'text-destructive',
-              )}
-            >
-              {value}
-            </p>
-            <p className="text-xs text-muted-foreground">{subtitle}</p>
-          </div>
-          <Icon className="h-5 w-5 text-muted-foreground" />
+        <div className="space-y-1">
+          <p className="font-body text-xs text-warm-gray">{title}</p>
+          <p
+            className={cn(
+              'font-display font-semibold text-3xl leading-tight',
+              variant === 'destructive' && Number(value) > 0
+                ? 'text-terracotta'
+                : 'text-forest-green',
+            )}
+          >
+            {value}
+          </p>
+          <p className="font-body text-xs text-warm-gray">{subtitle}</p>
         </div>
       </CardContent>
     </Card>

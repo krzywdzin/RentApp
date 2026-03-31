@@ -11,6 +11,7 @@ import { WizardStepper } from '@/components/WizardStepper';
 import { AppButton } from '@/components/AppButton';
 import { useRentalDraftStore } from '@/stores/rental-draft.store';
 import { RENTAL_WIZARD_LABELS } from '@/lib/constants';
+import { colors, fonts, spacing } from '@/lib/theme';
 
 interface PhotoPosition {
   key: string;
@@ -99,7 +100,7 @@ export default function PhotosStep() {
                 <Image source={{ uri }} style={s.thumbnail} />
               ) : (
                 <View style={s.placeholder}>
-                  <Camera size={32} color="#A1A1AA" />
+                  <Camera size={32} color={colors.warmGray} />
                 </View>
               )}
               <Text style={s.photoLabel}>{pos.label}</Text>
@@ -126,19 +127,21 @@ export default function PhotosStep() {
 }
 
 const s = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  safeArea: { flex: 1, backgroundColor: colors.cream },
   stepTitle: {
-    marginTop: 16,
-    paddingHorizontal: 16,
+    marginTop: spacing.base,
+    paddingHorizontal: spacing.base,
+    fontFamily: fonts.display,
     fontSize: 20,
     fontWeight: '600',
-    color: '#18181B',
+    color: colors.charcoal,
   },
   stepSubtitle: {
     marginTop: 4,
-    paddingHorizontal: 16,
+    paddingHorizontal: spacing.base,
+    fontFamily: fonts.body,
     fontSize: 14,
-    color: '#71717A',
+    color: colors.warmGray,
     lineHeight: 20,
   },
   grid: {
@@ -152,13 +155,14 @@ const s = StyleSheet.create({
   photoCard: {
     width: '47%',
     aspectRatio: 4 / 3,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E4E4E7',
-    backgroundColor: '#FAFAFA',
+    borderRadius: 8,
+    backgroundColor: colors.warmStone,
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderColor: colors.sand,
   },
   placeholder: {
     flex: 1,
@@ -177,30 +181,31 @@ const s = StyleSheet.create({
     right: 0,
     textAlign: 'center',
     paddingVertical: 6,
+    fontFamily: fonts.body,
     fontSize: 13,
-    fontWeight: '600',
-    color: '#18181B',
-    backgroundColor: 'rgba(255,255,255,0.85)',
+    fontWeight: '500',
+    color: colors.charcoal,
+    backgroundColor: 'rgba(253,250,246,0.9)',
   },
   doneBadge: {
     position: 'absolute',
     top: 8,
     right: 8,
-    backgroundColor: '#22C55E',
+    backgroundColor: colors.forestGreen,
     borderRadius: 10,
     paddingHorizontal: 8,
     paddingVertical: 2,
   },
   doneBadgeText: {
+    fontFamily: fonts.data,
     fontSize: 11,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    color: colors.cream,
   },
   bottomBar: {
     borderTopWidth: 1,
-    borderTopColor: '#F4F4F5',
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: 16,
+    borderTopColor: colors.sand,
+    backgroundColor: colors.cream,
+    paddingHorizontal: spacing.base,
     paddingTop: 12,
     alignItems: 'center',
   },
@@ -209,8 +214,9 @@ const s = StyleSheet.create({
     paddingVertical: 8,
   },
   skipText: {
+    fontFamily: fonts.body,
     fontSize: 15,
-    color: '#3B82F6',
+    color: colors.forestGreen,
     fontWeight: '500',
   },
 });

@@ -57,7 +57,7 @@ export default function NewCustomerPage() {
     <div className="space-y-6">
       <Breadcrumbs items={[{ label: 'Klienci', href: '/klienci' }, { label: 'Nowy klient' }]} />
 
-      <h1 className="text-2xl font-semibold">Nowy klient</h1>
+      <h1 className="font-display font-semibold text-2xl text-charcoal">Nowy klient</h1>
 
       <Card>
         <CardHeader>

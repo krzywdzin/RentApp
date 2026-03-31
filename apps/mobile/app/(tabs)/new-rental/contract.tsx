@@ -10,6 +10,7 @@ import { AppButton } from '@/components/AppButton';
 import { useRentalDraftStore } from '@/stores/rental-draft.store';
 import { formatDateTime, formatCurrency } from '@/lib/format';
 import { RENTAL_WIZARD_LABELS, VAT_MULTIPLIER, ONE_DAY_MS } from '@/lib/constants';
+import { colors, fonts, spacing } from '@/lib/theme';
 
 export default function ContractStep() {
   const { t } = useTranslation();
@@ -116,11 +117,11 @@ export default function ContractStep() {
           >
             {draft.rodoConsent ? (
               <View style={s.checkboxChecked}>
-                <Check size={16} color="#FFFFFF" />
+                <Check size={16} color={colors.cream} />
               </View>
             ) : (
               <View style={s.checkboxUnchecked}>
-                <Square size={24} color="#D4D4D8" />
+                <Square size={24} color={colors.sand} />
               </View>
             )}
             <Text style={s.rodoText}>{t('wizard.rodoConsent')}</Text>
@@ -142,39 +143,37 @@ export default function ContractStep() {
 }
 
 const s = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  safeArea: { flex: 1, backgroundColor: colors.cream },
   flex1: { flex: 1 },
-  stepTitle: { marginTop: 16, paddingHorizontal: 16, fontSize: 20, fontWeight: '600', color: '#18181B' },
-  scrollBody: { flex: 1, paddingHorizontal: 16, paddingTop: 16 },
+  stepTitle: { marginTop: spacing.base, paddingHorizontal: spacing.base, fontFamily: fonts.display, fontSize: 20, fontWeight: '600', color: colors.charcoal },
+  scrollBody: { flex: 1, paddingHorizontal: spacing.base, paddingTop: spacing.base },
   previewBox: {
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E4E4E7',
-    backgroundColor: '#FAFAFA',
-    padding: 16,
+    borderRadius: 8,
+    backgroundColor: colors.warmStone,
+    padding: spacing.base,
   },
-  sectionHeader: { fontSize: 13, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 1, color: '#A1A1AA' },
-  sectionValue: { marginTop: 4, fontSize: 16, color: '#18181B' },
-  mt16: { marginTop: 16 },
+  sectionHeader: { fontFamily: fonts.body, fontSize: 13, fontWeight: '500', textTransform: 'uppercase', letterSpacing: 1, color: colors.warmGray },
+  sectionValue: { marginTop: 4, fontFamily: fonts.data, fontSize: 16, color: colors.charcoal },
+  mt16: { marginTop: spacing.base },
   mt4: { marginTop: 4 },
   datesRow: { marginTop: 4, flexDirection: 'row', alignItems: 'center', gap: 8 },
-  dash: { color: '#A1A1AA' },
-  daysText: { marginTop: 4, fontSize: 13, color: '#71717A' },
+  dash: { color: colors.warmGray },
+  daysText: { marginTop: 4, fontFamily: fonts.body, fontSize: 13, color: colors.warmGray },
   priceRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   priceRowMt: { marginTop: 4, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  priceLabel: { fontSize: 13, color: '#71717A' },
-  priceValue: { fontSize: 16, color: '#18181B' },
+  priceLabel: { fontFamily: fonts.body, fontSize: 13, color: colors.warmGray },
+  priceValue: { fontFamily: fonts.data, fontSize: 16, color: colors.charcoal },
   totalRow: {
     marginTop: 8,
     borderTopWidth: 1,
-    borderTopColor: '#E4E4E7',
+    borderTopColor: colors.sand,
     paddingTop: 8,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  totalLabel: { fontSize: 16, fontWeight: '600', color: '#18181B' },
-  totalValue: { fontSize: 18, fontWeight: '600', color: '#18181B' },
+  totalLabel: { fontFamily: fonts.body, fontSize: 16, fontWeight: '500', color: colors.charcoal },
+  totalValue: { fontFamily: fonts.display, fontWeight: '500', fontSize: 18, color: colors.forestGreen },
   rodoRow: { marginTop: 24, flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
   checkboxChecked: {
     marginTop: 2,
@@ -183,19 +182,19 @@ const s = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 4,
-    backgroundColor: '#3B82F6',
+    backgroundColor: colors.forestGreen,
   },
   checkboxUnchecked: { marginTop: 2 },
-  rodoText: { flex: 1, fontSize: 16, lineHeight: 24, color: '#3F3F46' },
+  rodoText: { flex: 1, fontFamily: fonts.body, fontSize: 16, lineHeight: 24, color: colors.charcoal },
   bottomBar: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     borderTopWidth: 1,
-    borderTopColor: '#F4F4F5',
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: 16,
+    borderTopColor: colors.sand,
+    backgroundColor: colors.cream,
+    paddingHorizontal: spacing.base,
     paddingTop: 12,
   },
 });

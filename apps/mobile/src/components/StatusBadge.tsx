@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, View, type ViewStyle, type TextStyle } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { colors, fonts } from '@/lib/theme';
 
 interface StatusBadgeProps {
   status: string;
@@ -12,15 +13,15 @@ interface BadgeStyle {
 }
 
 const STATUS_MAP: Record<string, BadgeStyle> = {
-  ACTIVE: { bg: '#DCFCE7', fg: '#15803D', label: 'Aktywny' },
-  RENTED: { bg: '#DCFCE7', fg: '#15803D', label: 'Aktywny' },
-  DRAFT: { bg: '#F4F4F5', fg: '#52525B', label: 'Wersja robocza' },
-  EXTENDED: { bg: '#FEF3C7', fg: '#B45309', label: 'Przedluzony' },
-  RETURNED: { bg: '#E4E4E7', fg: '#52525B', label: 'Zwrócony' },
-  OVERDUE: { bg: '#FEE2E2', fg: '#B91C1C', label: 'Przeterminowany' },
+  ACTIVE: { bg: colors.sage + '14', fg: colors.sage, label: 'Aktywny' },
+  RENTED: { bg: colors.sage + '14', fg: colors.sage, label: 'Aktywny' },
+  DRAFT: { bg: colors.warmGray + '14', fg: colors.warmGray, label: 'Szkic' },
+  EXTENDED: { bg: colors.amberGlow + '14', fg: colors.amberGlow, label: 'Przedłużony' },
+  RETURNED: { bg: colors.warmGray + '14', fg: colors.warmGray, label: 'Zwrócony' },
+  OVERDUE: { bg: colors.terracotta + '14', fg: colors.terracotta, label: 'Zaległy' },
 };
 
-const DEFAULT_STYLE: BadgeStyle = { bg: '#F4F4F5', fg: '#52525B', label: '' };
+const DEFAULT_STYLE: BadgeStyle = { bg: colors.warmGray + '14', fg: colors.warmGray, label: '' };
 
 export function StatusBadge({ status }: StatusBadgeProps) {
   const badgeStyle = STATUS_MAP[status] ?? DEFAULT_STYLE;
@@ -35,12 +36,15 @@ export function StatusBadge({ status }: StatusBadgeProps) {
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 9999,
+    borderRadius: 4,
     paddingHorizontal: 12,
     paddingVertical: 4,
   },
   text: {
-    fontSize: 13,
-    fontWeight: '500',
+    fontFamily: fonts.body,
+    fontWeight: '600',
+    fontSize: 12,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
 });

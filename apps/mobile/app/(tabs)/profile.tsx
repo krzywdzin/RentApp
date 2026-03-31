@@ -12,6 +12,7 @@ import { AppButton } from '@/components/AppButton';
 import { AppCard } from '@/components/AppCard';
 import { StatusBadge } from '@/components/StatusBadge';
 import { ConfirmationDialog } from '@/components/ConfirmationDialog';
+import { colors, fonts, spacing } from '@/lib/theme';
 
 export default function ProfileScreen() {
   const { t } = useTranslation();
@@ -51,10 +52,19 @@ export default function ProfileScreen() {
 
         {/* User Info */}
         <AppCard cardStyle={s.mb16}>
-          <Text style={s.userName}>{user?.name ?? ''}</Text>
-          <Text style={s.userEmail}>{user?.email ?? ''}</Text>
-          <View style={s.mt8}>
-            <StatusBadge status={user?.role ?? 'EMPLOYEE'} />
+          <View style={s.avatarRow}>
+            <View style={s.avatarCircle}>
+              <Text style={s.avatarInitial}>
+                {(user?.name ?? user?.email ?? 'U').charAt(0).toUpperCase()}
+              </Text>
+            </View>
+            <View style={s.userInfo}>
+              <Text style={s.userName}>{user?.name ?? ''}</Text>
+              <Text style={s.userEmail}>{user?.email ?? ''}</Text>
+              <View style={s.mt8}>
+                <StatusBadge status={user?.role ?? 'EMPLOYEE'} />
+              </View>
+            </View>
           </View>
         </AppCard>
 
@@ -65,8 +75,8 @@ export default function ProfileScreen() {
             <Switch
               value={biometricEnabled}
               onValueChange={handleBiometricToggle}
-              trackColor={{ false: '#E4E4E7', true: '#2563EB' }}
-              thumbColor="#FFFFFF"
+              trackColor={{ false: colors.sand, true: colors.forestGreen }}
+              thumbColor={colors.cream}
             />
           </View>
         </AppCard>
@@ -106,15 +116,19 @@ export default function ProfileScreen() {
 }
 
 const s = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
-  scroll: { flex: 1, paddingHorizontal: 16, paddingTop: 16 },
-  pageTitle: { marginBottom: 16, fontSize: 20, fontWeight: '600', color: '#18181B' },
-  mb16: { marginBottom: 16 },
-  mt8: { marginTop: 8 },
-  userName: { fontSize: 18, fontWeight: '600', color: '#18181B' },
-  userEmail: { marginTop: 4, fontSize: 16, color: '#71717A' },
+  safeArea: { flex: 1, backgroundColor: colors.cream },
+  scroll: { flex: 1, paddingHorizontal: spacing.base, paddingTop: spacing.base },
+  pageTitle: { marginBottom: spacing.base, fontFamily: fonts.display, fontWeight: '600', fontSize: 20, color: colors.charcoal },
+  mb16: { marginBottom: spacing.base },
+  mt8: { marginTop: spacing.sm },
+  avatarRow: { flexDirection: 'row', alignItems: 'center' },
+  avatarCircle: { width: 52, height: 52, borderRadius: 26, backgroundColor: colors.forestGreen, alignItems: 'center', justifyContent: 'center', marginRight: spacing.md },
+  avatarInitial: { fontFamily: fonts.display, fontSize: 22, color: colors.cream },
+  userInfo: { flex: 1 },
+  userName: { fontFamily: fonts.body, fontSize: 18, fontWeight: '500', color: colors.charcoal },
+  userEmail: { marginTop: 4, fontFamily: fonts.body, fontSize: 14, color: colors.warmGray },
   settingsRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  settingsLabel: { fontSize: 16, color: '#18181B' },
-  versionText: { fontSize: 16, color: '#71717A' },
-  logoutWrap: { marginTop: 16, marginBottom: 32 },
+  settingsLabel: { fontFamily: fonts.body, fontSize: 16, color: colors.charcoal },
+  versionText: { fontFamily: fonts.data, fontSize: 12, color: colors.warmGray },
+  logoutWrap: { marginTop: spacing.base, marginBottom: 32 },
 });
