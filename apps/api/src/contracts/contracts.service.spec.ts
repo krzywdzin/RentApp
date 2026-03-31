@@ -475,6 +475,10 @@ describe('ContractsService', () => {
 
   // CONT-04: Email delivery
   describe('email delivery', () => {
+    // Helper to flush setImmediate queue (email is fire-and-forget)
+    const flushSetImmediate = () =>
+      new Promise((resolve) => setImmediate(resolve));
+
     it('sends email with PDF attachment after generation', async () => {
       prisma.contract.findUnique
         .mockResolvedValueOnce({ ...mockContract, status: 'PARTIALLY_SIGNED', signatures: [] })
@@ -496,6 +500,9 @@ describe('ContractsService', () => {
         'user-1',
         '127.0.0.1',
       );
+
+      // Email is sent via setImmediate (fire-and-forget), flush the queue
+      await flushSetImmediate();
 
       expect(mailService.sendContractEmail).toHaveBeenCalledWith(
         'jan@example.com',

@@ -12,7 +12,10 @@ export class SmsService {
   constructor(private readonly config: ConfigService) {
     this.testMode =
       this.config.get<string>('SMSAPI_TEST_MODE', 'false') === 'true';
-    this.senderName = this.config.get<string>('SMSAPI_SENDER_NAME', 'Test');
+    this.senderName = this.config.get<string>('SMSAPI_SENDER_NAME', 'KITEK');
+    this.logger.log(
+      `SMS service initialized (testMode: ${this.testMode}, sender: ${this.senderName})`,
+    );
   }
 
   private getClient(): SMSAPI | null {

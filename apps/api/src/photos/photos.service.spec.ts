@@ -124,12 +124,16 @@ describe('PhotosService', () => {
       expect(result.type).toBe('RETURN');
     });
 
-    it('throws ConflictException if walkthrough type already exists for rental', async () => {
+    it('returns existing walkthrough if type already exists for rental (idempotent)', async () => {
       prisma.photoWalkthrough.findFirst.mockResolvedValue(mockWalkthrough);
 
-      await expect(
-        service.createWalkthrough({ rentalId: 'rental-1', type: 'HANDOVER' }, 'user-1'),
-      ).rejects.toThrow(ConflictException);
+      const result = await service.createWalkthrough(
+        { rentalId: 'rental-1', type: 'HANDOVER' },
+        'user-1',
+      );
+
+      expect(prisma.photoWalkthrough.create).not.toHaveBeenCalled();
+      expect(result).toEqual(mockWalkthrough);
     });
   });
 
