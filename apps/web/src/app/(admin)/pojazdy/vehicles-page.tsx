@@ -75,7 +75,6 @@ export function VehiclesPage() {
   const [archivedSorting, setArchivedSorting] = useState<SortingState>([]);
 
   const [importOpen, setImportOpen] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState<VehicleDto | null>(null);
   const [hardDeleteTarget, setHardDeleteTarget] = useState<VehicleDto | null>(null);
   const [bulkStatusDialog, setBulkStatusDialog] = useState<{
     open: boolean;
@@ -94,15 +93,20 @@ export function VehiclesPage() {
     });
   }, [vehicles, search, statusFilter]);
 
+  const handleArchive = useCallback(
+    (vehicle: VehicleDto) => archiveVehicle.mutate(vehicle.id),
+    [archiveVehicle.mutate],
+  );
+
   const columns = useMemo(
     () =>
       getVehicleColumns({
         onDetail: (id) => router.push(`/pojazdy/${id}`),
         onEdit: (id) => router.push(`/pojazdy/${id}/edytuj`),
         onDelete: (vehicle) => setHardDeleteTarget(vehicle),
-        onArchive: (vehicle) => archiveVehicle.mutate(vehicle.id),
+        onArchive: handleArchive,
       }),
-    [router, archiveVehicle],
+    [router, handleArchive],
   );
 
   const archivedColumns = useMemo(
