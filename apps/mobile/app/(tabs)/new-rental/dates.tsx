@@ -15,7 +15,7 @@ import { WizardStepper } from '@/components/WizardStepper';
 import { AppInput } from '@/components/AppInput';
 import { AppButton } from '@/components/AppButton';
 import { useRentalDraftStore } from '@/stores/rental-draft.store';
-import { formatDateTime, formatCurrency } from '@/lib/format';
+import { formatDate, formatDateTime, formatCurrency } from '@/lib/format';
 import { RENTAL_WIZARD_LABELS, VAT_MULTIPLIER, ONE_DAY_MS } from '@/lib/constants';
 import { colors, fonts, spacing } from '@/lib/theme';
 
@@ -51,6 +51,7 @@ export default function DatesStep() {
 
   const [showStartPicker, setShowStartPicker] = useState(false);
   const [showEndPicker, setShowEndPicker] = useState(false);
+  const [showEndTimePicker, setShowEndTimePicker] = useState(false);
   // Keep dates in local state to avoid react-hook-form/zod crashes with DateTimePicker
   const [startDate, setStartDate] = useState(defaultStartDate);
   const [endDate, setEndDate] = useState(defaultEndDate);
@@ -90,9 +91,24 @@ export default function DatesStep() {
     (_event: DateTimePickerEvent, date?: Date) => {
       setTimeout(() => setShowEndPicker(false), 0);
       if (!date) return;
-      setEndDate(new Date(date));
+      // Keep existing time, only change date
+      const newEnd = new Date(date);
+      newEnd.setHours(endDate.getHours(), endDate.getMinutes(), 0, 0);
+      setEndDate(newEnd);
     },
-    [],
+    [endDate],
+  );
+
+  const handleEndTimeChange = useCallback(
+    (_event: DateTimePickerEvent, date?: Date) => {
+      setTimeout(() => setShowEndTimePicker(false), 0);
+      if (!date) return;
+      // Keep existing date, only change time
+      const newEnd = new Date(endDate);
+      newEnd.setHours(date.getHours(), date.getMinutes(), 0, 0);
+      setEndDate(newEnd);
+    },
+    [endDate],
   );
 
   const handleNext = useCallback(
@@ -154,12 +170,20 @@ export default function DatesStep() {
 
         {/* End Date */}
         <Text style={s.fieldLabel}>Data i godzina zwrotu</Text>
-        <Pressable
-          style={s.dateField}
-          onPress={() => setShowEndPicker(true)}
-        >
-          <Text style={s.dateFieldText}>{formatDateTime(endDate)}</Text>
-        </Pressable>
+        <View style={s.dateRow}>
+          <Pressable
+            style={[s.dateField, s.dateFieldHalf]}
+            onPress={() => setShowEndPicker(true)}
+          >
+            <Text style={s.dateFieldText}>{formatDate(endDate)}</Text>
+          </Pressable>
+          <Pressable
+            style={[s.dateField, s.dateFieldHalf]}
+            onPress={() => setShowEndTimePicker(true)}
+          >
+            <Text style={s.dateFieldText}>⏰ {endDate.getHours().toString().padStart(2,'0')}:{endDate.getMinutes().toString().padStart(2,'0')}</Text>
+          </Pressable>
+        </View>
 
         {/* Daily Rate */}
         <Controller
@@ -207,7 +231,7 @@ export default function DatesStep() {
       {showStartPicker && (
         <DateTimePicker
           value={startDate}
-          mode="datetime"
+          mode="date"
           display="default"
           onChange={handleStartDateChange}
         />
@@ -216,9 +240,19 @@ export default function DatesStep() {
       {showEndPicker && (
         <DateTimePicker
           value={endDate}
-          mode="datetime"
+          mode="date"
           display="default"
           onChange={handleEndDateChange}
+        />
+      )}
+
+      {showEndTimePicker && (
+        <DateTimePicker
+          value={endDate}
+          mode="time"
+          display="default"
+          is24Hour={true}
+          onChange={handleEndTimeChange}
         />
       )}
 
@@ -242,13 +276,20 @@ const s = StyleSheet.create({
   stepTitle: { marginTop: spacing.base, paddingHorizontal: spacing.base, fontFamily: fonts.display, fontSize: 20, fontWeight: '600', color: colors.charcoal },
   scrollBody: { flex: 1, paddingHorizontal: spacing.base, paddingTop: spacing.base },
   fieldLabel: { marginBottom: 4, fontFamily: fonts.body, fontWeight: '500', fontSize: 13, color: colors.warmGray },
-  dateField: {
+  dateRow: {
+    flexDirection: 'row',
+    gap: 8,
     marginBottom: spacing.base,
+  },
+  dateField: {
     paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: colors.sand,
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  dateFieldHalf: {
+    flex: 1,
   },
   dateFieldText: { flex: 1, fontFamily: fonts.data, fontSize: 16, color: colors.charcoal },
   mb16: { marginBottom: spacing.base },
