@@ -42,13 +42,20 @@ export default function NewCustomerPage() {
 
   function onSubmit(data: CreateCustomerInput) {
     // Clean up empty optional fields - replace empty strings with null for optional fields
-    const cleaned = { ...data };
+    const cleaned = { ...data } as Record<string, unknown>;
     for (const [key, value] of Object.entries(cleaned)) {
-      if (value === '') {
-        (cleaned as Record<string, unknown>)[key] = null;
+      if (value === '' || value === null || value === undefined) {
+        cleaned[key] = null;
       }
     }
-    createCustomer.mutate(cleaned, {
+    // Convert date fields from "YYYY-MM-DD" to ISO datetime string
+    const dateFields = ['idIssuedDate', 'idExpiryDate', 'dateOfBirth', 'birthDate'];
+    for (const field of dateFields) {
+      if (cleaned[field] && typeof cleaned[field] === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(cleaned[field] as string)) {
+        cleaned[field] = new Date(cleaned[field] as string).toISOString();
+      }
+    }
+    createCustomer.mutate(cleaned as CreateCustomerInput, {
       onSuccess: () => router.push('/klienci'),
     });
   }
