@@ -43,9 +43,14 @@ import { HealthModule } from './health/health.module';
     ContractsModule,
     PhotosModule,
     BullModule.forRootAsync({
-      useFactory: (config: ConfigService) => ({
-        url: config.getOrThrow<string>('REDIS_URL'),
-      }),
+      useFactory: (config: ConfigService) => {
+        const redisUrl = config.getOrThrow<string>('REDIS_URL');
+        const isTls = redisUrl.startsWith('rediss://');
+        return {
+          url: redisUrl,
+          redis: isTls ? { tls: { rejectUnauthorized: false } } : undefined,
+        };
+      },
       inject: [ConfigService],
     }),
     NotificationsModule,
