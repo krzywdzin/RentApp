@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Pencil } from 'lucide-react';
+import { Pencil, Link2, Copy, Check } from 'lucide-react';
 import { AuditTrail } from '@/components/audit/audit-trail';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,6 +24,8 @@ import { useCustomer, useArchiveCustomer } from '@/hooks/queries/use-customers';
 import { useRentals } from '@/hooks/queries/use-rentals';
 import { getRentalStatusBadge } from '../../wynajmy/columns';
 import { formatDate } from '@/lib/format';
+import { apiClient } from '@/lib/api-client';
+import { toast } from 'sonner';
 
 export default function CustomerDetailPage() {
   const params = useParams<{ id: string }>();
@@ -32,6 +34,30 @@ export default function CustomerDetailPage() {
   const { data: rentals, isLoading: rentalsLoading } = useRentals({ customerId: params.id });
   const archiveCustomer = useArchiveCustomer();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [portalLink, setPortalLink] = useState<string | null>(null);
+  const [showPortalDialog, setShowPortalDialog] = useState(false);
+  const [portalLinkLoading, setPortalLinkLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const generatePortalLink = async () => {
+    setPortalLinkLoading(true);
+    try {
+      const res = await apiClient<{ url: string }>(`/customers/${params.id}/portal-link`, { method: 'POST' });
+      setPortalLink(res.url);
+      setShowPortalDialog(true);
+    } catch {
+      toast.error('Nie udało się wygenerować linku portalu');
+    } finally {
+      setPortalLinkLoading(false);
+    }
+  };
+
+  const copyPortalLink = async () => {
+    if (!portalLink) return;
+    await navigator.clipboard.writeText(portalLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const customerRentals = rentals ?? [];
 
@@ -68,6 +94,10 @@ export default function CustomerDetailPage() {
           {customer.lastName} {customer.firstName}
         </h1>
         <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={generatePortalLink} disabled={portalLinkLoading}>
+            <Link2 className="h-4 w-4" />
+            {portalLinkLoading ? 'Generowanie...' : 'Link portalu'}
+          </Button>
           <Button variant="outline" asChild>
             <Link href={`/klienci/${params.id}/edytuj`}>
               <Pencil className="h-4 w-4" />
@@ -208,6 +238,28 @@ export default function CustomerDetailPage() {
               }}
             >
               {archiveCustomer.isPending ? 'Usuwanie...' : 'Usun klienta'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* Portal Link Dialog */}
+      <Dialog open={showPortalDialog} onOpenChange={setShowPortalDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Link portalu klienta</DialogTitle>
+            <DialogDescription>
+              Skopiuj link i wyślij klientowi. Link jest ważny przez 30 dni.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex items-center gap-2 rounded-md border bg-muted p-3">
+            <p className="flex-1 break-all text-xs font-mono text-muted-foreground">{portalLink}</p>
+            <Button size="icon" variant="ghost" onClick={copyPortalLink}>
+              {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+            </Button>
+          </div>
+          <DialogFooter>
+            <Button onClick={copyPortalLink} className="w-full">
+              {copied ? '✓ Skopiowano!' : 'Kopiuj link'}
             </Button>
           </DialogFooter>
         </DialogContent>
