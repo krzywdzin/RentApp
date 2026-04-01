@@ -1,5 +1,6 @@
-import { Controller, Get, Patch, Param, Query } from '@nestjs/common';
+import { Controller, Get, Patch, Post, Param, Query } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
+import { AlertScannerService } from './cron/alert-scanner.service';
 import { NotificationQueryDto } from './dto/notification-query.dto';
 import { Roles } from '../common/decorators/roles.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
@@ -9,6 +10,7 @@ import { UserRole } from '@rentapp/shared';
 export class NotificationsController {
   constructor(
     private readonly notificationsService: NotificationsService,
+    private readonly alertScannerService: AlertScannerService,
   ) {}
 
   @Get('in-app')
@@ -46,5 +48,12 @@ export class NotificationsController {
   @Roles(UserRole.ADMIN)
   async getNotificationLog(@Query() query: NotificationQueryDto) {
     return this.notificationsService.getNotificationLog(query);
+  }
+
+  @Post('trigger-scan')
+  @Roles(UserRole.ADMIN)
+  async triggerScan() {
+    await this.alertScannerService.scanAlerts();
+    return { message: 'Alert scan triggered' };
   }
 }
