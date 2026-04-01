@@ -54,4 +54,16 @@ export class CreateCustomerDto {
   @IsOptional()
   @IsString()
   licenseIssuedBy?: string;
+
+  @IsOptional()
+  @IsISO8601()
+  licenseIssuedDate?: string;
+
+  @IsOptional()
+  @IsISO8601()
+  idExpiryDate?: string;
+
+  @IsOptional()
+  @IsString()
+  licenseBookletNumber?: string;
 }

@@ -258,6 +258,20 @@ export default function NewCustomerPage() {
                     </FormItem>
                   )}
                 />
+
+                <FormField
+                  control={form.control}
+                  name="licenseBookletNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nr blankietu prawa jazdy</FormLabel>
+                      <FormControl>
+                        <Input placeholder="np. MC 1234567" {...field} value={field.value ?? ''} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
 
               <div className="flex justify-end gap-3 pt-4">

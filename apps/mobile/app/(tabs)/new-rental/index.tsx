@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, KeyboardAvoidingView, Linking, Platform, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -52,6 +52,7 @@ export default function CustomerStep() {
       licenseNumber: '',
       licenseCategory: '',
       licenseIssuedBy: '',
+      licenseBookletNumber: '',
     },
   });
 
@@ -392,6 +393,31 @@ export default function CustomerStep() {
                 containerStyle={s.mb12}
               />
             )}
+          />
+
+          <Controller
+            control={control}
+            name="licenseBookletNumber"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <AppInput
+                label="Nr blankietu prawa jazdy"
+                value={value ?? ''}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                placeholder="np. MC 1234567"
+                autoCapitalize="characters"
+                error={(errors as Record<string, {message?: string}>).licenseBookletNumber?.message}
+                containerStyle={s.mb12}
+              />
+            )}
+          />
+
+          <AppButton
+            title="🔍 Sprawdź uprawnienia kierowcy (gov.pl)"
+            onPress={() => Linking.openURL('https://moj.gov.pl/uslugi/engine/ng/index?xFormsAppName=UprawnieniaKierowcow&xFormsOrigin=EXTERNAL')}
+            variant="secondary"
+            fullWidth
+            containerStyle={s.mb12}
           />
 
           <AppButton

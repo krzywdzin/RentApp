@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     httpOnly: true,
     secure: isProduction,
     sameSite: 'lax',
-    path: '/portal',
+    path: '/',
     maxAge: 86400, // 24h matching JWT expiry
   });
   return response;

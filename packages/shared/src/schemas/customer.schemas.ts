@@ -13,9 +13,12 @@ export const CreateCustomerSchema = z.object({
   idNumber: z.string().min(3).max(20),
   licenseNumber: z.string().min(3).max(30),
   idIssuedBy: z.string().max(200).nullable().optional(),
-  idIssuedDate: z.string().datetime().nullable().optional(),
+  idIssuedDate: z.string().nullable().optional(),
+  idExpiryDate: z.string().nullable().optional(),
   licenseCategory: z.string().max(20).nullable().optional(),
   licenseIssuedBy: z.string().max(200).nullable().optional(),
+  licenseIssuedDate: z.string().nullable().optional(),
+  licenseBookletNumber: z.string().max(50).nullable().optional(),
 });
 
 export const UpdateCustomerSchema = CreateCustomerSchema.partial();

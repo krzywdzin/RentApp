@@ -3,28 +3,8 @@ import Constants from 'expo-constants';
 // Production Railway API URL - hardcoded as bulletproof fallback
 const RAILWAY_API_URL = 'https://api-production-977b.up.railway.app';
 
-const resolveApiUrl = (): string => {
-  // In production builds always use Railway
-  if (!__DEV__) {
-    return RAILWAY_API_URL;
-  }
-  // Metro embeds EXPO_PUBLIC_* vars at build time - most reliable source
-  const envUrl = process.env.EXPO_PUBLIC_API_URL;
-  if (envUrl) {
-    return envUrl;
-  }
-
-  // Try expo-constants (may be undefined in EAS builds)
-  const extraUrl = Constants.expoConfig?.extra?.apiUrl;
-  if (extraUrl) {
-    return extraUrl;
-  }
-
-  // Fallback to Railway URL - localhost is never acceptable in production
-  return RAILWAY_API_URL;
-};
-
-export const API_URL = resolveApiUrl();
+// Always use Railway production API
+export const API_URL = RAILWAY_API_URL;
 
 // Log API URL on startup for debugging (only in development or when debugging builds)
 if (__DEV__) {
