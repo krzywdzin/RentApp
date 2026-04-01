@@ -11,6 +11,7 @@ import {
 import { UserRole } from '@rentapp/shared';
 import { Roles } from '../common/decorators/roles.decorator';
 import { CustomersService } from './customers.service';
+import { PortalService } from '../portal/portal.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { SearchCustomerDto } from './dto/search-customer.dto';
@@ -19,7 +20,10 @@ import { CustomersQueryDto } from './dto/customers-query.dto';
 @Controller('customers')
 @Roles(UserRole.ADMIN, UserRole.EMPLOYEE)
 export class CustomersController {
-  constructor(private customersService: CustomersService) {}
+  constructor(
+    private customersService: CustomersService,
+    private portalService: PortalService,
+  ) {}
 
   @Post()
   async create(@Body() dto: CreateCustomerDto) {
@@ -56,6 +60,13 @@ export class CustomersController {
         changes: oldValues,
       },
     };
+  }
+
+  @Post(':id/portal-link')
+  @Roles(UserRole.ADMIN)
+  async generatePortalLink(@Param('id', ParseUUIDPipe) id: string) {
+    const url = await this.portalService.generatePortalToken(id);
+    return { url };
   }
 
   @Patch(':id/archive')
