@@ -47,7 +47,11 @@ export default function CustomerStep() {
       email: '',
       pesel: '',
       idNumber: '',
+      idIssuedBy: '',
+      idExpiryDate: '',
       licenseNumber: '',
+      licenseCategory: '',
+      licenseIssuedBy: '',
     },
   });
 
@@ -311,6 +315,38 @@ export default function CustomerStep() {
 
           <Controller
             control={control}
+            name="idIssuedBy"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <AppInput
+                label="Organ wydający dowód"
+                value={value ?? ''}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                placeholder="np. Prezydent m.st. Warszawy"
+                error={(errors as Record<string, {message?: string}>).idIssuedBy?.message}
+                containerStyle={s.mb12}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="idExpiryDate"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <AppInput
+                label="Data ważności dowodu"
+                value={value ?? ''}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                placeholder="RRRR-MM-DD"
+                error={(errors as Record<string, {message?: string}>).idExpiryDate?.message}
+                containerStyle={s.mb12}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
             name="licenseNumber"
             render={({ field: { onChange, onBlur, value } }) => (
               <AppInput
@@ -320,6 +356,39 @@ export default function CustomerStep() {
                 onBlur={onBlur}
                 autoCapitalize="characters"
                 error={errors.licenseNumber?.message}
+                containerStyle={s.mb12}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="licenseCategory"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <AppInput
+                label="Kategoria prawa jazdy"
+                value={value ?? ''}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                placeholder="np. B, B+E, C"
+                autoCapitalize="characters"
+                error={(errors as Record<string, {message?: string}>).licenseCategory?.message}
+                containerStyle={s.mb12}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="licenseIssuedBy"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <AppInput
+                label="Organ wydający prawo jazdy"
+                value={value ?? ''}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                placeholder="np. Starosta bydgoski"
+                error={(errors as Record<string, {message?: string}>).licenseIssuedBy?.message}
                 containerStyle={s.mb12}
               />
             )}
