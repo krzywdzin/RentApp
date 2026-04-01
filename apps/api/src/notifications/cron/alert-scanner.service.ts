@@ -16,22 +16,29 @@ export class AlertScannerService {
 
   @Cron('0 8 * * *')
   async scanAlerts() {
-    this.logger.log('Starting daily alert scan');
-    await this.scanReturnReminders();
+    this.logger.log('Starting daily alert scan (8:00)');
+    await this.scanReturnReminders(1); // SMS 1 dzień przed o 8:00
     await this.scanOverdueRentals();
     await this.scanInsuranceExpiry();
     await this.scanInspectionExpiry();
     this.logger.log('Daily alert scan complete');
   }
 
-  async scanReturnReminders(): Promise<void> {
+  @Cron('0 18 * * *')
+  async scanAlertsEvening() {
+    this.logger.log('Starting evening alert scan (18:00)');
+    await this.scanReturnReminders(2); // SMS 2 dni przed o 18:00
+    this.logger.log('Evening alert scan complete');
+  }
+
+  async scanReturnReminders(leadTimeDaysOverride?: number): Promise<void> {
     const config = await this.alertConfigService.findByType('RETURN_REMINDER');
     if (!config?.enabled) {
       this.logger.debug('RETURN_REMINDER alerts disabled, skipping');
       return;
     }
 
-    const leadTimeDays = config.leadTimeDays ?? 1;
+    const leadTimeDays = leadTimeDaysOverride ?? config.leadTimeDays ?? 1;
     const { startOfTarget, endOfTarget } =
       this.getWarsawDateRange(leadTimeDays);
 

@@ -153,7 +153,7 @@ export default function DatesStep() {
         </Pressable>
 
         {/* End Date */}
-        <Text style={s.fieldLabel}>Data zakonczenia</Text>
+        <Text style={s.fieldLabel}>Data i godzina zwrotu</Text>
         <Pressable
           style={s.dateField}
           onPress={() => setShowEndPicker(true)}
@@ -207,7 +207,7 @@ export default function DatesStep() {
       {showStartPicker && (
         <DateTimePicker
           value={startDate}
-          mode="date"
+          mode="datetime"
           display="default"
           onChange={handleStartDateChange}
         />
@@ -216,7 +216,7 @@ export default function DatesStep() {
       {showEndPicker && (
         <DateTimePicker
           value={endDate}
-          mode="date"
+          mode="datetime"
           display="default"
           onChange={handleEndDateChange}
         />
