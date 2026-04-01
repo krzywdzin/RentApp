@@ -206,8 +206,10 @@ model Customer {
 
   idIssuedBy            String?
   idIssuedDate          DateTime?
+  idExpiryDate          DateTime?
   licenseCategory       String?
   licenseIssuedBy       String?
+  licenseIssuedDate     DateTime?
 
   retentionExpiresAt    DateTime?
   isArchived            Boolean   @default(false)
