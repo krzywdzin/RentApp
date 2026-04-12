@@ -6,7 +6,7 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import type { ContractFrozenData } from '@rentapp/shared';
 
-export interface ContractPdfData extends ContractFrozenData {
+export type ContractPdfData = ContractFrozenData & {
   contractNumber: string;
   signatures: {
     employeePage1?: string;
