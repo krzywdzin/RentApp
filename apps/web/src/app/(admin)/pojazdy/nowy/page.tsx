@@ -26,10 +26,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import { fuelTypeOptions, transmissionOptions } from '@/lib/constants';
 import { useCreateVehicle } from '@/hooks/queries/use-vehicles';
+import { useVehicleClasses } from '@/hooks/queries/use-vehicle-classes';
 
 export default function NewVehiclePage() {
   const router = useRouter();
   const createVehicle = useCreateVehicle();
+  const { data: vehicleClasses } = useVehicleClasses();
 
   const form = useForm({
     resolver: zodResolver(CreateVehicleSchema),
@@ -38,6 +40,7 @@ export default function NewVehiclePage() {
       vin: '',
       make: '',
       model: '',
+      vehicleClassId: '',
       year: new Date().getFullYear(),
       color: '',
       fuelType: 'PETROL',
@@ -119,6 +122,31 @@ export default function NewVehiclePage() {
                       <FormControl>
                         <Input placeholder="np. Golf" {...field} />
                       </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="vehicleClassId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Klasa pojazdu</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Wybierz klase" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {vehicleClasses?.map((vc) => (
+                            <SelectItem key={vc.id} value={vc.id}>
+                              {vc.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}

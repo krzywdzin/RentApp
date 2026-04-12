@@ -87,6 +87,19 @@ export function getVehicleColumns({
       },
     },
     {
+      id: 'vehicleClass',
+      accessorFn: (row) => (row as unknown as { vehicleClass?: { name: string } }).vehicleClass?.name,
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Klasa" />,
+      cell: ({ row }) => {
+        const className = row.getValue('vehicleClass') as string | undefined;
+        return className ? (
+          <Badge variant="outline">{className}</Badge>
+        ) : (
+          <span className="text-muted-foreground text-xs">-</span>
+        );
+      },
+    },
+    {
       id: 'actions',
       cell: ({ row }) => {
         const vehicle = row.original;

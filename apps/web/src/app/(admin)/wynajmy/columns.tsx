@@ -118,6 +118,20 @@ export function getRentalColumns({
       enableSorting: false,
     },
     {
+      id: 'insurance',
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Ubezp." />,
+      cell: ({ row }) => {
+        const caseNumber = (row.original as unknown as { insuranceCaseNumber?: string })
+          .insuranceCaseNumber;
+        return caseNumber ? (
+          <Badge variant="outline" className="text-xs">
+            {caseNumber}
+          </Badge>
+        ) : null;
+      },
+      enableSorting: false,
+    },
+    {
       id: 'actions',
       cell: ({ row }) => {
         const rental = row.original;

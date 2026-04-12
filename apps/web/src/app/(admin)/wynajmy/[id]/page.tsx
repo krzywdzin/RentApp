@@ -279,6 +279,47 @@ export default function RentalDetailPage() {
                   <dt className="font-body text-sm text-warm-gray">VAT</dt>
                   <dd className="font-data text-sm">{rental.vatRate}%</dd>
                 </div>
+                {(rental as unknown as { vehicleClassName?: string }).vehicleClassName && (
+                  <div>
+                    <dt className="font-body text-sm text-warm-gray">Klasa pojazdu</dt>
+                    <dd className="font-body text-sm">
+                      {(rental as unknown as { vehicleClassName?: string }).vehicleClassName}
+                    </dd>
+                  </div>
+                )}
+                {(rental as unknown as { isCompanyRental?: boolean }).isCompanyRental && (
+                  <>
+                    <div className="col-span-full border-t pt-4 mt-2">
+                      <dt className="font-body text-sm font-medium text-charcoal">Dane firmy</dt>
+                    </div>
+                    <div>
+                      <dt className="font-body text-sm text-warm-gray">NIP</dt>
+                      <dd className="font-data text-sm">
+                        {(rental as unknown as { companyNip?: string }).companyNip ?? '-'}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="font-body text-sm text-warm-gray">Platnik VAT</dt>
+                      <dd className="font-body text-sm">
+                        {(() => {
+                          const vat = (rental as unknown as { vatPayerStatus?: string }).vatPayerStatus;
+                          if (vat === 'FULL_100') return '100%';
+                          if (vat === 'HALF_50') return '50%';
+                          if (vat === 'NONE') return 'Nie';
+                          return '-';
+                        })()}
+                      </dd>
+                    </div>
+                  </>
+                )}
+                {(rental as unknown as { insuranceCaseNumber?: string }).insuranceCaseNumber && (
+                  <div>
+                    <dt className="font-body text-sm text-warm-gray">Nr sprawy ubezpieczeniowej</dt>
+                    <dd className="font-data text-sm">
+                      {(rental as unknown as { insuranceCaseNumber?: string }).insuranceCaseNumber}
+                    </dd>
+                  </div>
+                )}
                 {rental.returnMileage != null && (
                   <div>
                     <dt className="font-body text-sm text-warm-gray">Przebieg przy zwrocie</dt>

@@ -28,12 +28,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import { fuelTypeOptions, transmissionOptions } from '@/lib/constants';
 import { useVehicle, useUpdateVehicle } from '@/hooks/queries/use-vehicles';
+import { useVehicleClasses } from '@/hooks/queries/use-vehicle-classes';
 
 export default function EditVehiclePage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const { data: vehicle, isLoading } = useVehicle(params.id);
   const updateVehicle = useUpdateVehicle(params.id);
+  const { data: vehicleClasses } = useVehicleClasses();
 
   const form = useForm({
     resolver: zodResolver(UpdateVehicleSchema),
@@ -46,6 +48,7 @@ export default function EditVehiclePage() {
         vin: vehicle.vin,
         make: vehicle.make,
         model: vehicle.model,
+        vehicleClassId: (vehicle as unknown as { vehicleClassId?: string }).vehicleClassId ?? '',
         year: vehicle.year,
         color: vehicle.color,
         fuelType: vehicle.fuelType,
@@ -144,6 +147,31 @@ export default function EditVehiclePage() {
                       <FormControl>
                         <Input {...field} value={field.value ?? ''} />
                       </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="vehicleClassId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Klasa pojazdu</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Wybierz klase" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {vehicleClasses?.map((vc) => (
+                            <SelectItem key={vc.id} value={vc.id}>
+                              {vc.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}

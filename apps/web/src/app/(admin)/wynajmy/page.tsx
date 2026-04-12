@@ -38,6 +38,8 @@ export default function RentalsPage() {
   const [statusFilter, setStatusFilter] = useState<RentalStatus | 'ALL'>('ALL');
   const [dateFrom, setDateFrom] = useState<Date | undefined>();
   const [dateTo, setDateTo] = useState<Date | undefined>();
+  const [insuranceFilter, setInsuranceFilter] = useState<'ALL' | 'YES' | 'NO'>('ALL');
+  const [insuranceSearch, setInsuranceSearch] = useState('');
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 25,
@@ -60,9 +62,13 @@ export default function RentalsPage() {
       if (statusFilter !== 'ALL' && r.status !== statusFilter) return false;
       if (dateFrom && new Date(r.startDate) < dateFrom) return false;
       if (dateTo && new Date(r.endDate) > dateTo) return false;
+      const caseNumber = (r as unknown as { insuranceCaseNumber?: string }).insuranceCaseNumber;
+      if (insuranceFilter === 'YES' && !caseNumber) return false;
+      if (insuranceFilter === 'NO' && caseNumber) return false;
+      if (insuranceSearch && (!caseNumber || !caseNumber.toLowerCase().includes(insuranceSearch.toLowerCase()))) return false;
       return true;
     });
-  }, [rentals, statusFilter, dateFrom, dateTo]);
+  }, [rentals, statusFilter, dateFrom, dateTo, insuranceFilter, insuranceSearch]);
 
   const pageData = useMemo(() => {
     const start = pagination.pageIndex * pagination.pageSize;
@@ -146,6 +152,16 @@ export default function RentalsPage() {
             }}
             onDateToChange={(v) => {
               setDateTo(v);
+              setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+            }}
+            insuranceFilter={insuranceFilter}
+            onInsuranceChange={(v) => {
+              setInsuranceFilter(v);
+              setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+            }}
+            insuranceSearch={insuranceSearch}
+            onInsuranceSearchChange={(v) => {
+              setInsuranceSearch(v);
               setPagination((prev) => ({ ...prev, pageIndex: 0 }));
             }}
           />
