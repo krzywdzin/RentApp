@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Client Features & Contract Enhancements
 status: in-progress
-stopped_at: Completed 34-01-PLAN.md
-last_updated: "2026-04-12T21:21:00Z"
-last_activity: 2026-04-12 -- Completed 34-01 (Data Foundation)
+stopped_at: Completed 34-03-PLAN.md
+last_updated: "2026-04-12T21:25:48.894Z"
+last_activity: 2026-04-12 -- Completed 34-04 (Admin Terms Editor)
 progress:
   total_phases: 7
   completed_phases: 1
   total_plans: 9
-  completed_plans: 5
+  completed_plans: 7
   percent: 55
 ---
 
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-04-12)
 ## Current Position
 
 Phase: 34 of 39 (ContractFrozenData v2, PDF Template Rewrite)
-Plan: 1 of 5 in current phase
+Plan: 4 of 5 in current phase
 Status: in-progress
-Last activity: 2026-04-12 -- Completed 34-01 (Data Foundation)
+Last activity: 2026-04-12 -- Completed 34-04 (Admin Terms Editor)
 
 Progress: [█████░░░░░] 55%
 
@@ -56,6 +56,8 @@ Progress: [█████░░░░░] 55%
 - [Phase 34]: Settings module uses simple key-value upsert for configurable rental terms
 - [Phase 34]: CepikVerificationDto.customerId made nullable for driver-only verifications
 - [Phase 34]: Migration SQL written manually (no shadow DB), following Phase 33 precedent
+- [Phase 34]: CepikService.verifyDriver() validates driver belongs to rental via findByRentalId + driverId match
+- [Phase 34]: Portal uses Prisma select (not include:true) for defense-in-depth privacy filtering
 
 ### Pending Todos
 
@@ -69,6 +71,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-12T21:21:00Z
-Stopped at: Completed 34-01-PLAN.md
-Resume file: .planning/phases/34-contractfrozendata-v2-pdf-template-rewrite/34-02-PLAN.md
+Last session: 2026-04-12T21:25:00Z
+Stopped at: Completed 34-04-PLAN.md
+Resume file: .planning/phases/34-contractfrozendata-v2-pdf-template-rewrite/34-05-PLAN.md
