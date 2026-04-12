@@ -1,3 +1,9 @@
+export enum VatPayerStatus {
+  FULL_100 = 'FULL_100',
+  HALF_50 = 'HALF_50',
+  NONE = 'NONE',
+}
+
 export enum RentalStatus {
   DRAFT = 'DRAFT',
   ACTIVE = 'ACTIVE',
@@ -43,6 +49,10 @@ export interface RentalDto {
   returnMileage: number | null;
   notes: string | null;
   overrodeConflict: boolean;
+  isCompanyRental: boolean;
+  companyNip: string | null;
+  vatPayerStatus: VatPayerStatus | null;
+  insuranceCaseNumber: string | null;
   createdAt: string;
   updatedAt: string;
 }

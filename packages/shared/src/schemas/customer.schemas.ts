@@ -5,7 +5,11 @@ export const CreateCustomerSchema = z.object({
   lastName: z.string().min(1).max(100),
   phone: z.string().min(5).max(20),
   email: z.string().email().nullable().optional(),
-  address: z.string().max(500).nullable().optional(),
+  street: z.string().max(200).nullable().optional(),
+  houseNumber: z.string().max(20).nullable().optional(),
+  apartmentNumber: z.string().max(20).nullable().optional(),
+  postalCode: z.string().regex(/^\d{2}-\d{3}$/, 'Format: XX-XXX').nullable().optional(),
+  city: z.string().max(100).nullable().optional(),
   pesel: z
     .string()
     .length(11)

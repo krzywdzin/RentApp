@@ -17,6 +17,7 @@ export const CreateVehicleSchema = z.object({
   seatCount: z.number().int().min(1).max(99).default(5),
   mileage: z.number().int().min(0).default(0),
   notes: z.string().max(1000).nullable().optional(),
+  vehicleClassId: z.string().uuid(),
 });
 
 export const UpdateVehicleSchema = CreateVehicleSchema.partial().extend({

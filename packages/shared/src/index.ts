@@ -18,3 +18,4 @@ export * from './types/cepik.types';
 export * from './schemas/cepik.schemas';
 export * from './types/portal.types';
 export * from './schemas/portal.schemas';
+export * from './lib/nip';

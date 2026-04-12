@@ -25,6 +25,13 @@ export enum InsuranceCoverageType {
   NNW = 'NNW',
 }
 
+export interface VehicleClassDto {
+  id: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface VehicleDto {
   id: string;
   registration: string;
@@ -41,6 +48,7 @@ export interface VehicleDto {
   status: VehicleStatus;
   photoUrl: string | null;
   isArchived: boolean;
+  vehicleClassName?: string;
   insurance: VehicleInsuranceDto | null;
   inspection: VehicleInspectionDto | null;
   createdAt: string;
