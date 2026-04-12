@@ -115,11 +115,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Worker can enter a full customer address (street, number, postal code, city) in the mobile rental wizard
   4. Admin can create, edit, and delete vehicle classes in the web panel, and assign a class to any vehicle
   5. Worker can enter an optional insurance case number when creating a rental
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 33-01: TBD
-- [ ] 33-02: TBD
+- [ ] 33-01-PLAN.md — Prisma schema, migration, shared Zod schemas, NIP validator
+- [ ] 33-02-PLAN.md — VehicleClasses API module, NIP decorator, update all DTOs/services
+- [ ] 33-03-PLAN.md — Mobile wizard: draft store, address fields, company/NIP/VAT toggle, insurance toggle
+- [ ] 33-04-PLAN.md — Web admin: /klasy CRUD page, vehicle class dropdown, rental detail/filters, customer address
 
 ### Phase 34: ContractFrozenData v2 & PDF Template Rewrite
 **Goal**: All contract-touching features are delivered in a single coordinated pass -- the PDF contract reflects company data, VAT status, editable terms, terms acceptance, custom notes, second driver, and hides VIN/year from client
@@ -223,7 +225,7 @@ v3.0: 33 -> 34 -> 35 & 36 (parallel, both depend on 33) -> 37 (after 34) -> 38 (
 | 20-26 | v2.1 | 26/26 | Complete | 2026-03-28 |
 | 27 | v2.2 | 2/2 | Complete | 2026-03-29 |
 | 28-32 | v2.3 | 9/9 | Complete | 2026-03-29 |
-| 33. Foundation | v3.0 | 0/? | Not started | - |
+| 33. Foundation | v3.0 | 0/4 | Not started | - |
 | 34. PDF Template | v3.0 | 0/? | Not started | - |
 | 35. Google Places | v3.0 | 0/? | Not started | - |
 | 36. OCR Scanning | v3.0 | 0/? | Not started | - |
