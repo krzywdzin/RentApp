@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Client Features & Contract Enhancements
-status: planning
-stopped_at: Phase 33 planned (4 plans, 3 waves)
-last_updated: "2026-04-12T17:35:31.646Z"
-last_activity: 2026-04-12 -- Roadmap created for v3.0 (7 phases, 34 requirements)
+status: executing
+stopped_at: Completed 33-01-PLAN.md
+last_updated: "2026-04-12T17:46:08.816Z"
+last_activity: 2026-04-12 -- Completed 33-01 (Foundation Schema & Simple Fields)
 progress:
   total_phases: 7
   completed_phases: 0
   total_plans: 4
-  completed_plans: 0
+  completed_plans: 1
   percent: 0
 ---
 
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-04-12)
 ## Current Position
 
 Phase: 33 of 39 (Foundation -- Schema & Simple Fields)
-Plan: 0 of ? in current phase
-Status: Ready to plan
-Last activity: 2026-04-12 -- Roadmap created for v3.0 (7 phases, 34 requirements)
+Plan: 1 of 4 in current phase
+Status: executing
+Last activity: 2026-04-12 -- Completed 33-01 (Foundation Schema & Simple Fields)
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -47,6 +47,8 @@ Progress: [░░░░░░░░░░] 0%
 - [v3.0 roadmap]: PDF encryption via pure-JS @pdfsmaller/pdf-encrypt-lite (RC4-128) -- no qpdf on Railway
 - [v3.0 roadmap]: Second driver uses dedicated RentalDriver model, NOT Customer model
 - [v3.0 roadmap]: Google Places proxied through backend API -- key security + billing control
+- [Phase 33]: Used migrate diff + manual SQL for migration due to shadow DB incompatibility with db-push history
+- [Phase 33]: Constructed backward-compatible address string from structured fields in contracts.service for PDF template
 
 ### Pending Todos
 
@@ -60,6 +62,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-12T17:35:31.644Z
-Stopped at: Phase 33 planned (4 plans, 3 waves)
-Resume file: .planning/phases/33-foundation-schema-simple-fields/33-01-PLAN.md
+Last session: 2026-04-12T17:46:08.814Z
+Stopped at: Completed 33-01-PLAN.md
+Resume file: None

@@ -18,16 +18,16 @@ Requirements for v3.0 Client Features & Contract Enhancements. Each maps to road
 
 ### Dane klienta (KLIENT)
 
-- [ ] **KLIENT-01**: Pracownik moze oznaczyc klienta jako firme (checkbox) i wpisac NIP
-- [ ] **KLIENT-02**: System waliduje format NIP (10 cyfr, suma kontrolna)
-- [ ] **KLIENT-03**: Pracownik moze ustawic status platnika VAT klienta: 100%, 50%, nie
-- [ ] **KLIENT-04**: Pracownik moze wpisac adres klienta w aplikacji mobilnej (ulica, nr, kod, miasto)
+- [x] **KLIENT-01**: Pracownik moze oznaczyc klienta jako firme (checkbox) i wpisac NIP
+- [x] **KLIENT-02**: System waliduje format NIP (10 cyfr, suma kontrolna)
+- [x] **KLIENT-03**: Pracownik moze ustawic status platnika VAT klienta: 100%, 50%, nie
+- [x] **KLIENT-04**: Pracownik moze wpisac adres klienta w aplikacji mobilnej (ulica, nr, kod, miasto)
 - [ ] **KLIENT-05**: Dane firmy (NIP, nazwa firmy) i status VAT pojawiaja sie w umowie PDF
 
 ### Flota (FLOTA)
 
-- [ ] **FLOTA-01**: Admin moze definiowac klasy samochodow w panelu webowym (np. Ekonomiczna, Komfort, SUV, Premium)
-- [ ] **FLOTA-02**: Admin moze przypisac klase do pojazdu przy dodawaniu/edycji
+- [x] **FLOTA-01**: Admin moze definiowac klasy samochodow w panelu webowym (np. Ekonomiczna, Komfort, SUV, Premium)
+- [x] **FLOTA-02**: Admin moze przypisac klase do pojazdu przy dodawaniu/edycji
 - [ ] **FLOTA-03**: Klasa pojazdu widoczna w liscie pojazdow i w szczegolach wynajmu
 - [ ] **FLOTA-04**: Klient nie widzi numeru VIN ani roku produkcji pojazdu w portalu klienta
 - [ ] **FLOTA-05**: Numer VIN i rok produkcji nie pojawiaja sie w PDF umowy wysylanej do klienta
@@ -44,7 +44,7 @@ Requirements for v3.0 Client Features & Contract Enhancements. Each maps to road
 
 ### Wynajem (NAJEM)
 
-- [ ] **NAJEM-01**: Pracownik moze wpisac nr sprawy ubezpieczeniowej przy tworzeniu wynajmu (opcjonalne pole)
+- [x] **NAJEM-01**: Pracownik moze wpisac nr sprawy ubezpieczeniowej przy tworzeniu wynajmu (opcjonalne pole)
 - [ ] **NAJEM-02**: Pracownik moze wybrac miejsce wydania pojazdu z autocomplete Google Places
 - [ ] **NAJEM-03**: Pracownik moze wybrac miejsce zdania pojazdu z autocomplete Google Places
 - [ ] **NAJEM-04**: Wybrana lokalizacja (adres) zapisywana jest w danych wynajmu
@@ -89,13 +89,13 @@ Requirements for v3.0 Client Features & Contract Enhancements. Each maps to road
 | DOC-04 | Phase 36 | Pending |
 | DOC-05 | Phase 36 | Pending |
 | DOC-06 | Phase 36 | Pending |
-| KLIENT-01 | Phase 33 | Pending |
-| KLIENT-02 | Phase 33 | Pending |
-| KLIENT-03 | Phase 33 | Pending |
-| KLIENT-04 | Phase 33 | Pending |
+| KLIENT-01 | Phase 33 | Complete |
+| KLIENT-02 | Phase 33 | Complete |
+| KLIENT-03 | Phase 33 | Complete |
+| KLIENT-04 | Phase 33 | Complete |
 | KLIENT-05 | Phase 34 | Pending |
-| FLOTA-01 | Phase 33 | Pending |
-| FLOTA-02 | Phase 33 | Pending |
+| FLOTA-01 | Phase 33 | Complete |
+| FLOTA-02 | Phase 33 | Complete |
 | FLOTA-03 | Phase 33 | Pending |
 | FLOTA-04 | Phase 34 | Pending |
 | FLOTA-05 | Phase 34 | Pending |
@@ -106,7 +106,7 @@ Requirements for v3.0 Client Features & Contract Enhancements. Each maps to road
 | UMOWA-05 | Phase 37 | Pending |
 | UMOWA-06 | Phase 37 | Pending |
 | UMOWA-07 | Phase 37 | Pending |
-| NAJEM-01 | Phase 33 | Pending |
+| NAJEM-01 | Phase 33 | Complete |
 | NAJEM-02 | Phase 35 | Pending |
 | NAJEM-03 | Phase 35 | Pending |
 | NAJEM-04 | Phase 35 | Pending |
