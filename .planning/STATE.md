@@ -1,60 +1,40 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.3
-milestone_name: User Management, Login Overhaul & Feature Additions
-status: executing
-stopped_at: Completed 32-02-PLAN.md (damage map wizard integration)
-last_updated: "2026-03-29T18:20:47.129Z"
-last_activity: 2026-03-29 -- Completed 30-01 (customer search verification)
+milestone: v3.0
+milestone_name: Client Features & Contract Enhancements
+status: defining_requirements
+stopped_at: null
+last_updated: "2026-04-12"
+last_activity: 2026-04-12 -- Milestone v3.0 started
 progress:
-  total_phases: 5
-  completed_phases: 5
-  total_plans: 9
-  completed_plans: 9
-  percent: 80
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-29)
+See: .planning/PROJECT.md (updated 2026-04-12)
 
 **Core value:** Pracownik w terenie moze w pelni obsluzyc wynajem -- od wypelnienia umowy, przez zweryfikowanie uprawnien kierowcy, zrobienie zdjec auta, po podpis klienta i wysylke PDF -- bez papieru i bez powrotu do biura.
-**Current focus:** Phase 30 - Customer Search Verification
+**Current focus:** Defining requirements for v3.0
 
 ## Current Position
 
-Phase: 30 of 32 (Customer Search Verification)
-Plan: 1 of 1 in current phase
-Status: Executing
-Last activity: 2026-03-29 -- Completed 30-01 (customer search verification)
-
-Progress: [████████░░] 80%
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-04-12 — Milestone v3.0 started
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 86 (37 v1.0 + 14 v1.1 + 7 v2.0 + 26 v2.1 + 2 v2.2)
-- Phases completed: 27 + 1 inserted (9.1)
-
-**By Phase (v2.3):**
-
-| Phase | Plans | Total | Avg/Plan |
-|-------|-------|-------|----------|
-| 28 | 1/2 | 1min | 1min |
-| 29 | 0/? | - | - |
-| 30 | 0/? | - | - |
-| 31 | 0/? | - | - |
-| 32 | 0/? | - | - |
-| Phase 28 P02 | 2min | 2 tasks | 8 files |
-| Phase 29 P01 | 4min | 2 tasks | 11 files |
-| Phase 29 P03 | 1min | 2 tasks | 3 files |
-| Phase 29 P02 | 2min | 2 tasks | 4 files |
-| Phase 30 P01 | 9min | 2 tasks | 5 files |
-| Phase 31 P01 | 2min | 2 tasks | 5 files |
-| Phase 32 P01 | 2min | 2 tasks | 4 files |
-| Phase 32 P02 | 2min | 2 tasks | 5 files |
+- Total plans completed: 95 (37 v1.0 + 14 v1.1 + 7 v2.0 + 26 v2.1 + 2 v2.2 + 9 v2.3)
+- Phases completed: 32 + 1 inserted (9.1)
 
 ## Accumulated Context
 
@@ -65,27 +45,14 @@ Progress: [████████░░] 80%
 - v2.0 completed 2026-03-27 with 28 requirements across 5 phases (15-19), 7 plans
 - v2.1 completed 2026-03-28 with 111 requirements across 7 phases (20-26), 26 plans
 - v2.2 completed 2026-03-29 with 8 requirements in 1 phase (27), 2 plans
+- v2.3 completed 2026-03-29 with 24 requirements across 5 phases (28-32), 9 plans
 
 ### Decisions
 
 - [v2.3]: Username-based login replaces email login for both web and mobile
 - [v2.3]: Admin and mobile auth contexts kept separate (different JWT secrets from v2.1)
 - [v2.3]: No email required for worker accounts -- admin sets temporary password directly
-- [v2.3]: Phases 30, 31, 32 are independent and can execute in parallel after Phase 28
-- [28-01]: Middleware checks refresh_token alongside access_token to prevent premature logout during client-side token refresh
-- [28-01]: Split signature useEffect into two: orientation lock (mount-only) and canvas clear (step-dependent)
-- [Phase 28]: Used findFirst with OR clause for dual email/username lookup instead of two sequential queries
-- [29-01]: Mobile tokens signed with JWT_MOBILE_SECRET, admin with JWT_ACCESS_SECRET -- separate secrets prevent cross-context reuse
-- [29-01]: Prisma schema User.email made nullable to support worker accounts without email
-- [29-01]: Worker fast-create: password provided = immediate hash, no email setup flow
-- [Phase 29-02]: UserDto.email made nullable to support worker accounts without email
-- [30-01]: Phone search uses Prisma 'contains' with normalization instead of exact match, enabling partial number lookup
-- [30-01]: detectSearchParam exported from customers.api.ts for testability
-- [Phase 31]: BFF proxy uses arrayBuffer for multipart body to avoid binary corruption from text encoding
-- [Phase 31]: apiClient omits Content-Type for FormData to let browser set boundary automatically
-- [Phase 32]: SVG viewBox 200x400 with 9 tappable zones, pin coords normalized to 0-100 range
-- [Phase 32]: Walkthrough created on damage-map mount with loading spinner guard
-- [Phase 32]: Pin deletion re-numbers remaining pins sequentially to avoid gaps
+- [v2.3]: SVG damage map (top view only) for vehicle inspection
 
 ### Pending Todos
 
@@ -93,10 +60,10 @@ None.
 
 ### Blockers/Concerns
 
-None.
+- Protokół zwrotu: wzór jeszcze nie przesłany przez klienta
 
 ## Session Continuity
 
-Last session: 2026-03-29T18:10:34.166Z
-Stopped at: Completed 32-02-PLAN.md (damage map wizard integration)
+Last session: 2026-04-12
+Stopped at: Milestone v3.0 initialization
 Resume file: None

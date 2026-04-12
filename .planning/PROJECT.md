@@ -48,7 +48,23 @@ Pracownik w terenie może w pełni obsłużyć wynajem — od wypełnienia umowy
 
 ### Active
 
-(No active requirements — planning next milestone)
+- [ ] Skan dokumentów klienta (OCR + zdjęcie dowodu i prawa jazdy)
+- [ ] Klasy samochodów (definiowane przez admina)
+- [ ] Edytowalne warunki najmu (per wynajem, w PDF)
+- [ ] Obsługa klienta-firmy (checkbox + NIP)
+- [ ] Akceptacja warunków najmu przez klienta (checkbox zgody)
+- [ ] Lokalizacja wydania/zdania (Google Places autocomplete)
+- [ ] Nr sprawy ubezpieczeniowej przy najmie
+- [ ] Adres klienta w aplikacji mobilnej
+- [ ] Tytuł maila = nr sprawy + nr rejestracyjny
+- [ ] Ukrycie VIN/roku produkcji od klienta
+- [ ] Status płatnika VAT (100%/50%/nie)
+- [ ] Powiadomienie o pobraniu VAT przy zwrocie
+- [ ] Drugi kierowca (dane + weryfikacja CEPiK)
+- [ ] Uwagi do warunków najmu (dodatkowe pole → PDF)
+- [ ] Protokół zwrotu (wg wzoru klienta)
+- [ ] Śledzenie rozliczenia najmu w web panelu
+- [ ] Szyfrowanie PDF umowy (hasło = nr rejestracyjny, info SMS-em)
 
 ### Out of Scope
 
@@ -93,9 +109,22 @@ Pracownik w terenie może w pełni obsłużyć wynajem — od wypełnienia umowy
 | SVG damage map (top view only) | Single view sufficient for v2.3 — multi-view deferred | — Pending (v2.3) |
 
 ---
-## Current State
+## Current Milestone: v3.0 Client Features & Contract Enhancements
 
-**Shipped:** v2.3 User Management, Login Overhaul & Feature Additions (2026-03-29)
-All milestones complete. System has username-based login, worker management, vehicle import, and interactive damage mapping.
+**Goal:** Duży zestaw nowych funkcji na życzenie klienta — skan dokumentów z OCR, klasy pojazdów, edytowalne warunki najmu, obsługa firm, Google Places, drugi kierowca, szyfrowanie PDF, protokół zwrotu.
 
-*Last updated: 2026-03-29 after v2.3 milestone completion*
+**Target features:**
+- Skan dokumentów (OCR + zdjęcie) dowodu i prawa jazdy
+- Klasy samochodów definiowane przez admina
+- Edytowalne warunki najmu per wynajem + uwagi dodatkowe
+- Obsługa firm (NIP) + status płatnika VAT
+- Akceptacja warunków najmu przez klienta
+- Lokalizacja wydania/zdania z Google Places
+- Nr sprawy ubezpieczeniowej + tytuł maila
+- Ukrycie VIN/roku od klienta
+- Drugi kierowca z CEPiK
+- Protokół zwrotu
+- Rozliczenie najmu w web panelu
+- Szyfrowanie PDF (hasło = rejestracja, info SMS)
+
+*Last updated: 2026-04-12 after v3.0 milestone start*
