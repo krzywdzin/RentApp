@@ -27,8 +27,11 @@ export default function VehicleStep() {
   const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState('');
   const [availableOnly, setAvailableOnly] = useState(true);
-  // Initialize selectedVehicle from draft when vehicles load
   const [selectedVehicle, setSelectedVehicle] = useState<VehicleDto | null>(null);
+  const [isInsurance, setIsInsurance] = useState(draft.isInsuranceRental ?? false);
+  const [insuranceCaseNumber, setInsuranceCaseNumber] = useState(draft.insuranceCaseNumber ?? '');
+
+  const { data: vehicles, isLoading } = useVehicles();
 
   // Restore selection from draft when vehicles arrive
   React.useEffect(() => {
@@ -37,10 +40,6 @@ export default function VehicleStep() {
       if (found) setSelectedVehicle(found);
     }
   }, [vehicles, draft.vehicleId]);
-  const [isInsurance, setIsInsurance] = useState(draft.isInsuranceRental ?? false);
-  const [insuranceCaseNumber, setInsuranceCaseNumber] = useState(draft.insuranceCaseNumber ?? '');
-
-  const { data: vehicles, isLoading } = useVehicles();
 
   const filteredVehicles = useMemo(() => {
     if (!vehicles) return [];

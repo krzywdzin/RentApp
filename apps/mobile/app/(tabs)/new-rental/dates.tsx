@@ -25,16 +25,16 @@ const DatesSchema = z.object({
   dailyRateNet: z.string()
     .min(1, 'Stawka dzienna jest wymagana')
     .regex(/^\d+([.,]\d{1,2})?$/, 'Nieprawidlowy format stawki (np. 150 lub 150.00)'),
-  isCompanyRental: z.boolean().default(false),
+  isCompanyRental: z.boolean(),
   companyNip: z.string().nullable().optional(),
   vatPayerStatus: z.enum(['FULL_100', 'HALF_50', 'NONE']).nullable().optional(),
-}).refine(
-  (data) => !data.isCompanyRental || (data.companyNip && /^\d{10}$/.test(data.companyNip)),
-  { message: 'NIP musi miec 10 cyfr', path: ['companyNip'] },
-).refine(
-  (data) => !data.companyNip || !data.isCompanyRental || isValidNip(data.companyNip),
-  { message: 'Nieprawidlowy NIP', path: ['companyNip'] },
-);
+}).superRefine((data, ctx) => {
+  if (data.isCompanyRental && (!data.companyNip || !/^\d{10}$/.test(data.companyNip))) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'NIP musi miec 10 cyfr', path: ['companyNip'] });
+  } else if (data.isCompanyRental && data.companyNip && !isValidNip(data.companyNip)) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Nieprawidlowy NIP', path: ['companyNip'] });
+  }
+});
 
 type DatesFormValues = z.infer<typeof DatesSchema>;
 

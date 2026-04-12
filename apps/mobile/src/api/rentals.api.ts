@@ -16,6 +16,7 @@ export interface RentalWithRelations extends RentalDto {
     year: number;
     mileage: number;
     status: string;
+    vehicleClass?: { id: string; name: string } | null;
   };
   customer: {
     id: string;

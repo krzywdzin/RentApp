@@ -90,6 +90,10 @@ export default function SignaturesStep() {
         vatRate: DEFAULT_VAT_RATE,
         overrideConflict: override,
         status: 'DRAFT',
+        isCompanyRental: draft.isCompanyRental ?? false,
+        companyNip: draft.companyNip ?? undefined,
+        vatPayerStatus: (draft.vatPayerStatus as 'FULL_100' | 'HALF_50' | 'NONE' | null) ?? undefined,
+        insuranceCaseNumber: draft.insuranceCaseNumber ?? undefined,
       });
       draft.updateDraft({ rentalId: rental.id });
 
