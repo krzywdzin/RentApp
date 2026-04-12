@@ -95,7 +95,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 **Milestone Goal:** Full suite of client-requested features -- document OCR, vehicle classes, editable terms, company support, Google Places, second driver, PDF encryption, return protocol, settlement tracking.
 
-- [ ] **Phase 33: Foundation -- Schema & Simple Fields** - New DB models, customer address/company/VAT fields, vehicle classes, insurance case number in mobile
+- [x] **Phase 33: Foundation -- Schema & Simple Fields** - New DB models, customer address/company/VAT fields, vehicle classes, insurance case number in mobile (completed 2026-04-12)
 - [ ] **Phase 34: ContractFrozenData v2 & PDF Template Rewrite** - Versioned frozen data schema, single coordinated PDF template rewrite for all contract-touching features
 - [ ] **Phase 35: Google Places Integration** - Pickup/return location autocomplete via backend-proxied Google Places API
 - [ ] **Phase 36: OCR Document Scanning** - On-device OCR for Polish ID card and driver license with worker review/correction
@@ -225,7 +225,7 @@ v3.0: 33 -> 34 -> 35 & 36 (parallel, both depend on 33) -> 37 (after 34) -> 38 (
 | 20-26 | v2.1 | 26/26 | Complete | 2026-03-28 |
 | 27 | v2.2 | 2/2 | Complete | 2026-03-29 |
 | 28-32 | v2.3 | 9/9 | Complete | 2026-03-29 |
-| 33. Foundation | 3/4 | In Progress|  | - |
+| 33. Foundation | 4/4 | Complete   | 2026-04-12 | - |
 | 34. PDF Template | v3.0 | 0/? | Not started | - |
 | 35. Google Places | v3.0 | 0/? | Not started | - |
 | 36. OCR Scanning | v3.0 | 0/? | Not started | - |
