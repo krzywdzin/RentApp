@@ -28,8 +28,9 @@ export interface CepikVerificationResult {
 
 export interface CepikVerificationDto {
   id: string;
-  customerId: string;
+  customerId: string | null;
   rentalId: string | null;
+  driverId: string | null;
   status: CepikVerificationStatus;
   result: CepikVerificationResult | null;
   checkedById: string;

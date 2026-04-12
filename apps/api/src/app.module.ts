@@ -25,6 +25,8 @@ import { CepikModule } from './cepik/cepik.module';
 import { PortalModule } from './portal/portal.module';
 import { HealthModule } from './health/health.module';
 import { VehicleClassesModule } from './vehicle-classes/vehicle-classes.module';
+import { SettingsModule } from './settings/settings.module';
+import { RentalDriversModule } from './rental-drivers/rental-drivers.module';
 
 @Module({
   imports: [
@@ -60,6 +62,8 @@ import { VehicleClassesModule } from './vehicle-classes/vehicle-classes.module';
     PortalModule,
     HealthModule,
     VehicleClassesModule,
+    SettingsModule,
+    RentalDriversModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

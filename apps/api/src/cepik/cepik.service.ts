@@ -158,6 +158,7 @@ export class CepikService {
       id: verification.id,
       customerId: verification.customerId,
       rentalId: verification.rentalId,
+      driverId: verification.driverId,
       status: verification.status as CepikVerificationStatus,
       result: verification.result as CepikVerificationResult | null,
       checkedById: verification.checkedById,

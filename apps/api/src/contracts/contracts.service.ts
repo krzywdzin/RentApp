@@ -695,6 +695,8 @@ export class ContractsService {
       employee_page1: 'employeePage1',
       customer_page2: 'customerPage2',
       employee_page2: 'employeePage2',
+      second_customer_page1: 'secondCustomerPage1',
+      second_customer_page2: 'secondCustomerPage2',
     };
     return map[sigType];
   }
