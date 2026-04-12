@@ -14,7 +14,9 @@ import Toast from 'react-native-toast-message';
 import { WizardStepper } from '@/components/WizardStepper';
 import { AppInput } from '@/components/AppInput';
 import { AppButton } from '@/components/AppButton';
+import { AppSwitch } from '@/components/AppSwitch';
 import { useRentalDraftStore } from '@/stores/rental-draft.store';
+import { isValidNip } from '@rentapp/shared';
 import { formatDate, formatDateTime, formatCurrency } from '@/lib/format';
 import { RENTAL_WIZARD_LABELS, VAT_MULTIPLIER, ONE_DAY_MS } from '@/lib/constants';
 import { colors, fonts, spacing } from '@/lib/theme';
@@ -23,7 +25,16 @@ const DatesSchema = z.object({
   dailyRateNet: z.string()
     .min(1, 'Stawka dzienna jest wymagana')
     .regex(/^\d+([.,]\d{1,2})?$/, 'Nieprawidlowy format stawki (np. 150 lub 150.00)'),
-});
+  isCompanyRental: z.boolean().default(false),
+  companyNip: z.string().nullable().optional(),
+  vatPayerStatus: z.enum(['FULL_100', 'HALF_50', 'NONE']).nullable().optional(),
+}).refine(
+  (data) => !data.isCompanyRental || (data.companyNip && /^\d{10}$/.test(data.companyNip)),
+  { message: 'NIP musi miec 10 cyfr', path: ['companyNip'] },
+).refine(
+  (data) => !data.companyNip || !data.isCompanyRental || isValidNip(data.companyNip),
+  { message: 'Nieprawidlowy NIP', path: ['companyNip'] },
+);
 
 type DatesFormValues = z.infer<typeof DatesSchema>;
 
@@ -46,6 +57,9 @@ export default function DatesStep() {
       dailyRateNet: draft.dailyRateNet
         ? String(draft.dailyRateNet / 100)
         : '',
+      isCompanyRental: draft.isCompanyRental ?? false,
+      companyNip: draft.companyNip ?? '',
+      vatPayerStatus: draft.vatPayerStatus as 'FULL_100' | 'HALF_50' | 'NONE' | null ?? null,
     },
   });
 
@@ -56,6 +70,14 @@ export default function DatesStep() {
   const [startDate, setStartDate] = useState(defaultStartDate);
   const [endDate, setEndDate] = useState(defaultEndDate);
   const dailyRateStr = watch('dailyRateNet');
+  const isCompanyRental = watch('isCompanyRental');
+
+  const VAT_OPTIONS = [
+    { label: '100%', value: 'FULL_100' as const },
+    { label: '50%', value: 'HALF_50' as const },
+    { label: 'Nie', value: 'NONE' as const },
+  ];
+  const selectedVat = watch('vatPayerStatus');
 
   const pricing = useMemo(() => {
     const rateZloty = parseFloat(dailyRateStr.replace(',', '.')) || 0;
@@ -134,6 +156,9 @@ export default function DatesStep() {
         startDate: startDate.toISOString(),
         endDate: endDate.toISOString(),
         dailyRateNet: rateGrosze,
+        isCompanyRental: data.isCompanyRental,
+        companyNip: data.isCompanyRental ? (data.companyNip || null) : null,
+        vatPayerStatus: data.isCompanyRental ? (data.vatPayerStatus || null) : null,
         step: 3,
       });
       router.push('/(tabs)/new-rental/contract');
@@ -225,6 +250,72 @@ export default function DatesStep() {
             <Text style={s.totalValue}>{formatCurrency(pricing.totalGrossGrosze)}</Text>
           </View>
         </View>
+
+        {/* Company rental toggle */}
+        <View style={s.companySection}>
+          <Controller
+            control={control}
+            name="isCompanyRental"
+            render={({ field: { onChange, value } }) => (
+              <AppSwitch
+                label="Wynajem na firme"
+                value={value}
+                onValueChange={(val) => {
+                  onChange(val);
+                  if (!val) {
+                    setValue('companyNip', null);
+                    setValue('vatPayerStatus', null);
+                  }
+                }}
+              />
+            )}
+          />
+
+          {isCompanyRental && (
+            <View style={s.companyFields}>
+              <Controller
+                control={control}
+                name="companyNip"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <AppInput
+                    label="NIP"
+                    value={value ?? ''}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    keyboardType="numeric"
+                    maxLength={10}
+                    placeholder="0000000000"
+                    error={errors.companyNip?.message}
+                    containerStyle={s.mb12}
+                  />
+                )}
+              />
+
+              <Text style={s.fieldLabel}>Platnik VAT</Text>
+              <View style={s.vatChipRow}>
+                {VAT_OPTIONS.map((opt) => (
+                  <Pressable
+                    key={opt.value}
+                    style={[
+                      s.vatChip,
+                      selectedVat === opt.value && s.vatChipActive,
+                    ]}
+                    onPress={() => setValue('vatPayerStatus', opt.value)}
+                  >
+                    <Text
+                      style={[
+                        s.vatChipText,
+                        selectedVat === opt.value && s.vatChipTextActive,
+                      ]}
+                    >
+                      {opt.label}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+            </View>
+          )}
+        </View>
       </ScrollView>
 
       {/* Date pickers rendered outside ScrollView to avoid iOS crash with inline spinner */}
@@ -292,6 +383,7 @@ const s = StyleSheet.create({
     flex: 1,
   },
   dateFieldText: { flex: 1, fontFamily: fonts.data, fontSize: 16, color: colors.charcoal },
+  mb12: { marginBottom: spacing.md },
   mb16: { marginBottom: spacing.base },
   summaryBox: {
     borderRadius: 8,
@@ -314,6 +406,24 @@ const s = StyleSheet.create({
   },
   totalLabel: { fontFamily: fonts.body, fontSize: 16, fontWeight: '500', color: colors.charcoal },
   totalValue: { fontFamily: fonts.display, fontWeight: '500', fontSize: 20, color: colors.forestGreen },
+  companySection: { marginTop: spacing.lg },
+  companyFields: { marginTop: spacing.md },
+  vatChipRow: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.xs },
+  vatChip: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.sand,
+    alignItems: 'center',
+    backgroundColor: colors.cream,
+  },
+  vatChipActive: {
+    borderColor: colors.forestGreen,
+    backgroundColor: colors.sageTint,
+  },
+  vatChipText: { fontFamily: fonts.body, fontSize: 14, color: colors.warmGray },
+  vatChipTextActive: { color: colors.forestGreen, fontWeight: '500' },
   bottomBar: {
     position: 'absolute',
     bottom: 0,

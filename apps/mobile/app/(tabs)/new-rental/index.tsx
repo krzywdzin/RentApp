@@ -53,6 +53,11 @@ export default function CustomerStep() {
       licenseCategory: '',
       licenseIssuedBy: '',
       licenseBookletNumber: '',
+      street: '',
+      houseNumber: '',
+      apartmentNumber: '',
+      postalCode: '',
+      city: '',
     },
   });
 
@@ -412,6 +417,97 @@ export default function CustomerStep() {
             )}
           />
 
+          {/* Address section */}
+          <Text style={s.sectionHeading}>Adres klienta</Text>
+
+          <Controller
+            control={control}
+            name="street"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <AppInput
+                label="Ulica"
+                value={value ?? ''}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                error={(errors as Record<string, {message?: string}>).street?.message}
+                containerStyle={s.mb12}
+              />
+            )}
+          />
+
+          <View style={s.fieldRow}>
+            <Controller
+              control={control}
+              name="houseNumber"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <AppInput
+                  label="Numer domu"
+                  value={value ?? ''}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  error={(errors as Record<string, {message?: string}>).houseNumber?.message}
+                  containerStyle={s.fieldHalf}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="apartmentNumber"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <AppInput
+                  label="Numer mieszkania"
+                  value={value ?? ''}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  error={(errors as Record<string, {message?: string}>).apartmentNumber?.message}
+                  containerStyle={s.fieldHalf}
+                />
+              )}
+            />
+          </View>
+
+          <View style={s.fieldRowPostal}>
+            <Controller
+              control={control}
+              name="postalCode"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <AppInput
+                  label="Kod pocztowy"
+                  value={value ?? ''}
+                  onChangeText={(text: string) => {
+                    // Auto-insert dash after 2 digits
+                    const digits = text.replace(/[^0-9]/g, '');
+                    if (digits.length <= 2) {
+                      onChange(digits);
+                    } else {
+                      onChange(`${digits.slice(0, 2)}-${digits.slice(2, 5)}`);
+                    }
+                  }}
+                  onBlur={onBlur}
+                  keyboardType="numeric"
+                  maxLength={6}
+                  placeholder="XX-XXX"
+                  error={(errors as Record<string, {message?: string}>).postalCode?.message}
+                  containerStyle={s.fieldPostal}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="city"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <AppInput
+                  label="Miasto"
+                  value={value ?? ''}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  error={(errors as Record<string, {message?: string}>).city?.message}
+                  containerStyle={s.fieldCity}
+                />
+              )}
+            />
+          </View>
+
           <AppButton
             title="🔍 Sprawdź uprawnienia kierowcy (gov.pl)"
             onPress={() => Linking.openURL('https://moj.gov.pl/uslugi/engine/ng/index?xFormsAppName=UprawnieniaKierowcow&xFormsOrigin=EXTERNAL')}
@@ -465,4 +561,10 @@ const s = StyleSheet.create({
   searchHint: { paddingHorizontal: spacing.base, marginTop: spacing.sm, fontFamily: fonts.body, fontSize: 13, color: colors.warmGray },
   spinnerRow: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.base, marginTop: spacing.sm, gap: 8 },
   spinnerText: { fontFamily: fonts.body, fontSize: 13, color: colors.warmGray },
+  sectionHeading: { marginTop: spacing.lg, marginBottom: spacing.base, fontFamily: fonts.display, fontSize: 20, fontWeight: '600', color: colors.charcoal },
+  fieldRow: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.md },
+  fieldHalf: { flex: 1 },
+  fieldRowPostal: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.md },
+  fieldPostal: { flex: 2 },
+  fieldCity: { flex: 3 },
 });

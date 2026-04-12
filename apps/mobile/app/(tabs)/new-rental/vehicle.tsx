@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { FlatList, StyleSheet, Switch, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import type { VehicleDto } from '@rentapp/shared';
@@ -9,6 +9,9 @@ import { VehicleStatus } from '@rentapp/shared';
 import { WizardStepper } from '@/components/WizardStepper';
 import { SearchBar } from '@/components/SearchBar';
 import { AppCard } from '@/components/AppCard';
+import { AppButton } from '@/components/AppButton';
+import { AppInput } from '@/components/AppInput';
+import { AppSwitch } from '@/components/AppSwitch';
 import { StatusBadge } from '@/components/StatusBadge';
 import { EmptyState } from '@/components/EmptyState';
 import { LoadingSkeleton } from '@/components/LoadingSkeleton';
@@ -21,8 +24,21 @@ export default function VehicleStep() {
   const { t } = useTranslation();
   const router = useRouter();
   const draft = useRentalDraftStore();
+  const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState('');
   const [availableOnly, setAvailableOnly] = useState(true);
+  // Initialize selectedVehicle from draft when vehicles load
+  const [selectedVehicle, setSelectedVehicle] = useState<VehicleDto | null>(null);
+
+  // Restore selection from draft when vehicles arrive
+  React.useEffect(() => {
+    if (vehicles && draft.vehicleId && !selectedVehicle) {
+      const found = vehicles.find((v) => v.id === draft.vehicleId);
+      if (found) setSelectedVehicle(found);
+    }
+  }, [vehicles, draft.vehicleId]);
+  const [isInsurance, setIsInsurance] = useState(draft.isInsuranceRental ?? false);
+  const [insuranceCaseNumber, setInsuranceCaseNumber] = useState(draft.insuranceCaseNumber ?? '');
 
   const { data: vehicles, isLoading } = useVehicles();
 
@@ -50,13 +66,23 @@ export default function VehicleStep() {
   const handleSelectVehicle = useCallback(
     (vehicle: VehicleDto) => {
       if (availableOnly && vehicle.status !== VehicleStatus.AVAILABLE) return;
-
-      const label = `${vehicle.registration} ${vehicle.make} ${vehicle.model}`;
-      draft.updateDraft({ vehicleId: vehicle.id, vehicleLabel: label, step: 2 });
-      router.push('/(tabs)/new-rental/dates');
+      setSelectedVehicle(vehicle);
     },
-    [availableOnly, draft, router],
+    [availableOnly],
   );
+
+  const handleContinue = useCallback(() => {
+    if (!selectedVehicle) return;
+    const label = `${selectedVehicle.registration} ${selectedVehicle.make} ${selectedVehicle.model}`;
+    draft.updateDraft({
+      vehicleId: selectedVehicle.id,
+      vehicleLabel: label,
+      isInsuranceRental: isInsurance,
+      insuranceCaseNumber: isInsurance ? (insuranceCaseNumber || null) : null,
+      step: 2,
+    });
+    router.push('/(tabs)/new-rental/dates');
+  }, [selectedVehicle, draft, router, isInsurance, insuranceCaseNumber]);
 
   if (isLoading) {
     return (
@@ -111,9 +137,11 @@ export default function VehicleStep() {
           const isSelectable =
             !availableOnly || item.status === VehicleStatus.AVAILABLE;
 
+          const isSelected = selectedVehicle?.id === item.id;
+
           return (
             <AppCard
-              cardStyle={[s.mb12, !isSelectable ? s.dimmed : undefined]}
+              cardStyle={[s.mb12, !isSelectable ? s.dimmed : undefined, isSelected ? s.selectedCard : undefined]}
               onPress={isSelectable ? () => handleSelectVehicle(item) : undefined}
             >
               <View style={s.itemRow}>
@@ -136,7 +164,38 @@ export default function VehicleStep() {
             />
           ) : null
         }
+        ListFooterComponent={
+          <View style={s.insuranceSection}>
+            <AppSwitch
+              label="Najem ubezpieczeniowy?"
+              value={isInsurance}
+              onValueChange={(val) => {
+                setIsInsurance(val);
+                if (!val) setInsuranceCaseNumber('');
+              }}
+            />
+            {isInsurance && (
+              <AppInput
+                label="Nr sprawy ubezpieczeniowej"
+                value={insuranceCaseNumber}
+                onChangeText={setInsuranceCaseNumber}
+                placeholder="np. ABC/123/2026"
+                containerStyle={s.mt12}
+              />
+            )}
+          </View>
+        }
       />
+
+      {/* Bottom CTA */}
+      <View style={[s.bottomBar, { paddingBottom: Math.max(insets.bottom, 16) }]}>
+        <AppButton
+          title="Dalej"
+          onPress={handleContinue}
+          disabled={!selectedVehicle}
+          fullWidth
+        />
+      </View>
     </SafeAreaView>
   );
 }
@@ -155,5 +214,19 @@ const s = StyleSheet.create({
   vehReg: { fontFamily: fonts.data, fontSize: 16, color: colors.charcoal },
   vehSub: { marginTop: 4, fontFamily: fonts.body, fontSize: 13, color: colors.warmGray },
   dimmed: { opacity: 0.5 },
+  selectedCard: { borderWidth: 2, borderColor: colors.forestGreen },
   loadingWrap: { paddingHorizontal: spacing.base, paddingTop: 24 },
+  insuranceSection: { marginTop: spacing.lg, paddingBottom: 80 },
+  mt12: { marginTop: spacing.md },
+  bottomBar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    borderTopWidth: 1,
+    borderTopColor: colors.sand,
+    backgroundColor: colors.cream,
+    paddingHorizontal: spacing.base,
+    paddingTop: 12,
+  },
 });
