@@ -34,7 +34,7 @@ Requirements for v3.0 Client Features & Contract Enhancements. Each maps to road
 
 ### Umowa i warunki (UMOWA)
 
-- [ ] **UMOWA-01**: Admin moze edytowac warunki najmu (druga strona umowy) w panelu webowym za pomoca edytora tekstu
+- [x] **UMOWA-01**: Admin moze edytowac warunki najmu (druga strona umowy) w panelu webowym za pomoca edytora tekstu
 - [ ] **UMOWA-02**: Pracownik moze dostosowac warunki najmu indywidualnie dla kazdego wynajmu
 - [ ] **UMOWA-03**: Klient widzi warunki najmu i musi potwierdzic zapoznanie sie checkbox-em przed podpisem
 - [x] **UMOWA-04**: Pracownik moze dodac uwagi do warunkow najmu (pole tekstowe) -- uwagi pojawiaja sie w PDF
@@ -99,7 +99,7 @@ Requirements for v3.0 Client Features & Contract Enhancements. Each maps to road
 | FLOTA-03 | Phase 33 | Complete |
 | FLOTA-04 | Phase 34 | Complete |
 | FLOTA-05 | Phase 34 | Pending |
-| UMOWA-01 | Phase 34 | Pending |
+| UMOWA-01 | Phase 34 | Complete |
 | UMOWA-02 | Phase 34 | Pending |
 | UMOWA-03 | Phase 34 | Pending |
 | UMOWA-04 | Phase 34 | Complete |

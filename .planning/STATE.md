@@ -58,6 +58,7 @@ Progress: [█████░░░░░] 55%
 - [Phase 34]: Migration SQL written manually (no shadow DB), following Phase 33 precedent
 - [Phase 34]: CepikService.verifyDriver() validates driver belongs to rental via findByRentalId + driverId match
 - [Phase 34]: Portal uses Prisma select (not include:true) for defense-in-depth privacy filtering
+- [Phase 34]: TipTap v3 (3.22.3) for rich text editing -- headings limited to H2/H3 for contract terms
 
 ### Pending Todos
 
