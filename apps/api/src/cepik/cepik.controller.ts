@@ -11,6 +11,7 @@ import { Roles } from '../common/decorators/roles.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { CepikService } from './cepik.service';
 import { VerifyLicenseDto } from './dto/verify-license.dto';
+import { VerifyDriverDto } from './dto/verify-driver.dto';
 import { OverrideCepikDto } from './dto/override-cepik.dto';
 
 @Controller('cepik')
@@ -30,6 +31,29 @@ export class CepikController {
       dto.firstName,
       dto.lastName,
       dto.licenseNumber,
+      dto.requiredCategory,
+    );
+
+    return {
+      ...verification,
+      __audit: {
+        entityType: 'CepikVerification',
+        entityId: verification.id,
+        action: 'CREATE',
+      },
+    };
+  }
+
+  @Post('verify-driver')
+  @Roles(UserRole.EMPLOYEE, UserRole.ADMIN)
+  async verifyDriver(
+    @Body() dto: VerifyDriverDto,
+    @CurrentUser('id') userId: string,
+  ) {
+    const verification = await this.cepikService.verifyDriver(
+      dto.driverId,
+      dto.rentalId,
+      userId,
       dto.requiredCategory,
     );
 

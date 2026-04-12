@@ -14,6 +14,7 @@ import {
   CalendarRentalEntry,
 } from '@rentapp/shared';
 import { CreateRentalDto } from './dto/create-rental.dto';
+import { UpdateRentalTermsDto } from './dto/update-rental-terms.dto';
 import { ActivateRentalDto } from './dto/activate-rental.dto';
 import { ExtendRentalDto } from './dto/extend-rental.dto';
 import { ReturnRentalDto } from './dto/return-rental.dto';
@@ -191,6 +192,25 @@ export class RentalsService {
     ]);
 
     return { data, total, page, limit };
+  }
+
+  async updateTerms(
+    id: string,
+    dto: UpdateRentalTermsDto,
+  ): Promise<RentalWithRelations> {
+    const rental = await this.prisma.rental.findUnique({ where: { id } });
+    if (!rental) {
+      throw new NotFoundException(`Rental with ID "${id}" not found`);
+    }
+
+    return this.prisma.rental.update({
+      where: { id },
+      data: {
+        ...(dto.rentalTerms !== undefined && { rentalTerms: dto.rentalTerms }),
+        ...(dto.termsNotes !== undefined && { termsNotes: dto.termsNotes }),
+      },
+      include: RENTAL_INCLUDE,
+    });
   }
 
   async findOne(id: string): Promise<RentalWithRelations> {

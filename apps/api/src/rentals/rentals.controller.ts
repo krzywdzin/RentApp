@@ -23,6 +23,7 @@ import { ReturnRentalDto } from './dto/return-rental.dto';
 import { CalendarQueryDto } from './dto/calendar-query.dto';
 import { RollbackRentalDto } from './dto/rollback-rental.dto';
 import { RentalsQueryDto } from './dto/rentals-query.dto';
+import { UpdateRentalTermsDto } from './dto/update-rental-terms.dto';
 
 @Controller('rentals')
 export class RentalsController {
@@ -71,6 +72,15 @@ export class RentalsController {
   @Roles(UserRole.ADMIN, UserRole.EMPLOYEE)
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.rentalsService.findOne(id);
+  }
+
+  @Patch(':id/terms')
+  @Roles(UserRole.ADMIN, UserRole.EMPLOYEE)
+  async updateTerms(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateRentalTermsDto,
+  ) {
+    return this.rentalsService.updateTerms(id, dto);
   }
 
   @Patch(':id/activate')

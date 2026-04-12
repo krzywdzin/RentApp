@@ -1,6 +1,9 @@
 import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { CepikVerification, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import {
+  RentalDriversService,
+} from '../rental-drivers/rental-drivers.service';
 import type {
   CepikVerificationResult,
   CepikVerificationDto,
@@ -14,7 +17,10 @@ import { CepikVerificationStatus, CepikVerificationSource } from '@rentapp/share
 export class CepikService {
   private readonly logger = new Logger(CepikService.name);
 
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private rentalDriversService: RentalDriversService,
+  ) {}
 
   /**
    * Stub implementation of driver license verification.
@@ -72,6 +78,48 @@ export class CepikService {
       status,
       result,
     );
+
+    return this.toDto(verification);
+  }
+
+  /**
+   * Verify a second driver's license and persist the result.
+   * Fetches the driver's decrypted license number from RentalDriver record.
+   */
+  async verifyDriver(
+    driverId: string,
+    rentalId: string,
+    checkedById: string,
+    requiredCategory: string = 'B',
+  ): Promise<CepikVerificationDto> {
+    // Fetch driver to get decrypted data
+    const driver = await this.rentalDriversService.findByRentalId(rentalId);
+    if (!driver || driver.id !== driverId) {
+      throw new NotFoundException(
+        `Driver ${driverId} not found for rental ${rentalId}`,
+      );
+    }
+
+    const result = this.verifyDriverLicense(
+      driver.firstName,
+      driver.lastName,
+      driver.licenseNumber,
+      requiredCategory,
+    );
+
+    const status = result.verified
+      ? CepikVerificationStatus.PASSED
+      : CepikVerificationStatus.FAILED;
+
+    const verification = await this.prisma.cepikVerification.create({
+      data: {
+        driverId,
+        rentalId,
+        status,
+        result: result as unknown as Prisma.InputJsonValue,
+        checkedById,
+      },
+    });
 
     return this.toDto(verification);
   }

@@ -12,6 +12,7 @@ import {
   FileText,
   Shield,
   UserCog,
+  Settings,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
@@ -28,6 +29,7 @@ const navItems = [
   { href: '/umowy', label: 'Umowy', icon: FileText },
   { href: '/audyt', label: 'Audyt', icon: Shield },
   { href: '/uzytkownicy', label: 'Uzytkownicy', icon: UserCog },
+  { href: '/ustawienia', label: 'Ustawienia', icon: Settings },
 ];
 
 const STORAGE_KEY = 'sidebar-collapsed';
