@@ -3,6 +3,20 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+export interface SecondDriverData {
+  firstName: string;
+  lastName: string;
+  pesel: string;
+  idNumber: string;
+  licenseNumber: string;
+  licenseCategory: string;
+  street: string;
+  houseNumber: string;
+  postalCode: string;
+  city: string;
+  phone: string;
+}
+
 interface RentalDraft {
   step: number;
   customerId: string | null;
@@ -24,6 +38,12 @@ interface RentalDraft {
   vatPayerStatus: string | null; // 'FULL_100' | 'HALF_50' | 'NONE'
   isInsuranceRental: boolean;
   insuranceCaseNumber: string | null;
+  rentalTerms: string | null;
+  termsNotes: string | null;
+  termsAcceptedAt: string | null;
+  secondDriver: SecondDriverData | null;
+  secondDriverId: string | null;
+  secondDriverCepikStatus: string | null;
 }
 
 interface RentalDraftState extends RentalDraft {
@@ -53,6 +73,12 @@ const initialDraft: RentalDraft = {
   vatPayerStatus: null,
   isInsuranceRental: false,
   insuranceCaseNumber: null,
+  rentalTerms: null,
+  termsNotes: null,
+  termsAcceptedAt: null,
+  secondDriver: null,
+  secondDriverId: null,
+  secondDriverCepikStatus: null,
 };
 
 /**
