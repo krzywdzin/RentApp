@@ -30,18 +30,25 @@ Source: `apps/web/components.json`, `apps/mobile/src/lib/theme.ts`
 
 ## Spacing Scale
 
-Declared values from existing `apps/mobile/src/lib/theme.ts` spacing tokens. Web uses Tailwind defaults (multiples of 4).
+Standard scale (multiples of 4) used across both web and mobile:
 
 | Token | Value | Usage |
 |-------|-------|-------|
 | xs | 4px | Icon gaps, label-to-input margin, error text margin-top |
 | sm | 8px | Inline icon padding (iconWrap marginRight), compact element spacing |
-| md | 12px | Inner form group gaps (between label groups in a section) |
 | base | 16px | Default element spacing, input horizontal padding, section icon margin |
-| lg | 20px | Between form sections |
 | xl | 24px | Button horizontal padding, action wrap margin-top, major section gaps |
 | xxl | 32px | Empty state horizontal padding, page-level horizontal padding |
-| section | 40px | Top/bottom page section breaks |
+
+### Legacy tokens (locked — inherited from `apps/mobile/src/lib/theme.ts`)
+
+These values exist in the shipped mobile theme and are used across existing screens. Changing them would require a full mobile UI regression pass, which is out of scope for Phase 33.
+
+| Token | Value | Justification |
+|-------|-------|---------------|
+| md | 12px | Inner form group gaps (between label groups in a section). Used in AppInput, AppCard, and all wizard steps. Changing to 8px or 16px would alter every existing form. Locked legacy token. |
+| lg | 20px | Between form sections. Provides visual separation between toggle groups and field clusters. Changing to 16px or 24px would require re-testing all wizard step layouts. Locked legacy token. |
+| section | 40px | Top/bottom page section breaks. Used in scroll containers for breathing room between major sections. Nearest standard values (32px, 48px) would alter page rhythm across all existing screens. Locked legacy token. |
 
 Exceptions: Mobile input height is 48px (touch target). This is not a spacing token but a fixed component dimension. Web inputs follow shadcn default height (40px).
 
@@ -53,24 +60,28 @@ Source: `apps/mobile/src/lib/theme.ts` (spacing object), `AppInput.tsx` (48px he
 
 ### Web (Tailwind + shadcn tokens)
 
+2 weights: 400 (body) and 600 (heading/button).
+
 | Role | Size | Weight | Line Height | Font Family |
 |------|------|--------|-------------|-------------|
 | Body | 14px (text-sm) | 400 | 1.43 (20px) | Satoshi (--font-body) |
-| Label | 14px (text-sm) | 500 | 1.43 (20px) | Satoshi (--font-body) |
-| Heading (page) | 20px (text-xl) | 500 | 1.2 | Fraunces (--font-display) |
-| Table header | 14px (text-sm) | 500 | 1.43 | Satoshi (--font-body) |
+| Label | 14px (text-sm) | 600 | 1.43 (20px) | Satoshi (--font-body) |
+| Heading (page) | 20px (text-xl) | 600 | 1.2 | Fraunces (--font-display) |
+| Table header | 14px (text-sm) | 600 | 1.43 | Satoshi (--font-body) |
 
 ### Mobile (StyleSheet)
+
+2 weights: 400 (body/label/error) and 600 (heading/button).
 
 | Role | Size | Weight | Line Height | Font Family |
 |------|------|--------|-------------|-------------|
 | Body / Input | 16px | 400 | 1.5 (24px) | Satoshi-Variable |
 | Label | 13px | 400 | 1.38 (18px) | system default (matches AppInput) |
 | Error | 13px | 400 | 1.38 (18px) | system default |
-| Section heading | 18px | 500 | 1.33 (24px) | Fraunces-Variable |
+| Section heading | 20px | 600 | 1.2 (24px) | Fraunces-Variable |
 | Button | 16px | 600 | 1.5 | Satoshi-Variable |
 
-Source: `AppInput.tsx` (13px label, 16px input), `AppButton.tsx` (16px/600), `EmptyState.tsx` (18px heading), `globals.css`
+Source: `AppInput.tsx` (13px label, 16px input), `AppButton.tsx` (16px/600), `EmptyState.tsx` (heading), `globals.css`
 
 ---
 
@@ -86,7 +97,7 @@ All colors are established in the project. No new colors introduced in Phase 33.
 | Destructive | #C75D3A | oklch(0.56 0.15 40) | Delete vehicle class confirmation, error states (terracotta) |
 
 **Accent (forest-green) reserved for:**
-- Primary CTA buttons ("Dodaj klase", "Zapisz" in dialogs)
+- Primary CTA buttons ("Dodaj klase" on /klasy page, "Zapisz nazwe" in edit dialog)
 - Switch/toggle active state (isCompanyRental, isInsuranceRental)
 - Focus ring on inputs (border: #3B82F6 on mobile -- existing blue kept for mobile focus; forest-green on web)
 - Sidebar active link indicator
@@ -190,15 +201,16 @@ All copy in Polish (project language -- see REQUIREMENTS.md "Wielojezycznosc" ou
 | Dialog heading (edit) | Edytuj klase |
 | Field: name | Nazwa klasy |
 | Field: name placeholder | np. Ekonomiczna |
-| Confirm button (create) | Dodaj |
-| Confirm button (edit) | Zapisz |
-| Cancel button | Anuluj |
+| Confirm button (create) | Dodaj klase |
+| Confirm button (edit) | Zapisz nazwe |
+| Cancel button (create) | Nie, wroc |
+| Cancel button (edit) | Nie, wroc |
 | Empty state heading | Brak klas pojazdow |
 | Empty state body | Dodaj pierwsza klase, aby organizowac flote. |
 | Error state | Nie udalo sie zaladowac klas. Sprobuj ponownie. |
 | Delete confirmation | Usun klase "{name}"? Tej operacji nie mozna cofnac. |
 | Delete blocked (vehicles assigned) | Nie mozna usunac klasy przypisanej do pojazdow. Najpierw zmien klase tych pojazdow. |
-| Delete button | Usun |
+| Delete button | Usun klase |
 
 ### Web — Vehicle Form (class dropdown)
 
@@ -237,6 +249,40 @@ All copy in Polish (project language -- see REQUIREMENTS.md "Wielojezycznosc" ou
 
 ---
 
+## Visual Hierarchy
+
+### `/klasy` page (web)
+
+1. **Page heading** "Klasy pojazdow" — 20px/600 Fraunces, top-left
+2. **Primary CTA** "Dodaj klase" — accent button, top-right, aligned with heading
+3. **Table** — secondary background rows, 14px/400 Satoshi body cells, 14px/600 Satoshi header cells
+4. **Empty state** — centered in table area, 20px/600 heading + 14px/400 body below
+
+### Vehicle class dialog (web)
+
+1. **Dialog heading** "Nowa klasa pojazdu" / "Edytuj klase" — 20px/600 Fraunces
+2. **Input field** — single `Nazwa klasy` input, auto-focused, 14px/400 value text
+3. **Button row** — right-aligned: "Nie, wroc" (ghost/outline) + "Dodaj klase" or "Zapisz nazwe" (accent filled)
+
+### Customer address section (mobile)
+
+1. **Section heading** "Adres klienta" — 20px/600 Fraunces-Variable, left-aligned, 20px margin-top from previous section
+2. **Field stack** — AppInput fields at 12px vertical gaps between label groups
+3. **Side-by-side rows** — houseNumber+apartmentNumber (50/50), postalCode+city (40/60), 8px horizontal gap
+
+### Company/NIP toggle section (mobile, dates step)
+
+1. **Toggle row** "Wynajem na firme" — 16px/400 label, AppSwitch right-aligned, 48px row height
+2. **Revealed fields** (when ON) — NIP input + VAT picker animate in below toggle, 12px gap between fields
+3. **Section boundary** — 20px gap before next section
+
+### Insurance toggle section (mobile, vehicle step)
+
+1. **Toggle row** "Najem ubezpieczeniowy?" — 16px/400 label, AppSwitch right-aligned, 48px row height
+2. **Revealed field** (when ON) — case number input animates in below toggle, 12px gap
+
+---
+
 ## Interaction Contracts
 
 ### Toggle Progressive Disclosure (Mobile)
@@ -267,7 +313,7 @@ Postal code input: `keyboardType="numeric"`, `maxLength={6}` (including dash). A
 1. `/klasy` page loads with table of existing classes
 2. "Dodaj klase" button top-right opens Dialog with single `Nazwa klasy` input
 3. Input auto-focuses on dialog open
-4. Submit on Enter key or "Dodaj" button click
+4. Submit on Enter key or "Dodaj klase" button click
 5. Inline edit: click row edit icon opens same Dialog pre-filled
 6. Delete: click row delete icon shows confirmation dialog
 7. If class has assigned vehicles, delete returns 409 and shows "Nie mozna usunac..." toast/inline message
