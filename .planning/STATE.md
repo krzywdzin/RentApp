@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Client Features & Contract Enhancements
 status: executing
-stopped_at: Completed 33-01-PLAN.md
-last_updated: "2026-04-12T17:46:08.816Z"
-last_activity: 2026-04-12 -- Completed 33-01 (Foundation Schema & Simple Fields)
+stopped_at: Completed 33-02-PLAN.md
+last_updated: "2026-04-12T17:52:25.144Z"
+last_activity: 2026-04-12 -- Completed 33-02 (API DTOs & Services)
 progress:
   total_phases: 7
   completed_phases: 0
   total_plans: 4
-  completed_plans: 1
-  percent: 0
+  completed_plans: 2
+  percent: 50
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-04-12)
 ## Current Position
 
 Phase: 33 of 39 (Foundation -- Schema & Simple Fields)
-Plan: 1 of 4 in current phase
+Plan: 2 of 4 in current phase
 Status: executing
-Last activity: 2026-04-12 -- Completed 33-01 (Foundation Schema & Simple Fields)
+Last activity: 2026-04-12 -- Completed 33-02 (API DTOs & Services)
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█████░░░░░] 50%
 
 ## Performance Metrics
 
@@ -49,6 +49,7 @@ Progress: [░░░░░░░░░░] 0%
 - [v3.0 roadmap]: Google Places proxied through backend API -- key security + billing control
 - [Phase 33]: Used migrate diff + manual SQL for migration due to shadow DB incompatibility with db-push history
 - [Phase 33]: Constructed backward-compatible address string from structured fields in contracts.service for PDF template
+- [Phase 33]: NIP validator wraps shared isValidNip via class-validator decorator pattern (same as PESEL)
 
 ### Pending Todos
 
@@ -62,6 +63,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-12T17:46:08.814Z
-Stopped at: Completed 33-01-PLAN.md
+Last session: 2026-04-12T17:52:25.142Z
+Stopped at: Completed 33-02-PLAN.md
 Resume file: None

@@ -28,7 +28,7 @@ Requirements for v3.0 Client Features & Contract Enhancements. Each maps to road
 
 - [x] **FLOTA-01**: Admin moze definiowac klasy samochodow w panelu webowym (np. Ekonomiczna, Komfort, SUV, Premium)
 - [x] **FLOTA-02**: Admin moze przypisac klase do pojazdu przy dodawaniu/edycji
-- [ ] **FLOTA-03**: Klasa pojazdu widoczna w liscie pojazdow i w szczegolach wynajmu
+- [x] **FLOTA-03**: Klasa pojazdu widoczna w liscie pojazdow i w szczegolach wynajmu
 - [ ] **FLOTA-04**: Klient nie widzi numeru VIN ani roku produkcji pojazdu w portalu klienta
 - [ ] **FLOTA-05**: Numer VIN i rok produkcji nie pojawiaja sie w PDF umowy wysylanej do klienta
 
@@ -96,7 +96,7 @@ Requirements for v3.0 Client Features & Contract Enhancements. Each maps to road
 | KLIENT-05 | Phase 34 | Pending |
 | FLOTA-01 | Phase 33 | Complete |
 | FLOTA-02 | Phase 33 | Complete |
-| FLOTA-03 | Phase 33 | Pending |
+| FLOTA-03 | Phase 33 | Complete |
 | FLOTA-04 | Phase 34 | Pending |
 | FLOTA-05 | Phase 34 | Pending |
 | UMOWA-01 | Phase 34 | Pending |
