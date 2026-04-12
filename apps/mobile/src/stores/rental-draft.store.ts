@@ -19,6 +19,11 @@ interface RentalDraft {
   rentalId: string | null;
   contractId: string | null;
   currentSignatureIndex: number;
+  isCompanyRental: boolean;
+  companyNip: string | null;
+  vatPayerStatus: string | null; // 'FULL_100' | 'HALF_50' | 'NONE'
+  isInsuranceRental: boolean;
+  insuranceCaseNumber: string | null;
 }
 
 interface RentalDraftState extends RentalDraft {
@@ -43,6 +48,11 @@ const initialDraft: RentalDraft = {
   rentalId: null,
   contractId: null,
   currentSignatureIndex: 0,
+  isCompanyRental: false,
+  companyNip: null,
+  vatPayerStatus: null,
+  isInsuranceRental: false,
+  insuranceCaseNumber: null,
 };
 
 /**
