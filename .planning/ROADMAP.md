@@ -137,10 +137,10 @@ Plans:
 
 Plans:
 - [x] 34-01-PLAN.md — Schema + shared types v2 + Settings API + RentalDrivers service
-- [ ] 34-02-PLAN.md — ContractFrozenData v2 buildFrozenData + PDF template rewrite + dynamic signatures
-- [ ] 34-03-PLAN.md — Second driver REST API + CEPiK extension + Portal VIN/year hiding
-- [ ] 34-04-PLAN.md — Web admin TipTap terms editor (/ustawienia settings page)
-- [ ] 34-05-PLAN.md — Mobile: terms WebView + acceptance checkbox + second driver form + 6-signature flow
+- [x] 34-02-PLAN.md — ContractFrozenData v2 buildFrozenData + PDF template rewrite + dynamic signatures
+- [x] 34-03-PLAN.md — Second driver REST API + CEPiK extension + Portal VIN/year hiding
+- [x] 34-04-PLAN.md — Web admin TipTap terms editor (/ustawienia settings page)
+- [x] 34-05-PLAN.md — Mobile: terms WebView + acceptance checkbox + second driver form + 6-signature flow
 
 ### Phase 35: Google Places Integration
 **Goal**: Workers can select real addresses for vehicle pickup and return locations using autocomplete instead of typing free-text
@@ -228,7 +228,7 @@ v3.0: 33 -> 34 -> 35 & 36 (parallel, both depend on 33) -> 37 (after 34) -> 38 (
 | 27 | v2.2 | 2/2 | Complete | 2026-03-29 |
 | 28-32 | v2.3 | 9/9 | Complete | 2026-03-29 |
 | 33. Foundation | v3.0 | 4/4 | Complete | 2026-04-12 |
-| 34. PDF Template | 5/5 | Complete   | 2026-04-12 | - |
+| 34. PDF Template | v3.0 | 5/5 | Complete | 2026-04-12 |
 | 35. Google Places | v3.0 | 0/? | Not started | - |
 | 36. OCR Scanning | v3.0 | 0/? | Not started | - |
 | 37. PDF Encryption | v3.0 | 0/? | Not started | - |
