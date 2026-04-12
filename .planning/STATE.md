@@ -2,12 +2,12 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Client Features & Contract Enhancements
-status: defining_requirements
+status: ready_to_plan
 stopped_at: null
 last_updated: "2026-04-12"
-last_activity: 2026-04-12 -- Milestone v3.0 started
+last_activity: 2026-04-12 -- Roadmap created (7 phases, 34 requirements)
 progress:
-  total_phases: 0
+  total_phases: 7
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -21,14 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-12)
 
 **Core value:** Pracownik w terenie moze w pelni obsluzyc wynajem -- od wypelnienia umowy, przez zweryfikowanie uprawnien kierowcy, zrobienie zdjec auta, po podpis klienta i wysylke PDF -- bez papieru i bez powrotu do biura.
-**Current focus:** Defining requirements for v3.0
+**Current focus:** v3.0 Phase 33 -- Foundation (Schema & Simple Fields)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-04-12 — Milestone v3.0 started
+Phase: 33 of 39 (Foundation -- Schema & Simple Fields)
+Plan: 0 of ? in current phase
+Status: Ready to plan
+Last activity: 2026-04-12 -- Roadmap created for v3.0 (7 phases, 34 requirements)
+
+Progress: [░░░░░░░░░░] 0%
 
 ## Performance Metrics
 
@@ -38,21 +40,13 @@ Last activity: 2026-04-12 — Milestone v3.0 started
 
 ## Accumulated Context
 
-### Roadmap Evolution
-
-- v1.0 completed 2026-03-25 with 42 requirements across 9 phases + 9.1 bug-fix phase (37 plans)
-- v1.1 completed 2026-03-25 with 29 requirements across 5 phases (10-14), 14 plans
-- v2.0 completed 2026-03-27 with 28 requirements across 5 phases (15-19), 7 plans
-- v2.1 completed 2026-03-28 with 111 requirements across 7 phases (20-26), 26 plans
-- v2.2 completed 2026-03-29 with 8 requirements in 1 phase (27), 2 plans
-- v2.3 completed 2026-03-29 with 24 requirements across 5 phases (28-32), 9 plans
-
 ### Decisions
 
-- [v2.3]: Username-based login replaces email login for both web and mobile
-- [v2.3]: Admin and mobile auth contexts kept separate (different JWT secrets from v2.1)
-- [v2.3]: No email required for worker accounts -- admin sets temporary password directly
-- [v2.3]: SVG damage map (top view only) for vehicle inspection
+- [v3.0 roadmap]: Batch ALL ContractFrozenData + PDF template changes into Phase 34 (single pass prevents 7 separate rewrites)
+- [v3.0 roadmap]: OCR uses on-device ML Kit (expo-text-extractor) -- RODO compliance
+- [v3.0 roadmap]: PDF encryption via pure-JS @pdfsmaller/pdf-encrypt-lite (RC4-128) -- no qpdf on Railway
+- [v3.0 roadmap]: Second driver uses dedicated RentalDriver model, NOT Customer model
+- [v3.0 roadmap]: Google Places proxied through backend API -- key security + billing control
 
 ### Pending Todos
 
@@ -60,10 +54,12 @@ None.
 
 ### Blockers/Concerns
 
-- Protokół zwrotu: wzór jeszcze nie przesłany przez klienta
+- ZWROT-01 (return protocol): client template not yet received -- Phase 39 is last for this reason
+- OCR (Phase 36) requires EAS dev client build, not Expo Go
+- @pdfsmaller/pdf-encrypt-lite newer library (Feb 2026) -- validate on target readers before Phase 37 ships
 
 ## Session Continuity
 
 Last session: 2026-04-12
-Stopped at: Milestone v3.0 initialization
+Stopped at: v3.0 roadmap created, ready to plan Phase 33
 Resume file: None

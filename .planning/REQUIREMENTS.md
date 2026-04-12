@@ -1,7 +1,7 @@
 # Requirements: RentApp v3.0
 
 **Defined:** 2026-04-12
-**Core Value:** Pracownik w terenie może w pełni obsłużyć wynajem — od wypełnienia umowy, przez zweryfikowanie uprawnień kierowcy, zrobienie zdjęć auta, po podpis klienta i wysyłkę PDF — bez papieru i bez powrotu do biura.
+**Core Value:** Pracownik w terenie moze w pelni obsluzyc wynajem -- od wypelnienia umowy, przez zweryfikowanie uprawnien kierowcy, zrobienie zdjec auta, po podpis klienta i wysylke PDF -- bez papieru i bez powrotu do biura.
 
 ## v3.0 Requirements
 
@@ -9,87 +9,120 @@ Requirements for v3.0 Client Features & Contract Enhancements. Each maps to road
 
 ### Dokumenty klienta (DOC)
 
-- [ ] **DOC-01**: Pracownik może zrobić zdjęcie dowodu osobistego klienta w aplikacji mobilnej
-- [ ] **DOC-02**: Pracownik może zrobić zdjęcie prawa jazdy klienta w aplikacji mobilnej
-- [ ] **DOC-03**: System automatycznie odczytuje dane z dowodu osobistego (OCR): imię, nazwisko, PESEL, nr dokumentu, adres
-- [ ] **DOC-04**: System automatycznie odczytuje dane z prawa jazdy (OCR): nr prawa jazdy, kategorie, data ważności
-- [ ] **DOC-05**: Pracownik może poprawić/uzupełnić dane po OCR przed zapisem
-- [ ] **DOC-06**: Zdjęcia dokumentów zapisywane są w storage (R2) i powiązane z klientem
+- [ ] **DOC-01**: Pracownik moze zrobic zdjecie dowodu osobistego klienta w aplikacji mobilnej
+- [ ] **DOC-02**: Pracownik moze zrobic zdjecie prawa jazdy klienta w aplikacji mobilnej
+- [ ] **DOC-03**: System automatycznie odczytuje dane z dowodu osobistego (OCR): imie, nazwisko, PESEL, nr dokumentu, adres
+- [ ] **DOC-04**: System automatycznie odczytuje dane z prawa jazdy (OCR): nr prawa jazdy, kategorie, data waznosci
+- [ ] **DOC-05**: Pracownik moze poprawic/uzupelnic dane po OCR przed zapisem
+- [ ] **DOC-06**: Zdjecia dokumentow zapisywane sa w storage (R2) i powiazane z klientem
 
 ### Dane klienta (KLIENT)
 
-- [ ] **KLIENT-01**: Pracownik może oznaczyć klienta jako firmę (checkbox) i wpisać NIP
+- [ ] **KLIENT-01**: Pracownik moze oznaczyc klienta jako firme (checkbox) i wpisac NIP
 - [ ] **KLIENT-02**: System waliduje format NIP (10 cyfr, suma kontrolna)
-- [ ] **KLIENT-03**: Pracownik może ustawić status płatnika VAT klienta: 100%, 50%, nie
-- [ ] **KLIENT-04**: Pracownik może wpisać adres klienta w aplikacji mobilnej (ulica, nr, kod, miasto)
-- [ ] **KLIENT-05**: Dane firmy (NIP, nazwa firmy) i status VAT pojawiają się w umowie PDF
+- [ ] **KLIENT-03**: Pracownik moze ustawic status platnika VAT klienta: 100%, 50%, nie
+- [ ] **KLIENT-04**: Pracownik moze wpisac adres klienta w aplikacji mobilnej (ulica, nr, kod, miasto)
+- [ ] **KLIENT-05**: Dane firmy (NIP, nazwa firmy) i status VAT pojawiaja sie w umowie PDF
 
 ### Flota (FLOTA)
 
-- [ ] **FLOTA-01**: Admin może definiować klasy samochodów w panelu webowym (np. Ekonomiczna, Komfort, SUV, Premium)
-- [ ] **FLOTA-02**: Admin może przypisać klasę do pojazdu przy dodawaniu/edycji
-- [ ] **FLOTA-03**: Klasa pojazdu widoczna w liście pojazdów i w szczegółach wynajmu
+- [ ] **FLOTA-01**: Admin moze definiowac klasy samochodow w panelu webowym (np. Ekonomiczna, Komfort, SUV, Premium)
+- [ ] **FLOTA-02**: Admin moze przypisac klase do pojazdu przy dodawaniu/edycji
+- [ ] **FLOTA-03**: Klasa pojazdu widoczna w liscie pojazdow i w szczegolach wynajmu
 - [ ] **FLOTA-04**: Klient nie widzi numeru VIN ani roku produkcji pojazdu w portalu klienta
-- [ ] **FLOTA-05**: Numer VIN i rok produkcji nie pojawiają się w PDF umowy wysyłanej do klienta
+- [ ] **FLOTA-05**: Numer VIN i rok produkcji nie pojawiaja sie w PDF umowy wysylanej do klienta
 
 ### Umowa i warunki (UMOWA)
 
-- [ ] **UMOWA-01**: Admin może edytować warunki najmu (druga strona umowy) w panelu webowym za pomocą edytora tekstu
-- [ ] **UMOWA-02**: Pracownik może dostosować warunki najmu indywidualnie dla każdego wynajmu
-- [ ] **UMOWA-03**: Klient widzi warunki najmu i musi potwierdzić zapoznanie się checkbox-em przed podpisem
-- [ ] **UMOWA-04**: Pracownik może dodać uwagi do warunków najmu (pole tekstowe) — uwagi pojawiają się w PDF
-- [ ] **UMOWA-05**: PDF umowy jest szyfrowany hasłem równym numerowi rejestracyjnemu pojazdu
-- [ ] **UMOWA-06**: Informacja o haśle do PDF wysyłana jest SMS-em przy wynajmie (nie w emailu)
-- [ ] **UMOWA-07**: Tytuł emaila z umową zawiera nr sprawy ubezpieczeniowej (jeśli jest) + nr rejestracyjny pojazdu
+- [ ] **UMOWA-01**: Admin moze edytowac warunki najmu (druga strona umowy) w panelu webowym za pomoca edytora tekstu
+- [ ] **UMOWA-02**: Pracownik moze dostosowac warunki najmu indywidualnie dla kazdego wynajmu
+- [ ] **UMOWA-03**: Klient widzi warunki najmu i musi potwierdzic zapoznanie sie checkbox-em przed podpisem
+- [ ] **UMOWA-04**: Pracownik moze dodac uwagi do warunkow najmu (pole tekstowe) -- uwagi pojawiaja sie w PDF
+- [ ] **UMOWA-05**: PDF umowy jest szyfrowany haslem rownym numerowi rejestracyjnemu pojazdu
+- [ ] **UMOWA-06**: Informacja o hasle do PDF wysylana jest SMS-em przy wynajmie (nie w emailu)
+- [ ] **UMOWA-07**: Tytul emaila z umowa zawiera nr sprawy ubezpieczeniowej (jesli jest) + nr rejestracyjny pojazdu
 
 ### Wynajem (NAJEM)
 
-- [ ] **NAJEM-01**: Pracownik może wpisać nr sprawy ubezpieczeniowej przy tworzeniu wynajmu (opcjonalne pole)
-- [ ] **NAJEM-02**: Pracownik może wybrać miejsce wydania pojazdu z autocomplete Google Places
-- [ ] **NAJEM-03**: Pracownik może wybrać miejsce zdania pojazdu z autocomplete Google Places
+- [ ] **NAJEM-01**: Pracownik moze wpisac nr sprawy ubezpieczeniowej przy tworzeniu wynajmu (opcjonalne pole)
+- [ ] **NAJEM-02**: Pracownik moze wybrac miejsce wydania pojazdu z autocomplete Google Places
+- [ ] **NAJEM-03**: Pracownik moze wybrac miejsce zdania pojazdu z autocomplete Google Places
 - [ ] **NAJEM-04**: Wybrana lokalizacja (adres) zapisywana jest w danych wynajmu
-- [ ] **NAJEM-05**: Pracownik może dodać drugiego kierowcę (dane osobowe + nr prawa jazdy)
-- [ ] **NAJEM-06**: Drugi kierowca weryfikowany jest przez CEPiK (tak jak główny najemca)
-- [ ] **NAJEM-07**: Dane drugiego kierowcy pojawiają się w umowie PDF
+- [ ] **NAJEM-05**: Pracownik moze dodac drugiego kierowce (dane osobowe + nr prawa jazdy)
+- [ ] **NAJEM-06**: Drugi kierowca weryfikowany jest przez CEPiK (tak jak glowny najemca)
+- [ ] **NAJEM-07**: Dane drugiego kierowcy pojawiaja sie w umowie PDF
 
 ### Zwrot i rozliczenie (ZWROT)
 
-- [ ] **ZWROT-01**: Przy zwrocie pojazdu generowany jest protokół zwrotu wg wzoru klienta
-- [ ] **ZWROT-02**: Pracownik otrzymuje powiadomienie o konieczności pobrania VAT przy zwrocie (jeśli klient jest płatnikiem VAT)
-- [ ] **ZWROT-03**: Admin może oznaczyć wynajem jako rozliczony/nierozliczony w panelu webowym
-- [ ] **ZWROT-04**: Panel webowy wyświetla listę nierozliczonych wynajmów z filtrowaniem
+- [ ] **ZWROT-01**: Przy zwrocie pojazdu generowany jest protokol zwrotu wg wzoru klienta
+- [ ] **ZWROT-02**: Pracownik otrzymuje powiadomienie o koniecznosci pobrania VAT przy zwrocie (jesli klient jest platnikiem VAT)
+- [ ] **ZWROT-03**: Admin moze oznaczyc wynajem jako rozliczony/nierozliczony w panelu webowym
+- [ ] **ZWROT-04**: Panel webowy wyswietla liste nierozliczonych wynajmow z filtrowaniem
 
 ## v4.0 Requirements (Deferred)
 
-- **DOC-F01**: OCR automatyczne rozpoznawanie typu dokumentu (dowód vs prawo jazdy)
-- **FLOTA-F01**: Filtrowanie dostępności pojazdów wg klasy
-- **FLOTA-F02**: Cennik powiązany z klasą pojazdu
-- **NAJEM-F01**: Protokół zwrotu jako osobny PDF wysyłany klientowi
-- **ZWROT-F01**: Śledzenie częściowych płatności i kaucji w rozliczeniu
+- **DOC-F01**: OCR automatyczne rozpoznawanie typu dokumentu (dowod vs prawo jazdy)
+- **FLOTA-F01**: Filtrowanie dostepnosci pojazdow wg klasy
+- **FLOTA-F02**: Cennik powiazany z klasa pojazdu
+- **NAJEM-F01**: Protokol zwrotu jako osobny PDF wysylany klientowi
+- **ZWROT-F01**: Sledzenie czesciowych platnosci i kaucji w rozliczeniu
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Płatności online | Wypożyczalnia rozlicza się z klientem bezpośrednio |
-| Rezerwacja online | Wynajem odbywa się na miejscu |
-| Wielojęzyczność | Interfejs tylko po polsku |
-| System księgowy | Ręczne rozliczenia |
-| OCR server-side (Cloud Vision) | On-device OCR (ML Kit) wystarczające, lepsze dla RODO |
-| Rich text editor w mobile | Warunki edytowane w web, mobile tylko wyświetla |
-| Wielowidokowa mapa szkód | Jeden widok (top) wystarczający — z v2.3 |
+| Platnosci online | Wypozyczalnia rozlicza sie z klientem bezposrednio |
+| Rezerwacja online | Wynajem odbywa sie na miejscu |
+| Wielojezycznosc | Interfejs tylko po polsku |
+| System ksiegowy | Reczne rozliczenia |
+| OCR server-side (Cloud Vision) | On-device OCR (ML Kit) wystarczajace, lepsze dla RODO |
+| Rich text editor w mobile | Warunki edytowane w web, mobile tylko wyswietla |
+| Wielowidokowa mapa szkod | Jeden widok (top) wystarczajacy -- z v2.3 |
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (To be filled by roadmapper) | | |
+| DOC-01 | Phase 36 | Pending |
+| DOC-02 | Phase 36 | Pending |
+| DOC-03 | Phase 36 | Pending |
+| DOC-04 | Phase 36 | Pending |
+| DOC-05 | Phase 36 | Pending |
+| DOC-06 | Phase 36 | Pending |
+| KLIENT-01 | Phase 33 | Pending |
+| KLIENT-02 | Phase 33 | Pending |
+| KLIENT-03 | Phase 33 | Pending |
+| KLIENT-04 | Phase 33 | Pending |
+| KLIENT-05 | Phase 34 | Pending |
+| FLOTA-01 | Phase 33 | Pending |
+| FLOTA-02 | Phase 33 | Pending |
+| FLOTA-03 | Phase 33 | Pending |
+| FLOTA-04 | Phase 34 | Pending |
+| FLOTA-05 | Phase 34 | Pending |
+| UMOWA-01 | Phase 34 | Pending |
+| UMOWA-02 | Phase 34 | Pending |
+| UMOWA-03 | Phase 34 | Pending |
+| UMOWA-04 | Phase 34 | Pending |
+| UMOWA-05 | Phase 37 | Pending |
+| UMOWA-06 | Phase 37 | Pending |
+| UMOWA-07 | Phase 37 | Pending |
+| NAJEM-01 | Phase 33 | Pending |
+| NAJEM-02 | Phase 35 | Pending |
+| NAJEM-03 | Phase 35 | Pending |
+| NAJEM-04 | Phase 35 | Pending |
+| NAJEM-05 | Phase 34 | Pending |
+| NAJEM-06 | Phase 34 | Pending |
+| NAJEM-07 | Phase 34 | Pending |
+| ZWROT-01 | Phase 39 | Pending |
+| ZWROT-02 | Phase 38 | Pending |
+| ZWROT-03 | Phase 38 | Pending |
+| ZWROT-04 | Phase 38 | Pending |
 
 **Coverage:**
-- v3.0 requirements: 30 total
-- Mapped to phases: 0
-- Unmapped: 30 ⚠️
+- v3.0 requirements: 34 total
+- Mapped to phases: 34
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-04-12*
-*Last updated: 2026-04-12 after initial definition*
+*Last updated: 2026-04-12 after roadmap creation*

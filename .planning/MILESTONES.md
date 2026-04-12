@@ -1,22 +1,18 @@
 # Milestones: RentApp
 
-## v2.3 User Management, Login Overhaul & Feature Additions (Shipped: 2026-03-29)
-
-**Phases completed:** 5 phases, 9 plans, 0 tasks
-
-**Key accomplishments:**
-- (none recorded)
-
----
-
 ## In Progress
 
-### v2.3 -- User Management, Login Overhaul & Feature Additions (2026-03-29 to ...)
-- 5 phases (28-32)
-- 24 requirements, plans TBD
-- Fix auth bugs, overhaul login to username-based, enable worker management, vehicle import, interactive damage map
+### v3.0 -- Client Features & Contract Enhancements (2026-04-12 to ...)
+- 7 phases (33-39)
+- 34 requirements, plans TBD
+- Document OCR scanning, vehicle classes, editable contract terms, company/NIP support, Google Places locations, second driver with CEPiK, PDF encryption, return protocol, settlement tracking
 
 ## Completed
+
+### v2.3 -- User Management, Login Overhaul & Feature Additions (2026-03-29)
+- 5 phases (28-32)
+- 24 requirements, 9 plans
+- Fix auth bugs, overhaul login to username-based, enable worker management, vehicle import, interactive damage map
 
 ### v2.2 -- Android APK Build Fix (2026-03-29)
 - 1 phase (27)
