@@ -106,7 +106,14 @@ export class PortalService {
     const rentals = await this.prisma.rental.findMany({
       where: { customerId },
       include: {
-        vehicle: true,
+        vehicle: {
+          select: {
+            make: true,
+            model: true,
+            registration: true,
+            // Privacy: VIN and year are intentionally excluded from portal responses
+          },
+        },
         contracts: {
           where: { status: 'SIGNED' },
           orderBy: { createdAt: 'desc' },
@@ -171,7 +178,14 @@ export class PortalService {
     const rental = await this.prisma.rental.findUnique({
       where: { id: rentalId },
       include: {
-        vehicle: true,
+        vehicle: {
+          select: {
+            make: true,
+            model: true,
+            registration: true,
+            // Privacy: VIN and year are intentionally excluded from portal responses
+          },
+        },
         contracts: {
           where: { status: 'SIGNED' },
           orderBy: { createdAt: 'desc' },
