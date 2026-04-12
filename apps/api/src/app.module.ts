@@ -24,6 +24,7 @@ import { AlertConfigModule } from './alert-config/alert-config.module';
 import { CepikModule } from './cepik/cepik.module';
 import { PortalModule } from './portal/portal.module';
 import { HealthModule } from './health/health.module';
+import { VehicleClassesModule } from './vehicle-classes/vehicle-classes.module';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { HealthModule } from './health/health.module';
     CepikModule,
     PortalModule,
     HealthModule,
+    VehicleClassesModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
