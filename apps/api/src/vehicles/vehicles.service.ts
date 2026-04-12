@@ -26,11 +26,12 @@ export class VehiclesService {
   ) {}
 
   async create(dto: CreateVehicleDto) {
-    const { insurance, inspection, ...vehicleData } = dto;
+    const { insurance, inspection, vehicleClassId, ...vehicleData } = dto;
 
     return this.prisma.vehicle.create({
       data: {
         ...vehicleData,
+        vehicleClass: { connect: { id: vehicleClassId } },
         insurance: insurance
           ? {
               create: {
@@ -371,6 +372,12 @@ export class VehiclesService {
               ? Number(normalized.mileage)
               : undefined,
             notes: normalized.notes ? String(normalized.notes) : undefined,
+            vehicleClass: {
+              connectOrCreate: {
+                where: { name: 'Nieokreslona' },
+                create: { name: 'Nieokreslona' },
+              },
+            },
             insurance: insuranceData,
             inspection: inspectionData,
           },

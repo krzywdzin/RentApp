@@ -85,6 +85,9 @@ export class CreateVehicleDto {
   @IsString()
   notes?: string;
 
+  @IsString()
+  vehicleClassId!: string;
+
   @IsOptional()
   @ValidateNested()
   @Type(() => CreateInsuranceDto)

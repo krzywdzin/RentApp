@@ -102,7 +102,7 @@ export class ContractsService {
       customer: {
         firstName: customer.firstName,
         lastName: customer.lastName,
-        address: customer.address ?? null,
+        address: [customer.street, customer.houseNumber, customer.apartmentNumber].filter(Boolean).join(' ') + (customer.postalCode ? `, ${customer.postalCode}` : '') + (customer.city ? ` ${customer.city}` : '') || null,
         pesel: customer.pesel,
         idNumber: customer.idNumber,
         idIssuedBy: customer.idIssuedBy ?? null,

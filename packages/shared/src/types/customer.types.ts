@@ -4,7 +4,11 @@ export interface CustomerDto {
   lastName: string;
   phone: string;
   email: string | null;
-  address: string | null;
+  street: string | null;
+  houseNumber: string | null;
+  apartmentNumber: string | null;
+  postalCode: string | null;
+  city: string | null;
   pesel: string;
   idNumber: string;
   licenseNumber: string;

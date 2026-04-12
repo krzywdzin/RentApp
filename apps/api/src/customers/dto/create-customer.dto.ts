@@ -26,7 +26,23 @@ export class CreateCustomerDto {
 
   @IsOptional()
   @IsString()
-  address?: string;
+  street?: string;
+
+  @IsOptional()
+  @IsString()
+  houseNumber?: string;
+
+  @IsOptional()
+  @IsString()
+  apartmentNumber?: string;
+
+  @IsOptional()
+  @IsString()
+  postalCode?: string;
+
+  @IsOptional()
+  @IsString()
+  city?: string;
 
   @IsValidPesel()
   pesel!: string;

@@ -79,6 +79,7 @@ describe('VehiclesService', () => {
       year: 2022,
       fuelType: FuelType.PETROL,
       transmission: TransmissionType.MANUAL,
+      vehicleClassId: '00000000-0000-0000-0000-000000000001',
       insurance: {
         companyName: 'PZU',
         policyNumber: 'ABC123',

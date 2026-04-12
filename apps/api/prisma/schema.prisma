@@ -72,6 +72,12 @@ enum ContractStatus {
   VOIDED
 }
 
+enum VatPayerStatus {
+  FULL_100
+  HALF_50
+  NONE
+}
+
 model User {
   id               String    @id @default(uuid())
   email            String?   @unique
@@ -118,6 +124,15 @@ model AuditLog {
   @@map("audit_logs")
 }
 
+model VehicleClass {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  vehicles  Vehicle[]
+  @@map("vehicle_classes")
+}
+
 model Vehicle {
   id              String            @id @default(uuid())
   registration    String            @unique
@@ -135,6 +150,8 @@ model Vehicle {
   photoKey        String?
   isArchived      Boolean           @default(false)
   requiredLicenseCategory  String   @default("B")
+  vehicleClassId  String
+  vehicleClass    VehicleClass      @relation(fields: [vehicleClassId], references: [id])
 
   insurance       VehicleInsurance?
   inspection      VehicleInspection?
@@ -195,7 +212,11 @@ model Customer {
   lastName              String
   phone                 String
   email                 String?
-  address               String?
+  street                String?
+  houseNumber           String?
+  apartmentNumber       String?
+  postalCode            String?
+  city                  String?
 
   peselEncrypted        Json
   peselHmac             String
@@ -247,6 +268,10 @@ model Rental {
   returnMileage   Int?
   notes           String?
   overrodeConflict Boolean      @default(false)
+  isCompanyRental      Boolean          @default(false)
+  companyNip           String?
+  vatPayerStatus       VatPayerStatus?
+  insuranceCaseNumber  String?
   isArchived      Boolean       @default(false)
 
   vehicle         Vehicle       @relation(fields: [vehicleId], references: [id])

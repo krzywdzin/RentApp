@@ -129,7 +129,11 @@ export default function CustomerDetailPage() {
                 <InfoRow label="Nazwisko" value={customer.lastName} />
                 <InfoRow label="Telefon" value={customer.phone} />
                 <InfoRow label="Email" value={customer.email} />
-                <InfoRow label="Adres" value={customer.address} />
+                <InfoRow label="Ulica" value={customer.street} />
+                <InfoRow label="Nr domu" value={customer.houseNumber} />
+                <InfoRow label="Nr lokalu" value={customer.apartmentNumber} />
+                <InfoRow label="Kod pocztowy" value={customer.postalCode} />
+                <InfoRow label="Miasto" value={customer.city} />
               </CardContent>
             </Card>
 
