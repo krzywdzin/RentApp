@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
   Car,
+  Layers,
   Users,
   CalendarClock,
   FileText,
@@ -21,6 +22,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 const navItems = [
   { href: '/', label: 'Pulpit', icon: LayoutDashboard },
   { href: '/pojazdy', label: 'Pojazdy', icon: Car },
+  { href: '/klasy', label: 'Klasy', icon: Layers },
   { href: '/klienci', label: 'Klienci', icon: Users },
   { href: '/wynajmy', label: 'Wynajmy', icon: CalendarClock },
   { href: '/umowy', label: 'Umowy', icon: FileText },
