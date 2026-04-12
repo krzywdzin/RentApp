@@ -1,179 +1,223 @@
-# Technology Stack
+# Technology Stack Additions for v3.0
 
-**Project:** RentApp - System Zarzadzania Wypozyczalnia Samochodow
-**Researched:** 2026-03-23
-**Overall confidence:** HIGH
+**Project:** RentApp v3.0 — Client Features & Contract Enhancements
+**Researched:** 2026-04-12
+**Scope:** NEW libraries only. Existing stack (Expo 54, React Native 0.81, NestJS 11, Prisma 6, Puppeteer 24, etc.) is validated and unchanged.
 
-## Recommended Stack
+## Recommended Stack Additions
 
-### Mobile App (Field Employees)
+### 1. OCR — On-Device Text Recognition (Mobile)
 
-| Technology | Version | Purpose | Why | Confidence |
-|------------|---------|---------|-----|------------|
-| React Native | 0.83 | Cross-platform mobile runtime | Shared JS/TS ecosystem with web admin panel; team likely knows JS better than Dart; one codebase for Android + iOS | HIGH |
-| Expo SDK | 55 | Managed RN workflow | Expo SDK 55 is the current stable (March 2026). New Architecture only (legacy dropped). EAS Build/Submit handles native builds without Xcode/Android Studio setup. expo-camera, expo-image-picker built-in | HIGH |
-| Expo Router | v7 | File-based navigation | Ships with SDK 55, provides React Navigation under the hood with file-system routing. Deep linking for free | HIGH |
-| TypeScript | 5.x | Type safety | Non-negotiable for any modern RN project. Catches contract mismatches between mobile and API early | HIGH |
+| Technology | Version | Purpose | Why |
+|------------|---------|---------|-----|
+| `expo-text-extractor` | ^2.0.0 | On-device OCR for Polish ID cards and driver licenses | Uses Google ML Kit (Android) + Apple Vision (iOS). Expo Modules architecture (SDK 52+, confirmed compatible with SDK 54). Simple API: `extractTextFromImage(uri)` returns string array. Zero cloud dependency — works offline, no per-scan cost. Polish uses Latin script — fully supported by both engines. Published Feb 2026, actively maintained. |
 
-### Web Admin Panel
+**How it works:**
+1. User takes photo with existing `expo-image-picker` (already in project)
+2. Pass image URI to `expo-text-extractor`
+3. Parse extracted text blocks on the client to find name, PESEL, ID number, expiry date
+4. Pre-fill customer form fields
 
-| Technology | Version | Purpose | Why | Confidence |
-|------------|---------|---------|-----|------------|
-| Next.js | 16 | Full-stack React framework | Current stable is 16.2.x. Server components reduce client bundle. App Router is mature. API routes can proxy to NestJS if needed. SSR not critical (admin panel behind auth) but the framework conventions save time vs bare React | HIGH |
-| React | 19.2 | UI library | Ships with Next.js 16 and Expo SDK 55 -- same React version across mobile and web | HIGH |
-| Tailwind CSS | v4 | Utility-first styling | v4 is stable and the ecosystem default. CSS-based config (@theme directive), no JS config file needed. Faster builds | HIGH |
-| shadcn/ui | latest | Component library | Not a package -- copy-paste components built on Radix + Tailwind. Full control, no version lock-in. Updated for Tailwind v4 and React 19 | HIGH |
+**Why NOT other options:**
+- `react-native-mlkit-ocr` — Last published 3 years ago (2023), unmaintained, incompatible with New Architecture
+- `expo-ocr` (barthap) — Experimental, fewer commits, less actively maintained
+- Scanbot SDK / Dynamsoft — Commercial license ($$$), overkill for reading a few fields from known document types
+- Cloud OCR (Google Vision API, AWS Textract) — Adds per-scan cost, requires network, privacy concern with ID documents staying on-device is important
+- `react-native-executorch` useOCR — Heavier dependency (ML model download), more complex setup than ML Kit wrapper
 
-### Customer Portal
+**Important implementation note:** This is general OCR, not structured document parsing. The app must implement regex/parsing logic to extract fields:
+- PESEL pattern: 11 consecutive digits
+- Polish ID number (dowod osobisty): 3 letters + 6 digits (e.g., ABC123456)
+- Driver license number: varies, but parseable
+- Name/surname: from text blocks near field labels
+- Polish ID cards and driver licenses have standardized layouts — field positions are predictable
 
-| Technology | Version | Purpose | Why | Confidence |
-|------------|---------|---------|-----|------------|
-| Next.js 16 (same app) | 16 | Shared deployment with admin | Customer portal is simple (view contracts, dates, history). Deploy as separate route group within the same Next.js app. Saves infrastructure cost and maintenance. Separate auth context via middleware | HIGH |
+**Build requirement:** Requires EAS Build (native module). Will NOT work in Expo Go — must use development build.
 
-### Backend API
+**Confidence:** MEDIUM — Library is Expo-compatible and maintained. Polish Latin-script text recognition is well-supported. Parsing accuracy depends on implementation quality and photo quality. Recommend building a parsing utility with unit tests for Polish document patterns.
 
-| Technology | Version | Purpose | Why | Confidence |
-|------------|---------|---------|-----|------------|
-| NestJS | 11.x | Backend framework | Structured, opinionated, TypeScript-native. Modules/controllers/services pattern keeps code organized as features grow. Built-in validation (class-validator), guards for auth, interceptors for audit trail. v12 expected Q3 2026 -- stay on v11 for stability | HIGH |
-| Prisma ORM | 7.4 | Database access | v7 dropped the Rust engine -- pure TypeScript now. 85-90% smaller bundle, up to 3.4x faster queries. Schema-first with auto-generated types. Prisma Studio for DB inspection. Migrations are first-class | HIGH |
-| PostgreSQL | 16 | Primary database | The only serious choice for a relational business app. JSONB for flexible metadata, full-text search for Polish language (with hunspell), row-level security if needed later | HIGH |
+---
 
-### Infrastructure & Hosting
+### 2. Google Places Autocomplete (Mobile + Web)
 
-| Technology | Version | Purpose | Why | Confidence |
-|------------|---------|---------|-----|------------|
-| Railway | -- | App hosting (API + Web) | Simplest PaaS for small teams. Native PostgreSQL support. Deploy from GitHub push. Usage-based pricing fits ~100-car operation (low traffic). No DevOps required. Starts at ~$5/month | MEDIUM |
-| Vercel | -- | Next.js hosting (alternative) | If Railway proves insufficient for Next.js SSR, Vercel is the native host. Free tier generous for admin panels with low traffic | MEDIUM |
-| EAS (Expo Application Services) | -- | Mobile builds + OTA updates | Build iOS/Android binaries in the cloud. OTA updates for JS-only changes without App Store review. Free tier covers small team needs | HIGH |
+| Technology | Version | Purpose | Why |
+|------------|---------|---------|-----|
+| `react-native-google-places-autocomplete` | ^2.6.4 | Location autocomplete for pickup/return locations (mobile) | De facto standard: 60K+ weekly npm downloads, 110 contributors, actively maintained (v2.6.4 published early 2026). Pure JS — no native modules, works in Expo without dev client. Battle-tested with Expo SDK 54. |
 
-### Supporting Libraries
+**For the web admin panel (Next.js):**
 
-| Library | Version | Purpose | When to Use | Confidence |
-|---------|---------|---------|-------------|------------|
-| react-native-signature-canvas | 4.x | Signature capture | Customer signs rental agreement on tablet/phone. WebView-based, Expo compatible. Exports as PNG/Base64 | HIGH |
-| @shopify/react-native-skia | latest | Photo annotation/damage marking | Drawing on vehicle photos to mark damage areas. GPU-accelerated canvas. Works with Expo (with-skia template). Export annotated image via makeImageSnapshot | HIGH |
-| expo-camera | SDK 55 | Vehicle photo capture | Built into Expo. Camera access with permissions handled automatically | HIGH |
-| expo-image-picker | SDK 55 | Photo selection from gallery | For selecting existing photos. Built into Expo | HIGH |
-| Puppeteer | latest | Server-side PDF generation | Render HTML/CSS template to PDF on the server. Handles Polish characters, complex layouts, embedded signature images. Heavier than alternatives but pixel-perfect output matching existing contract template | HIGH |
-| Handlebars | 4.x | PDF HTML templating | Inject contract data into HTML template before Puppeteer renders. Simple, logic-less templates. Perfect for rental agreement template | HIGH |
-| smsapi (official) | latest | SMS integration | Official smsapi.pl Node.js client. npm package `smsapi`. OAuth token auth. sendSms() method. Required by business | HIGH |
-| Nodemailer | 6.x | Email sending | Send PDF contracts to customers, send customer portal access links. Use with any SMTP provider | HIGH |
-| Passport.js | 0.7+ | Authentication | NestJS has @nestjs/passport integration. JWT strategy for mobile app, session strategy for web admin. Well-tested | HIGH |
-| bull / bullmq | latest | Job queue | Background jobs: PDF generation, SMS sending, email sending, CEPiK verification. Redis-backed. NestJS has @nestjs/bull integration | HIGH |
-| Zod | 3.x | Runtime validation | Shared validation schemas between mobile and API. Works with React Hook Form on frontend | HIGH |
-| React Hook Form | 7.x | Form management | Complex rental agreement forms on mobile and web. Performant (uncontrolled components). Zod resolver for validation | HIGH |
-| date-fns | 3.x | Date utilities | Calendar calculations, rental period math, Polish locale support (pl). Tree-shakeable. Lighter than Moment/Luxon | HIGH |
-| FullCalendar or react-big-calendar | latest | Calendar view (admin) | Rental calendar with drag-and-drop. FullCalendar has more features but is heavier. react-big-calendar is lighter and sufficient for this use case | MEDIUM |
-| Resend or @nestjs-modules/mailer | latest | Email service | Resend for managed email delivery. Alternative: Nodemailer with SMTP if self-hosting email relay | MEDIUM |
-| Redis | 7.x | Caching + job queue backend | Required by BullMQ for job queues. Also useful for session storage and rate limiting CEPiK API calls | HIGH |
+| Technology | Version | Purpose | Why |
+|------------|---------|---------|-----|
+| `react-google-places-autocomplete` | ^4.1.0 | Location autocomplete in web admin panel | Same Google Places API, React-specific wrapper for web. Different library than the RN one — uses the Maps JavaScript API directly. |
+
+**Backend / API key management:**
+- Create a Google Cloud project, enable "Places API (New)" 
+- Create an API key restricted to Places API
+- For mobile: pass API key directly to the component (standard pattern for Places Autocomplete)
+- For web: restrict API key by HTTP referrer
+- Store selected place data (formatted address + place_id + coordinates) in the rental record
+
+**Pricing (March 2025 changes):**
+- Autocomplete sessions terminating in Place Details (Essentials): first 12 requests billed, then free within session
+- Essentials SKU: 10,000 free billable events/month
+- For a ~100 car fleet with ~10 employees, usage will comfortably stay within free tier
+- Use session tokens to bundle autocomplete requests (the library handles this)
+
+**Why NOT other options:**
+- `expo-google-places-autocomplete` (alanjhughes) — Uses native Places SDK, requires dev client + more complex native build config, more setup for the same result
+- Custom fetch implementation — Reinventing session management and UI
+- `react-native-google-places-textinput` — Newer, less battle-tested, smaller community
+
+**Confidence:** HIGH — Most popular RN places library, well-documented, straightforward integration.
+
+---
+
+### 3. PDF Encryption with Password (API Backend)
+
+| Technology | Version | Purpose | Why |
+|------------|---------|---------|-----|
+| `@pdfsmaller/pdf-encrypt-lite` | ^1.0.0 | Password-protect generated PDF contracts | **Pure JavaScript**, zero dependencies, ~7KB. RC4-128 encryption. No binary to install on Railway. Works with existing Puppeteer PDF buffer — encrypt in-memory after generation. |
+
+**How it integrates with existing PdfService:**
+```typescript
+// In pdf.service.ts — add after generateContractPdf()
+import { encryptPDF } from '@pdfsmaller/pdf-encrypt-lite';
+
+async generateEncryptedContractPdf(data: ContractPdfData, password: string): Promise<Buffer> {
+  const pdfBuffer = await this.generateContractPdf(data);
+  const pdfUint8 = new Uint8Array(pdfBuffer);
+  const encrypted = encryptPDF(pdfUint8, { userPassword: password });
+  return Buffer.from(encrypted);
+}
+// password = vehicle registration number (e.g., "WA12345")
+// SMS notification tells customer the password
+```
+
+**Why this over alternatives:**
+- `node-qpdf2` — Requires `qpdf` binary installed in deployment environment. Railway Nixpacks would need custom Dockerfile or apt package. AES-256 is nice but overkill — we're protecting casual access (password = registration number), not state secrets.
+- `pdf-encrypt-decrypt` — Uses Go FFI, complex native dependency
+- `muhammara` / `hummus` — Heavy PDF manipulation libraries, overkill for just adding encryption
+- Puppeteer native — Does NOT support PDF encryption (confirmed via GitHub issues #657, #6120)
+- `pdf-lib` — Does NOT support encryption natively
+
+**Upgrade path:** If AES-256 is ever required, switch to `node-qpdf2` (^4.0.0) which supports AES-256 encryption but requires the `qpdf` binary on the server.
+
+**Confidence:** HIGH — Pure JS library, simple integration point with existing Puppeteer PDF generation. RC4-128 is adequate for the business requirement (password = registration plate for casual access protection).
+
+---
+
+### 4. Editable Rental Terms — Rich Text Editor (Web Admin Only)
+
+**Critical architectural insight:** This does NOT need a mobile rich text editor. The workflow is:
+1. Admin edits rental terms template in the **web panel** (Next.js) — rich text editor needed here
+2. Terms are stored as HTML in the database
+3. Mobile app **displays** terms (read-only) for customer acceptance — use existing WebView
+4. Terms HTML is injected into the Handlebars contract PDF template
+
+**Web Admin — Rich Text Editor:**
+
+| Technology | Version | Purpose | Why |
+|------------|---------|---------|-----|
+| `@tiptap/react` | ^2.11.0 | Rich text editor for rental terms in Next.js admin | Built on ProseMirror. Headless (fully customizable UI — matches existing shadcn design). Output: HTML — directly usable in Handlebars PDF templates. Active maintenance, large community. Free core (paid collaboration features not needed). |
+| `@tiptap/starter-kit` | ^2.11.0 | Essential extensions bundle | Bold, italic, lists, headings, paragraphs — everything needed for rental terms. |
+| `@tiptap/pm` | ^2.11.0 | ProseMirror peer dependency | Required by TipTap. |
+
+**Mobile — Display Only (NO new dependency):**
+
+| Technology | Version | Purpose | Why |
+|------------|---------|---------|-----|
+| `react-native-webview` | ~13.15.0 (existing) | Render HTML terms for customer review | Already installed. Render stored HTML in a styled WebView with acceptance checkbox below. Zero new dependencies. |
+
+**Why NOT a mobile rich text editor:**
+- `@10play/tentap-editor` — TipTap-based for RN, requires Expo dev client for full features, complex setup, completely unnecessary since editing is admin-only
+- `react-native-enriched` (Software Mansion) — New Architecture required, powerful but overkill for display-only
+- `@siposdani87/expo-rich-text-editor` — WebView-based editor, unnecessary complexity
+
+**Data flow:**
+1. Admin writes/edits terms via TipTap editor (web) -> stored as HTML string in database (e.g., `rentalTermsHtml` column)
+2. Mobile fetches terms HTML -> displays in WebView (read-only) with acceptance checkbox
+3. PDF generation: inject terms HTML into Handlebars template via `{{{rentalTermsHtml}}}` (triple-stache for unescaped HTML)
+4. Per-rental overrides: admin can customize terms for specific rental, stored on the rental record
+
+**Confidence:** HIGH — TipTap is the standard React rich text editor. WebView display is trivial. HTML output maps directly to existing Handlebars PDF pipeline.
+
+---
+
+## Complete Installation Summary
+
+### Mobile (`apps/mobile`)
+
+```bash
+npx expo install expo-text-extractor
+npm install react-native-google-places-autocomplete
+```
+
+**Note:** `expo-text-extractor` requires EAS Build (contains native code). Development builds needed, Expo Go insufficient.
+
+### Web Admin (`apps/web`)
+
+```bash
+npm install @tiptap/react @tiptap/pm @tiptap/starter-kit
+npm install react-google-places-autocomplete
+```
+
+### API Backend (`apps/api`)
+
+```bash
+npm install @pdfsmaller/pdf-encrypt-lite
+```
+
+### Infrastructure Requirements
+
+| Requirement | For | Action | Cost |
+|-------------|-----|--------|------|
+| Google Places API key | Location autocomplete | Enable Places API in Google Cloud Console. Create restricted API key. | Free tier (10K events/month) — sufficient |
+| Google Cloud project | API key | Create project if not existing | Free |
+
+**No new infrastructure needed** — no new binaries, no new services, no new databases.
+
+---
 
 ## Alternatives Considered
 
 | Category | Recommended | Alternative | Why Not |
 |----------|-------------|-------------|---------|
-| Mobile framework | React Native + Expo | Flutter | Dart is a separate language with separate ecosystem. RN shares TypeScript with backend and web admin -- one language for everything. The "one iOS employee" scenario doesn't need Flutter's pixel-perfect rendering |
-| Mobile workflow | Expo (managed) | Bare React Native | Expo SDK 55 covers all needed native modules (camera, image picker, file system). No need for bare workflow complexity. EAS handles builds |
-| Backend | NestJS | Express / Fastify | Express lacks structure for a multi-module business app. Fastify is fast but unopinionated. NestJS provides the module/controller/service pattern that matches this app's feature set (fleet, contracts, users, SMS, CEPiK) |
-| ORM | Prisma 7 | Drizzle ORM | Drizzle is lighter and more SQL-like, but Prisma's schema-first approach with auto-generated types and Prisma Studio is better for a team that needs clear DB modeling. Prisma 7 closed the performance gap |
-| PDF generation | Puppeteer + Handlebars | pdfme / react-pdf / pdfmake | The existing rental agreement template needs pixel-perfect reproduction. Puppeteer renders HTML/CSS exactly like a browser -- easiest way to match the existing paper template. pdfmake/react-pdf require learning a custom layout DSL |
-| Hosting | Railway | Render / Fly.io / VPS | Render's free PostgreSQL expires after 30 days. Fly.io adds unnecessary complexity (Docker, global distribution not needed for Poland-only). VPS requires DevOps skills. Railway is the sweet spot for simplicity + managed PostgreSQL |
-| Admin UI | Next.js + shadcn/ui | React Admin / Refine | React Admin and Refine are opinionated admin frameworks. For RentApp, the admin panel has custom workflows (contract creation, damage annotation, calendar) that don't fit CRUD-only patterns. Next.js + shadcn/ui gives full flexibility |
-| Database | PostgreSQL | Supabase (managed) | Supabase adds a layer (PostgREST, auth) that overlaps with NestJS. Since we already have NestJS handling auth and API, Supabase's value-add is just managed hosting. Railway's managed PostgreSQL is simpler and cheaper |
-| Signature | react-native-signature-canvas | PSPDFKit / Nutrient | Commercial SDKs (PSPDFKit/Nutrient) cost thousands/year. react-native-signature-canvas is free, Expo-compatible, and exports signatures as images -- which is all we need to embed in the PDF |
-| Photo annotation | React Native Skia | Canvas-based libraries | Skia is GPU-accelerated, works cross-platform including web, and is maintained by Shopify. The drawing/annotation UX will be smooth even on mid-range Android devices |
+| OCR | `expo-text-extractor` | `react-native-mlkit-ocr` | Unmaintained since 2023, pre-New Architecture |
+| OCR | `expo-text-extractor` | Cloud OCR (Google Vision) | Per-scan cost, requires network, ID privacy concern |
+| OCR | `expo-text-extractor` | Scanbot SDK | Commercial license, overkill |
+| Places (mobile) | `react-native-google-places-autocomplete` | `expo-google-places-autocomplete` | Requires native SDK setup, no advantage for text autocomplete |
+| Places (web) | `react-google-places-autocomplete` | Raw Google Maps JS API | More boilerplate for same result |
+| PDF encryption | `@pdfsmaller/pdf-encrypt-lite` | `node-qpdf2` | Binary dependency on server; upgrade path exists if needed |
+| PDF encryption | `@pdfsmaller/pdf-encrypt-lite` | `pdf-lib` | pdf-lib has NO encryption support |
+| Rich text (web) | `@tiptap/react` | Quill / Slate / Draft.js | TipTap: best DX, headless (fits shadcn), HTML output, active maintenance |
+| Rich text (mobile) | WebView (existing) | `@10play/tentap-editor` | Display-only use case — no editor needed on mobile |
 
-## Monorepo Strategy
+---
 
-Use a **Turborepo** monorepo to share code between mobile and web:
+## What NOT to Add
 
-```
-rentapp/
-  apps/
-    mobile/        # Expo (React Native) app
-    web/           # Next.js app (admin + customer portal)
-  packages/
-    shared/        # Shared TypeScript types, Zod schemas, utilities
-    api-client/    # Type-safe API client (generated or manual)
-  services/
-    api/           # NestJS backend
-```
+| Temptation | Why Avoid |
+|------------|-----------|
+| Mobile rich text editor | Terms editing is admin-only (web). Mobile just displays HTML in WebView. Adding an editor library adds ~2MB+ and significant complexity for zero benefit. |
+| Cloud OCR service | ID documents should stay on-device for privacy. ML Kit/Vision accuracy is sufficient for Latin-script Polish documents. |
+| Google Maps SDK (full) | Only need Places Autocomplete, not map rendering. Pure JS library is sufficient and avoids native SDK complexity. |
+| pdf-lib for encryption | pdf-lib does NOT support encryption. This is a common misconception. |
+| Commercial OCR/scanning SDK | Licensing cost unjustified for reading a few standardized fields from Polish ID cards and driver licenses. |
+| Upgrading Expo SDK to 55 for this milestone | SDK 54 supports everything needed. Upgrade is a separate effort with breaking changes (New Architecture only in SDK 55). |
 
-**Why Turborepo:** Shared Zod validation schemas, TypeScript types, and utility functions between mobile, web, and API. Parallel builds. Caching. Simpler than Nx for this project size.
-
-## Installation
-
-```bash
-# Initialize monorepo
-npx create-turbo@latest rentapp
-
-# Mobile (Expo)
-cd apps/mobile
-npx create-expo-app@latest . --template blank-typescript
-npx expo install expo-camera expo-image-picker expo-file-system expo-sharing
-npx expo install react-native-webview react-native-signature-canvas
-npx expo install @shopify/react-native-skia
-npm install react-hook-form @hookform/resolvers zod date-fns
-
-# Web Admin (Next.js)
-cd apps/web
-npx create-next-app@latest . --typescript --tailwind --app
-npx shadcn@latest init
-npm install react-hook-form @hookform/resolvers zod date-fns
-
-# Backend (NestJS)
-cd services/api
-npx @nestjs/cli new . --package-manager npm
-npm install @nestjs/passport passport passport-jwt passport-local
-npm install @prisma/client prisma
-npm install @nestjs/bull bull bullmq ioredis
-npm install smsapi nodemailer puppeteer handlebars
-npm install class-validator class-transformer
-npm install -D @types/passport-jwt @types/nodemailer @types/bull
-
-# Shared packages
-cd packages/shared
-npm install zod date-fns
-```
-
-## Key Version Matrix (March 2026)
-
-| Package | Version | Verified Source |
-|---------|---------|----------------|
-| Expo SDK | 55 (55.0.8) | expo.dev/changelog/sdk-55 |
-| React Native | 0.83.2 | Ships with Expo SDK 55 |
-| React | 19.2 | Ships with Expo SDK 55 and Next.js 16 |
-| Next.js | 16.2.x | github.com/vercel/next.js/releases |
-| NestJS | 11.1.x | github.com/nestjs/nest/releases |
-| Prisma | 7.4.x | prisma.io/changelog |
-| Tailwind CSS | 4.x | tailwindcss.com |
-| TypeScript | 5.x | Ships with all above |
-| PostgreSQL | 16 | postgresql.org |
-| Redis | 7.x | redis.io |
-| Node.js | 22 LTS | nodejs.org (required by Expo SDK 55) |
-
-## CEPiK 2.0 Integration Notes
-
-**Access:** Public API at api.cepik.gov.pl with Swagger docs. Free access to selected data. Full access requires formal application to the Ministry of Digitalization, certificate generation, and approval process.
-
-**Risk:** Access approval may take weeks/months. The API for Carriers (launched January 2025) supports mass automated queries but may have specific requirements for car rental companies.
-
-**Mitigation:** Build the CEPiK integration module with a pluggable adapter. Start with manual driver license verification (employee enters data), add automated CEPiK verification when access is granted. This way the app is usable from day one.
-
-**Technical:** REST API, HTTPS, JSON responses. Standard NestJS HttpModule integration. Rate limiting recommended.
+---
 
 ## Sources
 
-- Expo SDK 55 changelog: https://expo.dev/changelog/sdk-55
-- Expo SDK reference: https://docs.expo.dev/versions/latest/
-- NestJS releases: https://github.com/nestjs/nest/releases
-- Prisma v7 announcement: https://www.prisma.io/blog/announcing-prisma-orm-7-0-0
-- Prisma v7.4 release: https://www.prisma.io/blog/prisma-orm-v7-4-query-caching-partial-indexes-and-major-performance-improvements
-- Next.js releases: https://github.com/vercel/next.js/releases
-- react-native-signature-canvas: https://github.com/YanYuanFE/react-native-signature-canvas
-- React Native Skia (Expo docs): https://docs.expo.dev/versions/latest/sdk/skia/
-- shadcn/ui Tailwind v4: https://ui.shadcn.com/docs/tailwind-v4
-- SMSAPI.pl Node.js client: https://github.com/smsapi/smsapi-javascript-client
-- CEPiK API documentation: https://api.cepik.gov.pl/doc
-- CEPiK access information: https://www.gov.pl/web/cepik/api-dla-centralnej-ewidencji-pojazdow-i-kierowcow-api-do-cepik
-- Railway: https://railway.app
-- Turborepo: https://turbo.build/repo
+- [expo-text-extractor GitHub](https://github.com/pchalupa/expo-text-extractor) — v2.0.0, Feb 2026, Expo SDK 52+ compatible
+- [react-native-google-places-autocomplete npm](https://www.npmjs.com/package/react-native-google-places-autocomplete) — v2.6.4, 60K+ weekly downloads
+- [Google Places API Pricing (March 2025)](https://developers.google.com/maps/billing-and-pricing/pricing) — New pricing with free tiers
+- [Google Places Autocomplete Session Pricing](https://developers.google.com/maps/documentation/places/web-service/session-pricing)
+- [Puppeteer PDF encryption issue #6120](https://github.com/puppeteer/puppeteer/issues/6120) — Confirmed not supported
+- [Puppeteer PDF meta/password issue #657](https://github.com/puppeteer/puppeteer/issues/657) — Confirmed not supported
+- [@pdfsmaller/pdf-encrypt-lite npm](https://www.npmjs.com/package/@pdfsmaller/pdf-encrypt-lite) — Pure JS, RC4-128, zero deps
+- [node-qpdf2 GitHub](https://github.com/Sparticuz/node-qpdf2) — AES-256 via qpdf binary (upgrade path)
+- [TipTap documentation](https://tiptap.dev/) — Headless rich text editor for React
+- [Expo rich text editing guide](https://docs.expo.dev/guides/editing-richtext/) — Confirms no default RN rich text solution
+- [10tap-editor GitHub](https://github.com/10play/10tap-editor) — Evaluated, not recommended (mobile editor unnecessary)
+- [react-native-mlkit-ocr npm](https://www.npmjs.com/package/react-native-mlkit-ocr) — Last published 2023, unmaintained

@@ -1,273 +1,285 @@
 # Domain Pitfalls
 
-**Domain:** Car rental management system (Polish market)
-**Researched:** 2026-03-23
+**Domain:** Polish car rental management system - v3.0 feature additions
+**Researched:** 2026-04-12
+**Scope:** Pitfalls specific to ADDING v3.0 features (OCR, Google Places, PDF encryption, editable terms, company/NIP, second driver, settlement tracking, return protocol, vehicle classes) to the existing RentApp system.
+
+Note: v1.0 pitfalls (PESEL encryption, digital signatures, CEPiK dependency, audit trail, offline, photo compression) were addressed in previous versions. This file focuses on v3.0 integration risks.
 
 ## Critical Pitfalls
 
-Mistakes that cause rewrites, legal liability, or major issues.
+Mistakes that cause rewrites or major issues.
 
-### Pitfall 1: Scanning/Storing Full Identity Document Images
+### Pitfall 1: OCR Library Requires Expo Dev Client -- No Expo Go
 
-**What goes wrong:** The system captures and stores full scans or photos of dowod osobisty (ID card), including photo, CAN number, and other data beyond what is necessary for the rental contract. UODO (Polish data protection authority) has ruled this violates the RODO data minimization principle (Art. 5(1)(c) GDPR).
+**What goes wrong:** All OCR/ML Kit libraries for React Native (`@react-native-ml-kit/text-recognition`, `react-native-mlkit`, `expo-ocr`) require native modules. They crash immediately in Expo Go with "NativeModule is null" errors. The entire OCR feature is untestable in Expo Go.
 
-**Why it happens:** It feels natural to "just photograph the ID" for verification. Developers implement a simple camera capture without understanding that storing the full document image is legally distinct from recording specific data fields.
+**Why it happens:** Google ML Kit requires native iOS/Android SDK bindings compiled into the app binary. Expo Go bundles a fixed set of native modules and ML Kit is not one of them.
 
-**Consequences:** Fines up to millions of PLN. In August 2025, ING Bank was fined over 18 million PLN for systematic copying of identity documents. Glovo's Polish entity was fined 5.9 million PLN for similar violations. A car rental company is not exempt.
+**Consequences:** If the team tries to prototype OCR in Expo Go, they waste days on cryptic errors. If daily development workflow relies on Expo Go, switching to dev client changes how every developer works.
 
 **Prevention:**
-- Capture individual data fields (name, PESEL, ID number, issuing authority, issue date) as structured text input -- not as document scans.
-- For driver's license: photographing the license to verify driving rights can be considered proportionate and justified (RODO Art. 6(1)(b) and 6(1)(f)), but storage duration must be limited and justified.
-- Implement a clear data retention policy: delete personal data after the rental period plus any legally required retention period (typically statute of limitations for claims -- 3 years for business contracts in Poland).
-- Never store CAN numbers from ID cards.
+- The app already uses EAS Build for APK (v2.2). Set up an EAS Development Client profile (`eas build --profile development`) BEFORE starting any OCR work.
+- Test the dev client workflow on both Android and iOS before writing OCR code.
+- Start with a minimal proof-of-concept: take photo -> extract text -> display in TextInput. If this works, the rest is UI.
 
-**Detection (warning signs):** A feature spec that says "scan dowod" or "photograph ID card" without specifying exactly which fields are captured and stored.
+**Detection:** "NativeModule.RNMLKitTextRecognition is null" at runtime in Expo Go.
 
-**Phase relevance:** Must be resolved in Phase 1 (data model design). Retrofitting data minimization into a system that already stores full document images requires data migration and potential UODO notification.
-
-**Confidence:** HIGH -- based on UODO enforcement decisions and official guidance.
+**Phase relevance:** Must be resolved in the first task of OCR implementation. This is a prerequisite, not a feature.
 
 ---
 
-### Pitfall 2: Digital Signature Without Legal Standing
+### Pitfall 2: ContractFrozenData Schema Change Breaks Existing Contracts
 
-**What goes wrong:** The app collects a finger/stylus drawn signature and embeds it in a PDF, but the resulting document has weak legal standing because the signature type and contract formation process were not designed with Polish eIDAS regulations in mind.
+**What goes wrong:** v3.0 adds many new fields to the contract: company NIP, second driver, editable terms, insurance case number, VAT status, pickup/return location, rental notes. The current `ContractFrozenData` interface is frozen into the `Contract.contractData` JSON column at signing time. Old contracts have the OLD shape. The Handlebars PDF template crashes or renders blank when encountering old contracts missing new fields.
 
-**Why it happens:** Developers implement a simple canvas drawing component and assume "a signature is a signature." Polish law recognizes three levels of electronic signature (SES, AES, QES) under eIDAS, each with different legal weight.
+**Why it happens:** The current architecture freezes all contract data into a JSON blob at creation. The PDF template reads from this blob. Adding `{{customer.companyNip}}` or `{{secondDriver.firstName}}` to the template and then viewing an old contract = broken rendering.
 
-**Consequences:** In a dispute, the customer could argue the contract is not binding. For car rental agreements, Polish law does not require written form (forma pisemna) -- oral agreements are valid. However, the entire point of the system is to have enforceable documentation. A weak signature process undermines this.
+**Consequences:** Cannot re-generate PDFs for old contracts. Admin panel crashes viewing historical contract details. Potential data integrity issues if migration tries to backfill frozen data.
 
 **Prevention:**
-- Car rental contracts (umowa najmu) do not require written form under pain of invalidity in Polish law, so a Simple Electronic Signature (SES) -- the drawn signature -- is legally admissible as evidence.
-- However, strengthen evidentiary value by: (1) capturing a timestamp with the signature, (2) logging device info and IP, (3) including a hash of the contract content at signing time, (4) sending the signed PDF immediately to the customer's email as confirmation.
-- Store the full audit trail: who signed, when, on which device, which employee facilitated.
-- Do NOT claim the signature is a "qualified electronic signature" (QES) -- it is not. Frame it correctly in the contract text as an electronic signature per Art. 25 eIDAS.
-- Include a clause in the contract where the customer acknowledges and accepts the electronic form.
+- NEVER backfill or modify existing `contractData` JSON -- it is an immutable legal record
+- Add a `schemaVersion` field to new `ContractFrozenData` entries (e.g., `schemaVersion: 2`)
+- All new Handlebars template fields MUST use `{{#if fieldName}}` guards
+- Create versioned templates: `contract-v1.hbs` (current, untouched), `contract-v2.hbs` (with new fields). Select based on `schemaVersion`.
+- In shared types, use a discriminated union: `ContractFrozenDataV1 | ContractFrozenDataV2` so TypeScript catches missing field access
 
-**Detection (warning signs):** Contract template that references "podpis wlasnoręczny" (handwritten signature) without adapting language for electronic context. No audit metadata stored alongside the signature.
+**Detection:** PDF generation fails for older rentals; blank fields in re-generated PDFs; TypeScript errors when accessing new fields on old contracts without narrowing.
 
-**Phase relevance:** Phase 1-2 (contract template design + signature implementation). The contract template wording and signature capture must be designed together.
-
-**Confidence:** HIGH -- based on Polish eIDAS implementation, Docusign/PandaDoc legal guides for Poland, and Polish civil code provisions on contract form.
+**Phase relevance:** Must be the FIRST thing designed in v3.0 -- every other feature (terms, company, second driver, locations) depends on how frozen data is versioned.
 
 ---
 
-### Pitfall 3: PESEL and Personal Data Stored Without Encryption at Rest
+### Pitfall 3: PDF Encryption Requires System Dependency (qpdf) on Railway
 
-**What goes wrong:** The database stores PESEL, ID numbers, and driver's license numbers in plaintext. A database breach exposes all customer identity data, triggering mandatory UODO notification (72 hours) and potential fines.
+**What goes wrong:** Puppeteer generates PDFs but has ZERO support for encryption or password protection (confirmed in puppeteer/puppeteer#657, still open). The commonly recommended approach is post-processing with `node-qpdf2`, which shells out to the `qpdf` CLI binary. Railway containers do not have `qpdf` installed by default.
 
-**Why it happens:** Developers treat these as regular string fields. The urgency to ship features pushes encryption "to later." Standard ORMs and database setups do not encrypt individual fields by default.
+**Why it happens:** `page.pdf()` produces an unencrypted buffer. PDF encryption is a separate concern. `node-qpdf2` is a wrapper around a system binary, not pure JavaScript.
 
-**Consequences:** Data breach notification obligations. Potential UODO fines. Reputational destruction for a local business. PESEL is essentially a permanent identifier (like SSN) -- once leaked, it cannot be changed.
+**Consequences:** Works locally (qpdf installed via brew/apt), fails silently or crashes in production on Railway. Emergency fix requires custom Dockerfile or a library swap under pressure.
 
 **Prevention:**
-- Encrypt sensitive fields (PESEL, nr dowodu, nr prawa jazdy) at the application level before storage. Use AES-256-GCM or similar.
-- Separate encryption keys from the database (use environment variables or a key management service).
-- Implement column-level encryption for these specific fields, not just disk encryption (which does not protect against SQL injection or application-level breaches).
-- Ensure search functionality works with encrypted data (e.g., store a HMAC hash for lookup, decrypt only for display).
-- Audit trail: log who accessed decrypted personal data and when.
+- **Recommended:** Use `@pdfsmaller/pdf-encrypt-lite` -- pure JS, ~7KB, works directly on Buffers, peer-depends on `pdf-lib`. It provides RC4 128-bit encryption which is adequate for password-protecting rental contracts (this is deterrent security, not classified documents).
+- Workflow: `PdfService.generateContractPdf()` returns `Buffer` -> pass through `encryptPDF()` -> upload encrypted buffer to R2.
+- **Alternative (if AES-256 required):** Add qpdf to Railway via a custom Dockerfile: `RUN apt-get update && apt-get install -y qpdf`. Use `node-qpdf2`. Test in Docker locally first.
+- **Password strategy:** requirement says password = registration plate number. Send the password info via SMS (already have SMSAPI integration). Do NOT put the password in the email body alongside the PDF attachment.
 
-**Detection (warning signs):** Database schema where PESEL is a VARCHAR without any encryption wrapper. No key management strategy in the architecture document.
+**Detection:** `Error: spawn qpdf ENOENT` in production logs. Or: PDF opens without asking for password.
 
-**Phase relevance:** Phase 1 (database design). Must be built in from the start. Retrofitting encryption requires data migration and potential downtime.
-
-**Confidence:** HIGH -- RODO requirement, UODO enforcement patterns.
+**Phase relevance:** Implement after the basic PDF template v2 is working. Encryption is a post-processing step that wraps the existing `generateContractPdf()` output.
 
 ---
 
-### Pitfall 4: CEPiK API Treated as Real-Time Dependency
+### Pitfall 4: Second Driver Does Not Fit the Customer Model
 
-**What goes wrong:** The rental workflow blocks on a CEPiK API call to verify driver's license. CEPiK is a government API -- it has maintenance windows, can be slow, and may be unavailable. When it is down, employees cannot complete rentals.
+**What goes wrong:** Adding a second driver seems like "just another customer." But the `Customer` model has: portal tokens, retention policies, rental relations, PESEL encryption, archived status. A second driver needs a subset (name, PESEL, license, CEPiK check) but not the full `Customer` lifecycle. Reusing `Customer` creates ghost records (customers with no rentals, no portal access, polluting search results). Creating inline JSON loses CEPiK verification tracking.
 
-**Why it happens:** The happy-path design assumes the API is always available. The CEPiK API is free and accessible, so developers integrate it directly into the rental flow without fallback planning.
+**Why it happens:** The Prisma schema has `Customer` as a full entity. A second driver is conceptually "a person who can drive" but not "a customer who rents." The ORM encourages reusing existing models.
 
-**Consequences:** Employee in the field cannot complete a rental because the verification step hangs or fails. Lost revenue. Frustrated customers waiting in the parking lot.
+**Consequences:** Ghost Customer records. CEPiK verification service tightly coupled to Customer entity needs refactoring. Customer search returns second drivers. PESEL uniqueness constraints may collide if the same person is both a customer and a second driver.
 
 **Prevention:**
-- Design CEPiK verification as asynchronous/non-blocking. Allow the rental to proceed with a "verification pending" status.
-- Implement a fallback: manual verification (employee visually checks the driver's license and records the details). Flag these rentals for later CEPiK confirmation when the API is available.
-- Cache recent verification results (a driver verified yesterday is likely still valid today).
-- Monitor CEPiK API health with circuit breaker pattern -- after N failures, automatically switch to manual mode and alert the admin.
-- Note: CEPiK API access requires application to biurocepik2.0@cyfra.gov.pl. The approval process timeline is unknown. Build the system to work without CEPiK first.
+- Create a dedicated `SecondDriver` model: `{ id, rentalId, firstName, lastName, peselEncrypted, peselHmac, licenseNumEncrypted, licenseNumHmac, licenseCategory, phone? }`. Link to Rental (1:1 optional), not Customer.
+- Extract CEPiK verification logic into a service method that accepts "a person's license data" (interface `DriverLicenseData { licenseNumber, firstName, lastName, pesel? }`) rather than a Customer entity. Both Customer and SecondDriver can use it.
+- Add `secondDriver` as an optional section in `ContractFrozenDataV2`.
+- Mobile wizard: "Dodaj drugiego kierowce" toggle that reveals additional fields inline -- NOT a navigation to customer creation.
+- Apply the same encryption pattern (encrypted JSON + HMAC) used for Customer's PESEL/license fields.
 
-**Detection (warning signs):** Rental creation flow that has a hard dependency on an external API call. No "degraded mode" in the workflow design.
+**Detection:** Orphaned Customer records with no rentals; duplicate PESEL entries; CEPiK service type errors when passed a non-Customer entity.
 
-**Phase relevance:** Design the fallback in Phase 1 (workflow design). Implement CEPiK integration in a later phase as an enhancement, not a blocker.
-
-**Confidence:** MEDIUM -- CEPiK API availability characteristics are based on general government API patterns and limited public documentation. The access process (email application) suggests it is not a self-service, instant-access API.
+**Phase relevance:** Data model design phase. Must be decided before building the mobile form or the PDF template section.
 
 ---
 
-### Pitfall 5: Double-Booking / Calendar Race Conditions
+### Pitfall 5: Google Places API Billing Surprise
 
-**What goes wrong:** Two employees simultaneously assign the same car to different customers for overlapping dates. The calendar shows the car as available to both because the reservation is not committed until the contract is signed.
+**What goes wrong:** Google Places API costs money per request. Every autocomplete keystroke that hits the API is a billable event. A busy rental office making 50 rentals/day with employees typing pickup/return locations = thousands of API calls/month.
 
-**Why it happens:** With ~10 employees in the field using mobile apps, concurrent access to the same fleet data is inevitable. Simple SELECT-then-INSERT patterns without locking allow race conditions.
+**Why it happens:** Developers enable the API, test with small volume, deploy. Google charges ~$2.83/1000 Autocomplete requests and ~$17/1000 Place Details requests. No free tier for Places API (only $200/month Cloud credit which covers ~70K autocomplete calls but gets eaten quickly if Place Details are also called).
 
-**Consequences:** Two customers show up for the same car. One must be turned away. Unprofessional, potential conflict, lost revenue.
+**Consequences:** Unexpected monthly bills of $50-200+. No way to retroactively limit spend.
 
 **Prevention:**
-- Use database-level constraints: a unique constraint or exclusion constraint on (vehicle_id, date_range) that prevents overlapping bookings at the database level (PostgreSQL supports range types and exclusion constraints natively with `EXCLUDE USING gist`).
-- Implement optimistic locking with version numbers on vehicle availability records.
-- Show real-time or near-real-time availability in the app (WebSocket or polling with short intervals).
-- Add a "hold" mechanism: when an employee starts a rental for a vehicle, place a temporary 15-minute hold that other employees can see.
-- Buffer time between rentals (e.g., 1-2 hours) for cleaning and inspection.
+- Aggressive debouncing: 400ms minimum before firing API call
+- Minimum 3 characters before first API call
+- Use session tokens (native SDK supports them) to bundle autocomplete + place details into one session charge (~$0.017/session vs separate pricing)
+- Set Google Cloud billing budget alert at $20/month and a hard cap
+- Cache frequent locations -- rental office pickup points are the same addresses repeatedly. Store them as "favorite locations" in the admin panel.
+- Store the full address string + coordinates in the rental record, NOT just a Google Place ID (Place IDs can change and re-resolving costs money)
 
-**Detection (warning signs):** No database-level constraint preventing overlapping date ranges for the same vehicle. Availability check done only at the application level.
+**Detection:** Google Cloud billing dashboard. High API call count in first operational week.
 
-**Phase relevance:** Phase 1 (database schema design) for constraints. Phase 2 (mobile app) for real-time availability display.
-
-**Confidence:** HIGH -- well-documented problem in all booking/reservation systems.
+**Phase relevance:** Must configure billing alerts and debouncing before deploying to production. Test with realistic usage patterns.
 
 ---
 
 ## Moderate Pitfalls
 
-### Pitfall 6: Polish Character Encoding in PDF Generation
+### Pitfall 6: OCR Accuracy on Polish Documents Is Unreliable Without UX Guardrails
 
-**What goes wrong:** Generated PDF contracts display garbled text instead of Polish diacritics (ą, ę, ó, ś, ź, ż, ć, ń, ł). The standard 14 PDF fonts do not support Polish characters.
+**What goes wrong:** ML Kit text recognition on a photo of a Polish dowod osobisty or prawo jazdy returns garbled text with field boundaries mixed up. Polish diacritics (ą, ę, ó, ś, ź, ż, ć, ń, ł) are frequently misread: ł -> l, ó -> o, ą -> a. Workers expect "scan and done" but get "scan and correct everything."
 
-**Why it happens:** Default PDF libraries use built-in fonts that only support ASCII/Latin-1. Developers test with "Jan Kowalski" (no diacritics) and miss the issue until production.
+**Why it happens:** Polish ID cards have a specific layout but ML Kit returns unstructured text blocks. Glare, angles, fingers over text, and low light make it worse. There is no field-level extraction in basic ML Kit -- it returns a flat text string.
 
 **Prevention:**
-- Use a PDF generation approach that supports UTF-8 with embedded fonts (e.g., Puppeteer/Chromium rendering HTML-to-PDF, or a library like pdf-lib with explicitly embedded Polish-compatible fonts).
-- Embed a font that covers Polish characters (DejaVu Sans, Roboto, or Lato all work).
-- Test PDF generation with maximally diacritical test data: "Małgorzata Łączkowska-Źrebięcka, ul. Żółkiewskiego 13/4, Łódź."
-- Include font embedding in the CI/CD test suite -- generate a test PDF and validate character rendering.
+- Frame OCR as a "pre-fill helper" in the UI. Show extracted text in EDITABLE TextInputs. The worker reviews and corrects. Never auto-submit OCR results.
+- For Polish ID cards, the MRZ (Machine Readable Zone) at the bottom is more reliable than visual text. Parse MRZ first for PESEL, name, document number.
+- For driving licenses, field numbers (1. surname, 2. first name, 4b. date of issue, etc.) help with structured extraction -- but require parsing logic per document type.
+- Image preprocessing before OCR: crop to document bounds, increase contrast, convert to grayscale (use `sharp` on the server or Expo Image Manipulator on device).
+- Set worker expectations during training: OCR saves 50-70% of typing, not 100%.
+- RODO consideration: if photos of documents are sent to the server for OCR, they must be deleted immediately after text extraction. Do NOT store document images (see v1.0 PITFALLS on UODO fines for document scanning). Process OCR on-device whenever possible.
 
-**Detection (warning signs):** PDF generation tests using only ASCII names. No explicit font embedding in the PDF generation configuration.
+**Detection:** Workers complaining "OCR doesn't work." High correction rate on pre-filled fields.
 
-**Phase relevance:** Phase 2 (PDF generation feature). Must be validated before the contract template is finalized.
-
-**Confidence:** HIGH -- extensively documented issue in PDF generation libraries (dompdf, jsPDF, etc.).
+**Phase relevance:** OCR implementation phase. Build the editable pre-fill UI first, then add OCR as an enhancement.
 
 ---
 
-### Pitfall 7: SMS Character Encoding Eating Message Budgets
+### Pitfall 7: Editable Rental Terms Create Mutability Hazard
 
-**What goes wrong:** SMS messages containing Polish diacritics (ą, ę, etc.) switch from GSM-7 encoding (160 chars/segment) to UCS-2 encoding (70 chars/segment). A 120-character reminder with one "ą" becomes a 2-segment message, doubling the cost.
+**What goes wrong:** "Editable terms per rental" introduces a question the current system doesn't have: when exactly are terms frozen? Currently, contract data freezes at creation. If terms are editable, can they change after the contract is generated but before signing? After partial signing? This ambiguity leads to contracts where the PDF shows different terms than what the customer saw on screen.
 
-**Why it happens:** Developers write natural Polish text in SMS templates without considering encoding economics. SMSAPI.pl has a `nounicode` parameter that strips diacritics, but if not enabled, Polish characters trigger UCS-2.
+**Why it happens:** The current `ContractFrozenData` has a `conditions` object with numeric values but no free-text terms. Adding editable terms means adding a mutable text field to what was previously an immutable-at-creation pipeline.
 
 **Prevention:**
-- Use SMSAPI's `nounicode=1` parameter to automatically transliterate Polish diacritics (ą->a, ę->e, etc.). This keeps messages in GSM-7 encoding at 160 chars/segment.
-- Write SMS templates using ASCII-safe Polish (e.g., "Przypominamy o zwrocie samochodu" instead of using special characters).
-- Monitor SMS costs -- a sudden doubling often indicates encoding issues.
-- Note SMSAPI rate limit: 100 requests/second per IP. Unlikely to be a problem at this scale (~100 cars) but implement queuing anyway.
-- Sender ID is limited to 11 alphanumeric characters and requires manual verification (business hours Mon-Fri 8-17). Register the sender name early -- the default is "Test."
+- Add `terms: string[]` and `termsNotes: string` to `ContractFrozenDataV2`
+- Terms are editable in the mobile wizard ONLY while contract status is `DRAFT`
+- Once ANY signature is added (`PARTIALLY_SIGNED`), terms are locked. No exceptions.
+- Store a `defaultTermsTemplate` at the company/admin level. Each new rental pre-fills from this template. Per-rental overrides are stored in the frozen data.
+- The "uwagi do warunkow najmu" (notes to terms) is a separate free-text field in the frozen data -- do not mix it into the terms array.
+- UI must clearly show "locked" state after signing begins.
 
-**Detection (warning signs):** SMS templates with Polish diacritics and no `nounicode` parameter. No sender ID registered before launch.
+**Detection:** Customer disputes contract terms. PDF shows different terms than database record.
 
-**Phase relevance:** Phase 2-3 (SMS integration). Register sender ID as a non-technical task in Phase 1.
-
-**Confidence:** HIGH -- directly from SMSAPI.pl documentation.
+**Phase relevance:** Must be designed alongside the ContractFrozenDataV2 schema. The locking rules must be enforced at the API level, not just in the mobile UI.
 
 ---
 
-### Pitfall 8: Photo Storage Without Compression or Lifecycle Management
+### Pitfall 8: NIP Validation Has Multiple Layers -- Checksum Is Not Enough
 
-**What goes wrong:** Each rental generates 20-40 high-resolution photos (vehicle condition before/after). At ~100 rentals/month, uncompressed photos accumulate to hundreds of GB within months. Storage costs balloon. App performance degrades when loading photo galleries.
+**What goes wrong:** Team implements NIP checksum validation (mod-11 algorithm with weights 6,5,7,2,3,4,5,6,7) client-side and considers it done. But the business needs: (1) verify the company exists, (2) check VAT payer status for the 100%/50%/nie VAT field, (3) auto-fill company name and address. Checksum alone validates format, nothing more.
 
-**Why it happens:** The initial implementation stores original camera images (3-8 MB each from modern phones) without server-side compression. No lifecycle policy moves old photos to cheaper storage tiers.
+**Why it happens:** NIP checksum is trivial to implement. The real value -- government API integration -- requires understanding rate limits, API availability, and data freshness.
 
 **Prevention:**
-- Compress photos on the device before upload: resize to max 1920px on the longest edge, JPEG quality 80%. This typically reduces 5MB to ~300KB with acceptable quality for damage documentation.
-- Generate thumbnails server-side for gallery views (200px, ~20KB each).
-- Implement storage lifecycle: keep full-resolution photos for the rental period + 1 year (statute of limitations for visible damage claims), then move to cold storage or delete.
-- Use presigned URLs for direct-to-storage uploads (S3 or equivalent) to avoid routing through the application server.
-- Tag photos with metadata: rental_id, vehicle_id, timestamp, before/after, employee_id.
+- **Layer 1 (client-side, instant):** NIP format + checksum via `validate-polish` npm package. Already in the monorepo ecosystem (pure JS, no native deps).
+- **Layer 2 (server-side, async):** Hit the free gov.pl Biala Lista VAT API: `GET https://wl-api.mf.gov.pl/api/check/nip/{nip}?date={YYYY-MM-DD}`. Free, no auth needed. Returns VAT status (czynny/zwolniony/niezarejestrowany). Rate limited: 10 requests/second, 100 searches or 5000 checks per day. Use the "check" endpoint (higher daily limit).
+- **Layer 3 (optional, paid):** nip24.pl API for full GUS/REGON data (company name, address, legal form). Has a Node.js SDK. Paid service. Consider only if auto-fill of company data is a priority.
+- Cache NIP verification results: store status, timestamp, source. Don't re-check on every page load.
+- VAT status field on the customer/company record should be an ENUM (`ACTIVE_VAT | EXEMPT_VAT | NOT_REGISTERED | UNKNOWN`), not a boolean. The "100%/50%/nie" in the requirements refers to VAT deduction rate, which is a business rule applied to the enum status.
 
-**Detection (warning signs):** No image compression in the upload pipeline. No storage cost projections in the architecture document. Photos stored as BLOBs in the database.
+**Detection:** Invalid company data accepted. VAT status incorrect on contract.
 
-**Phase relevance:** Phase 2 (photo documentation feature). Design the storage strategy before implementation.
-
-**Confidence:** HIGH -- standard mobile app image management concern, validated by scale math.
+**Phase relevance:** Implement Layer 1 (checksum) immediately with the form. Layer 2 (Biala Lista) as a background check. Layer 3 only if the business explicitly wants auto-fill.
 
 ---
 
-### Pitfall 9: No Offline Capability for Field Workers
+### Pitfall 9: Settlement Tracking Scope Creep Into Accounting
 
-**What goes wrong:** The mobile app requires constant internet connectivity. Employees in parking garages, rural areas, or dead zones cannot complete rentals. The app shows spinners or errors, and the employee resorts to paper.
+**What goes wrong:** "Sledzenie rozliczenia najmu" starts as a simple paid/unpaid status but requirements grow: partial payments, payment dates, payment methods, deposit handling, damage deductions, late fee calculations, multi-payment tracking. The team ends up building a half-baked accounting system.
 
-**Why it happens:** Building offline-first is significantly harder than online-only. The initial MVP is built assuming connectivity, and offline is "added later" -- which often means never, because retrofitting offline sync is architecturally invasive.
+**Why it happens:** The business says "track settlements" but the actual need is ambiguous. Once a "payments" table exists, every financial edge case gets shoe-horned into it.
 
 **Prevention:**
-- Design for offline from the start, even if the first implementation is online-only. This means: local-first data model, sync queue for pending operations, conflict resolution strategy.
-- Critical offline flows: creating a rental (draft), capturing photos, capturing signatures. These must work without connectivity.
-- Sync strategy: queue operations locally, sync when connectivity returns. For this scale (~10 employees), "last write wins" with employee identification is likely sufficient -- true conflicts are rare.
-- Pre-cache vehicle fleet data and active rentals on app startup.
-- Display clear connectivity status in the UI so employees know when they are operating offline.
+- Define scope NOW: settlement tracking is a STATUS + NOTES system, NOT a payment processing or accounting system. Get explicit sign-off.
+- Minimal model: `Settlement { rentalId (unique), status: PENDING|PARTIAL|PAID|DISPUTED, totalDue: Int, totalPaid: Int, notes: String?, paidAt: DateTime?, settledById: String? }` on the Rental model, or as a related record.
+- The web admin sets a rental's settlement status with an amount and optional notes. That is the feature.
+- Do NOT add: payment method tracking, bank integration, automatic VAT calculation, invoice generation, multi-payment ledger.
+- If the business later needs invoicing, that is a separate system (Fakturownia, wFirma, etc.) and out of scope per PROJECT.md.
 
-**Detection (warning signs):** All API calls are fire-and-forget with no local persistence layer. No "pending sync" concept in the data model.
+**Detection:** Feature requirements growing beyond the original ask. Requests for "just one more field" on the settlement form.
 
-**Phase relevance:** Architecture decision in Phase 1. Implementation in Phase 2 (mobile app). Even if offline is not in MVP, the data model must accommodate it.
-
-**Confidence:** MEDIUM -- severity depends on actual connectivity conditions at rental locations. Discuss with the business owner whether poor connectivity is a real problem.
+**Phase relevance:** Define scope in initial design. Implement as one of the simpler v3.0 features. Resist scope expansion.
 
 ---
 
-### Pitfall 10: Audit Trail as an Afterthought
+### Pitfall 10: Google Places Library Choice -- JS HTTP vs Native SDK
 
-**What goes wrong:** The audit trail is implemented as simple log messages rather than a structured, queryable record. When the business owner asks "which employee extended this rental on Tuesday?" there is no reliable way to answer.
+**What goes wrong:** The most popular library `react-native-google-places-autocomplete` (by FaridSafi) is pure JS making HTTP calls directly to Google's API. It has 500+ open GitHub issues, no proper session token support, CORS issues on web, and exposes the API key in the JavaScript bundle. Developers choose it because it appears first on npm and has the most downloads.
 
-**Why it happens:** Audit logging feels like a cross-cutting concern that can be "added later." But retroactively adding audit trails means historical actions are unrecoverable.
+**Why it happens:** The JS library is easy to install (no native deps, works in Expo Go). The native SDK alternatives require a dev client build.
 
 **Prevention:**
-- Implement audit logging from day one as a first-class data model: `audit_events` table with (event_id, user_id, action, entity_type, entity_id, timestamp, before_state, after_state, ip_address, device_info).
-- Every mutation to rentals, contracts, vehicles, and customer data must create an audit record.
-- Make audit records immutable (append-only, no UPDATE or DELETE on the audit table).
-- Build a simple audit viewer in the admin panel from the start.
-- This is especially important for RODO compliance: you need to demonstrate who accessed personal data and when.
+- Since OCR already requires a dev client build (Pitfall 1), there is NO extra cost to using a native Places SDK wrapper.
+- Use `expo-google-places` or `react-native-google-places-sdk` -- both use the native Google Places SDK, support session tokens natively, and keep the API key in native config (not exposed in JS).
+- For the web admin panel (Next.js), use Google Maps JavaScript API directly via `@react-google-maps/api` or the Places Autocomplete widget -- this is a completely separate integration path.
+- Restrict the API key: Android apps restriction (SHA-1 fingerprint) + iOS apps restriction (bundle ID) + Places API only. Create a SEPARATE key for web with HTTP referrer restrictions.
 
-**Detection (warning signs):** No `audit_events` or equivalent table in the schema. Audit implemented via application logs (grep-based, not queryable).
+**Detection:** API key visible in React Native JS bundle. CORS errors. Session tokens not reducing billing.
 
-**Phase relevance:** Phase 1 (database schema and API middleware). Must be wired in before any business logic is written.
-
-**Confidence:** HIGH -- explicit business requirement in PROJECT.md ("Auth z audit trailem").
+**Phase relevance:** Library choice must be made before implementation. Prototype with native SDK early to validate it works with the dev client.
 
 ---
 
 ## Minor Pitfalls
 
-### Pitfall 11: Contract Template Drift
+### Pitfall 11: Return Protocol Is a Separate Template, Not an Extension of the Contract
 
-**What goes wrong:** The PDF template and the digital contract form diverge over time. The business updates the paper template but the digital version is not updated (or vice versa). Customers receive contracts with different terms depending on channel.
+**What goes wrong:** Developers try to append the return protocol to the existing contract PDF template, creating a mega-template with conditional sections. The Handlebars template becomes unmaintainable -- contract.hbs grows from a complex 2-page template to an even more complex 3-4 page conditional template.
 
 **Prevention:**
-- Use a single source of truth for the contract template -- an HTML/Handlebars template that generates both the on-screen form and the PDF.
-- Version the contract template with a version number displayed on each generated contract.
-- Implement a template update workflow: business owner uploads new template -> admin reviews -> deploy.
+- Create a separate `return-protocol.hbs` template and a `generateReturnProtocolPdf()` method in PdfService.
+- The return protocol has different data: return date/time, final mileage, fuel level, damage assessment, settlement summary, photos reference.
+- Link to Rental, not Contract. Add `returnProtocolPdfKey` and `returnProtocolPdfGeneratedAt` to the Rental model.
+- A rental can have multiple contracts (original + annexes) but exactly one return protocol.
 
-**Phase relevance:** Phase 2 (contract/PDF generation).
+**Phase relevance:** Implement after the v2 contract template is stable. The return protocol is independent.
 
 ---
 
-### Pitfall 12: Timezone and Date Handling for Rental Periods
+### Pitfall 12: Vehicle Classes Are a Simple Lookup -- Don't Over-Engineer
 
-**What goes wrong:** Rental start/end times are stored ambiguously. Poland observes CET/CEST daylight saving time. A rental starting at "14:00" near a DST transition could be interpreted differently, causing 1-hour billing disputes.
+**What goes wrong:** Vehicle classes get designed as a complex hierarchy (Class -> Subclass -> Tier -> Variant) when the business just needs "Ekonomiczna, Kompaktowa, SUV, Premium" as admin-defined labels.
 
 **Prevention:**
-- Store all timestamps in UTC with timezone info (ISO 8601 with offset).
-- Display in Polish local time (Europe/Warsaw).
-- For rental duration calculations, use a proper date-time library that handles DST (e.g., date-fns-tz, Luxon).
-- Define billing periods based on calendar days, not 24-hour blocks, to avoid DST edge cases.
+- Simple model: `VehicleClass { id, name: String, defaultDailyRateNet: Int?, sortOrder: Int, isActive: Boolean }`
+- Many-to-one from Vehicle to VehicleClass (nullable -- existing vehicles don't have a class yet)
+- Admin CRUD in the web panel with drag-and-drop reordering
+- Migration: add nullable `vehicleClassId` column to Vehicle. No backfill required -- workers assign classes gradually.
 
-**Phase relevance:** Phase 1 (data model). Use UTC from the start.
+**Phase relevance:** One of the simplest v3.0 features. Can be implemented early as a warm-up.
 
 ---
 
-### Pitfall 13: Customer Portal Security with Email-Based Access
+### Pitfall 13: Hiding VIN/Year from Customer Requires Backend Filtering
 
-**What goes wrong:** The customer portal uses a "magic link" sent via email. If the link token is predictable, does not expire, or grants access to other customers' data, it becomes a security vulnerability.
+**What goes wrong:** Developers hide VIN and production year in the customer portal frontend only. The API still returns this data -- visible in browser DevTools network tab.
 
 **Prevention:**
-- Use cryptographically random tokens (at least 32 bytes, URL-safe base64).
-- Tokens expire after 24 hours and are single-use for authentication (issue a session after first use).
-- Scope access strictly: a customer can only see their own rentals.
-- Rate-limit magic link requests to prevent enumeration.
-- Include the customer's email in the token validation to prevent token reuse across accounts.
+- The portal JWT has `CUSTOMER` role. Use it to strip `vin` and `year` from vehicle responses at the API level (response serializer or DTO transformation).
+- Decide if the customer-facing PDF copy also omits VIN/year. If yes, the PDF template needs a variant or a conditional section based on whether the PDF is for the customer or the company's records.
+- Do not rely on frontend-only data hiding for anything the client considers sensitive.
 
-**Phase relevance:** Phase 3 (customer portal). Security design during Phase 1.
+**Phase relevance:** Small change. Can be done alongside any portal work.
+
+---
+
+### Pitfall 14: Email Subject with Registration + Case Number -- Encoding and Length
+
+**What goes wrong:** Email subject "Umowa najmu WE 12345 - sprawa ubezp. 2024/XYZ/1234" may hit length limits on some email clients (recommended max ~78 chars for subject line). Special characters in case numbers (slashes, dots) display inconsistently.
+
+**Prevention:**
+- Keep email subject template short: `Umowa najmu {registration}` or `{registration} - {caseNumber}` if case number exists.
+- Ensure Resend/Nodemailer uses proper MIME header encoding for UTF-8 subjects (this should be default but verify).
+- Test with edge cases: long case numbers, case numbers with special characters.
+
+**Phase relevance:** Trivial change in the email service. Can be done at any point.
+
+---
+
+### Pitfall 15: Migration Complexity -- Many Schema Changes at Once
+
+**What goes wrong:** v3.0 adds many new fields and models simultaneously: VehicleClass, SecondDriver, settlement fields on Rental, returnProtocol fields, company/NIP fields on Customer, terms template, etc. A single massive migration is risky (long lock time, hard to debug failures, hard to rollback).
+
+**Prevention:**
+- Split into multiple sequential migrations, each adding one concern: (1) VehicleClass model + FK, (2) Customer company fields, (3) SecondDriver model, (4) Rental settlement fields, (5) Rental return protocol fields, (6) Contract schema version, etc.
+- All new columns on existing tables MUST be nullable or have defaults. No non-null columns on populated tables.
+- Test each migration on a copy of production data (Neon DB allows branching) before applying to production.
+- Run `prisma migrate deploy` in CI to catch migration issues before production.
+
+**Detection:** Migration timeout. Lock wait errors. Prisma migration status showing failed migrations.
+
+**Phase relevance:** Plan migration strategy at the start of v3.0. Execute migrations incrementally as each feature is built.
 
 ---
 
@@ -275,31 +287,30 @@ Mistakes that cause rewrites, legal liability, or major issues.
 
 | Phase Topic | Likely Pitfall | Mitigation |
 |-------------|---------------|------------|
-| Data model design | Storing full document scans instead of structured fields | Define exactly which fields are captured from each document type. No image capture of ID cards. |
-| Data model design | No encryption for PESEL/ID numbers | Implement field-level encryption from day one. |
-| Data model design | No audit trail table | Add `audit_events` as part of initial schema. |
-| Contract/signature | Weak legal standing of digital signature | Include timestamp, device info, hash; adapt contract language for electronic form. |
-| CEPiK integration | Hard dependency on government API | Design as async/optional. Build manual fallback first. |
-| PDF generation | Polish character encoding failures | Embed UTF-8 fonts explicitly. Test with maximum-diacritical data. |
-| SMS integration | Diacritics doubling message costs | Use `nounicode=1`. Register sender ID early (manual process). |
-| Photo documentation | Uncompressed photos, no lifecycle policy | Compress on device, thumbnails on server, lifecycle policies for old photos. |
-| Mobile app | No offline support despite field-worker use case | Design local-first data model even if online-only MVP. |
-| Calendar/scheduling | Double-booking race conditions | Database-level exclusion constraints on (vehicle, date_range). |
-| Customer portal | Insecure magic link implementation | Cryptographic tokens, expiry, single-use, strict scoping. |
+| Schema design (first) | Massive migration + frozen data breakage | Version ContractFrozenData; split migrations; all new cols nullable |
+| Dev client setup | OCR + native Places SDK need dev client | Set up EAS dev client BEFORE feature work begins |
+| OCR document scanning | Poor accuracy; RODO risk of storing doc images | OCR is pre-fill helper; process on-device; never store images |
+| Google Places | Billing surprise; wrong library choice; key exposure | Budget alerts; native SDK (since dev client required anyway); restrict key |
+| PDF encryption | System dependency breaks in Railway | Use pure-JS encryption (`@pdfsmaller/pdf-encrypt-lite`); test in Docker |
+| Editable terms | Mutability after signing; template divergence | Lock at PARTIALLY_SIGNED; version templates |
+| Company/NIP | Checksum-only validation; VAT status as boolean | Layer validation (local + Biala Lista); use enum for VAT status |
+| Second driver | Reusing Customer model; CEPiK coupling | Dedicated SecondDriver model; extract driver verification interface |
+| Return protocol | Template bloat in contract.hbs | Separate template; link to Rental not Contract |
+| Settlement tracking | Scope creep into accounting | Define scope boundary upfront; status + notes + amount only |
+| Vehicle classes | Over-engineering a lookup table | Simple model with name + sort order; nullable FK on Vehicle |
+| VIN/year hiding | Frontend-only hiding; API still exposes data | Backend response filtering based on CUSTOMER role |
 
 ## Sources
 
-- [UODO on document scanning legality](https://auraco.pl/blog/skany-dokumentow-osobistych-praktyczny-przewodnik/) -- MEDIUM confidence
-- [UODO fine against ING Bank (18M PLN) for document copying](https://uodo.gov.pl/decyzje/DKN.5131.1.2025) -- HIGH confidence
-- [UODO fine against Glovo (5.9M PLN)](https://kicb.pl/ponad-58-mln-zl-kary-dla-wlasciciela-glovo-za-skanowanie-dokumentow/) -- HIGH confidence
-- [CEPiK API driver verification](https://chandonwaller.pl/api-weryfikacja-uprawnien-kierowcy/) -- MEDIUM confidence
-- [CEPiK API access: biurocepik2.0@cyfra.gov.pl](http://www.cepik.gov.pl/interfejs-dla-cepik) -- HIGH confidence (official portal)
-- [Electronic signature legality in Poland (eIDAS)](https://www.docusign.com/products/electronic-signature/legality/poland) -- HIGH confidence
-- [PandaDoc: e-signature law Poland](https://www.pandadoc.com/electronic-signature-law/poland/) -- HIGH confidence
-- [Car rental contract form requirements (Polish law)](https://poradnikprzedsiebiorcy.pl/-wzor-umowa-najmu-samochodu-z-omowieniem) -- MEDIUM confidence
-- [SMSAPI.pl integration docs](https://www.smsapi.com/blog/sms-api-integration-checklist/) -- HIGH confidence
-- [SMSAPI.pl FAQ on encoding and rate limits](https://www.smsapi.com/blog/tech-support-sms-communication-faq/) -- HIGH confidence
-- [Polish diacritics in PDF generation (dompdf issue)](https://github.com/dompdf/dompdf/discussions/3172) -- HIGH confidence
-- [Double-booking prevention system design](https://itnext.io/solving-double-booking-at-scale-system-design-patterns-from-top-tech-companies-4c5a3311d8ea) -- HIGH confidence
-- [GDPR enforcement in Poland](https://cms.law/en/int/publication/gdpr-enforcement-tracker-report/poland) -- HIGH confidence
-- [Poland SMS features and restrictions](https://api.support.vonage.com/hc/en-us/articles/204017553-Poland-SMS-Features-and-Restrictions) -- MEDIUM confidence
+- [Puppeteer #657: no PDF encryption support](https://github.com/puppeteer/puppeteer/issues/657) - HIGH confidence, official GitHub issue, still open
+- [@pdfsmaller/pdf-encrypt-lite on npm](https://www.npmjs.com/package/@pdfsmaller/pdf-encrypt-lite) - MEDIUM confidence, newer pure-JS library
+- [node-qpdf2](https://github.com/Sparticuz/node-qpdf2) - HIGH confidence, established qpdf wrapper
+- [react-native-google-places-autocomplete issues](https://github.com/FaridSafi/react-native-google-places-autocomplete/issues) - HIGH confidence, 500+ open issues visible
+- [expo-google-places-autocomplete](https://github.com/alanjhughes/expo-google-places-autocomplete) - MEDIUM confidence, native SDK wrapper
+- [validate-polish on npm](https://www.npmjs.com/package/validate-polish) - HIGH confidence, Polish validation utility
+- [Biala Lista VAT API (gov.pl)](https://www.gov.pl/web/kas/api-wykazu-podatnikow-vat) - HIGH confidence, official government API documentation
+- [nip24.pl Node.js SDK](https://nip24.pl/en/nowosc-biblioteka-javascript-dla-node-js-ze-wszystkimi-funkcjami-juz-dostepna/) - MEDIUM confidence, commercial service with Node.js support
+- [@react-native-ml-kit/text-recognition](https://www.npmjs.com/package/@react-native-ml-kit/text-recognition) - HIGH confidence, npm package
+- [react-native-mlkit by Infinite Red](https://docs.infinite.red/react-native-mlkit/) - MEDIUM confidence, maintained by known RN consultancy
+- [Google Places API pricing](https://developers.google.com/maps/documentation/places/web-service/usage-and-billing) - HIGH confidence, official Google documentation
+- Existing codebase: PdfService (Puppeteer + Handlebars), ContractFrozenData interface, Customer/Rental/Contract Prisma models, shared types - HIGH confidence, direct code inspection

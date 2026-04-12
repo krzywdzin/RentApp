@@ -1,479 +1,615 @@
-# Architecture Research
+# Architecture Patterns — v3.0 Integration
 
-**Domain:** Car Rental Management System (Polish market, field-first workflow)
-**Researched:** 2026-03-23
-**Confidence:** HIGH
+**Domain:** Car rental management system — v3.0 feature integration into existing architecture
+**Researched:** 2026-04-12
+**Confidence:** HIGH (based on full codebase inspection)
 
-## Standard Architecture
-
-### System Overview
+## Existing Architecture (Reference)
 
 ```
-┌──────────────────────────────────────────────────────────────────────┐
-│                        CLIENT LAYER                                  │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐               │
-│  │  Mobile App  │  │  Admin Panel │  │ Customer     │               │
-│  │  (Employee)  │  │  (Web SPA)   │  │ Portal (Web) │               │
-│  │  React Native│  │  React       │  │ React        │               │
-│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘               │
-│         │                 │                  │                       │
-├─────────┴─────────────────┴──────────────────┴───────────────────────┤
-│                        API GATEWAY / REVERSE PROXY                   │
-│                        (Nginx or Caddy)                              │
-├──────────────────────────────────────────────────────────────────────┤
-│                        BACKEND API (Node.js / NestJS)                │
-│  ┌────────────┐ ┌──────────┐ ┌──────────┐ ┌───────────┐            │
-│  │  Auth &    │ │ Contract │ │  Fleet   │ │ Rental    │            │
-│  │  Audit     │ │ & PDF    │ │ Mgmt     │ │ Lifecycle │            │
-│  ├────────────┤ ├──────────┤ ├──────────┤ ├───────────┤            │
-│  │ Calendar & │ │ Photo &  │ │ Customer │ │ Notifi-   │            │
-│  │ Scheduling │ │ Damage   │ │ Mgmt     │ │ cations   │            │
-│  └────────────┘ └──────────┘ └──────────┘ └───────────┘            │
-├──────────────────────────────────────────────────────────────────────┤
-│                        DATA & STORAGE LAYER                          │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐               │
-│  │ PostgreSQL   │  │ Object Store │  │ Redis        │               │
-│  │ (primary DB) │  │ (S3 / MinIO) │  │ (sessions,   │               │
-│  │              │  │ photos, PDFs │  │  job queue)  │               │
-│  └──────────────┘  └──────────────┘  └──────────────┘               │
-├──────────────────────────────────────────────────────────────────────┤
-│                        EXTERNAL SERVICES                             │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐            │
-│  │ CEPiK    │  │ smsapi.pl│  │ SMTP /   │  │ Push     │            │
-│  │ 2.0 API  │  │          │  │ Mailgun  │  │ (FCM/APNs)│           │
-│  └──────────┘  └──────────┘  └──────────┘  └──────────┘            │
-└──────────────────────────────────────────────────────────────────────┘
+apps/
+  api/          NestJS + Prisma + Bull queues (15 modules)
+  mobile/       Expo/React Native (file-based routing, wizard pattern)
+  web/          Next.js admin panel
+packages/
+  shared/       Types (TypeScript interfaces), schemas (Zod), enums
 ```
 
-### Component Responsibilities
+**Key patterns already established:**
+- Prisma ORM with PostgreSQL, single `schema.prisma` at `apps/api/prisma/`
+- Encrypted PII (PESEL, ID, license) via `Json` columns + HMAC for search
+- `ContractFrozenData` JSON snapshot at contract creation time
+- Puppeteer + Handlebars PDF generation in `PdfService`
+- S3-compatible storage (Cloudflare R2) via `StorageService`
+- Event-driven side effects via `EventEmitter2` (e.g., `rental.created`, `rental.returned`)
+- Bull queues on Redis for async SMS/email jobs
+- class-validator DTOs on API, Zod schemas in shared package
+- Mobile wizard pattern with file-based routing (`new-rental/`, `return/`)
 
-| Component | Responsibility | Typical Implementation |
-|-----------|----------------|------------------------|
-| Mobile App (Employee) | Field rental workflow: create contracts, capture signatures, take photos, verify drivers | React Native with signature canvas, camera integration |
-| Admin Panel (Web) | Fleet management, calendar view, rental oversight, reporting, employee management | React SPA (Vite), full CRUD dashboard |
-| Customer Portal (Web) | Read-only view of own contracts, rental history, upcoming return dates | Lightweight React app, token-based access (magic link) |
-| Auth & Audit Module | JWT authentication, role-based access (admin/employee/customer), full audit trail | Passport.js or NestJS Guards, audit log table |
-| Contract & PDF Module | Digital contract creation, signature embedding, PDF generation from template, email delivery | pdf-lib or @react-pdf/renderer (server), Handlebars templates |
-| Fleet Management Module | Vehicle CRUD, status tracking (available/rented/maintenance), mileage, insurance dates | Standard REST CRUD with status state machine |
-| Rental Lifecycle Module | Full rental cycle: create, extend, return, close. Links vehicle + customer + contract | State machine (draft -> active -> extended -> returned -> closed) |
-| Calendar & Scheduling | Visual calendar of rentals, alerts for upcoming returns, conflict detection | FullCalendar (admin), cron jobs for alerts |
-| Photo & Damage Module | Photo capture (mobile), upload, storage, association with rental + damage annotations | Camera API -> presigned URL upload -> S3/MinIO |
-| Customer Management | Customer CRUD, contact info, rental history, driver license data | Standard REST CRUD, PESEL validation |
-| Notifications | SMS reminders, email with PDF contracts, push notifications, in-app alerts | BullMQ job queue, smsapi.pl SDK, Nodemailer |
+---
 
-## Recommended Project Structure
+## Feature-by-Feature Integration Map
 
-This is a monorepo with three client apps and one backend API.
+### 1. Document Scanning (OCR + photo of ID/license)
 
+**Impact:** NEW module + new DB model + new mobile wizard step
+
+**New API module:** `apps/api/src/documents/`
 ```
-rentapp/
-├── apps/
-│   ├── mobile/                  # React Native (Expo) employee app
-│   │   ├── src/
-│   │   │   ├── screens/         # Screen components
-│   │   │   ├── components/      # Shared UI components
-│   │   │   ├── navigation/      # React Navigation config
-│   │   │   ├── hooks/           # Custom hooks (useRental, useCamera)
-│   │   │   ├── services/        # API client, storage helpers
-│   │   │   ├── stores/          # State management (Zustand)
-│   │   │   └── types/           # TypeScript types
-│   │   └── app.json
-│   ├── admin/                   # React web admin panel
-│   │   ├── src/
-│   │   │   ├── pages/           # Route-level components
-│   │   │   ├── components/      # Shared UI components
-│   │   │   ├── hooks/           # Data fetching hooks
-│   │   │   ├── services/        # API client
-│   │   │   └── types/           # TypeScript types
-│   │   └── vite.config.ts
-│   └── customer-portal/         # React web customer view
-│       └── src/                 # Minimal structure (few pages)
-├── packages/
-│   └── shared/                  # Shared types, validation, constants
-│       ├── types/               # Contract, Vehicle, Customer types
-│       ├── validation/          # Zod schemas (shared client+server)
-│       └── constants/           # Rental statuses, roles, etc.
-├── server/                      # NestJS backend API
-│   ├── src/
-│   │   ├── modules/
-│   │   │   ├── auth/            # Authentication, JWT, guards
-│   │   │   ├── audit/           # Audit trail logging
-│   │   │   ├── vehicles/        # Fleet management
-│   │   │   ├── customers/       # Customer management
-│   │   │   ├── rentals/         # Rental lifecycle
-│   │   │   ├── contracts/       # PDF generation, templates
-│   │   │   ├── photos/          # Photo upload, storage
-│   │   │   ├── notifications/   # SMS, email, push
-│   │   │   ├── calendar/        # Scheduling, alerts
-│   │   │   └── cepik/           # CEPiK 2.0 integration
-│   │   ├── common/
-│   │   │   ├── guards/          # Auth guards
-│   │   │   ├── interceptors/    # Audit interceptor, logging
-│   │   │   ├── filters/         # Exception filters
-│   │   │   └── decorators/      # Custom decorators
-│   │   ├── database/
-│   │   │   ├── migrations/      # TypeORM or Prisma migrations
-│   │   │   └── seeds/           # Seed data (vehicle types, etc.)
-│   │   └── jobs/                # Background job processors (BullMQ)
-│   └── test/
-├── docker-compose.yml           # PostgreSQL, Redis, MinIO (dev)
-├── package.json                 # Workspace root (pnpm)
-└── turbo.json                   # Turborepo config
+documents/
+  documents.module.ts
+  documents.controller.ts    POST /documents/scan (multipart)
+  documents.service.ts        orchestrates storage + OCR
+  ocr.service.ts              wraps OCR provider
+  dto/scan-document.dto.ts
 ```
 
-### Structure Rationale
+**New DB model:**
+```prisma
+model CustomerDocument {
+  id            String   @id @default(uuid())
+  customerId    String?
+  rentalId      String?
+  type          String   // "ID_CARD" | "DRIVERS_LICENSE"
+  photoKey      String
+  thumbnailKey  String?
+  ocrData       Json?
+  ocrConfidence Float?
+  uploadedById  String
+  createdAt     DateTime @default(now())
 
-- **Monorepo (pnpm workspaces + Turborepo):** Three client apps + one API share types and validation schemas. Keeps everything in sync without publishing packages. At this scale (~100 cars, ~10 employees), a monorepo is simpler than separate repos.
-- **packages/shared/:** Zod validation schemas and TypeScript types shared between server and all clients. Prevents contract drift between API and frontends.
-- **server/src/modules/:** NestJS module-per-domain pattern. Each module owns its controller, service, entities, and DTOs. Clear boundaries, easy to test in isolation.
-- **server/src/jobs/:** Background processing separated from request handlers. PDF generation, SMS sending, and email delivery should never block API responses.
+  customer      Customer? @relation(fields: [customerId], references: [id])
+  rental        Rental?   @relation(fields: [rentalId], references: [id])
 
-## Architectural Patterns
-
-### Pattern 1: Modular Monolith (Backend)
-
-**What:** A single NestJS application organized into well-bounded modules, each owning its domain (vehicles, rentals, contracts, notifications). Modules communicate through injected services, not HTTP calls.
-
-**When to use:** Always for this project. With ~100 vehicles and ~10 employees, microservices would add operational complexity with zero benefit.
-
-**Trade-offs:**
-- Pro: Single deployment, simple debugging, shared database transactions
-- Pro: Can extract modules into services later if needed (unlikely at this scale)
-- Con: All modules share the same process -- a bug in notifications could theoretically affect rentals
-- Mitigation: Use BullMQ for background jobs to isolate heavy work from the API process
-
-### Pattern 2: Rental State Machine
-
-**What:** Each rental follows a strict state machine: `draft -> active -> [extended] -> returned -> closed -> [disputed]`. State transitions are enforced in the service layer and logged in the audit trail.
-
-**When to use:** Always. The rental lifecycle is the core business process. Free-form status updates lead to invalid states and data corruption.
-
-**Trade-offs:**
-- Pro: Prevents invalid transitions (cannot "return" a draft, cannot "extend" a closed rental)
-- Pro: Audit trail captures every transition with timestamp and actor
-- Con: Adding new states requires migration and careful testing
-
-**Example:**
-```typescript
-// Allowed transitions map
-const RENTAL_TRANSITIONS: Record<RentalStatus, RentalStatus[]> = {
-  draft: ['active', 'cancelled'],
-  active: ['extended', 'returned'],
-  extended: ['returned'],
-  returned: ['closed', 'disputed'],
-  closed: [],
-  cancelled: [],
-  disputed: ['closed'],
-};
-
-// Service method
-async transitionRental(id: string, newStatus: RentalStatus, actorId: string) {
-  const rental = await this.rentalRepo.findOneOrFail(id);
-  const allowed = RENTAL_TRANSITIONS[rental.status];
-  if (!allowed.includes(newStatus)) {
-    throw new BadRequestException(
-      `Cannot transition from ${rental.status} to ${newStatus}`
-    );
-  }
-  rental.status = newStatus;
-  await this.rentalRepo.save(rental);
-  await this.auditService.log('rental.transition', { rentalId: id, from: rental.status, to: newStatus, actorId });
+  @@index([customerId])
+  @@index([rentalId])
+  @@map("customer_documents")
 }
 ```
 
-### Pattern 3: Presigned URL Upload (Photos)
+**Modified models:** `Customer` (add `documents CustomerDocument[]` relation), `Rental` (add `documents CustomerDocument[]` relation)
 
-**What:** Mobile app requests a presigned upload URL from the API, then uploads photos directly to object storage (S3/MinIO). The API only stores the metadata (URL, rental ID, timestamp, damage flag).
-
-**When to use:** Always for photo uploads. Avoids routing large binary payloads through the API server.
-
-**Trade-offs:**
-- Pro: API server never handles photo bytes -- saves memory and bandwidth
-- Pro: Works well offline (queue uploads, execute when connected)
-- Con: Slightly more complex client-side logic
-- Con: Requires object storage setup (MinIO for dev, S3 or compatible for production)
-
-### Pattern 4: Background Job Queue for Notifications
-
-**What:** SMS, email, and PDF generation are processed asynchronously via BullMQ (Redis-backed). API endpoints enqueue jobs and return immediately.
-
-**When to use:** Always for PDF generation, SMS, and email. These involve external service calls that can fail or be slow.
-
-**Trade-offs:**
-- Pro: API responses remain fast
-- Pro: Automatic retries with exponential backoff for failed SMS/email
-- Pro: Job status tracking (useful for "PDF is generating..." UI feedback)
-- Con: Redis dependency (minimal -- already useful for sessions)
-
-## Data Flow
-
-### Core Rental Flow (Employee in the field)
-
-```
-Employee opens mobile app
-    |
-    v
-[Select/Create Customer] --> API: POST /customers or GET /customers/:id
-    |
-    v
-[Verify Driver License] --> API: POST /cepik/verify --> CEPiK 2.0 API
-    |                                                     (rate limited:
-    v                                                      20/sec, 100/min)
-[Select Vehicle] --> API: GET /vehicles?status=available
-    |
-    v
-[Fill Contract Form] --> local state (dates, terms, customer, vehicle)
-    |
-    v
-[Capture Signature] --> react-native-signature-canvas --> base64 PNG
-    |
-    v
-[Take Photos] --> Camera API --> presigned URL --> S3/MinIO (direct upload)
-    |
-    v
-[Submit Rental] --> API: POST /rentals
-    |                  (creates rental + contract record in transaction)
-    |
-    v
-[Generate PDF] --> BullMQ job --> pdf-lib (embed signature, photos, data)
-    |                              --> S3 (store PDF)
-    |
-    v
-[Send Contract] --> BullMQ job --> Nodemailer (PDF attachment to customer)
-    |
-    v
-[Rental Active] --> Cron job watches return dates
-                    --> BullMQ --> smsapi.pl (SMS reminder before due date)
+**Shared types:**
+```typescript
+interface DocumentScanResult {
+  documentType: 'ID_CARD' | 'DRIVERS_LICENSE';
+  photoUrl: string;
+  extractedFields: {
+    firstName?: string; lastName?: string;
+    pesel?: string; idNumber?: string;
+    idIssuedBy?: string; idExpiryDate?: string;
+    licenseNumber?: string; licenseCategory?: string;
+    address?: string;
+  };
+  confidence: number;
+}
 ```
 
-### Admin Calendar & Extension Flow
+**Mobile:** New step in `new-rental/` wizard between customer selection and dates. Camera capture, upload, display extracted fields for employee confirmation.
 
-```
-Admin views calendar --> API: GET /rentals?from=X&to=Y
-    |
-    v
-[Sees upcoming return] --> clicks "Extend"
-    |
-    v
-[Set new end date] --> API: PATCH /rentals/:id/extend
-    |                   (state: active -> extended, audit logged)
-    |
-    v
-[Auto-notify customer] --> BullMQ --> smsapi.pl SMS
-                           BullMQ --> email with updated dates
-```
+**Data flow:** Mobile captures photo -> `POST /documents/scan` -> API stores in R2, runs OCR -> returns extracted fields -> mobile pre-fills customer form -> employee corrects -> proceeds to rental creation.
 
-### Customer Portal Flow
+**OCR provider choice:** Google Cloud Vision API (best Polish text accuracy). Fallback: Tesseract.js for offline/cost reasons. Implementation in `ocr.service.ts` behind interface for swappability.
 
-```
-Customer receives email with contract
-    |
-    v
-[Clicks magic link] --> /portal?token=xyz123
-    |                   (short-lived JWT, scoped to customer ID)
-    v
-[Views own rentals] --> API: GET /portal/rentals (token-scoped)
-    |
-    v
-[Downloads PDF] --> presigned S3 URL (time-limited)
+---
+
+### 2. Vehicle Classes (admin-defined)
+
+**Impact:** NEW model + extend Vehicle model + extend VehiclesModule
+
+**New DB model:**
+```prisma
+model VehicleClass {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  description String?
+  sortOrder   Int       @default(0)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  vehicles    Vehicle[]
+  @@map("vehicle_classes")
+}
 ```
 
-### Key Data Flows
+**Modified model:** `Vehicle` — add `classId String?` + `vehicleClass VehicleClass? @relation(...)` + `@@index([classId])`
 
-1. **Contract creation flow:** Multi-step data collection on mobile -> single API transaction (rental + contract + photo metadata) -> async PDF generation -> async email delivery. The mobile app should be able to collect all data offline and submit when connected.
+**No new module needed.** Extend `VehiclesModule` with class CRUD:
+- `GET /vehicles/classes` (all roles)
+- `POST /vehicles/classes` (admin)
+- `PATCH /vehicles/classes/:id` (admin)
+- `DELETE /vehicles/classes/:id` (admin, soft-delete via `isActive`)
 
-2. **Notification pipeline:** All notifications flow through BullMQ. A rental event (creation, extension, approaching return) triggers a job. The job processor selects the right channel (SMS via smsapi.pl, email via SMTP, push via FCM). Failed deliveries retry with backoff.
+**Shared types:** `VehicleClassDto { id, name, description, sortOrder, isActive }`
+**VehicleDto extension:** add `vehicleClass?: VehicleClassDto`
 
-3. **Photo pipeline:** Mobile captures photo -> requests presigned URL from API -> uploads directly to object storage -> confirms upload to API with metadata. Photos are grouped by rental and tagged as "pre-rental", "post-rental", or "damage".
+**Web:** New "Klasy pojazdow" settings page + class dropdown in vehicle edit form.
+**Mobile:** Filter/group vehicles by class in vehicle selection step.
 
-4. **Audit trail:** An NestJS interceptor automatically logs every mutating API call (POST, PUT, PATCH, DELETE) with: actor ID, action, entity type, entity ID, timestamp, and changed fields. Stored in a dedicated audit_logs table.
+---
 
-## Database Schema (Core Entities)
+### 3. Editable Rental Terms + Notes (features #3 and #14 combined)
 
-```
-┌─────────────┐     ┌──────────────┐     ┌─────────────┐
-│  employees  │     │   rentals    │     │  vehicles   │
-├─────────────┤     ├──────────────┤     ├─────────────┤
-│ id          │──┐  │ id           │  ┌──│ id          │
-│ name        │  │  │ customer_id  │──│  │ make        │
-│ email       │  │  │ vehicle_id   │──┘  │ model       │
-│ phone       │  └──│ employee_id  │     │ plate_number│
-│ role        │     │ start_date   │     │ year        │
-│ password_h  │     │ end_date     │     │ status      │
-│ created_at  │     │ status       │     │ daily_rate  │
-└─────────────┘     │ created_at   │     │ vin         │
-                    │ updated_at   │     │ insurance_  │
-┌─────────────┐     └──────┬───────┘     │   expiry    │
-│  customers  │            │             │ mileage     │
-├─────────────┤     ┌──────┴───────┐     └─────────────┘
-│ id          │──┐  │  contracts   │
-│ first_name  │  │  ├──────────────┤     ┌─────────────┐
-│ last_name   │  │  │ id           │     │   photos    │
-│ phone       │  │  │ rental_id    │     ├─────────────┤
-│ email       │  │  │ template_ver │     │ id          │
-│ address     │  │  │ data_json    │     │ rental_id   │
-│ pesel       │  │  │ signature_url│     │ url         │
-│ id_number   │  │  │ pdf_url      │     │ type (pre/  │
-│ id_issuer   │  │  │ signed_at    │     │  post/dmg)  │
-│ id_issued   │  │  │ created_at   │     │ annotation  │
-│ license_num │  │  └──────────────┘     │ uploaded_at │
-│ license_cat │  │                       │ uploaded_by │
-│ license_doc │  │  ┌──────────────┐     └─────────────┘
-│ license_iss │  │  │ audit_logs   │
-│ created_at  │  │  ├──────────────┤     ┌──────────────┐
-└─────────────┘  │  │ id           │     │ notifications│
-                 │  │ actor_id     │     ├──────────────┤
-                 │  │ action       │     │ id           │
-                 │  │ entity_type  │     │ rental_id    │
-                 │  │ entity_id    │     │ channel      │
-                 │  │ changes_json │     │ type         │
-                 │  │ ip_address   │     │ status       │
-                 │  │ created_at   │     │ sent_at      │
-                 │  └──────────────┘     │ error        │
-                 │                       └──────────────┘
-                 │
-                 └── (customer_id FK on rentals table)
+**Impact:** Modify Rental model + ContractFrozenData + PDF template + new Settings model
+
+**New DB model (for default terms):**
+```prisma
+model AppSetting {
+  key       String   @id
+  value     String   @db.Text
+  updatedAt DateTime @updatedAt
+  @@map("app_settings")
+}
 ```
 
-### Key Schema Decisions
-
-- **contracts.data_json:** Store the full contract data as JSONB. The contract template may evolve, but historical contracts must preserve the exact data they were generated with. Do not reconstruct contracts from normalized data.
-- **photos.url:** Store the S3/MinIO object key, not the full URL. Generate presigned URLs on demand.
-- **audit_logs.changes_json:** JSONB column storing `{ field: { old: X, new: Y } }` diffs. Enables "who changed what when" queries.
-- **rentals.status:** Enum column with state machine enforcement in application code (not DB triggers).
-- **customers.pesel:** Sensitive data. Encrypt at rest. Consider column-level encryption with pgcrypto for PII fields (PESEL, ID number, license number).
-
-## Scaling Considerations
-
-| Scale | Architecture Adjustments |
-|-------|--------------------------|
-| Current (~100 vehicles, ~10 employees) | Single server monolith is perfect. PostgreSQL on same host or managed service. Redis for job queue. MinIO or S3 for photos. |
-| 500 vehicles, 50 employees | Same architecture. Add read replicas for PostgreSQL if report queries slow down admin panel. CDN for photo delivery. |
-| 2000+ vehicles, multi-location | Consider splitting into location-scoped tenants. Separate reporting database (replicated). Dedicated job worker process. Still a monolith. |
-
-### Scaling Priorities
-
-1. **First bottleneck: Photo storage bandwidth.** At 10-20 photos per rental, this accumulates. Presigned URL pattern means API server is unaffected, but storage costs and retrieval latency grow. Mitigation: lifecycle policies to move old photos to cheaper storage tiers after 1 year.
-
-2. **Second bottleneck: PDF generation under load.** If multiple employees submit rentals simultaneously, PDF generation queue depth grows. Mitigation: BullMQ handles this naturally with configurable concurrency. At this scale, a single worker with concurrency=3 is sufficient.
-
-3. **Not a bottleneck: Database.** With ~100 vehicles and ~10 concurrent users, PostgreSQL will never be stressed. Even naive queries will be fast. Optimize only when there is actual evidence of slowness.
-
-## Anti-Patterns
-
-### Anti-Pattern 1: Synchronous PDF Generation in API Response
-
-**What people do:** Generate PDF in the same request that creates the rental, making the employee wait 3-10 seconds.
-**Why it's wrong:** PDF generation involves template rendering, signature image embedding, and file upload. It is slow and can fail. The employee is standing with the customer in a parking lot.
-**Do this instead:** Return the rental immediately, generate PDF in background, notify when ready. The mobile app shows "Contract is being generated..." and polls or uses a WebSocket for completion.
-
-### Anti-Pattern 2: Storing Photos as BLOBs in PostgreSQL
-
-**What people do:** Store photo binary data directly in the database.
-**Why it's wrong:** Bloats the database, makes backups slow and expensive, kills query performance when the photos table is touched.
-**Do this instead:** Use object storage (S3/MinIO). Store only the object key in the database. Generate presigned URLs for access.
-
-### Anti-Pattern 3: Free-form Rental Status Updates
-
-**What people do:** Allow setting any status string on a rental (`rental.status = 'whatever'`).
-**Why it's wrong:** Leads to inconsistent data, broken business logic, and impossible-to-debug states. "Is this rental active or returned? The status says 'done'."
-**Do this instead:** Enforce a state machine with explicit allowed transitions. Every transition is a named method (e.g., `extendRental()`, `returnRental()`) that validates preconditions.
-
-### Anti-Pattern 4: Hardcoded Contract Template
-
-**What people do:** Build the contract layout directly in code with string concatenation.
-**Why it's wrong:** Contract templates change frequently (legal requirements, business terms). Developers should not be required for every text change.
-**Do this instead:** Use a template system (Handlebars or similar) with the contract template stored as a versioned file or database record. Data is injected at render time. Old contracts reference their template version.
-
-### Anti-Pattern 5: Coupling CEPiK Verification to Rental Creation
-
-**What people do:** Make CEPiK verification a blocking step in the rental creation flow.
-**Why it's wrong:** CEPiK API may be slow, rate-limited (20/sec, 100/min), or down. If verification fails, the employee cannot proceed with the rental at all.
-**Do this instead:** Make CEPiK verification a separate, optional step. The employee can verify before creating the rental. If CEPiK is unavailable, allow creating the rental with a "verification_pending" flag and verify later. Log the verification result regardless.
-
-## Integration Points
-
-### External Services
-
-| Service | Integration Pattern | Notes |
-|---------|---------------------|-------|
-| CEPiK 2.0 API | REST API via HTTPS with client certificate | Requires formal application (2-3 weeks), certificate issuance. Rate limited: 20 req/sec, 100 req/min. Test environment available. Documentation at api.cepik.gov.pl/doc. Input: name + license doc number. Apply as "Przewoznicy i posrednicy przy przewozie osob". |
-| smsapi.pl | REST API with bearer token | Polish SMS provider. TLS 1.2 required. Rate limit: 100 req/sec per IP. Node.js SDK available. Simple integration: POST with phone number + message text. |
-| Email (SMTP) | Nodemailer via SMTP or API (Mailgun/SendGrid) | For sending contracts as PDF attachments. Use a transactional email service rather than raw SMTP for deliverability. |
-| Object Storage | S3-compatible API (AWS S3 or MinIO) | Presigned URLs for upload and download. MinIO for local dev (Docker), S3 or compatible (e.g., DigitalOcean Spaces) for production. |
-| Push Notifications | FCM (Android) + APNs (iOS) via firebase-admin | For in-app alerts about upcoming returns, contract ready, etc. Expo Push Notifications simplifies this if using Expo. |
-
-### Internal Boundaries
-
-| Boundary | Communication | Notes |
-|----------|---------------|-------|
-| Mobile App <-> API | REST over HTTPS + JWT | All business logic lives in the API. Mobile is a thin client. |
-| Admin Panel <-> API | REST over HTTPS + JWT | Same API, different auth role. Admin endpoints require admin guard. |
-| Customer Portal <-> API | REST over HTTPS + scoped JWT (magic link) | Minimal endpoints. Read-only access to own rentals. Token contains customer_id and expiry. |
-| API <-> Job Queue | BullMQ (Redis) | API enqueues jobs (PDF gen, SMS, email). Workers process them. Same codebase, can run in same or separate process. |
-| API <-> Database | TypeORM or Prisma | ORM for standard CRUD. Raw SQL for complex reporting queries if needed. |
-| API <-> Object Storage | AWS SDK v3 | Presigned URL generation in API. Direct upload/download from clients. |
-
-## Build Order (Dependency Chain)
-
-The architecture dictates a natural build order based on dependencies:
-
+**Modified model: Rental** — add:
 ```
-Phase 1: Foundation
-  ├── Database schema + migrations
-  ├── Auth module (JWT, roles, guards)
-  ├── Audit trail interceptor
-  └── Basic API scaffolding (NestJS)
-
-Phase 2: Core Domain
-  ├── Vehicle CRUD (depends on: auth, DB)
-  ├── Customer CRUD (depends on: auth, DB)
-  └── Rental lifecycle + state machine (depends on: vehicles, customers)
-
-Phase 3: Mobile App Shell
-  ├── React Native project setup (Expo)
-  ├── Auth flow (login screen -> JWT storage)
-  └── Basic navigation + vehicle/customer list screens
-
-Phase 4: Contract & Signature
-  ├── Signature capture (mobile) (depends on: mobile shell)
-  ├── Contract template system (depends on: rental lifecycle)
-  ├── PDF generation via BullMQ (depends on: contract, job queue)
-  └── Email delivery (depends on: PDF generation)
-
-Phase 5: Photo System
-  ├── Object storage setup (MinIO/S3)
-  ├── Presigned URL endpoint (depends on: auth, storage)
-  ├── Photo upload from mobile (depends on: mobile shell, storage)
-  └── Photo viewer in admin panel
-
-Phase 6: Notifications & Calendar
-  ├── SMS integration (smsapi.pl) (depends on: job queue)
-  ├── Calendar view in admin panel (depends on: rental data)
-  ├── Return reminder cron jobs (depends on: SMS, rentals)
-  └── Push notifications (depends on: mobile shell)
-
-Phase 7: External Integrations & Polish
-  ├── CEPiK 2.0 integration (depends on: API approval process - start early!)
-  ├── Admin panel (full) (depends on: all backend modules)
-  ├── Customer portal (depends on: contracts, auth)
-  └── Rental extension flow with auto-notifications
+rentalTerms   String?  @db.Text  // custom terms, null = use default
+termsNotes    String?  @db.Text  // additional notes ("uwagi")
 ```
 
-**Critical path note:** CEPiK 2.0 API access requires a formal application and certificate issuance (2-3 weeks). Start the application process in Phase 1 even though integration happens in Phase 7. Build the verification module with a mock/stub first.
+**ContractFrozenData.conditions extension:**
+```typescript
+rentalTerms: string;   // frozen: custom or default at contract time
+termsNotes: string | null;
+```
+
+**CreateContractDto extension:** No change needed. `ContractsService.buildFrozenData` reads `rentalTerms` from rental (or falls back to default from `AppSetting`).
+
+**PDF template:** Add `{{#if conditions.rentalTerms}}` section to `contract.hbs`.
+
+**Web admin:** Settings page to edit default terms via `AppSetting` table.
+**Mobile:** Editable textarea in contract step, pre-filled with default terms. Separate "Uwagi" textarea.
+
+---
+
+### 4. Company Customer (NIP checkbox)
+
+**Impact:** Modify Customer model + CustomerDto + contract frozen data + PDF
+
+**Modified model: Customer** — add:
+```
+isCompany       Boolean   @default(false)
+companyName     String?
+nipEncrypted    Json?
+nipHmac         String?
+companyAddress  String?
+```
+
+**CustomerDto extension:** `isCompany: boolean`, `companyName: string | null`, `nip: string | null`, `companyAddress: string | null`
+
+**ContractFrozenData.customer extension:** same fields.
+
+**Shared schemas:** NIP validation (Polish checksum algorithm) in `customer.schemas.ts`.
+
+**CustomersService:** Extend `create` and `update` to handle NIP encryption (same pattern as PESEL — encrypt + HMAC).
+
+**Mobile:** Toggle "Firma" in customer form. When checked, show NIP + company name + company address.
+**PDF:** Conditional company section in header.
+
+---
+
+### 5. Terms Acceptance Checkbox
+
+**Impact:** Modify Contract model + CreateContractDto + mobile flow
+
+**Modified model: Contract** — add:
+```
+termsAcceptedAt  DateTime?
+```
+
+**CreateContractDto extension:** `termsAcceptedAt?: string` (ISO date, same pattern as `rodoConsentAt`).
+
+**ContractFrozenData extension:** `termsAccepted: { accepted: boolean; timestamp: string | null }`
+
+**Mobile:** Checkbox before signatures step, same UX as existing RODO consent.
+**PDF:** Checkbox indicator with timestamp.
+
+**Minimal change** — exact copy of existing `rodoConsentAt` pattern.
+
+---
+
+### 6. Google Places (handover/return location)
+
+**Impact:** NEW module + extend handover/return JSON data
+
+**New API module:** `apps/api/src/places/`
+```
+places/
+  places.module.ts
+  places.controller.ts   GET /places/autocomplete?input=...
+  places.service.ts       wraps Google Places API
+```
+
+**No DB schema changes.** Location stored in existing `handoverData` / `returnData` JSON:
+```typescript
+// Extend VehicleInspection interface in shared:
+location?: {
+  placeId: string;
+  description: string;
+  lat: number;
+  lng: number;
+};
+```
+
+**API key:** Server-side only via `GOOGLE_PLACES_API_KEY` env var. Mobile calls own backend proxy, never touches Google directly.
+
+**Mobile:** Autocomplete text input in handover step and return `[rentalId].tsx` step.
+**PDF:** Show location text in handover/return sections.
+
+---
+
+### 7. Insurance Case Number + Email Subject (features #7 and #9 combined)
+
+**Impact:** Modify Rental model + mail service + PDF
+
+**Modified model: Rental** — add:
+```
+insuranceCaseNumber  String?
+```
+
+**CreateRentalDto extension:** `insuranceCaseNumber?: string`
+
+**ContractFrozenData.rental extension:** `insuranceCaseNumber: string | null`
+
+**MailService change:** `sendContractEmail` subject becomes: `insuranceCaseNumber ? "Nr sprawy: ${caseNumber} | ${reg} — Umowa ${contractNumber}" : "Umowa ${contractNumber} — ${reg}"`
+
+**Mobile:** Optional text field in rental creation dates step.
+**PDF:** Insurance case number in header if present.
+
+---
+
+### 8. Customer Address in Mobile
+
+**Impact:** Mobile UI only
+
+**No API or DB changes.** `Customer.address` already exists. Add address field to mobile customer form components.
+
+---
+
+### 10. Hide VIN/Year from Customer
+
+**Impact:** PDF template + portal API
+
+**PDF template change only:** Use Handlebars conditional — show VIN/year on company copy, hide on customer copy section.
+
+**Portal:** Filter VIN/year from portal endpoint responses in `PortalService`.
+
+**No DB changes.**
+
+---
+
+### 11. VAT Payer Status
+
+**Impact:** Modify Rental model + mobile form + PDF
+
+**Modified model: Rental** — add:
+```
+vatDeductionRate  Int?   // 100, 50, or 0. null = not applicable
+```
+
+**On Rental, not Customer** — VAT status is per-rental (can change between rentals).
+
+**Mobile:** Segmented control in rental creation: "100% VAT" / "50% VAT" / "Nie odlicza".
+**PDF:** VAT deduction info in pricing section.
+**Pricing impact:** Display-only. Does not change invoice amounts.
+
+---
+
+### 12. VAT Notification on Return
+
+**Impact:** Extend notifications module event listener
+
+**No new models.** Uses existing `Notification` model with new type `'VAT_RETURN_REMINDER'`.
+
+**Implementation:** Add handler in notification event listener for `rental.returned` event — if `vatDeductionRate` is set, queue notification to admin.
+
+---
+
+### 13. Second Driver (data + CEPiK)
+
+**Impact:** NEW model + modify Rental + extend CEPiK + extend contract + PDF
+
+**New DB model:**
+```prisma
+model RentalDriver {
+  id                  String   @id @default(uuid())
+  rentalId            String
+  firstName           String
+  lastName            String
+  phone               String?
+  peselEncrypted      Json
+  peselHmac           String
+  licenseNumEncrypted Json
+  licenseNumHmac      String
+  licenseCategory     String?
+  licenseIssuedBy     String?
+  rental              Rental   @relation(fields: [rentalId], references: [id], onDelete: Cascade)
+  cepikVerifications  CepikVerification[]
+  createdAt           DateTime @default(now())
+  @@index([rentalId])
+  @@map("rental_drivers")
+}
+```
+
+**Modified models:**
+- `Rental` — add `additionalDrivers RentalDriver[]`
+- `CepikVerification` — add `driverId String?` + `driver RentalDriver? @relation(...)` (nullable, existing records stay linked to customer only)
+
+**ContractFrozenData extension:**
+```typescript
+secondDriver?: {
+  firstName: string; lastName: string;
+  pesel: string; licenseNumber: string;
+  licenseCategory: string | null; phone: string | null;
+};
+```
+
+**Mobile:** "Dodaj drugiego kierowce" button in rental wizard. Sub-form with same encrypted fields. CEPiK check via existing `CepikService`.
+
+**API:** Extend `CreateRentalDto` with optional `secondDriver` object. Create `RentalDriver` record in same transaction. Encryption follows `CustomersService` pattern.
+
+**PDF:** Second driver section (conditional) on contract.
+
+---
+
+### 15. Return Protocol
+
+**Impact:** New PDF template + modify Rental model + extend return flow
+
+**Modified model: Rental** — add:
+```
+returnProtocolKey  String?
+returnProtocolAt   DateTime?
+```
+
+**PdfService extension:** New template `return-protocol.hbs` + method `generateReturnProtocolPdf(data)`.
+
+**Return protocol data type:**
+```typescript
+interface ReturnProtocolPdfData {
+  contractNumber: string;
+  returnDate: string;
+  customer: { firstName: string; lastName: string };
+  vehicle: { registration: string; make: string; model: string };
+  handoverMileage: number;
+  returnMileage: number;
+  damages: { x: number; y: number; label: string }[];
+  location?: { description: string };
+  notes?: string;
+  signatures: { employee?: string; customer?: string };
+}
+```
+
+**Mobile return flow:** After existing return wizard steps, new signature collection step (employee + customer sign protocol). Then generate/upload protocol PDF.
+
+**API:** New endpoint `POST /rentals/:id/return-protocol` or extend `processReturn`.
+
+---
+
+### 16. Settlement Tracking
+
+**Impact:** NEW module + new models + web admin page
+
+**New DB models:**
+```prisma
+enum SettlementStatus {
+  PENDING
+  PARTIAL
+  SETTLED
+  DISPUTED
+}
+
+model RentalSettlement {
+  id          String           @id @default(uuid())
+  rentalId    String           @unique
+  status      SettlementStatus @default(PENDING)
+  totalDue    Int
+  totalPaid   Int              @default(0)
+  notes       String?
+  settledAt   DateTime?
+  settledById String?
+  rental      Rental           @relation(fields: [rentalId], references: [id])
+  payments    SettlementPayment[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  @@map("rental_settlements")
+}
+
+model SettlementPayment {
+  id           String   @id @default(uuid())
+  settlementId String
+  amount       Int
+  method       String   // CASH, TRANSFER, CARD
+  reference    String?
+  paidAt       DateTime
+  recordedById String
+  settlement   RentalSettlement @relation(fields: [settlementId], references: [id])
+  createdAt    DateTime @default(now())
+  @@index([settlementId])
+  @@map("settlement_payments")
+}
+```
+
+**New API module:** `apps/api/src/settlements/`
+- `GET /settlements` (with status/date filters, pagination)
+- `GET /settlements/:id`
+- `POST /settlements` (auto-created on rental return or manual)
+- `PATCH /settlements/:id` (update status, notes)
+- `POST /settlements/:id/payments` (record payment)
+
+**Modified model: Rental** — add `settlement RentalSettlement?`
+
+**Web admin:** New "Rozliczenia" page with table, status filters, payment recording.
+**Mobile:** Read-only settlement status badge on rental detail (low priority).
+
+---
+
+### 17. Encrypted PDF
+
+**Impact:** Modify PdfService + contract signing flow + SMS
+
+**No new DB columns.** Encryption happens after PDF generation, before R2 upload.
+
+**PdfService extension:**
+```typescript
+async encryptPdf(pdfBuffer: Buffer, password: string): Promise<Buffer> {
+  // qpdf CLI: qpdf --encrypt <password> <password> 256 -- input.pdf output.pdf
+}
+```
+
+**Integration:** In `ContractsService.sign`, after `generateContractPdf`, call `encryptPdf(pdfBuffer, registration.toLowerCase())` before `storageService.upload`.
+
+**SMS:** After contract email sent, queue SMS: "Umowa wyslana na email. Haslo do PDF: {registration}".
+
+**Tool:** `qpdf` via `child_process.execFile` — battle-tested, handles PDF encryption correctly. Install as system dependency in Docker/Railway.
+
+---
+
+## Complete Database Migration Summary
+
+### New Models (5)
+| Model | Table | Purpose |
+|-------|-------|---------|
+| `CustomerDocument` | `customer_documents` | OCR scan photos + results |
+| `VehicleClass` | `vehicle_classes` | Admin-defined vehicle categories |
+| `RentalDriver` | `rental_drivers` | Second driver per rental |
+| `RentalSettlement` | `rental_settlements` | Settlement lifecycle |
+| `SettlementPayment` | `settlement_payments` | Individual payments |
+| `AppSetting` | `app_settings` | Key-value for default terms etc. |
+
+### New Enums (1)
+| Enum | Values |
+|------|--------|
+| `SettlementStatus` | PENDING, PARTIAL, SETTLED, DISPUTED |
+
+### Modified Models (4)
+| Model | New Columns |
+|-------|-------------|
+| `Customer` | `isCompany`, `companyName`, `nipEncrypted`, `nipHmac`, `companyAddress` + `documents` relation |
+| `Vehicle` | `classId` (FK) + `vehicleClass` relation |
+| `Rental` | `insuranceCaseNumber`, `vatDeductionRate`, `rentalTerms`, `termsNotes`, `returnProtocolKey`, `returnProtocolAt` + `additionalDrivers`, `documents`, `settlement` relations |
+| `Contract` | `termsAcceptedAt` |
+| `CepikVerification` | `driverId` (FK, nullable) + `driver` relation |
+
+### Migration Strategy
+**Single Prisma migration.** All new columns are nullable or have defaults. All new tables are standalone. Zero downtime — no data migration for existing records.
+
+---
+
+## New API Module Map
+
+```
+apps/api/src/
+  documents/         NEW — OCR document scanning
+  places/            NEW — Google Places proxy
+  settlements/       NEW — Settlement tracking
+  vehicles/          EXTEND — vehicle class CRUD endpoints
+  rentals/           EXTEND — new fields (insurance case, VAT, terms, second driver)
+  contracts/         EXTEND — terms acceptance, encryption, updated frozen data
+  contracts/pdf/     EXTEND — new templates (return protocol), encryption, updated contract template
+  customers/         EXTEND — company fields, NIP encryption, document relation
+  notifications/     EXTEND — VAT return notification type
+  mail/              EXTEND — dynamic email subject
+  portal/            EXTEND — hide VIN/year
+```
+
+### Component Communication
+
+| Component | Communicates With | How |
+|-----------|-------------------|-----|
+| `DocumentsModule` | `StorageService`, `CustomersService` | Direct injection |
+| `PlacesModule` | Google Places API | HTTP client |
+| `SettlementsModule` | `PrismaService` | Direct injection |
+| `RentalsModule` (extended) | `CepikService` (for second driver) | Direct injection |
+| `ContractsModule` (extended) | `PdfService`, `StorageService`, `NotificationsModule` | Direct injection + event |
+| `PdfService` (extended) | `qpdf` CLI | `child_process.execFile` |
+| `NotificationsModule` (extended) | Bull queue | Existing pattern |
+
+---
+
+## Suggested Build Order (Dependency-Aware)
+
+### Phase 1: Schema + Simple Fields (no feature dependencies)
+1. **Vehicle Classes** — standalone CRUD, simple
+2. **Customer Address in Mobile** — UI-only change
+3. **Company/NIP Support** — extends Customer model, needed by contract/PDF later
+4. **Insurance Case Number** — simple Rental field, enables email subject change
+5. **AppSetting model** — needed for default rental terms
+
+### Phase 2: Contract Enhancements (batched — all touch ContractFrozenData + PDF)
+6. **Editable Rental Terms + Notes** — Rental columns + frozen data + PDF template
+7. **Terms Acceptance Checkbox** — Contract column, follows rodoConsentAt pattern
+8. **VAT Payer Status** — Rental column + PDF display
+9. **Hide VIN/Year** — PDF template conditional only
+10. **Email Subject = Case Number + Reg** — MailService change, depends on #4
+
+**Rationale for batching:** All these features modify `ContractFrozenData` and the contract Handlebars template. Doing them together means one template rewrite, one frozen data interface update.
+
+### Phase 3: New Modules (independent, complex)
+11. **Google Places Integration** — new module, used by handover/return
+12. **Second Driver** — new model, CEPiK integration, contract/PDF extension
+13. **Document Scanning (OCR)** — new module, most complex feature
+
+### Phase 4: Return Flow + Settlement + Encryption (depend on earlier phases)
+14. **Return Protocol** — new PDF template, extends return flow, uses locations from #11
+15. **VAT Notification on Return** — notification extension, depends on #8
+16. **Settlement Tracking** — new module, web admin only
+17. **Encrypted PDF + SMS** — wraps final PDF generation, last because it affects existing signing flow
+
+### Build Order Rationale
+- Phase 1: Leaf nodes with no downstream dependencies, quick wins
+- Phase 2: Batch all ContractFrozenData + PDF template changes to avoid rework
+- Phase 3: Isolated complex features (OCR, Google API) that don't block other work
+- Phase 4: Features that consume data from earlier phases (return protocol needs locations, settlement needs complete rental, encryption wraps final PDF)
+
+---
+
+## Anti-Patterns to Avoid
+
+### Overloading JSON Columns
+**Trap:** Putting all new data in `handoverData`/`returnData`/`contractData` JSON.
+**Why bad:** Loses type safety, can't index, can't query efficiently.
+**Rule:** Use proper columns for structured data. JSON only for truly dynamic data (OCR results, damage pins, inspection areas).
+
+### Direct Google API from Mobile
+**Trap:** Embedding Google Places API key in mobile app.
+**Why bad:** Key exposed in APK, no rate limiting, billing risk.
+**Rule:** Proxy through `PlacesModule`.
+
+### Separate Migrations per Feature
+**Trap:** Running 17 separate migrations during deployment.
+**Why bad:** Slow deploys, risk of partial failures.
+**Rule:** Single Prisma migration with all additive schema changes.
+
+### Mutating ContractFrozenData Interface Piecemeal
+**Trap:** Each feature independently extends `ContractFrozenData`.
+**Why bad:** Multiple incompatible changes, contract template gets rewritten multiple times.
+**Rule:** Design the full v3.0 `ContractFrozenData` shape upfront, implement in one pass (Phase 2).
+
+---
+
+## Scalability Notes
+
+| Concern | At Current Scale (~100 vehicles) | If Growth Needed |
+|---------|----------------------------------|------------------|
+| OCR processing | Synchronous in request OK | Move to Bull queue |
+| PDF encryption | `qpdf` CLI is fast (<1s) | Fine at any scale |
+| Google Places | Backend proxy, no caching needed | Add Redis cache |
+| Settlement queries | Simple paginated queries | Already indexed |
+| Document storage | Flat R2 keys | R2 scales infinitely |
+
+---
 
 ## Sources
 
-- [CEPiK 2.0 API Documentation (Swagger)](https://api.cepik.gov.pl/doc)
-- [CEPiK API Access Portal (gov.pl)](https://www.gov.pl/web/cepik/api-dla-centralnej-ewidencji-pojazdow-i-kierowcow-api-do-cepik)
-- [CEPiK Certificate Requirements](https://www.gov.pl/web/cepik/certyfikaty-do-cepik-20)
-- [SMSAPI Documentation](https://www.smsapi.com/docs)
-- [Fleet Management Database Design (GeeksforGeeks)](https://www.geeksforgeeks.org/dbms/how-to-design-database-for-fleet-management-systems/)
-- [Fleet Management System Design (Hicron)](https://hicronsoftware.com/blog/fleet-management-system-design/)
-- [react-native-signature-canvas (npm)](https://www.npmjs.com/package/react-native-signature-canvas)
-- [@signpdf/signpdf (npm)](https://www.npmjs.com/package/@signpdf/signpdf)
-- [React Native Architecture Overview](https://reactnative.dev/architecture/overview)
-
----
-*Architecture research for: Car Rental Management System (Polish market)*
-*Researched: 2026-03-23*
+- Prisma schema: `apps/api/prisma/schema.prisma`
+- NestJS modules: `apps/api/src/app.module.ts`
+- Contract frozen data: `packages/shared/src/types/contract.types.ts`
+- PDF service: `apps/api/src/contracts/pdf/pdf.service.ts`
+- Storage service: `apps/api/src/storage/storage.service.ts`
+- Rentals service: `apps/api/src/rentals/rentals.service.ts`
+- Contracts service: `apps/api/src/contracts/contracts.service.ts`
+- Mobile routing: `apps/mobile/app/` directory structure
+- Customer types: `packages/shared/src/types/customer.types.ts`
+- All analysis based on direct codebase inspection — HIGH confidence

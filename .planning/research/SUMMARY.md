@@ -1,189 +1,167 @@
 # Project Research Summary
 
-**Project:** RentApp - System Zarzadzania Wypozyczalnia Samochodow
-**Domain:** Car Rental Management System (Polish market, ~100 vehicles, ~10 employees)
-**Researched:** 2026-03-23
+**Project:** RentApp v3.0 — Client Features & Contract Enhancements
+**Domain:** Polish B2B car rental management system (internal tool)
+**Researched:** 2026-04-12
 **Confidence:** HIGH
 
 ## Executive Summary
 
-RentApp is a car rental management system for a small Polish fleet operator. The core product is a field-first workflow: employees in parking lots create digital rental contracts on a mobile app, capture customer signatures, photograph vehicle condition, generate PDFs, and send them to customers -- replacing a fully paper-based process. The admin back-office manages fleet, calendar, and customer data via a web panel. Experts build this as a TypeScript monorepo with a React Native (Expo) mobile app, a Next.js web admin panel, and a NestJS API backed by PostgreSQL. This is a well-understood domain with established patterns, and the recommended stack is entirely mainstream with high-confidence version choices (Expo SDK 55, Next.js 16, NestJS 11, Prisma 7).
+RentApp v3.0 adds 17 features to a production-validated monorepo (Expo 54 / NestJS 11 / Prisma 6 / Next.js). The stack itself does not change — all 4 new library additions (expo-text-extractor for OCR, react-native-google-places-autocomplete for location, @pdfsmaller/pdf-encrypt-lite for PDF encryption, @tiptap/react for admin rich text) integrate cleanly into existing patterns. No new infrastructure is required. The dominant implementation concern is not technology selection but integration sequencing: several features share the same data structures (ContractFrozenData, contract PDF template, Rental model) and must be designed together and batched into phases to avoid repeated rework.
 
-The recommended approach is a modular monolith backend with clear domain boundaries (vehicles, rentals, contracts, notifications), a background job queue (BullMQ/Redis) for all async work (PDF generation, SMS, email), and presigned-URL photo uploads to object storage. The rental lifecycle should be modeled as a strict state machine. The monorepo (Turborepo) shares TypeScript types and Zod validation schemas between all three client apps and the API, preventing contract drift. The system should be deployable on Railway (PaaS) with minimal DevOps overhead.
+The clearest recommendation from combined research is to design the v3.0 ContractFrozenData schema upfront — before implementing any individual feature — and to version it. Every feature that touches the contract PDF template (editable terms, second driver, company/NIP, VIN hiding, terms acceptance, VAT status, insurance case number) must be batched into a single PDF template rewrite. Attempting these features piecemeal will force 5-7 separate Handlebars template iterations and multiple frozen-data interface changes. The architecture research confirms this explicitly: treating Phase 2 as a single "all ContractFrozenData + PDF template changes" pass is the correct approach.
 
-The key risks are legal, not technical. Polish GDPR (RODO) enforcement is aggressive -- ING Bank was fined 18M PLN and Glovo 5.9M PLN for improper document scanning. The system must never store full ID card images, must encrypt PESEL and personal identifiers at the field level, and must implement data retention policies from day one. The digital signature (finger-drawn SES) is legally sufficient for rental contracts under Polish law, but requires proper audit metadata (timestamp, device info, content hash) to have evidentiary value. CEPiK 2.0 driver verification is a differentiator but must be treated as optional/async since the government API requires a multi-week approval process and may be unreliable.
+The two highest-risk features are OCR document scanning (requires EAS dev client, on-device ML Kit, and Polish document parsing logic with inherently imperfect accuracy) and PDF encryption (Puppeteer does not support encryption natively; the pure-JS library @pdfsmaller/pdf-encrypt-lite resolves the Railway deployment constraint but delivers RC4-128, not AES-256). Both risks have identified mitigations. Google Places API billing is a moderate operational risk requiring session tokens, debouncing, and billing alerts before the feature goes live. Settlement tracking carries scope-creep risk and must be bounded to status+notes+amounts at design time.
 
 ## Key Findings
 
 ### Recommended Stack
 
-A full-TypeScript monorepo with three client apps and one backend API. React shares the same version (19.2) across mobile and web, and Zod schemas are shared for validation consistency.
+No changes to the existing validated stack (Expo 54, React Native 0.81, NestJS 11, Prisma 6, Puppeteer 24, Cloudflare R2, Bull/Redis, SMSAPI). Four targeted additions cover the four new technical concerns. The on-device OCR approach (expo-text-extractor using ML Kit / Apple Vision) was chosen over cloud OCR to keep ID document photos off external servers — a RODO consideration. Google Places is proxied through the backend to avoid exposing the API key in the mobile bundle.
 
-**Core technologies:**
-- **React Native + Expo SDK 55:** Cross-platform mobile app for field employees. Managed workflow with EAS builds. Includes camera, image picker, and file system modules out of the box.
-- **Next.js 16:** Web admin panel and customer portal (same app, separate route groups). Server components, App Router, Tailwind v4 + shadcn/ui for rapid UI development.
-- **NestJS 11:** Structured TypeScript backend. Module-per-domain pattern matches the feature set perfectly. Built-in validation, guards, interceptors for audit trail.
-- **Prisma 7.4:** Pure TypeScript ORM (Rust engine dropped). Schema-first with auto-generated types. Significant performance improvements over v6.
-- **PostgreSQL 16:** Primary database. JSONB for contract data snapshots, exclusion constraints for double-booking prevention, pgcrypto for field-level encryption.
-- **Redis 7 + BullMQ:** Background job queue for PDF generation, SMS, email. Also used for session storage.
-- **Puppeteer + Handlebars:** Server-side PDF generation with pixel-perfect Polish character support. HTML/CSS template approach matches the existing paper contract template.
-- **smsapi.pl:** Official Polish SMS provider with Node.js SDK. Business requirement.
+**Core new technologies:**
+- `expo-text-extractor ^2.0.0` (mobile): on-device OCR using ML Kit/Vision — avoids cloud costs, keeps ID photos on-device, requires EAS dev client build
+- `react-native-google-places-autocomplete ^2.6.4` (mobile): location autocomplete — de facto standard, pure JS, no native module needed
+- `react-google-places-autocomplete ^4.1.0` (web): same Google Places API for the Next.js admin panel
+- `@pdfsmaller/pdf-encrypt-lite ^1.0.0` (API): pure-JS PDF encryption, zero server-side binaries — avoids Railway deployment issue with qpdf system dependency
+- `@tiptap/react ^2.11.0` + `@tiptap/starter-kit` (web): headless rich text editor for admin-editable rental terms — HTML output maps directly to Handlebars PDF pipeline
+- `react-native-webview ~13.15.0` (mobile, already installed): displays HTML terms for customer review — no new dependency needed
 
 ### Expected Features
 
 **Must have (table stakes):**
-- Digital rental contract with signature capture and PDF generation
-- Vehicle fleet database (registration, VIN, mileage, insurance, inspection dates)
-- Interactive rental calendar with double-booking prevention
-- Customer database with PESEL, ID, license data (encrypted)
-- Photo documentation (before/after vehicle condition)
-- SMS notifications via smsapi.pl (reminders, confirmations, overdue alerts)
-- PDF email delivery to customers
-- Admin web panel with full CRUD
-- Audit trail (who did what, when, immutable)
-- Authentication with roles (admin, employee, customer)
-- Rental extension and return processing workflows
+- Company client support (NIP) — legal requirement for B2B invoicing in Poland
+- Client terms acceptance checkbox — RODO/GDPR compliance and liability protection
+- Client address exposed in mobile app — required on every Polish rental contract
+- VAT payer status (100%/50%/no) — Polish tax law documentation requirement
+- Second driver (full data + CEPiK check) — insurance invalidated if unlisted driver causes accident
+- Custom terms notes field in PDF — per-rental conditions standard across all competitors
+- Email subject = case number + registration — basic operational hygiene, inbox filtering
+- Hide VIN/production year from client — standard Polish rental industry practice
 
 **Should have (differentiators):**
-- CEPiK 2.0 driver license verification (unique in Polish market)
-- Customer self-service portal (read-only, magic link access)
-- Interactive damage marking on vehicle diagram (SVG overlay)
-- Automated multi-channel alert system (insurance expiry, inspection due, overdue returns)
+- Document scanning (OCR) — no Polish competitor advertises this; saves 2-3 min per rental
+- Return protocol — structured formal process replacing current minimal returnData JSON
+- Rental settlement tracking — currently zero financial visibility post-rental
+- Encrypted PDF (password = registration) — genuine RODO improvement for PESEL/ID in email attachments
+- Google Places autocomplete for pickup/return location — professional delivery/collection service support
+- Vehicle classification system — pricing by class, fleet organization
 
 **Defer (v2+):**
-- Offline mobile capability (high complexity, validate need first)
-- Vehicle maintenance and cost tracking
-- Reporting and analytics dashboard
-- OCR document scanning for ID/license auto-fill
-- Online payments, self-booking, multi-language, GPS tracking, AI damage detection (anti-features)
+- Automated NIP/REGON company lookup (unreliable BIR1 API, manual entry sufficient)
+- AI/custom OCR model (ML Kit accuracy is adequate for Latin-script Polish documents)
+- Full offline OCR (no quality on-device Polish document models exist)
+- More than one second driver (client asked for exactly one)
+- Automated settlement/invoicing integration (no accounting system to target)
 
 ### Architecture Approach
 
-A modular monolith backend (single NestJS app with domain modules) serving three client apps. All heavy work (PDF, SMS, email) is async via BullMQ. Photos bypass the API entirely via presigned URL uploads to S3/MinIO. The rental lifecycle follows a strict state machine (draft -> active -> extended -> returned -> closed). An NestJS interceptor provides automatic audit logging for all mutations.
+All 17 features integrate into the existing NestJS module architecture without restructuring it. Three new API modules are added (documents/, places/, settlements/). Four existing modules are extended (vehicles/, rentals/, contracts/, customers/). Six new Prisma models are added (CustomerDocument, VehicleClass, RentalDriver, AppSetting, RentalSettlement, SettlementPayment). All new columns are nullable or have defaults — a single zero-downtime Prisma migration is viable, though splitting into sequential feature-grouped migrations is safer. The critical architectural constraint is ContractFrozenData versioning: a schemaVersion field plus ContractFrozenDataV1 | ContractFrozenDataV2 discriminated union prevents old contracts from breaking when the PDF template is updated.
 
-**Major components:**
-1. **Auth and Audit Module** -- JWT authentication, role-based access, immutable audit trail
-2. **Rental Lifecycle Module** -- State machine for the full rental cycle, links vehicle + customer + contract
-3. **Contract and PDF Module** -- Digital contract creation, signature embedding, Puppeteer PDF generation, email delivery
-4. **Fleet Management Module** -- Vehicle CRUD, status tracking, availability with exclusion constraints
-5. **Photo and Damage Module** -- Presigned URL upload, damage annotation on SVG diagrams, photo lifecycle management
-6. **Notifications Module** -- BullMQ-backed SMS (smsapi.pl), email (Nodemailer), cron-triggered reminders
+**Major components and responsibilities:**
+1. `DocumentsModule` (new) — OCR photo upload to R2, on-device text extraction via expo-text-extractor, returns parsed fields to mobile for worker review/correction
+2. `PlacesModule` (new) — backend proxy to Google Places API; mobile never calls Google directly; stores place data in existing handoverData/returnData JSON
+3. `SettlementsModule` (new) — PENDING/PARTIAL/SETTLED/DISPUTED lifecycle, payment recording, dashboard widget for unsettled rentals
+4. `ContractFrozenDataV2` (schema redesign) — add schemaVersion, secondDriver, termsAccepted, rentalTerms, termsNotes, insuranceCaseNumber, vatDeductionRate, customer company fields, pickup/return location; used by all contract/PDF features
+5. `PdfService` (extended) — new contract-v2.hbs template (all new contract fields), separate return-protocol.hbs, post-processing with @pdfsmaller/pdf-encrypt-lite before R2 upload
+6. Mobile wizard (extended) — customer address, company toggle, terms acceptance, second driver sub-form, Google Places autocomplete in handover/return steps
 
 ### Critical Pitfalls
 
-1. **RODO violation from document scanning** -- Never store full ID card images. Capture structured text fields only. Fines reach millions of PLN. Design the data model correctly in Phase 1.
-2. **PESEL stored unencrypted** -- Implement AES-256-GCM field-level encryption for all PII (PESEL, ID number, license number) from day one. Store HMAC hashes for search. Cannot be retrofitted easily.
-3. **Digital signature without audit metadata** -- The finger-drawn signature (SES) is legally admissible but must include timestamp, device info, content hash, and employee witness ID. Adapt contract language for electronic form.
-4. **Double-booking race conditions** -- Use PostgreSQL exclusion constraints (`EXCLUDE USING gist`) on (vehicle_id, date_range). Application-level checks alone are insufficient with concurrent mobile users.
-5. **CEPiK as a hard dependency** -- Design as async/optional with manual fallback. The API requires weeks for access approval and may be unreliable. Build the rental flow to work without it.
+1. **ContractFrozenData breakage on old contracts** — New Handlebars template fields crash or render blank on old contract JSON blobs. Prevention: add schemaVersion: 2 to new contracts; wrap ALL new template fields in {{#if}} guards; keep contract-v1.hbs untouched; use discriminated union in shared types. Design this before implementing any individual feature.
+
+2. **OCR requires EAS dev client, not Expo Go** — expo-text-extractor crashes in Expo Go with "NativeModule is null." Set up a development client profile (eas build --profile development) before writing any OCR code. This is a prerequisite task, not a feature task.
+
+3. **PDF encryption must be pure JS for Railway** — Puppeteer has no native PDF encryption support (confirmed open GitHub issues #657, #6120). node-qpdf2 requires the qpdf system binary absent on Railway. Use @pdfsmaller/pdf-encrypt-lite (pure JS, RC4-128, zero deps) to post-process the buffer before R2 upload.
+
+4. **Second driver must NOT reuse the Customer model** — Customer carries portal tokens, rental relations, archived status. Reusing it creates ghost records and PESEL uniqueness collisions. Use a dedicated RentalDriver model linked to Rental. Extract CEPiK verification into a DriverLicenseData interface both Customer and RentalDriver can use.
+
+5. **Google Places API billing** — Every autocomplete keystroke is billable. Mitigation: 400ms debounce, 3-character minimum, session tokens, billing alert at $20/month, cache frequent pickup points as "favorite locations."
 
 ## Implications for Roadmap
 
-Based on research, suggested phase structure:
+Based on combined research, the correct phase structure is dependency-driven: design ContractFrozenData v2 first (cross-cuts everything), batch all PDF template changes into one phase, keep new-module work isolated, defer high-risk/high-complexity features last.
 
-### Phase 1: Foundation and Data Model
-**Rationale:** Everything depends on the database schema, auth, and audit trail. Legal pitfalls (RODO, encryption, data minimization) must be addressed in the data model before any business logic is written. This is also when to start the CEPiK API access application (2-3 week approval) and register the SMSAPI sender ID (manual process, business hours only).
-**Delivers:** NestJS project scaffold, PostgreSQL schema with encrypted PII fields, auth module (JWT + roles), audit trail interceptor, Turborepo monorepo setup, shared types/validation package, Docker dev environment (PostgreSQL, Redis, MinIO).
-**Addresses:** Authentication with roles, audit trail, vehicle database (schema), customer database (schema).
-**Avoids:** PESEL stored unencrypted (Pitfall 3), no audit trail (Pitfall 10), timezone issues (Pitfall 12).
+### Phase 1: Foundation + Simple Field Additions
+**Rationale:** Leaf-node features with no downstream dependencies. Quick operational wins. No PDF template changes yet. EAS dev client setup happens here so Phase 4 is unblocked. AppSetting model created here for Phase 2.
+**Delivers:** Complete customer forms in mobile (address), business rental support (NIP), insurance tracking, terms notes, email subject formatting, VIN privacy fix, vehicle class lookup table.
+**Addresses features:** #8 client address, #4 company/NIP (schema + mobile form, PDF deferred to Phase 2), #7 insurance case number, #14 custom terms notes, #9 email subject, #10 hide VIN/year, #2 vehicle classes.
+**Avoids:** Pitfall 15 (migration complexity — all nullable columns); Pitfall 12 (vehicle class over-engineering).
 
-### Phase 2: Core Rental Workflow (API + Admin Panel)
-**Rationale:** The rental lifecycle is the core business process and the integration point for all other features. Building the API endpoints and admin panel together validates the data model and establishes the end-to-end contract from frontend to database.
-**Delivers:** Vehicle CRUD, customer CRUD, rental lifecycle with state machine, rental calendar with double-booking prevention, basic admin panel (Next.js + shadcn/ui) with fleet management and calendar views.
-**Addresses:** Vehicle database, customer database, rental calendar, admin web panel.
-**Avoids:** Double-booking race conditions (Pitfall 5), free-form status updates (Anti-pattern 3).
+### Phase 2: ContractFrozenData v2 + PDF Template Batch
+**Rationale:** All features that modify ContractFrozenData and contract.hbs must be done in one coordinated pass. This is the highest-leverage sequencing decision in v3.0. Seven features touch the same template — one rewrite beats seven incremental ones.
+**Delivers:** Versioned ContractFrozenData (schemaVersion, discriminated union, contract-v2.hbs), terms acceptance checkbox, editable rental terms with locking at PARTIALLY_SIGNED, VAT payer status display in PDF, second driver section in contract, company/NIP section in contract, all template fields guarded by {{#if}}.
+**Addresses features:** #5 terms acceptance, #3 editable terms, #11 VAT status, #13 second driver (model + contract/PDF), and the PDF portions of #4, #7, #10.
+**Avoids:** Pitfall 2 (frozen data breakage — versioned template), Pitfall 7 (terms mutability — locked at PARTIALLY_SIGNED), Pitfall 4 (second driver model design).
 
-### Phase 3: Contract, Signature, and PDF
-**Rationale:** The digital contract is the product's reason to exist. It depends on the rental lifecycle (Phase 2) and requires the signature capture, PDF generation pipeline, and email delivery to be built together as a cohesive flow.
-**Delivers:** Contract template (Handlebars), signature capture on web (admin-created contracts), Puppeteer PDF generation via BullMQ, email delivery with PDF attachment, contract versioning.
-**Addresses:** Digital rental contract with signature, PDF generation and email delivery.
-**Avoids:** Polish character encoding in PDFs (Pitfall 6), hardcoded contract template (Anti-pattern 4), weak signature legal standing (Pitfall 2).
+### Phase 3: New Modules — Google Places + Settlement
+**Rationale:** Independent new modules that don't require Phase 2 PDF work to be complete. Places is needed before Phase 4 (return protocol uses location data). Settlement is web-admin-only and self-contained.
+**Delivers:** Pickup/return location autocomplete in mobile (backend-proxied), settlement lifecycle tracking with unsettled-rentals dashboard, VAT return notification triggered on rental return.
+**Addresses features:** #6 Google Places, #16 settlement tracking, #12 VAT notification on return.
+**Avoids:** Pitfall 5 (Places billing — debounce + billing alerts + session tokens before production), Pitfall 9 (settlement scope creep — status+notes+amounts only), Pitfall 10 (API key exposure — server-side proxy).
 
-### Phase 4: Mobile App (Field Operations)
-**Rationale:** The mobile app is the primary user interface for field employees but depends on a stable API (Phases 1-3). Building mobile after the API is proven avoids rework. This phase delivers the field-first workflow: customer selection, contract signing, photo capture.
-**Delivers:** Expo React Native app with auth flow, customer lookup/creation, vehicle selection, contract form with signature capture, photo capture with presigned URL upload, rental submission.
-**Addresses:** Photo documentation (before/after), return processing workflow, mobile field workflow.
-**Avoids:** No offline architecture consideration (Pitfall 9 -- design local-first even if online-only initially), photo storage bloat (Pitfall 8 -- compress on device).
-
-### Phase 5: Notifications and Alerts
-**Rationale:** SMS and email notifications are a business requirement and depend on the rental lifecycle and contact data being in place. This phase also adds the rental extension workflow which triggers notifications.
-**Delivers:** SMS integration (smsapi.pl), email notifications, return reminder cron jobs, rental extension workflow with auto-notification, overdue alerts.
-**Addresses:** SMS notifications, rental extension workflow, automated alert system.
-**Avoids:** SMS encoding cost doubling (Pitfall 7 -- use nounicode=1).
-
-### Phase 6: Differentiation Features
-**Rationale:** These features set RentApp apart from competitors but are not required for the core rental workflow. CEPiK access should be approved by now (applied in Phase 1). Customer portal is low complexity and high value.
-**Delivers:** CEPiK 2.0 driver verification (with manual fallback), customer self-service portal (magic link auth, read-only), interactive damage marking on vehicle SVG diagram.
-**Addresses:** CEPiK verification, customer portal, damage marking.
-**Avoids:** CEPiK as hard dependency (Pitfall 4 -- async with fallback), insecure magic links (Pitfall 13 -- cryptographic tokens with expiry).
-
-### Phase 7: Polish and Scale
-**Rationale:** Once the core system is operational, add features that improve efficiency and provide business intelligence.
-**Delivers:** Reporting dashboard (utilization, revenue, trends), vehicle maintenance/cost tracking, photo lifecycle management (cold storage migration), performance optimization.
-**Addresses:** Reporting and analytics, vehicle maintenance tracking.
+### Phase 4: High-Complexity Differentiators
+**Rationale:** OCR and return protocol are the most complex and riskiest features. Self-contained — OCR doesn't block anything; return protocol uses location data from Phase 3. EAS dev client from Phase 1 makes OCR development possible. Stable contract/rental model from Phases 1-2 is the foundation.
+**Delivers:** OCR document scanning (pre-fills customer form from Polish ID card + driver license photo with worker review), structured return protocol (multi-step wizard + return-protocol.hbs PDF + dual signatures), encrypted PDF delivery (post-process signing pipeline, SMS password to customer).
+**Addresses features:** #1 document scanning, #15 return protocol, #17 encrypted PDF.
+**Avoids:** Pitfall 1 (dev client — already solved), Pitfall 3 (PDF encryption binary — pure-JS library), Pitfall 6 (OCR UX — editable pre-fill, not auto-submit), Pitfall 11 (return protocol as separate template, not contract extension).
 
 ### Phase Ordering Rationale
 
-- **Phases 1-3 form the critical path:** Schema -> rental lifecycle -> contract PDF. Each depends on the previous. No parallelization possible.
-- **Phase 4 (mobile) after Phase 3 (contract):** The mobile app is the primary interface but building it against an unstable API causes rework. The admin panel in Phase 2-3 validates the API first.
-- **Phase 5 (notifications) after Phase 4 (mobile):** SMS reminders and extension workflows are meaningful only after rentals are being created via the mobile app.
-- **Phase 6 (differentiation) last before polish:** CEPiK requires external approval (started in Phase 1), customer portal is low-effort high-value, damage marking enhances the photo system from Phase 4.
-- **Non-technical tasks to start in Phase 1:** CEPiK API application, SMSAPI sender ID registration, contract template legal review with a lawyer.
+- Phase 1 before Phase 2: AppSetting model needed for default terms; NIP schema needed before NIP section in PDF template; insurance case number field needed before email subject logic.
+- Phase 2 batched together: ContractFrozenData and contract.hbs must be designed holistically. Seven features all modify the same template and interface — one coordinated pass prevents repeated rework and TypeScript churn.
+- Phase 3 after Phase 2: VAT notification depends on VAT payer status (Phase 2). Location data from Places is used by return protocol PDF (Phase 4).
+- Phase 4 last: Riskiest features benefit from all earlier model/contract work being stable. Encrypted PDF wraps the final signing flow — safe to add last when the signing pipeline is proven.
 
 ### Research Flags
 
 Phases likely needing deeper research during planning:
-- **Phase 3 (Contract/PDF):** The existing paper contract template must be analyzed to design the Handlebars template. Legal review needed for electronic signature clause wording. Puppeteer resource requirements on Railway need validation.
-- **Phase 4 (Mobile App):** Offline architecture decisions (even if online-only MVP) need validation with the business owner about field connectivity conditions. React Native Skia integration for damage marking needs prototyping.
-- **Phase 6 (CEPiK):** API access process and response format need validation once access is granted. The exact fields available for driver verification are documented but may differ in practice.
+- **Phase 4 (OCR parsing):** Polish document layout parsing (MRZ zone extraction, pre-2019 vs post-2019 Polish ID card format differences) is implementation-sensitive. Build a parsing utility with unit tests for PESEL (11 digits), Polish ID number (3 letters + 6 digits), and name patterns before integrating into the wizard.
+- **Phase 4 (PDF encryption compatibility):** Validate that @pdfsmaller/pdf-encrypt-lite RC4-128 output is reliably openable by iOS Files, Adobe Reader Android, and common email clients before committing.
+- **Phase 3 (Places session tokens):** react-native-google-places-autocomplete session token behavior has known issues in older versions. Validate tokens are actually sent in v2.6.4 before production deployment.
 
-Phases with standard patterns (skip deep research):
-- **Phase 1 (Foundation):** Standard NestJS + Prisma + PostgreSQL setup. Well-documented.
-- **Phase 2 (Core CRUD + Calendar):** Standard REST CRUD with state machine. FullCalendar/react-big-calendar are mature.
-- **Phase 5 (Notifications):** SMSAPI has an official Node.js SDK. BullMQ + Nodemailer are standard patterns.
+Phases with standard patterns (skip research-phase):
+- **Phase 1:** All nullable schema fields + mobile form additions. Standard NestJS/Prisma/Expo patterns throughout.
+- **Phase 2 (terms/VAT/second driver model):** Architecture fully mapped, ContractFrozenData versioning pattern is clear, RentalDriver model is specified.
+- **Phase 3 (settlement):** New module following exact same NestJS structure as existing modules. No novel patterns.
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | All technologies verified against official release pages. Version matrix is current as of March 2026. Expo SDK 55, Next.js 16, NestJS 11, Prisma 7.4 are all stable releases. |
-| Features | HIGH | Feature landscape validated against two Polish competitors (RentCarSoft, EasyRent) and international references (Record360, HQ Rental). Anti-features are well-justified. |
-| Architecture | HIGH | Modular monolith with BullMQ async processing is the standard pattern for this domain and scale. Database schema covers all identified entities. |
-| Pitfalls | HIGH | Critical pitfalls backed by UODO enforcement decisions (ING 18M PLN, Glovo 5.9M PLN), official SMSAPI documentation, and well-documented booking system patterns. |
+| Stack | HIGH | All 4 new libraries verified against Expo 54 / NestJS 11. Incompatibilities confirmed via official GitHub issues. |
+| Features | HIGH | Polish rental industry competitive analysis (RentCarSoft, CorCode, Enterprise PL, Avis PL) plus direct client requirements. Scope is well-defined. |
+| Architecture | HIGH | Based on direct codebase inspection of schema.prisma, ContractFrozenData, PdfService, mobile routing. Not inference — actual code reviewed. |
+| Pitfalls | HIGH | Critical pitfalls confirmed via official sources (Puppeteer GitHub issues, Google Places API billing docs, Expo native module constraints). |
 
 **Overall confidence:** HIGH
 
 ### Gaps to Address
 
-- **CEPiK API access timeline:** The approval process (email to biurocepik2.0@cyfra.gov.pl) has an unknown timeline. Start immediately but plan for it to not be available until Phase 6 or later. Build the entire system to function without it.
-- **Existing contract template:** The paper contract template needs to be digitized into a Handlebars template. This requires input from the business owner and potentially legal review for electronic adaptation.
-- **Offline requirement validation:** Pitfall 9 (no offline capability) is rated MEDIUM confidence because actual field connectivity conditions are unknown. The business owner should confirm whether employees regularly encounter dead zones. The architecture should accommodate offline regardless, but the implementation priority depends on this answer.
-- **Railway hosting for Puppeteer:** Puppeteer requires a Chromium binary (~200MB). Verify that Railway's container environment supports this and that cold start times are acceptable. Alternative: use a dedicated PDF generation service or switch to a lighter PDF library if Puppeteer is too heavy.
-- **Photo storage cost projections:** At 20-40 photos per rental, ~100 rentals/month, ~300KB per compressed photo, storage grows at ~1-4GB/month. Manageable, but lifecycle policies should be defined before launch.
+- **OCR parsing accuracy for Polish documents:** expo-text-extractor returns unstructured text. Regex/parsing logic for PESEL, ID numbers, and names from ML Kit output needs iterative testing on real document samples. Budget extra time and set worker expectations (OCR is a pre-fill helper, not auto-complete).
+- **@pdfsmaller/pdf-encrypt-lite production validation:** Newer library (Feb 2026) with fewer production deployments than node-qpdf2. Test encrypted PDFs on target readers before Phase 4 ships.
+- **Google Places session token validation:** Confirm session tokens are actually sent by react-native-google-places-autocomplete v2.6.4 before enabling in production to avoid billing surprises.
+- **ContractFrozenData V1 type guard:** Existing production contracts have no schemaVersion field. TypeScript narrowing must treat all contracts without schemaVersion as V1. Design this type guard before Phase 2 implementation begins.
 
 ## Sources
 
 ### Primary (HIGH confidence)
-- Expo SDK 55 changelog: https://expo.dev/changelog/sdk-55
-- NestJS releases: https://github.com/nestjs/nest/releases
-- Prisma v7 announcement: https://www.prisma.io/blog/announcing-prisma-orm-7-0-0
-- Next.js releases: https://github.com/vercel/next.js/releases
-- UODO fine against ING Bank: https://uodo.gov.pl/decyzje/DKN.5131.1.2025
-- UODO fine against Glovo: https://kicb.pl/ponad-58-mln-zl-kary-dla-wlasciciela-glovo-za-skanowanie-dokumentow/
-- CEPiK API documentation: https://api.cepik.gov.pl/doc
-- CEPiK access portal: https://www.gov.pl/web/cepik/api-dla-centralnej-ewidencji-pojazdow-i-kierowcow-api-do-cepik
-- SMSAPI integration docs: https://www.smsapi.com/blog/sms-api-integration-checklist/
-- Electronic signature legality Poland (Docusign): https://www.docusign.com/products/electronic-signature/legality/poland
-- Electronic signature legality Poland (PandaDoc): https://www.pandadoc.com/electronic-signature-law/poland/
+- Direct codebase inspection: apps/api/prisma/schema.prisma, packages/shared/src/types/contract.types.ts, apps/api/src/contracts/pdf/pdf.service.ts, apps/mobile/app/ routing
+- [Puppeteer #657](https://github.com/puppeteer/puppeteer/issues/657) + [#6120](https://github.com/puppeteer/puppeteer/issues/6120) — PDF encryption not supported natively
+- [Google Places API Pricing](https://developers.google.com/maps/documentation/places/web-service/usage-and-billing) — billing structure confirmed
+- [Biala Lista VAT API](https://www.gov.pl/web/kas/api-wykazu-podatnikow-vat) — free gov.pl NIP/VAT verification
+- Enterprise Poland, Avis Poland general conditions — second driver signing requirement confirmed
 
 ### Secondary (MEDIUM confidence)
-- RentCarSoft features: https://rentcarsoft.pl/funkcjonalnosci/
-- Easy Rent features: https://easy-rent.pl/funkcje-programu-do-obslugi-wypozyczalni-samochodow/
-- CEPiK API via Cabgo: https://cabgo.pl/weryfikacja-prawa-jazdy-cepik-2-0-przez-api/
-- UODO document scanning guidance: https://auraco.pl/blog/skany-dokumentow-osobistych-praktyczny-przewodnik/
-- Railway hosting: https://railway.app
-- Poland SMS restrictions (Vonage): https://api.support.vonage.com/hc/en-us/articles/204017553
+- [expo-text-extractor GitHub](https://github.com/pchalupa/expo-text-extractor) — v2.0.0, Feb 2026, Expo SDK 52+ compatible; newer library, lower production deployment volume
+- [@pdfsmaller/pdf-encrypt-lite npm](https://www.npmjs.com/package/@pdfsmaller/pdf-encrypt-lite) — pure JS, RC4-128; functional but newer
+- [react-native-google-places-autocomplete npm](https://www.npmjs.com/package/react-native-google-places-autocomplete) — 60K+ weekly downloads, v2.6.4; session token behavior needs validation
+- Polish rental competitor analysis (RentCarSoft, CorCode, Nomora 2026 roundup) — feature landscape
+
+### Tertiary (LOW confidence)
+- NIP/REGON API (BIR1) reliability claims — based on community reports, not direct testing
+- OCR accuracy estimates for Polish diacritics — qualitative assessment, not benchmarked
 
 ---
-*Research completed: 2026-03-23*
+*Research completed: 2026-04-12*
 *Ready for roadmap: yes*
