@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Client Features & Contract Enhancements
 status: executing
-stopped_at: Completed 33-02-PLAN.md
-last_updated: "2026-04-12T17:52:25.144Z"
-last_activity: 2026-04-12 -- Completed 33-02 (API DTOs & Services)
+stopped_at: Completed 33-03-PLAN.md
+last_updated: "2026-04-12T17:53:17Z"
+last_activity: 2026-04-12 -- Completed 33-03 (Mobile UI Forms)
 progress:
   total_phases: 7
   completed_phases: 0
   total_plans: 4
-  completed_plans: 2
-  percent: 50
+  completed_plans: 3
+  percent: 75
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-04-12)
 ## Current Position
 
 Phase: 33 of 39 (Foundation -- Schema & Simple Fields)
-Plan: 2 of 4 in current phase
+Plan: 3 of 4 in current phase
 Status: executing
-Last activity: 2026-04-12 -- Completed 33-02 (API DTOs & Services)
+Last activity: 2026-04-12 -- Completed 33-03 (Mobile UI Forms)
 
-Progress: [█████░░░░░] 50%
+Progress: [███████░░░] 75%
 
 ## Performance Metrics
 
@@ -49,6 +49,8 @@ Progress: [█████░░░░░] 50%
 - [v3.0 roadmap]: Google Places proxied through backend API -- key security + billing control
 - [Phase 33]: Used migrate diff + manual SQL for migration due to shadow DB incompatibility with db-push history
 - [Phase 33]: Constructed backward-compatible address string from structured fields in contracts.service for PDF template
+- [Phase 33]: VAT picker as chip buttons (no external picker dependency); vehicle step uses explicit Dalej button for insurance fields
+- [Phase 33]: isInsuranceRental is UI-only draft toggle; only insuranceCaseNumber sent to API
 - [Phase 33]: NIP validator wraps shared isValidNip via class-validator decorator pattern (same as PESEL)
 
 ### Pending Todos
@@ -63,6 +65,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-12T17:52:25.142Z
-Stopped at: Completed 33-02-PLAN.md
+Last session: 2026-04-12T17:53:17Z
+Stopped at: Completed 33-03-PLAN.md
 Resume file: None
