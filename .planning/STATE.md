@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Client Features & Contract Enhancements
 status: in-progress
-stopped_at: Completed 34-02-PLAN.md
+stopped_at: "34-05 checkpoint: awaiting human verification of contract flow"
 last_updated: "2026-04-12T21:39:04.014Z"
-last_activity: 2026-04-12 -- Completed 34-02 (Contract Service V2 & PDF Template Rewrite)
+last_activity: 2026-04-12 -- Completed 34-05 T1-T2 (Mobile Contract UI, awaiting checkpoint)
 progress:
   total_phases: 7
   completed_phases: 1
@@ -26,16 +26,16 @@ See: .planning/PROJECT.md (updated 2026-04-12)
 ## Current Position
 
 Phase: 34 of 39 (ContractFrozenData v2, PDF Template Rewrite)
-Plan: 2 of 5 in current phase
+Plan: 5 of 5 in current phase (awaiting checkpoint verification)
 Status: in-progress
-Last activity: 2026-04-12 -- Completed 34-02 (Contract Service V2 & PDF Template Rewrite)
+Last activity: 2026-04-12 -- Completed 34-05 Tasks 1-2 (Mobile Contract UI -- Terms, Second Driver, 6-Sig Flow)
 
 Progress: [█████████░] 89%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 100 (37 v1.0 + 14 v1.1 + 7 v2.0 + 26 v2.1 + 2 v2.2 + 9 v2.3 + 5 v3.0)
+- Total plans completed: 103 (37 v1.0 + 14 v1.1 + 7 v2.0 + 26 v2.1 + 2 v2.2 + 9 v2.3 + 8 v3.0)
 - Phases completed: 32 + 1 inserted (9.1)
 
 ## Accumulated Context
@@ -60,6 +60,10 @@ Progress: [█████████░] 89%
 - [Phase 34]: Portal uses Prisma select (not include:true) for defense-in-depth privacy filtering
 - [Phase 34]: TipTap v3 (3.22.3) for rich text editing -- headings limited to H2/H3 for contract terms
 - [Phase 34-02]: companyName set to null in v2 frozen data -- no DB source column yet; future GUS/NIP lookup
+- [Phase 34-05]: TipTap terms editor loaded via CDN in WebView with contenteditable fallback
+- [Phase 34-05]: Terms acceptance checkbox gates signatures alongside RODO consent
+- [Phase 34-05]: Signature steps computed dynamically from draft.secondDriverId via useMemo
+- [Phase 34-05]: Rental terms PATCH is non-blocking before contract creation
 
 ### Pending Todos
 
@@ -73,6 +77,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-12T21:39:04.012Z
-Stopped at: Completed 34-02-PLAN.md
-Resume file: .planning/phases/34-contractfrozendata-v2-pdf-template-rewrite/34-03-PLAN.md
+Last session: 2026-04-12T21:46:34Z
+Stopped at: 34-05 checkpoint -- awaiting human verification of contract flow
+Resume file: .planning/phases/34-contractfrozendata-v2-pdf-template-rewrite/34-05-PLAN.md (Task 3)
