@@ -83,6 +83,20 @@ export class PdfService implements OnModuleInit, OnModuleDestroy {
       return `${zloty} zl`;
     });
 
+    Handlebars.registerHelper('eq', function(a: unknown, b: unknown) {
+      return a === b;
+    });
+
+    Handlebars.registerHelper('formatVatStatus', function(status: string | null) {
+      if (!status) return '-';
+      switch (status) {
+        case 'FULL_100': return '100%';
+        case 'HALF_50': return '50%';
+        case 'NONE': return 'Nie';
+        default: return status;
+      }
+    });
+
     // Compile templates
     const contractSource = readFileSync(
       join(__dirname, 'templates', 'contract.hbs'),

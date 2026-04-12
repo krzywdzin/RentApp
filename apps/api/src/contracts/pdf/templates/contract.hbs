@@ -46,6 +46,11 @@
     .commitments-title { font-weight: 700; margin-bottom: 2mm; }
 
     .acceptance { font-weight: 700; margin-top: 6mm; font-size: 11px; }
+
+    .terms-notes { font-size: 10px; margin-top: 3mm; padding: 2mm; border-left: 2px solid rgb(204, 204, 204); }
+
+    .signatures-row-three { display: flex; justify-content: space-between; margin-top: 10mm; }
+    .signatures-row-three .signature-block { width: 30%; }
   </style>
 </head>
 <body>
@@ -127,6 +132,26 @@
       </div>
     </div>
 
+    {{#if (eq version 2)}}
+      {{#if rental.isCompanyRental}}
+      <div class="section">
+        <div class="section-title">Dane firmy klienta</div>
+        <div class="field-row">
+          <span class="field-label">Firma:</span>
+          <span class="field-value">{{rental.companyName}}</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">NIP:</span>
+          <span class="field-value">{{rental.companyNip}}</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">Status VAT:</span>
+          <span class="field-value">{{formatVatStatus rental.vatPayerStatus}}</span>
+        </div>
+      </div>
+      {{/if}}
+    {{/if}}
+
     <div class="section">
       <div class="section-title">Pojazd</div>
       <div class="two-columns">
@@ -141,6 +166,7 @@
           </div>
         </div>
         <div>
+          {{#unless (eq version 2)}}
           <div class="field-row">
             <span class="field-label">VIN:</span>
             <span class="field-value">{{vehicle.vin}}</span>
@@ -149,9 +175,63 @@
             <span class="field-label">Rok produkcji:</span>
             <span class="field-value">{{vehicle.year}}</span>
           </div>
+          {{else}}
+          {{#if vehicle.vehicleClassName}}
+          <div class="field-row">
+            <span class="field-label">Klasa pojazdu:</span>
+            <span class="field-value">{{vehicle.vehicleClassName}}</span>
+          </div>
+          {{/if}}
+          {{/unless}}
         </div>
       </div>
     </div>
+
+    {{#if secondDriver}}
+    <div class="section">
+      <div class="section-title">Drugi kierowca</div>
+      <div class="field-row">
+        <span class="field-label">Imie i nazwisko:</span>
+        <span class="field-value">{{secondDriver.firstName}} {{secondDriver.lastName}}</span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">PESEL:</span>
+        <span class="field-value">{{secondDriver.pesel}}</span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Dowod osobisty nr:</span>
+        <span class="field-value">{{secondDriver.idNumber}}</span>
+      </div>
+      <div class="two-columns">
+        <div>
+          <div class="field-row">
+            <span class="field-label">Prawo jazdy nr:</span>
+            <span class="field-value">{{secondDriver.licenseNumber}}</span>
+          </div>
+          {{#if secondDriver.licenseCategory}}
+          <div class="field-row">
+            <span class="field-label">Kategoria:</span>
+            <span class="field-value">{{secondDriver.licenseCategory}}</span>
+          </div>
+          {{/if}}
+        </div>
+        <div>
+          {{#if secondDriver.phone}}
+          <div class="field-row">
+            <span class="field-label">Telefon:</span>
+            <span class="field-value">{{secondDriver.phone}}</span>
+          </div>
+          {{/if}}
+          {{#if secondDriver.address}}
+          <div class="field-row">
+            <span class="field-label">Adres:</span>
+            <span class="field-value">{{secondDriver.address}}</span>
+          </div>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+    {{/if}}
 
     <div class="section">
       <div class="section-title">Okres najmu</div>
@@ -206,6 +286,34 @@
       {{/if}}
     </div>
 
+    {{#if secondDriver}}
+    <div class="signatures-row-three">
+      <div class="signature-block">
+        {{#if signatures.employeePage1}}
+        <img class="signature-img" src="{{signatures.employeePage1}}" />
+        {{/if}}
+        <div class="signature-line">
+          <span class="signature-label">(Podpis Wynajmujacego)</span>
+        </div>
+      </div>
+      <div class="signature-block">
+        {{#if signatures.customerPage1}}
+        <img class="signature-img" src="{{signatures.customerPage1}}" />
+        {{/if}}
+        <div class="signature-line">
+          <span class="signature-label">(Podpis Klienta - Kierowcy)</span>
+        </div>
+      </div>
+      <div class="signature-block">
+        {{#if signatures.secondCustomerPage1}}
+        <img class="signature-img" src="{{signatures.secondCustomerPage1}}" />
+        {{/if}}
+        <div class="signature-line">
+          <span class="signature-label">(Podpis Drugiego Kierowcy)</span>
+        </div>
+      </div>
+    </div>
+    {{else}}
     <div class="signatures-row">
       <div class="signature-block">
         {{#if signatures.employeePage1}}
@@ -224,12 +332,24 @@
         </div>
       </div>
     </div>
+    {{/if}}
   </div>
 
   <!-- PAGE 2: Conditions + Damage Sketch + Acceptance -->
   <div class="page">
     <div class="title">WARUNKI NAJMU POJAZDU</div>
 
+    {{#if (eq version 2)}}
+    <div class="conditions">
+      {{{rental.termsHtml}}}
+    </div>
+    {{#if rental.termsNotes}}
+    <div class="terms-notes">
+      <div class="section-title">Uwagi dodatkowe:</div>
+      <p>{{rental.termsNotes}}</p>
+    </div>
+    {{/if}}
+    {{else}}
     <div class="conditions">
       <ol>
         <li>Wymagane jest ukonczenie 21 lat oraz posiadanie waznego prawa jazdy odpowiedniej kategorii.</li>
@@ -241,7 +361,7 @@
         <li>W przypadku opoznienia w zwrocie pojazdu, naliczana jest oplata w wysokosci {{formatMoney conditions.lateFeeNet}} netto za kazda rozpoczeta dobe opoznienia.</li>
         <li>Najemca zobowiazuje sie zwrocic pojazd w stanie niepogorszonym, z uwzglednieniem normalnego zuzycia eksploatacyjnego.</li>
         <li>Paliwo: pojazd wydawany jest z okreslonej ilosci paliwa i powinien byc zwrocony z taka sama iloscia.</li>
-        <li>Zabrania sie palenia tytoniu w pojazdie. W przypadku naruszenia tego zakazu naliczona zostanie oplata za czyszczenie.</li>
+        <li>Zabrania sie palenia tytoniu w pojezdie. W przypadku naruszenia tego zakazu naliczona zostanie oplata za czyszczenie.</li>
         <li>Zabrania sie przewozenia zwierzat w pojezdzie bez wczesniejszego uzgodnienia z Wynajmujacym.</li>
         <li>Najemca jest zobowiazany do niezwlocznego powiadomienia Wynajmujacego o wszelkich awariach, uszkodzeniach lub kolizjach.</li>
         <li>W przypadku kolizji lub wypadku, Najemca jest zobowiazany do wezwania policji i uzyskania protokolu zdarzenia.</li>
@@ -255,6 +375,7 @@
         <li>W sprawach nieuregulowanych niniejsza umowa obowiazuja przepisy Kodeksu Cywilnego.</li>
       </ol>
     </div>
+    {{/if}}
 
     <div class="damage-sketch">
       <div class="damage-sketch-title">Uwagi uszkodzen pojazdu:</div>
@@ -279,6 +400,42 @@
 
     <p class="acceptance">Zapoznalem sie z trescia i akceptuje powyzsze warunki.</p>
 
+    {{#if (eq version 2)}}
+      {{#if termsAcceptance.accepted}}
+      <div class="rodo-consent">
+        <strong>Akceptacja warunkow:</strong> Najemca zapoznal sie z warunkami najmu i zaakceptowal je dnia {{formatDateTime termsAcceptance.timestamp}}.
+      </div>
+      {{/if}}
+    {{/if}}
+
+    {{#if secondDriver}}
+    <div class="signatures-row-three">
+      <div class="signature-block">
+        {{#if signatures.employeePage2}}
+        <img class="signature-img" src="{{signatures.employeePage2}}" />
+        {{/if}}
+        <div class="signature-line">
+          <span class="signature-label">(Podpis Wynajmujacego)</span>
+        </div>
+      </div>
+      <div class="signature-block">
+        {{#if signatures.customerPage2}}
+        <img class="signature-img" src="{{signatures.customerPage2}}" />
+        {{/if}}
+        <div class="signature-line">
+          <span class="signature-label">(Podpis Najemcy)</span>
+        </div>
+      </div>
+      <div class="signature-block">
+        {{#if signatures.secondCustomerPage2}}
+        <img class="signature-img" src="{{signatures.secondCustomerPage2}}" />
+        {{/if}}
+        <div class="signature-line">
+          <span class="signature-label">(Podpis Drugiego Kierowcy)</span>
+        </div>
+      </div>
+    </div>
+    {{else}}
     <div class="signatures-row">
       <div class="signature-block">
         {{#if signatures.employeePage2}}
@@ -297,6 +454,7 @@
         </div>
       </div>
     </div>
+    {{/if}}
   </div>
 </body>
 </html>
