@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import * as ScreenOrientation from 'expo-screen-orientation';
@@ -15,25 +15,32 @@ import { DEFAULT_VAT_RATE } from '@/lib/constants';
 
 interface SignatureStep {
   titleKey: string;
-  // The two signatureTypes to upload for this step (page1 + page2 reuse same signature)
+  label: string;
   signatureTypes: [SignatureType, SignatureType];
   signerRole: 'customer' | 'employee';
 }
 
-// Reduced to 2 user-facing steps. Each signature is uploaded twice (page1 + page2)
-// so the backend receives all 4 required types and generates the PDF correctly.
-const SIGNATURE_STEPS: SignatureStep[] = [
+const BASE_SIGNATURE_STEPS: SignatureStep[] = [
   {
     titleKey: 'signatures.customerContract',
+    label: 'Podpis Klienta',
     signatureTypes: ['customer_page1', 'customer_page2'],
     signerRole: 'customer',
   },
   {
     titleKey: 'signatures.employeeContract',
+    label: 'Podpis Pracownika',
     signatureTypes: ['employee_page1', 'employee_page2'],
     signerRole: 'employee',
   },
 ];
+
+const SECOND_DRIVER_STEP: SignatureStep = {
+  titleKey: 'signatures.secondDriverContract',
+  label: 'Podpis Drugiego Kierowcy',
+  signatureTypes: ['second_customer_page1', 'second_customer_page2'],
+  signerRole: 'customer',
+};
 
 const MAX_RETRIES = 3;
 const RETRY_DELAYS = [1000, 2000, 4000];
@@ -56,17 +63,27 @@ export default function SignaturesStep() {
   const createContract = useCreateContract();
   const signContract = useSignContract();
 
-  // Guard against duplicate rental creation on rapid re-tap
   const isCreatingRef = useRef(false);
 
-  // Read rentalId, contractId, and currentSignatureIndex from persisted store
   const rentalId = draft.rentalId;
   const contractId = draft.contractId;
   const currentIndex = draft.currentSignatureIndex;
 
-  const currentStep = SIGNATURE_STEPS[currentIndex];
+  // Build signature steps dynamically based on second driver
+  const hasSecondDriver = draft.secondDriverId !== null;
+  const signatureSteps = useMemo<SignatureStep[]>(() => {
+    if (hasSecondDriver) {
+      return [
+        BASE_SIGNATURE_STEPS[0],
+        SECOND_DRIVER_STEP,
+        BASE_SIGNATURE_STEPS[1],
+      ];
+    }
+    return BASE_SIGNATURE_STEPS;
+  }, [hasSecondDriver]);
 
-  // Safety net: restore portrait when this screen unmounts
+  const currentStep = signatureSteps[currentIndex];
+
   useEffect(() => {
     return () => {
       ScreenOrientation.lockAsync(
@@ -97,10 +114,24 @@ export default function SignaturesStep() {
       });
       draft.updateDraft({ rentalId: rental.id });
 
-      // Create contract linked to rental
+      // PATCH rental terms if worker customized them or added notes
+      if (draft.rentalTerms || draft.termsNotes) {
+        try {
+          await apiClient.patch(`/rentals/${rental.id}/terms`, {
+            rentalTerms: draft.rentalTerms ?? undefined,
+            termsNotes: draft.termsNotes ?? undefined,
+          });
+        } catch (termsErr) {
+          console.warn('Failed to patch rental terms:', termsErr);
+          // Non-blocking: continue with contract creation
+        }
+      }
+
+      // Create contract linked to rental, including termsAcceptedAt
       const contract = await createContract.mutateAsync({
         rentalId: rental.id,
         rodoConsentAt: draft.rodoTimestamp!,
+        termsAcceptedAt: draft.termsAcceptedAt ?? undefined,
       });
       draft.updateDraft({ contractId: contract.id });
 
@@ -116,7 +147,6 @@ export default function SignaturesStep() {
       return await doCreateRentalAndContract(false);
     } catch (err: any) {
       if (err?.response?.status === 409) {
-        // Vehicle conflict -- ask user to confirm override
         return new Promise<{ rentalId: string; contractId: string }>((resolve, reject) => {
           setConflictCallback(() => async () => {
             try {
@@ -137,12 +167,9 @@ export default function SignaturesStep() {
     async (base64Png: string) => {
       setIsUploading(true);
 
-      // Snapshot photo URIs immediately before any async operations so they
-      // cannot be wiped by draft.clearDraft() in a race condition
       const snapshotPhotoUris = { ...draft.photoUris };
 
       try {
-        // On the first signature, create rental + contract
         let activeRentalId = rentalId;
         let activeContractId = contractId;
 
@@ -174,7 +201,7 @@ export default function SignaturesStep() {
           return;
         }
 
-        // Upload both signature types for this step (page1 + page2 reuse the same signature)
+        // Upload both signature types for this step
         for (const sigType of currentStep.signatureTypes) {
           let uploaded = false;
           for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
@@ -211,13 +238,13 @@ export default function SignaturesStep() {
         draft.updateDraft({ signatures: updatedSignatures });
 
         // Move to next signature or finalize
-        if (currentIndex < SIGNATURE_STEPS.length - 1) {
+        if (currentIndex < signatureSteps.length - 1) {
           draft.updateDraft({ currentSignatureIndex: currentIndex + 1 });
         } else {
           // All signatures done -- finalize
           setIsSubmitting(true);
 
-          // Upload walkthrough photos (non-blocking, per-photo error tracking)
+          // Upload walkthrough photos
           if (activeRentalId && Object.keys(snapshotPhotoUris).length > 0) {
             try {
               const walkthrough = await apiClient.post('/walkthroughs', {
@@ -273,7 +300,6 @@ export default function SignaturesStep() {
             type: 'success',
             text1: t('toasts.rentalCreated'),
           });
-          // Restore portrait before navigating away from signatures
           await ScreenOrientation.lockAsync(
             ScreenOrientation.OrientationLock.PORTRAIT_UP,
           );
@@ -293,6 +319,7 @@ export default function SignaturesStep() {
     [
       currentIndex,
       currentStep,
+      signatureSteps,
       rentalId,
       contractId,
       draft,
@@ -301,14 +328,12 @@ export default function SignaturesStep() {
       router,
       t,
     ],
-    // rentalId and contractId derived from draft store
   );
 
   const handleBack = useCallback(async () => {
     if (currentIndex > 0) {
       draft.updateDraft({ currentSignatureIndex: currentIndex - 1 });
     } else {
-      // Restore portrait before leaving signatures screen
       await ScreenOrientation.lockAsync(
         ScreenOrientation.OrientationLock.PORTRAIT_UP,
       );
@@ -334,7 +359,7 @@ export default function SignaturesStep() {
   return (
     <>
       <SignatureScreen
-        title={t(currentStep.titleKey)}
+        title={t(currentStep.titleKey, { defaultValue: currentStep.label })}
         stepLabel={t('signatures.stepCounter', {
           current: currentIndex + 1,
         })}
