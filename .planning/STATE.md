@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Client Features & Contract Enhancements
 status: in-progress
-stopped_at: Completed 34-03-PLAN.md
-last_updated: "2026-04-12T21:25:48.894Z"
-last_activity: 2026-04-12 -- Completed 34-04 (Admin Terms Editor)
+stopped_at: Completed 34-02-PLAN.md
+last_updated: "2026-04-12T21:39:04.014Z"
+last_activity: 2026-04-12 -- Completed 34-02 (Contract Service V2 & PDF Template Rewrite)
 progress:
   total_phases: 7
   completed_phases: 1
   total_plans: 9
-  completed_plans: 7
-  percent: 55
+  completed_plans: 8
+  percent: 89
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-04-12)
 ## Current Position
 
 Phase: 34 of 39 (ContractFrozenData v2, PDF Template Rewrite)
-Plan: 4 of 5 in current phase
+Plan: 2 of 5 in current phase
 Status: in-progress
-Last activity: 2026-04-12 -- Completed 34-04 (Admin Terms Editor)
+Last activity: 2026-04-12 -- Completed 34-02 (Contract Service V2 & PDF Template Rewrite)
 
-Progress: [█████░░░░░] 55%
+Progress: [█████████░] 89%
 
 ## Performance Metrics
 
@@ -59,6 +59,7 @@ Progress: [█████░░░░░] 55%
 - [Phase 34]: CepikService.verifyDriver() validates driver belongs to rental via findByRentalId + driverId match
 - [Phase 34]: Portal uses Prisma select (not include:true) for defense-in-depth privacy filtering
 - [Phase 34]: TipTap v3 (3.22.3) for rich text editing -- headings limited to H2/H3 for contract terms
+- [Phase 34-02]: companyName set to null in v2 frozen data -- no DB source column yet; future GUS/NIP lookup
 
 ### Pending Todos
 
@@ -72,6 +73,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-12T21:25:00Z
-Stopped at: Completed 34-04-PLAN.md
-Resume file: .planning/phases/34-contractfrozendata-v2-pdf-template-rewrite/34-05-PLAN.md
+Last session: 2026-04-12T21:39:04.012Z
+Stopped at: Completed 34-02-PLAN.md
+Resume file: .planning/phases/34-contractfrozendata-v2-pdf-template-rewrite/34-03-PLAN.md

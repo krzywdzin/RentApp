@@ -22,7 +22,7 @@ Requirements for v3.0 Client Features & Contract Enhancements. Each maps to road
 - [x] **KLIENT-02**: System waliduje format NIP (10 cyfr, suma kontrolna)
 - [x] **KLIENT-03**: Pracownik moze ustawic status platnika VAT klienta: 100%, 50%, nie
 - [x] **KLIENT-04**: Pracownik moze wpisac adres klienta w aplikacji mobilnej (ulica, nr, kod, miasto)
-- [ ] **KLIENT-05**: Dane firmy (NIP, nazwa firmy) i status VAT pojawiaja sie w umowie PDF
+- [x] **KLIENT-05**: Dane firmy (NIP, nazwa firmy) i status VAT pojawiaja sie w umowie PDF
 
 ### Flota (FLOTA)
 
@@ -30,13 +30,13 @@ Requirements for v3.0 Client Features & Contract Enhancements. Each maps to road
 - [x] **FLOTA-02**: Admin moze przypisac klase do pojazdu przy dodawaniu/edycji
 - [x] **FLOTA-03**: Klasa pojazdu widoczna w liscie pojazdow i w szczegolach wynajmu
 - [x] **FLOTA-04**: Klient nie widzi numeru VIN ani roku produkcji pojazdu w portalu klienta
-- [ ] **FLOTA-05**: Numer VIN i rok produkcji nie pojawiaja sie w PDF umowy wysylanej do klienta
+- [x] **FLOTA-05**: Numer VIN i rok produkcji nie pojawiaja sie w PDF umowy wysylanej do klienta
 
 ### Umowa i warunki (UMOWA)
 
 - [x] **UMOWA-01**: Admin moze edytowac warunki najmu (druga strona umowy) w panelu webowym za pomoca edytora tekstu
-- [ ] **UMOWA-02**: Pracownik moze dostosowac warunki najmu indywidualnie dla kazdego wynajmu
-- [ ] **UMOWA-03**: Klient widzi warunki najmu i musi potwierdzic zapoznanie sie checkbox-em przed podpisem
+- [x] **UMOWA-02**: Pracownik moze dostosowac warunki najmu indywidualnie dla kazdego wynajmu
+- [x] **UMOWA-03**: Klient widzi warunki najmu i musi potwierdzic zapoznanie sie checkbox-em przed podpisem
 - [x] **UMOWA-04**: Pracownik moze dodac uwagi do warunkow najmu (pole tekstowe) -- uwagi pojawiaja sie w PDF
 - [ ] **UMOWA-05**: PDF umowy jest szyfrowany haslem rownym numerowi rejestracyjnemu pojazdu
 - [ ] **UMOWA-06**: Informacja o hasle do PDF wysylana jest SMS-em przy wynajmie (nie w emailu)
@@ -50,7 +50,7 @@ Requirements for v3.0 Client Features & Contract Enhancements. Each maps to road
 - [ ] **NAJEM-04**: Wybrana lokalizacja (adres) zapisywana jest w danych wynajmu
 - [x] **NAJEM-05**: Pracownik moze dodac drugiego kierowce (dane osobowe + nr prawa jazdy)
 - [x] **NAJEM-06**: Drugi kierowca weryfikowany jest przez CEPiK (tak jak glowny najemca)
-- [ ] **NAJEM-07**: Dane drugiego kierowcy pojawiaja sie w umowie PDF
+- [x] **NAJEM-07**: Dane drugiego kierowcy pojawiaja sie w umowie PDF
 
 ### Zwrot i rozliczenie (ZWROT)
 
@@ -93,15 +93,15 @@ Requirements for v3.0 Client Features & Contract Enhancements. Each maps to road
 | KLIENT-02 | Phase 33 | Complete |
 | KLIENT-03 | Phase 33 | Complete |
 | KLIENT-04 | Phase 33 | Complete |
-| KLIENT-05 | Phase 34 | Pending |
+| KLIENT-05 | Phase 34 | Complete |
 | FLOTA-01 | Phase 33 | Complete |
 | FLOTA-02 | Phase 33 | Complete |
 | FLOTA-03 | Phase 33 | Complete |
 | FLOTA-04 | Phase 34 | Complete |
-| FLOTA-05 | Phase 34 | Pending |
+| FLOTA-05 | Phase 34 | Complete |
 | UMOWA-01 | Phase 34 | Complete |
-| UMOWA-02 | Phase 34 | Pending |
-| UMOWA-03 | Phase 34 | Pending |
+| UMOWA-02 | Phase 34 | Complete |
+| UMOWA-03 | Phase 34 | Complete |
 | UMOWA-04 | Phase 34 | Complete |
 | UMOWA-05 | Phase 37 | Pending |
 | UMOWA-06 | Phase 37 | Pending |
@@ -112,7 +112,7 @@ Requirements for v3.0 Client Features & Contract Enhancements. Each maps to road
 | NAJEM-04 | Phase 35 | Pending |
 | NAJEM-05 | Phase 34 | Complete |
 | NAJEM-06 | Phase 34 | Complete |
-| NAJEM-07 | Phase 34 | Pending |
+| NAJEM-07 | Phase 34 | Complete |
 | ZWROT-01 | Phase 39 | Pending |
 | ZWROT-02 | Phase 38 | Pending |
 | ZWROT-03 | Phase 38 | Pending |
