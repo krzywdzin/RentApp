@@ -29,4 +29,8 @@ export class CreateContractDto {
 
   @IsDateString()
   rodoConsentAt!: string;
+
+  @IsOptional()
+  @IsDateString()
+  termsAcceptedAt?: string;
 }

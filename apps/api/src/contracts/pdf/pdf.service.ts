@@ -13,9 +13,15 @@ export type ContractPdfData = ContractFrozenData & {
     customerPage1?: string;
     employeePage2?: string;
     customerPage2?: string;
+    secondCustomerPage1?: string;
+    secondCustomerPage2?: string;
   };
   damageSketch?: string;
   rodoConsent: {
+    accepted: boolean;
+    timestamp: string | null;
+  };
+  termsAcceptance?: {
     accepted: boolean;
     timestamp: string | null;
   };

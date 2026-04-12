@@ -14,6 +14,8 @@ import { StorageService } from '../storage/storage.service';
 import { MailService } from '../mail/mail.service';
 import { CustomersService } from '../customers/customers.service';
 import { PortalService } from '../portal/portal.service';
+import { SettingsService } from '../settings/settings.service';
+import { RentalDriversService, RentalDriverDto } from '../rental-drivers/rental-drivers.service';
 import { CreateContractDto } from './dto/create-contract.dto';
 import { SignContractDto } from './dto/sign-contract.dto';
 import { ContractsQueryDto } from './dto/contracts-query.dto';
@@ -21,11 +23,12 @@ import type {
   ContractDto,
   ContractAnnexDto,
   ContractFrozenData,
+  ContractFrozenDataV2,
   SignatureType,
   SignerRole,
   CustomerDto,
 } from '@rentapp/shared';
-import { ContractStatus } from '@rentapp/shared';
+import { ContractStatus, isV2 } from '@rentapp/shared';
 import type { ContractSignatureDto } from '@rentapp/shared';
 import type { ContractPdfData } from './pdf/pdf.service';
 
@@ -38,12 +41,20 @@ type ContractWithRelations = Prisma.ContractGetPayload<{
   include: typeof CONTRACT_INCLUDE;
 }>;
 
-const ALL_SIGNATURE_TYPES: SignatureType[] = [
+const BASE_SIGNATURE_TYPES: SignatureType[] = [
   'customer_page1',
   'employee_page1',
   'customer_page2',
   'employee_page2',
 ];
+
+function getRequiredSignatureTypes(frozenData: ContractFrozenData): SignatureType[] {
+  const types: SignatureType[] = [...BASE_SIGNATURE_TYPES];
+  if (isV2(frozenData) && frozenData.secondDriver) {
+    types.push('second_customer_page1', 'second_customer_page2');
+  }
+  return types;
+}
 
 interface RentalForContract {
   startDate: Date | string;
@@ -52,6 +63,12 @@ interface RentalForContract {
   totalPriceNet: number;
   totalPriceGross: number;
   vatRate: number;
+  isCompanyRental: boolean;
+  companyNip: string | null;
+  vatPayerStatus: string | null;
+  insuranceCaseNumber: string | null;
+  rentalTerms: string | null;
+  termsNotes: string | null;
 }
 
 interface VehicleForContract {
@@ -61,6 +78,7 @@ interface VehicleForContract {
   year: number;
   vin: string;
   mileage: number;
+  vehicleClass?: { name: string } | null;
 }
 
 @Injectable()
@@ -75,6 +93,8 @@ export class ContractsService {
     private customersService: CustomersService,
     private config: ConfigService,
     private portalService: PortalService,
+    private settingsService: SettingsService,
+    private rentalDriversService: RentalDriversService,
   ) {}
 
   private generateContractNumberFromCount(count: number): string {
@@ -86,6 +106,7 @@ export class ContractsService {
     return `KITEK/${year}/${month}${day}/${seq}`;
   }
 
+  /** @deprecated Use buildFrozenDataV2 for new contracts */
   private buildFrozenData(
     rental: RentalForContract,
     customer: CustomerDto,
@@ -131,6 +152,88 @@ export class ContractsService {
     };
   }
 
+  private buildFrozenDataV2(
+    rental: RentalForContract,
+    customer: CustomerDto,
+    vehicle: VehicleForContract,
+    conditions: { depositAmount: number | null; dailyRateNet: number; lateFeeNet: number | null },
+    termsHtml: string,
+    secondDriver: RentalDriverDto | null,
+  ): ContractFrozenDataV2 {
+    const customerAddress = [
+      [customer.street, customer.houseNumber].filter(Boolean).join(' '),
+      [customer.postalCode, customer.city].filter(Boolean).join(' '),
+    ].filter(Boolean).join(', ') || null;
+
+    const secondDriverAddress = secondDriver
+      ? [
+          [secondDriver.street, secondDriver.houseNumber].filter(Boolean).join(' '),
+          [secondDriver.postalCode, secondDriver.city].filter(Boolean).join(' '),
+        ].filter(Boolean).join(', ') || null
+      : null;
+
+    return {
+      version: 2,
+      company: {
+        name: this.config.get<string>('COMPANY_NAME', 'KITEK'),
+        owner: this.config.get<string>('COMPANY_OWNER', 'Pawel Romanowski'),
+        address: this.config.get<string>('COMPANY_ADDRESS', 'ul. Sieradzka 18, 87-100 Torun'),
+        phone: this.config.get<string>('COMPANY_PHONE', '535 766 666 / 602 367 100'),
+      },
+      customer: {
+        firstName: customer.firstName,
+        lastName: customer.lastName,
+        street: customer.street ?? null,
+        houseNumber: customer.houseNumber ?? null,
+        postalCode: customer.postalCode ?? null,
+        city: customer.city ?? null,
+        address: customerAddress,
+        pesel: customer.pesel,
+        idNumber: customer.idNumber,
+        idIssuedBy: customer.idIssuedBy ?? null,
+        licenseNumber: customer.licenseNumber,
+        licenseCategory: customer.licenseCategory ?? null,
+        phone: customer.phone,
+        email: customer.email ?? null,
+      },
+      vehicle: {
+        registration: vehicle.registration,
+        make: vehicle.make,
+        model: vehicle.model,
+        year: vehicle.year,
+        vin: vehicle.vin,
+        mileage: vehicle.mileage,
+        vehicleClassName: vehicle.vehicleClass?.name ?? null,
+      },
+      rental: {
+        startDate: rental.startDate instanceof Date ? rental.startDate.toISOString() : rental.startDate,
+        endDate: rental.endDate instanceof Date ? rental.endDate.toISOString() : rental.endDate,
+        dailyRateNet: rental.dailyRateNet,
+        totalPriceNet: rental.totalPriceNet,
+        totalPriceGross: rental.totalPriceGross,
+        vatRate: rental.vatRate,
+        isCompanyRental: rental.isCompanyRental,
+        companyName: null, // Future: populated from GUS/NIP lookup
+        companyNip: rental.companyNip ?? null,
+        vatPayerStatus: rental.vatPayerStatus ?? null,
+        insuranceCaseNumber: rental.insuranceCaseNumber ?? null,
+        termsHtml,
+        termsNotes: rental.termsNotes ?? null,
+      },
+      conditions,
+      secondDriver: secondDriver ? {
+        firstName: secondDriver.firstName,
+        lastName: secondDriver.lastName,
+        pesel: secondDriver.pesel,
+        idNumber: secondDriver.idNumber,
+        licenseNumber: secondDriver.licenseNumber,
+        licenseCategory: secondDriver.licenseCategory ?? null,
+        address: secondDriverAddress,
+        phone: secondDriver.phone ?? null,
+      } : null,
+    };
+  }
+
   generateContentHash(data: ContractFrozenData): string {
     const sortedStringify = (obj: unknown): string => {
       if (obj === null || obj === undefined) return JSON.stringify(obj);
@@ -145,10 +248,10 @@ export class ContractsService {
   }
 
   async create(dto: CreateContractDto, userId: string): Promise<ContractDto> {
-    // 1. Fetch rental with includes
+    // 1. Fetch rental with includes (v2: include vehicleClass on vehicle)
     const rental = await this.prisma.rental.findUnique({
       where: { id: dto.rentalId },
-      include: { vehicle: true, customer: true },
+      include: { vehicle: { include: { vehicleClass: true } }, customer: true },
     });
     if (!rental) {
       throw new NotFoundException(`Rental with ID "${dto.rentalId}" not found`);
@@ -170,13 +273,17 @@ export class ContractsService {
     // 3. Get decrypted customer data
     const customer = await this.customersService.findOne(rental.customerId);
 
-    // 4. Build frozen data
+    // 4. Fetch second driver and resolve terms (v2)
+    const secondDriver = await this.rentalDriversService.findByRentalId(rental.id);
+    const termsHtml = rental.rentalTerms ?? await this.settingsService.get('default_rental_terms') ?? '';
+
+    // 5. Build frozen data v2
     const conditions = {
       depositAmount: dto.depositAmount ?? null,
       dailyRateNet: rental.dailyRateNet,
       lateFeeNet: dto.lateFeeNet ?? null,
     };
-    const frozenData = this.buildFrozenData(rental, customer, rental.vehicle, conditions);
+    const frozenData = this.buildFrozenDataV2(rental, customer, rental.vehicle, conditions, termsHtml, secondDriver);
 
     // 5. Generate content hash
     const contentHash = this.generateContentHash(frozenData);
@@ -221,6 +328,7 @@ export class ContractsService {
               dailyRateNet: rental.dailyRateNet,
               lateFeeNet: dto.lateFeeNet ?? null,
               rodoConsentAt: new Date(dto.rodoConsentAt),
+              termsAcceptedAt: dto.termsAcceptedAt ? new Date(dto.termsAcceptedAt) : null,
               damageSketchKey,
             },
             include: CONTRACT_INCLUDE,
@@ -285,7 +393,7 @@ export class ContractsService {
     );
 
     // 5. Determine signer role and ID
-    const signerRole: SignerRole = dto.signatureType.startsWith('customer')
+    const signerRole: SignerRole = dto.signatureType.startsWith('customer') || dto.signatureType.startsWith('second_customer')
       ? 'customer'
       : 'employee';
     const signerId = signerRole === 'employee' ? userId : null;
@@ -322,11 +430,12 @@ export class ContractsService {
       where: { contractId },
     });
 
-    if (signatureCount >= ALL_SIGNATURE_TYPES.length) {
+    const requiredSignatureTypes = getRequiredSignatureTypes(frozenData);
+    if (signatureCount >= requiredSignatureTypes.length) {
       // All signatures collected — generate PDF BEFORE activating rental
       // a. Fetch all signature images as base64
       const signatures: Record<string, string> = {};
-      for (const sigType of ALL_SIGNATURE_TYPES) {
+      for (const sigType of requiredSignatureTypes) {
         const sig = await this.prisma.contractSignature.findUnique({
           where: {
             contractId_signatureType: { contractId, signatureType: sigType },
@@ -366,6 +475,12 @@ export class ContractsService {
             customerPage2: signatures['customerPage2']
               ? `data:image/png;base64,${signatures['customerPage2']}`
               : undefined,
+            secondCustomerPage1: signatures['secondCustomerPage1']
+              ? `data:image/png;base64,${signatures['secondCustomerPage1']}`
+              : undefined,
+            secondCustomerPage2: signatures['secondCustomerPage2']
+              ? `data:image/png;base64,${signatures['secondCustomerPage2']}`
+              : undefined,
           },
           damageSketch: damageSketch
             ? `data:image/png;base64,${damageSketch}`
@@ -373,6 +488,10 @@ export class ContractsService {
           rodoConsent: {
             accepted: !!contract.rodoConsentAt,
             timestamp: contract.rodoConsentAt?.toISOString() ?? null,
+          },
+          termsAcceptance: {
+            accepted: !!(contract as any).termsAcceptedAt,
+            timestamp: (contract as any).termsAcceptedAt?.toISOString() ?? null,
           },
         };
 
