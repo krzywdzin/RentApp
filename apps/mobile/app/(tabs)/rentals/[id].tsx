@@ -103,6 +103,9 @@ export default function RentalDetailScreen() {
             <Text style={s.subText}>
               {rental.vehicle.make} {rental.vehicle.model} ({rental.vehicle.year})
             </Text>
+            {rental.vehicle.vehicleClass?.name && (
+              <Text style={s.subText}>Klasa: {rental.vehicle.vehicleClass.name}</Text>
+            )}
             <Text style={s.subText}>
               Przebieg: {formatMileage(rental.vehicle.mileage)}
             </Text>
@@ -139,6 +142,31 @@ export default function RentalDetailScreen() {
               <Text style={s.grossTotal}>{formatCurrency(rental.totalPriceGross)}</Text>
             </View>
           </AppCard>
+
+          {/* Company data */}
+          {rental.isCompanyRental && (
+            <AppCard cardStyle={s.mb12}>
+              <Text style={s.sectionLabel}>Dane firmy</Text>
+              <View style={s.priceRow}>
+                <Text style={s.smallLabel}>NIP</Text>
+                <Text style={s.dateText}>{rental.companyNip || '-'}</Text>
+              </View>
+              <View style={[s.priceRow, { marginTop: 8 }]}>
+                <Text style={s.smallLabel}>Platnik VAT</Text>
+                <Text style={s.dateText}>
+                  {rental.vatPayerStatus === 'FULL_100' ? '100%' : rental.vatPayerStatus === 'HALF_50' ? '50%' : rental.vatPayerStatus === 'NONE' ? 'Nie' : '-'}
+                </Text>
+              </View>
+            </AppCard>
+          )}
+
+          {/* Insurance */}
+          {rental.insuranceCaseNumber ? (
+            <AppCard cardStyle={s.mb12}>
+              <Text style={s.sectionLabel}>Ubezpieczenie</Text>
+              <Text style={s.dateText}>Nr sprawy: {rental.insuranceCaseNumber}</Text>
+            </AppCard>
+          ) : null}
 
           {/* Return data (if returned) */}
           {isReturned && rental.returnData && (
