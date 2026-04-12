@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Client Features & Contract Enhancements
-status: completed
-stopped_at: Phase 34 planned (5 plans, 3 waves)
-last_updated: "2026-04-12T20:43:15.129Z"
-last_activity: 2026-04-12 -- Completed 33-04 (Web Admin UI)
+status: in-progress
+stopped_at: Completed 34-01-PLAN.md
+last_updated: "2026-04-12T21:21:00Z"
+last_activity: 2026-04-12 -- Completed 34-01 (Data Foundation)
 progress:
   total_phases: 7
   completed_phases: 1
   total_plans: 9
-  completed_plans: 4
-  percent: 100
+  completed_plans: 5
+  percent: 55
 ---
 
 # Project State
@@ -21,21 +21,21 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-12)
 
 **Core value:** Pracownik w terenie moze w pelni obsluzyc wynajem -- od wypelnienia umowy, przez zweryfikowanie uprawnien kierowcy, zrobienie zdjec auta, po podpis klienta i wysylke PDF -- bez papieru i bez powrotu do biura.
-**Current focus:** v3.0 Phase 33 -- Foundation (Schema & Simple Fields)
+**Current focus:** v3.0 Phase 34 -- ContractFrozenData v2, PDF Template Rewrite
 
 ## Current Position
 
-Phase: 33 of 39 (Foundation -- Schema & Simple Fields)
-Plan: 4 of 4 in current phase (PHASE COMPLETE)
-Status: phase-complete
-Last activity: 2026-04-12 -- Completed 33-04 (Web Admin UI)
+Phase: 34 of 39 (ContractFrozenData v2, PDF Template Rewrite)
+Plan: 1 of 5 in current phase
+Status: in-progress
+Last activity: 2026-04-12 -- Completed 34-01 (Data Foundation)
 
-Progress: [██████████] 100%
+Progress: [█████░░░░░] 55%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 99 (37 v1.0 + 14 v1.1 + 7 v2.0 + 26 v2.1 + 2 v2.2 + 9 v2.3 + 4 v3.0)
+- Total plans completed: 100 (37 v1.0 + 14 v1.1 + 7 v2.0 + 26 v2.1 + 2 v2.2 + 9 v2.3 + 5 v3.0)
 - Phases completed: 32 + 1 inserted (9.1)
 
 ## Accumulated Context
@@ -53,6 +53,9 @@ Progress: [██████████] 100%
 - [Phase 33]: isInsuranceRental is UI-only draft toggle; only insuranceCaseNumber sent to API
 - [Phase 33]: NIP validator wraps shared isValidNip via class-validator decorator pattern (same as PESEL)
 - [Phase 33]: Vehicle class CRUD uses dialog-based pattern (not separate pages) -- fewer than 20 classes expected
+- [Phase 34]: Settings module uses simple key-value upsert for configurable rental terms
+- [Phase 34]: CepikVerificationDto.customerId made nullable for driver-only verifications
+- [Phase 34]: Migration SQL written manually (no shadow DB), following Phase 33 precedent
 
 ### Pending Todos
 
@@ -66,6 +69,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-12T20:43:15.127Z
-Stopped at: Phase 34 planned (5 plans, 3 waves)
-Resume file: .planning/phases/34-contractfrozendata-v2-pdf-template-rewrite/34-01-PLAN.md
+Last session: 2026-04-12T21:21:00Z
+Stopped at: Completed 34-01-PLAN.md
+Resume file: .planning/phases/34-contractfrozendata-v2-pdf-template-rewrite/34-02-PLAN.md

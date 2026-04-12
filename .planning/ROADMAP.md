@@ -136,7 +136,7 @@ Plans:
 **Plans**: 5 plans
 
 Plans:
-- [ ] 34-01-PLAN.md — Schema + shared types v2 + Settings API + RentalDrivers service
+- [x] 34-01-PLAN.md — Schema + shared types v2 + Settings API + RentalDrivers service
 - [ ] 34-02-PLAN.md — ContractFrozenData v2 buildFrozenData + PDF template rewrite + dynamic signatures
 - [ ] 34-03-PLAN.md — Second driver REST API + CEPiK extension + Portal VIN/year hiding
 - [ ] 34-04-PLAN.md — Web admin TipTap terms editor (/ustawienia settings page)
@@ -228,7 +228,7 @@ v3.0: 33 -> 34 -> 35 & 36 (parallel, both depend on 33) -> 37 (after 34) -> 38 (
 | 27 | v2.2 | 2/2 | Complete | 2026-03-29 |
 | 28-32 | v2.3 | 9/9 | Complete | 2026-03-29 |
 | 33. Foundation | v3.0 | 4/4 | Complete | 2026-04-12 |
-| 34. PDF Template | v3.0 | 0/5 | Not started | - |
+| 34. PDF Template | v3.0 | 1/5 | In progress | - |
 | 35. Google Places | v3.0 | 0/? | Not started | - |
 | 36. OCR Scanning | v3.0 | 0/? | Not started | - |
 | 37. PDF Encryption | v3.0 | 0/? | Not started | - |
