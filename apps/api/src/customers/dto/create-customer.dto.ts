@@ -1,6 +1,8 @@
 import {
   IsString,
   MinLength,
+  MaxLength,
+  Matches,
   IsOptional,
   IsEmail,
   IsISO8601,
@@ -26,22 +28,27 @@ export class CreateCustomerDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(200)
   street?: string;
 
   @IsOptional()
   @IsString()
+  @MaxLength(20)
   houseNumber?: string;
 
   @IsOptional()
   @IsString()
+  @MaxLength(20)
   apartmentNumber?: string;
 
   @IsOptional()
   @IsString()
+  @Matches(/^\d{2}-\d{3}$/, { message: 'Format: XX-XXX' })
   postalCode?: string;
 
   @IsOptional()
   @IsString()
+  @MaxLength(100)
   city?: string;
 
   @IsValidPesel()

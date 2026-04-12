@@ -7,14 +7,16 @@ import {
   IsEnum,
   IsBoolean,
   Min,
+  MaxLength,
   ValidateNested,
   ValidateIf,
   IsNumber,
   Validate,
 } from 'class-validator';
 import { DateAfterValidator } from '../../common/validators/date-after.validator';
+import { IsValidNip } from '../../common/validators/nip.validator';
 import { Type } from 'class-transformer';
-import { RentalStatus } from '@rentapp/shared';
+import { RentalStatus, VatPayerStatus } from '@rentapp/shared';
 
 class AreaInspectionDto {
   @IsString()
@@ -89,4 +91,24 @@ export class CreateRentalDto {
   @IsOptional()
   @IsBoolean()
   overrideConflict?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  isCompanyRental?: boolean;
+
+  @IsOptional()
+  @IsString()
+  @ValidateIf((o) => o.isCompanyRental === true)
+  @IsValidNip({ message: 'Nieprawidlowy NIP' })
+  companyNip?: string;
+
+  @IsOptional()
+  @IsEnum(VatPayerStatus)
+  @ValidateIf((o) => o.isCompanyRental === true)
+  vatPayerStatus?: VatPayerStatus;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  insuranceCaseNumber?: string;
 }

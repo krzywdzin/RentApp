@@ -16,6 +16,7 @@ const VEHICLE_INCLUDE = {
   insurance: true,
   inspection: true,
   documents: true,
+  vehicleClass: true,
 };
 
 @Injectable()

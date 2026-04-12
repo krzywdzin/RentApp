@@ -3,6 +3,7 @@ import {
   IsInt,
   IsEnum,
   IsOptional,
+  IsUUID,
   MinLength,
   MaxLength,
   Min,
@@ -85,7 +86,7 @@ export class CreateVehicleDto {
   @IsString()
   notes?: string;
 
-  @IsString()
+  @IsUUID()
   vehicleClassId!: string;
 
   @IsOptional()

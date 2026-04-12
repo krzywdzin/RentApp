@@ -1,5 +1,5 @@
-import { IsOptional, IsInt, Min, Max, IsEnum, IsUUID, IsIn } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsOptional, IsInt, IsString, IsBoolean, Min, Max, IsEnum, IsUUID, IsIn } from 'class-validator';
+import { Type, Transform } from 'class-transformer';
 import { RentalStatus } from '@rentapp/shared';
 
 export class RentalsQueryDto {
@@ -31,4 +31,13 @@ export class RentalsQueryDto {
   @IsOptional()
   @IsIn(['active', 'archived', 'all'])
   filter?: 'active' | 'archived' | 'all' = 'active';
+
+  @IsOptional()
+  @Transform(({ value }) => value === 'true' || value === true)
+  @IsBoolean()
+  hasInsurance?: boolean;
+
+  @IsOptional()
+  @IsString()
+  insuranceSearch?: string;
 }

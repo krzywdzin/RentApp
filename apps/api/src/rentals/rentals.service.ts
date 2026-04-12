@@ -31,7 +31,11 @@ export interface OverlapConflict {
 }
 
 const RENTAL_INCLUDE = {
-  vehicle: true,
+  vehicle: {
+    include: {
+      vehicleClass: true,
+    },
+  },
   customer: true,
 } as const;
 
@@ -119,6 +123,10 @@ export class RentalsService {
           vatRate: pricing.vatRate,
           handoverData: dto.handoverData ? (dto.handoverData as unknown as Prisma.InputJsonValue) : undefined,
           notes: dto.notes,
+          isCompanyRental: dto.isCompanyRental ?? false,
+          companyNip: dto.companyNip ?? null,
+          vatPayerStatus: dto.vatPayerStatus ?? null,
+          insuranceCaseNumber: dto.insuranceCaseNumber ?? null,
           overrodeConflict: conflicts.length > 0,
         },
         include: RENTAL_INCLUDE,
@@ -143,7 +151,7 @@ export class RentalsService {
   }
 
   async findAll(query: RentalsQueryDto): Promise<{ data: RentalWithRelations[]; total: number; page: number; limit: number }> {
-    const { page = 1, limit = 20, status, customerId, vehicleId, filter = 'active' } = query;
+    const { page = 1, limit = 20, status, customerId, vehicleId, filter = 'active', hasInsurance, insuranceSearch } = query;
     const where: Prisma.RentalWhereInput = {};
 
     if (filter === 'archived') {
@@ -161,6 +169,14 @@ export class RentalsService {
     }
     if (vehicleId) {
       where.vehicleId = vehicleId;
+    }
+    if (hasInsurance === true) {
+      where.insuranceCaseNumber = { not: null };
+    } else if (hasInsurance === false) {
+      where.insuranceCaseNumber = null;
+    }
+    if (insuranceSearch) {
+      where.insuranceCaseNumber = { contains: insuranceSearch, mode: 'insensitive' };
     }
 
     const [data, total] = await Promise.all([
