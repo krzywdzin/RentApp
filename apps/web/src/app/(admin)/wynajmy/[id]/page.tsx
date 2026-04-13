@@ -320,6 +320,30 @@ export default function RentalDetailPage() {
                     </dd>
                   </div>
                 )}
+                {((rental as unknown as { pickupLocation?: { address: string } }).pickupLocation ||
+                  (rental as unknown as { returnLocation?: { address: string } }).returnLocation) && (
+                  <>
+                    <div className="col-span-full border-t pt-4 mt-2">
+                      <dt className="font-body text-sm font-medium text-charcoal">Lokalizacje</dt>
+                    </div>
+                    {(rental as unknown as { pickupLocation?: { address: string } }).pickupLocation && (
+                      <div>
+                        <dt className="font-body text-sm text-warm-gray">Miejsce wydania</dt>
+                        <dd className="font-body text-sm">
+                          {(rental as unknown as { pickupLocation: { address: string } }).pickupLocation.address}
+                        </dd>
+                      </div>
+                    )}
+                    {(rental as unknown as { returnLocation?: { address: string } }).returnLocation && (
+                      <div>
+                        <dt className="font-body text-sm text-warm-gray">Miejsce zdania</dt>
+                        <dd className="font-body text-sm">
+                          {(rental as unknown as { returnLocation: { address: string } }).returnLocation.address}
+                        </dd>
+                      </div>
+                    )}
+                  </>
+                )}
                 {rental.returnMileage != null && (
                   <div>
                     <dt className="font-body text-sm text-warm-gray">Przebieg przy zwrocie</dt>
