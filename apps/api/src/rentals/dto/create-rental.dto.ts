@@ -7,6 +7,7 @@ import {
   IsEnum,
   IsBoolean,
   Min,
+  MinLength,
   MaxLength,
   ValidateNested,
   ValidateIf,
@@ -111,4 +112,26 @@ export class CreateRentalDto {
   @IsString()
   @MaxLength(100)
   insuranceCaseNumber?: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => PlaceLocationDto)
+  pickupLocation?: PlaceLocationDto;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => PlaceLocationDto)
+  returnLocation?: PlaceLocationDto;
+}
+
+class PlaceLocationDto {
+  @IsString()
+  @MinLength(1)
+  @MaxLength(500)
+  address!: string;
+
+  @IsString()
+  @MinLength(1)
+  @MaxLength(300)
+  placeId!: string;
 }

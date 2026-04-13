@@ -128,6 +128,8 @@ export class RentalsService {
           companyNip: dto.companyNip ?? null,
           vatPayerStatus: dto.vatPayerStatus ?? null,
           insuranceCaseNumber: dto.insuranceCaseNumber ?? null,
+          pickupLocation: dto.pickupLocation ? (dto.pickupLocation as unknown as Prisma.InputJsonValue) : undefined,
+          returnLocation: dto.returnLocation ? (dto.returnLocation as unknown as Prisma.InputJsonValue) : undefined,
           overrodeConflict: conflicts.length > 0,
         },
         include: RENTAL_INCLUDE,
