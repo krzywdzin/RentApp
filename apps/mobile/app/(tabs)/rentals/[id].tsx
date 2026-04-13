@@ -130,6 +130,25 @@ export default function RentalDetailScreen() {
             </Text>
           </AppCard>
 
+          {/* Locations */}
+          {((rental as any).pickupLocation || (rental as any).returnLocation) && (
+            <AppCard cardStyle={s.mb12}>
+              <Text style={s.sectionLabel}>Lokalizacje</Text>
+              {(rental as any).pickupLocation && (
+                <>
+                  <Text style={s.smallLabel}>Miejsce wydania</Text>
+                  <Text style={s.mainText}>{(rental as any).pickupLocation.address}</Text>
+                </>
+              )}
+              {(rental as any).returnLocation && (
+                <>
+                  <Text style={[(rental as any).pickupLocation ? s.mt8 : undefined, s.smallLabel]}>Miejsce zdania</Text>
+                  <Text style={s.mainText}>{(rental as any).returnLocation.address}</Text>
+                </>
+              )}
+            </AppCard>
+          )}
+
           {/* Pricing */}
           <AppCard cardStyle={[s.mb12, s.cardStone]}>
             <Text style={s.sectionLabel}>Ceny</Text>
@@ -232,6 +251,7 @@ const s = StyleSheet.create({
   cardSage: { backgroundColor: colors.sageWash },
   cardStone: { backgroundColor: colors.warmStone },
   grossTotal: { fontFamily: fonts.display, color: colors.forestGreen, fontWeight: '500', fontSize: 16 },
+  mt8: { marginTop: 8 },
   mt16: { marginTop: spacing.base },
   bottomBar: {
     position: 'absolute',
