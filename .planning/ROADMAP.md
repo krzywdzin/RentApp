@@ -231,7 +231,7 @@ v3.0: 33 -> 34 -> 35 & 36 (parallel, both depend on 33) -> 37 (after 34) -> 38 (
 | 28-32 | v2.3 | 9/9 | Complete | 2026-03-29 |
 | 33. Foundation | v3.0 | 4/4 | Complete | 2026-04-12 |
 | 34. PDF Template | v3.0 | Complete    | 2026-04-12 | 2026-04-12 |
-| 35. Google Places | v3.0 | 1/3 | In progress | - |
+| 35. Google Places | 2/3 | In Progress|  | - |
 | 36. OCR Scanning | v3.0 | 0/? | Not started | - |
 | 37. PDF Encryption | v3.0 | 0/? | Not started | - |
 | 38. Settlement | v3.0 | 0/? | Not started | - |

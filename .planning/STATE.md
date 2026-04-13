@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Client Features & Contract Enhancements
 status: in-progress
-stopped_at: Completed 35-01-PLAN.md
-last_updated: "2026-04-13T18:07:20Z"
-last_activity: 2026-04-13 -- Phase 35 Plan 01 complete (shared types, Prisma migration, Places proxy)
+stopped_at: Completed 35-03-PLAN.md
+last_updated: "2026-04-13T18:11:09.321Z"
+last_activity: 2026-04-13 -- Phase 35 Plan 03 complete (location display in rental detail views)
 progress:
   total_phases: 7
   completed_phases: 2
   total_plans: 12
-  completed_plans: 10
-  percent: 83
+  completed_plans: 11
+  percent: 100
 ---
 
 # Project State
@@ -21,21 +21,21 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-12)
 
 **Core value:** Pracownik w terenie moze w pelni obsluzyc wynajem -- od wypelnienia umowy, przez zweryfikowanie uprawnien kierowcy, zrobienie zdjec auta, po podpis klienta i wysylke PDF -- bez papieru i bez powrotu do biura.
-**Current focus:** v3.0 Phase 35 -- Google Places Integration (Plan 01 complete, Plans 02-03 remaining)
+**Current focus:** v3.0 Phase 35 -- Google Places Integration (all 3 plans complete)
 
 ## Current Position
 
 Phase: 35 of 39 (Google Places Integration)
-Plan: 1 of 3 in current phase (35-01 complete)
+Plan: 3 of 3 in current phase (35-03 complete)
 Status: in-progress
-Last activity: 2026-04-13 -- Phase 35 Plan 01 complete (shared types, Prisma migration, Places proxy)
+Last activity: 2026-04-13 -- Phase 35 Plan 03 complete (location display in rental detail views)
 
 Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 105 (37 v1.0 + 14 v1.1 + 7 v2.0 + 26 v2.1 + 2 v2.2 + 9 v2.3 + 10 v3.0)
+- Total plans completed: 107 (37 v1.0 + 14 v1.1 + 7 v2.0 + 26 v2.1 + 2 v2.2 + 9 v2.3 + 12 v3.0)
 - Phases completed: 33 + 1 inserted (9.1)
 
 ## Accumulated Context
@@ -66,6 +66,7 @@ Progress: [██████████] 100%
 - [Phase 34-05]: Rental terms PATCH is non-blocking before contract creation
 - [Phase 35-01]: PlacesController short-circuits input < 2 chars with empty predictions (no Google API call)
 - [Phase 35-01]: Migration SQL written manually following Phase 33/34 precedent (no shadow DB)
+- [Phase 35]: Location display uses Lokalizacje section with Miejsce wydania/zdania labels, cast via as-any (mobile) and as-unknown (web)
 
 ### Pending Todos
 
@@ -79,6 +80,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-13T18:07:20Z
-Stopped at: Completed 35-01-PLAN.md
-Resume file: .planning/phases/35-google-places-integration/35-02-PLAN.md
+Last session: 2026-04-13T18:11:09.320Z
+Stopped at: Completed 35-03-PLAN.md
+Resume file: None
