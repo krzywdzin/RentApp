@@ -1,6 +1,11 @@
 import { z } from 'zod';
 import { isValidNip } from '../lib/nip';
 
+export const PlaceLocationSchema = z.object({
+  address: z.string().min(1).max(500),
+  placeId: z.string().min(1).max(300),
+});
+
 const ConditionRatingSchema = z.enum(['good', 'minor_damage', 'major_damage', 'missing']);
 
 const InspectionAreaSchema = z.enum([
@@ -37,6 +42,8 @@ export const CreateRentalSchema = z
     companyNip: z.string().length(10).nullable().optional(),
     vatPayerStatus: z.enum(['FULL_100', 'HALF_50', 'NONE']).nullable().optional(),
     insuranceCaseNumber: z.string().max(100).nullable().optional(),
+    pickupLocation: PlaceLocationSchema.nullable().optional(),
+    returnLocation: PlaceLocationSchema.nullable().optional(),
   })
   .refine((data) => data.dailyRateNet != null || data.totalPriceNet != null, {
     message: 'Either dailyRateNet or totalPriceNet must be provided',

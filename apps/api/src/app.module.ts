@@ -27,6 +27,7 @@ import { HealthModule } from './health/health.module';
 import { VehicleClassesModule } from './vehicle-classes/vehicle-classes.module';
 import { SettingsModule } from './settings/settings.module';
 import { RentalDriversModule } from './rental-drivers/rental-drivers.module';
+import { PlacesModule } from './places/places.module';
 
 @Module({
   imports: [
@@ -64,6 +65,7 @@ import { RentalDriversModule } from './rental-drivers/rental-drivers.module';
     VehicleClassesModule,
     SettingsModule,
     RentalDriversModule,
+    PlacesModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

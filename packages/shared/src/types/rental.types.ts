@@ -1,3 +1,8 @@
+export interface PlaceLocation {
+  address: string;
+  placeId: string;
+}
+
 export enum VatPayerStatus {
   FULL_100 = 'FULL_100',
   HALF_50 = 'HALF_50',
@@ -53,6 +58,8 @@ export interface RentalDto {
   companyNip: string | null;
   vatPayerStatus: VatPayerStatus | null;
   insuranceCaseNumber: string | null;
+  pickupLocation: PlaceLocation | null;
+  returnLocation: PlaceLocation | null;
   createdAt: string;
   updatedAt: string;
 }

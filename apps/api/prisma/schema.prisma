@@ -274,6 +274,8 @@ model Rental {
   insuranceCaseNumber  String?
   rentalTerms          String?          @db.Text
   termsNotes           String?          @db.Text
+  pickupLocation       Json?
+  returnLocation       Json?
   isArchived      Boolean       @default(false)
 
   vehicle         Vehicle       @relation(fields: [vehicleId], references: [id])
