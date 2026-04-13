@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Client Features & Contract Enhancements
 status: in-progress
-stopped_at: Phase 36 context gathered
-last_updated: "2026-04-13T23:06:29.774Z"
+stopped_at: Phase 36 UI-SPEC approved
+last_updated: "2026-04-13T23:34:42.166Z"
 last_activity: 2026-04-13 -- Phase 35 Plan 03 complete (location display in rental detail views)
 progress:
   total_phases: 7
@@ -82,6 +82,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-13T23:06:29.772Z
-Stopped at: Phase 36 context gathered
-Resume file: .planning/phases/36-ocr-document-scanning/36-CONTEXT.md
+Last session: 2026-04-13T23:34:42.164Z
+Stopped at: Phase 36 UI-SPEC approved
+Resume file: .planning/phases/36-ocr-document-scanning/36-UI-SPEC.md
