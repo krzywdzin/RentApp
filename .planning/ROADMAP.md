@@ -97,7 +97,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 33: Foundation -- Schema & Simple Fields** - New DB models, customer address/company/VAT fields, vehicle classes, insurance case number in mobile (completed 2026-04-12)
 - [x] **Phase 34: ContractFrozenData v2 & PDF Template Rewrite** - Versioned frozen data schema, single coordinated PDF template rewrite for all contract-touching features (completed 2026-04-12)
-- [ ] **Phase 35: Google Places Integration** - Pickup/return location autocomplete via backend-proxied Google Places API
+- [x] **Phase 35: Google Places Integration** - Pickup/return location autocomplete via backend-proxied Google Places API (completed 2026-04-13)
 - [ ] **Phase 36: OCR Document Scanning** - On-device OCR for Polish ID card and driver license with worker review/correction
 - [ ] **Phase 37: Contract Delivery -- PDF Encryption & Email** - Encrypted PDF with registration-plate password, SMS password notification, smart email subjects
 - [ ] **Phase 38: Settlement & VAT Notification** - Rental settlement lifecycle tracking in web admin, VAT collection reminder at return
@@ -231,7 +231,7 @@ v3.0: 33 -> 34 -> 35 & 36 (parallel, both depend on 33) -> 37 (after 34) -> 38 (
 | 28-32 | v2.3 | 9/9 | Complete | 2026-03-29 |
 | 33. Foundation | v3.0 | 4/4 | Complete | 2026-04-12 |
 | 34. PDF Template | v3.0 | Complete    | 2026-04-12 | 2026-04-12 |
-| 35. Google Places | 2/3 | In Progress|  | - |
+| 35. Google Places | 3/3 | Complete   | 2026-04-13 | - |
 | 36. OCR Scanning | v3.0 | 0/? | Not started | - |
 | 37. PDF Encryption | v3.0 | 0/? | Not started | - |
 | 38. Settlement | v3.0 | 0/? | Not started | - |

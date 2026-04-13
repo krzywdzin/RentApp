@@ -66,6 +66,8 @@ Progress: [██████████] 100%
 - [Phase 34-05]: Rental terms PATCH is non-blocking before contract creation
 - [Phase 35-01]: PlacesController short-circuits input < 2 chars with empty predictions (no Google API call)
 - [Phase 35-01]: Migration SQL written manually following Phase 33/34 precedent (no shadow DB)
+- [Phase 35-02]: SecureStore.getItemAsync for Bearer token in PlacesAutocomplete (requestUrl bypasses axios interceptor)
+- [Phase 35-02]: z-index 2/1 layering on pickup/return wrappers to prevent dropdown overlap
 - [Phase 35]: Location display uses Lokalizacje section with Miejsce wydania/zdania labels, cast via as-any (mobile) and as-unknown (web)
 
 ### Pending Todos
