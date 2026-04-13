@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { PlacesAutocomplete } from '@/components/PlacesAutocomplete';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -69,6 +70,8 @@ export default function DatesStep() {
   // Keep dates in local state to avoid react-hook-form/zod crashes with DateTimePicker
   const [startDate, setStartDate] = useState(defaultStartDate);
   const [endDate, setEndDate] = useState(defaultEndDate);
+  const [pickupLocation, setPickupLocation] = useState(draft.pickupLocation);
+  const [returnLocation, setReturnLocation] = useState(draft.returnLocation);
   const dailyRateStr = watch('dailyRateNet');
   const isCompanyRental = watch('isCompanyRental');
 
@@ -159,6 +162,8 @@ export default function DatesStep() {
         isCompanyRental: data.isCompanyRental,
         companyNip: data.isCompanyRental ? (data.companyNip || null) : null,
         vatPayerStatus: data.isCompanyRental ? (data.vatPayerStatus || null) : null,
+        pickupLocation,
+        returnLocation,
         step: 3,
       });
       router.push('/(tabs)/new-rental/contract');
@@ -208,6 +213,24 @@ export default function DatesStep() {
           >
             <Text style={s.dateFieldText}>⏰ {endDate.getHours().toString().padStart(2,'0')}:{endDate.getMinutes().toString().padStart(2,'0')}</Text>
           </Pressable>
+        </View>
+
+        {/* Pickup Location */}
+        <View style={{ zIndex: 2 }}>
+          <PlacesAutocomplete
+            label="Miejsce wydania pojazdu"
+            value={pickupLocation}
+            onSelect={(loc) => setPickupLocation(loc)}
+          />
+        </View>
+
+        {/* Return Location */}
+        <View style={{ zIndex: 1 }}>
+          <PlacesAutocomplete
+            label="Miejsce zdania pojazdu"
+            value={returnLocation}
+            onSelect={(loc) => setReturnLocation(loc)}
+          />
         </View>
 
         {/* Daily Rate */}
