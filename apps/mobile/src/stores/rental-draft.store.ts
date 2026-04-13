@@ -44,6 +44,8 @@ interface RentalDraft {
   secondDriver: SecondDriverData | null;
   secondDriverId: string | null;
   secondDriverCepikStatus: string | null;
+  pickupLocation: { address: string; placeId: string } | null;
+  returnLocation: { address: string; placeId: string } | null;
 }
 
 interface RentalDraftState extends RentalDraft {
@@ -79,6 +81,8 @@ const initialDraft: RentalDraft = {
   secondDriver: null,
   secondDriverId: null,
   secondDriverCepikStatus: null,
+  pickupLocation: null,
+  returnLocation: null,
 };
 
 /**
