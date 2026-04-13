@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Client Features & Contract Enhancements
 status: in-progress
-stopped_at: Phase 35 planned (3 plans, 2 waves)
-last_updated: "2026-04-12T23:11:02.141Z"
-last_activity: 2026-04-13 -- Phase 34 complete (34-05 checkpoint approved)
+stopped_at: Completed 35-01-PLAN.md
+last_updated: "2026-04-13T18:07:20Z"
+last_activity: 2026-04-13 -- Phase 35 Plan 01 complete (shared types, Prisma migration, Places proxy)
 progress:
   total_phases: 7
   completed_phases: 2
   total_plans: 12
-  completed_plans: 9
-  percent: 100
+  completed_plans: 10
+  percent: 83
 ---
 
 # Project State
@@ -21,21 +21,21 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-12)
 
 **Core value:** Pracownik w terenie moze w pelni obsluzyc wynajem -- od wypelnienia umowy, przez zweryfikowanie uprawnien kierowcy, zrobienie zdjec auta, po podpis klienta i wysylke PDF -- bez papieru i bez powrotu do biura.
-**Current focus:** v3.0 Phase 35+ -- Google Places, OCR, PDF Encryption (Phase 34 complete)
+**Current focus:** v3.0 Phase 35 -- Google Places Integration (Plan 01 complete, Plans 02-03 remaining)
 
 ## Current Position
 
-Phase: 34 of 39 (ContractFrozenData v2, PDF Template Rewrite) -- COMPLETE
-Plan: 5 of 5 in current phase (all plans complete)
+Phase: 35 of 39 (Google Places Integration)
+Plan: 1 of 3 in current phase (35-01 complete)
 Status: in-progress
-Last activity: 2026-04-13 -- Phase 34 complete (34-05 checkpoint approved)
+Last activity: 2026-04-13 -- Phase 35 Plan 01 complete (shared types, Prisma migration, Places proxy)
 
 Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 104 (37 v1.0 + 14 v1.1 + 7 v2.0 + 26 v2.1 + 2 v2.2 + 9 v2.3 + 9 v3.0)
+- Total plans completed: 105 (37 v1.0 + 14 v1.1 + 7 v2.0 + 26 v2.1 + 2 v2.2 + 9 v2.3 + 10 v3.0)
 - Phases completed: 33 + 1 inserted (9.1)
 
 ## Accumulated Context
@@ -64,6 +64,8 @@ Progress: [██████████] 100%
 - [Phase 34-05]: Terms acceptance checkbox gates signatures alongside RODO consent
 - [Phase 34-05]: Signature steps computed dynamically from draft.secondDriverId via useMemo
 - [Phase 34-05]: Rental terms PATCH is non-blocking before contract creation
+- [Phase 35-01]: PlacesController short-circuits input < 2 chars with empty predictions (no Google API call)
+- [Phase 35-01]: Migration SQL written manually following Phase 33/34 precedent (no shadow DB)
 
 ### Pending Todos
 
@@ -77,6 +79,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-12T23:11:02.139Z
-Stopped at: Phase 35 planned (3 plans, 2 waves)
-Resume file: .planning/phases/35-google-places-integration/35-01-PLAN.md
+Last session: 2026-04-13T18:07:20Z
+Stopped at: Completed 35-01-PLAN.md
+Resume file: .planning/phases/35-google-places-integration/35-02-PLAN.md

@@ -45,9 +45,9 @@ Requirements for v3.0 Client Features & Contract Enhancements. Each maps to road
 ### Wynajem (NAJEM)
 
 - [x] **NAJEM-01**: Pracownik moze wpisac nr sprawy ubezpieczeniowej przy tworzeniu wynajmu (opcjonalne pole)
-- [ ] **NAJEM-02**: Pracownik moze wybrac miejsce wydania pojazdu z autocomplete Google Places
-- [ ] **NAJEM-03**: Pracownik moze wybrac miejsce zdania pojazdu z autocomplete Google Places
-- [ ] **NAJEM-04**: Wybrana lokalizacja (adres) zapisywana jest w danych wynajmu
+- [x] **NAJEM-02**: Pracownik moze wybrac miejsce wydania pojazdu z autocomplete Google Places
+- [x] **NAJEM-03**: Pracownik moze wybrac miejsce zdania pojazdu z autocomplete Google Places
+- [x] **NAJEM-04**: Wybrana lokalizacja (adres) zapisywana jest w danych wynajmu
 - [x] **NAJEM-05**: Pracownik moze dodac drugiego kierowce (dane osobowe + nr prawa jazdy)
 - [x] **NAJEM-06**: Drugi kierowca weryfikowany jest przez CEPiK (tak jak glowny najemca)
 - [x] **NAJEM-07**: Dane drugiego kierowcy pojawiaja sie w umowie PDF
@@ -107,9 +107,9 @@ Requirements for v3.0 Client Features & Contract Enhancements. Each maps to road
 | UMOWA-06 | Phase 37 | Pending |
 | UMOWA-07 | Phase 37 | Pending |
 | NAJEM-01 | Phase 33 | Complete |
-| NAJEM-02 | Phase 35 | Pending |
-| NAJEM-03 | Phase 35 | Pending |
-| NAJEM-04 | Phase 35 | Pending |
+| NAJEM-02 | Phase 35 | Complete |
+| NAJEM-03 | Phase 35 | Complete |
+| NAJEM-04 | Phase 35 | Complete |
 | NAJEM-05 | Phase 34 | Complete |
 | NAJEM-06 | Phase 34 | Complete |
 | NAJEM-07 | Phase 34 | Complete |

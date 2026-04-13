@@ -153,7 +153,7 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 35-01-PLAN.md — Shared types, Prisma schema, backend Google Places proxy, rental DTO/service location fields
+- [x] 35-01-PLAN.md — Shared types, Prisma schema, backend Google Places proxy, rental DTO/service location fields
 - [ ] 35-02-PLAN.md — Mobile PlacesAutocomplete component + dates.tsx pickup/return fields
 - [ ] 35-03-PLAN.md — Display locations in rental detail views (mobile + web)
 
@@ -231,7 +231,7 @@ v3.0: 33 -> 34 -> 35 & 36 (parallel, both depend on 33) -> 37 (after 34) -> 38 (
 | 28-32 | v2.3 | 9/9 | Complete | 2026-03-29 |
 | 33. Foundation | v3.0 | 4/4 | Complete | 2026-04-12 |
 | 34. PDF Template | v3.0 | Complete    | 2026-04-12 | 2026-04-12 |
-| 35. Google Places | v3.0 | 0/3 | Not started | - |
+| 35. Google Places | v3.0 | 1/3 | In progress | - |
 | 36. OCR Scanning | v3.0 | 0/? | Not started | - |
 | 37. PDF Encryption | v3.0 | 0/? | Not started | - |
 | 38. Settlement | v3.0 | 0/? | Not started | - |
