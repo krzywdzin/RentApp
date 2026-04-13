@@ -43,7 +43,7 @@ Inherited from `apps/mobile/src/lib/theme.ts` (locked legacy tokens). No new tok
 | xxl | 32px | Page-level horizontal padding |
 | section | 40px | Top/bottom page section breaks |
 
-Exceptions: Mobile touch targets at 48px height (AppButton minHeight, input height). Camera shutter button at 72px diameter (industry standard for capture buttons). Document guide overlay frame uses 85.6mm:54mm aspect ratio (ISO/IEC 7810 ID-1 standard, approximately 1.586:1).
+Exceptions: Inherited legacy exceptions — not modifiable in Phase 36 without breaking existing components across 33+ completed phases: md (12px), lg (20px), section (40px). These tokens are defined in `apps/mobile/src/lib/theme.ts` and consumed by AppInput, AppButton, AppCard, WizardStepper, and numerous other shared components; changing them would require a cross-phase design migration. Mobile touch targets at 48px height (AppButton minHeight, input height). Camera shutter button at 72px diameter (industry standard for capture buttons). Document guide overlay frame uses 85.6mm:54mm aspect ratio (ISO/IEC 7810 ID-1 standard, approximately 1.586:1).
 
 ---
 
