@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Client Features & Contract Enhancements
 status: in-progress
-stopped_at: Completed 39-03-PLAN.md
-last_updated: "2026-04-14T22:42:20.271Z"
+stopped_at: Completed 39-02-PLAN.md
+last_updated: "2026-04-14T22:45:27.646Z"
 last_activity: 2026-04-15 -- Phase 39-03 complete (web protocol download section)
 progress:
   total_phases: 7
-  completed_phases: 6
+  completed_phases: 7
   total_plans: 23
-  completed_plans: 22
+  completed_plans: 23
   percent: 96
 ---
 
@@ -85,6 +85,8 @@ Progress: [██████████] 96%
 - [Phase 39-01]: Return protocol PDF uses 20mm margins (differs from contract 15mm) per UI-SPEC
 - [Phase 39-01]: setImmediate fire-and-forget email with DB emailSentAt update on success
 - [Phase 39]: useReturnProtocol hook in use-rentals.ts; protocol section outside Tabs for RETURNED visibility
+- [Phase 39]: Return location extracted from rental.returnLocation JSON with fallback to Nie podano
+- [Phase 39]: useCreateReturnProtocol hook in use-rentals.ts for consistency with other rental hooks
 
 ### Pending Todos
 
@@ -98,6 +100,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-14T22:42:20.269Z
-Stopped at: Completed 39-03-PLAN.md
+Last session: 2026-04-14T22:45:27.644Z
+Stopped at: Completed 39-02-PLAN.md
 Resume file: None

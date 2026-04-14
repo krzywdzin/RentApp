@@ -101,7 +101,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 36: OCR Document Scanning** - On-device OCR for Polish ID card and driver license with worker review/correction (completed 2026-04-14)
 - [x] **Phase 37: Contract Delivery -- PDF Encryption & Email** - Encrypted PDF with registration-plate password, SMS password notification, smart email subjects (completed 2026-04-14)
 - [x] **Phase 38: Settlement & VAT Notification** - Rental settlement lifecycle tracking in web admin, VAT collection reminder at return (completed 2026-04-14)
-- [ ] **Phase 39: Return Protocol** - Structured return protocol document generated per client template
+- [x] **Phase 39: Return Protocol** - Structured return protocol document generated per client template (completed 2026-04-14)
 
 ## Phase Details
 
@@ -241,4 +241,4 @@ v3.0: 33 -> 34 -> 35 & 36 (parallel, both depend on 33) -> 37 (after 34) -> 38 (
 | 36. OCR Scanning | 4/4 | Complete    | 2026-04-14 | - |
 | 37. PDF Encryption | 2/2 | Complete    | 2026-04-14 | - |
 | 38. Settlement | 2/2 | Complete    | 2026-04-14 | - |
-| 39. Return Protocol | 2/3 | In Progress|  | - |
+| 39. Return Protocol | 3/3 | Complete   | 2026-04-14 | - |
