@@ -99,7 +99,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 34: ContractFrozenData v2 & PDF Template Rewrite** - Versioned frozen data schema, single coordinated PDF template rewrite for all contract-touching features (completed 2026-04-12)
 - [x] **Phase 35: Google Places Integration** - Pickup/return location autocomplete via backend-proxied Google Places API (completed 2026-04-13)
 - [x] **Phase 36: OCR Document Scanning** - On-device OCR for Polish ID card and driver license with worker review/correction (completed 2026-04-14)
-- [ ] **Phase 37: Contract Delivery -- PDF Encryption & Email** - Encrypted PDF with registration-plate password, SMS password notification, smart email subjects
+- [x] **Phase 37: Contract Delivery -- PDF Encryption & Email** - Encrypted PDF with registration-plate password, SMS password notification, smart email subjects (completed 2026-04-14)
 - [ ] **Phase 38: Settlement & VAT Notification** - Rental settlement lifecycle tracking in web admin, VAT collection reminder at return
 - [ ] **Phase 39: Return Protocol** - Structured return protocol document generated per client template
 
@@ -236,6 +236,6 @@ v3.0: 33 -> 34 -> 35 & 36 (parallel, both depend on 33) -> 37 (after 34) -> 38 (
 | 34. PDF Template | v3.0 | Complete    | 2026-04-12 | 2026-04-12 |
 | 35. Google Places | 3/3 | Complete    | 2026-04-13 | - |
 | 36. OCR Scanning | 4/4 | Complete    | 2026-04-14 | - |
-| 37. PDF Encryption | 1/2 | In Progress|  | - |
+| 37. PDF Encryption | 2/2 | Complete   | 2026-04-14 | - |
 | 38. Settlement | v3.0 | 0/? | Not started | - |
 | 39. Return Protocol | v3.0 | 0/? | Not started | - |

@@ -39,7 +39,7 @@ Requirements for v3.0 Client Features & Contract Enhancements. Each maps to road
 - [x] **UMOWA-03**: Klient widzi warunki najmu i musi potwierdzic zapoznanie sie checkbox-em przed podpisem
 - [x] **UMOWA-04**: Pracownik moze dodac uwagi do warunkow najmu (pole tekstowe) -- uwagi pojawiaja sie w PDF
 - [x] **UMOWA-05**: PDF umowy jest szyfrowany haslem rownym numerowi rejestracyjnemu pojazdu
-- [ ] **UMOWA-06**: Informacja o hasle do PDF wysylana jest SMS-em przy wynajmie (nie w emailu)
+- [x] **UMOWA-06**: Informacja o hasle do PDF wysylana jest SMS-em przy wynajmie (nie w emailu)
 - [x] **UMOWA-07**: Tytul emaila z umowa zawiera nr sprawy ubezpieczeniowej (jesli jest) + nr rejestracyjny pojazdu
 
 ### Wynajem (NAJEM)
@@ -104,7 +104,7 @@ Requirements for v3.0 Client Features & Contract Enhancements. Each maps to road
 | UMOWA-03 | Phase 34 | Complete |
 | UMOWA-04 | Phase 34 | Complete |
 | UMOWA-05 | Phase 37 | Complete |
-| UMOWA-06 | Phase 37 | Pending |
+| UMOWA-06 | Phase 37 | Complete |
 | UMOWA-07 | Phase 37 | Complete |
 | NAJEM-01 | Phase 33 | Complete |
 | NAJEM-02 | Phase 35 | Complete |
