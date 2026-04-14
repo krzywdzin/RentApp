@@ -9,11 +9,11 @@ Requirements for v3.0 Client Features & Contract Enhancements. Each maps to road
 
 ### Dokumenty klienta (DOC)
 
-- [ ] **DOC-01**: Pracownik moze zrobic zdjecie dowodu osobistego klienta w aplikacji mobilnej
-- [ ] **DOC-02**: Pracownik moze zrobic zdjecie prawa jazdy klienta w aplikacji mobilnej
-- [ ] **DOC-03**: System automatycznie odczytuje dane z dowodu osobistego (OCR): imie, nazwisko, PESEL, nr dokumentu, adres
-- [ ] **DOC-04**: System automatycznie odczytuje dane z prawa jazdy (OCR): nr prawa jazdy, kategorie, data waznosci
-- [ ] **DOC-05**: Pracownik moze poprawic/uzupelnic dane po OCR przed zapisem
+- [x] **DOC-01**: Pracownik moze zrobic zdjecie dowodu osobistego klienta w aplikacji mobilnej
+- [x] **DOC-02**: Pracownik moze zrobic zdjecie prawa jazdy klienta w aplikacji mobilnej
+- [x] **DOC-03**: System automatycznie odczytuje dane z dowodu osobistego (OCR): imie, nazwisko, PESEL, nr dokumentu, adres
+- [x] **DOC-04**: System automatycznie odczytuje dane z prawa jazdy (OCR): nr prawa jazdy, kategorie, data waznosci
+- [x] **DOC-05**: Pracownik moze poprawic/uzupelnic dane po OCR przed zapisem
 - [x] **DOC-06**: Zdjecia dokumentow zapisywane sa w storage (R2) i powiazane z klientem
 
 ### Dane klienta (KLIENT)
@@ -83,11 +83,11 @@ Requirements for v3.0 Client Features & Contract Enhancements. Each maps to road
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DOC-01 | Phase 36 | Pending |
-| DOC-02 | Phase 36 | Pending |
-| DOC-03 | Phase 36 | Pending |
-| DOC-04 | Phase 36 | Pending |
-| DOC-05 | Phase 36 | Pending |
+| DOC-01 | Phase 36 | Complete |
+| DOC-02 | Phase 36 | Complete |
+| DOC-03 | Phase 36 | Complete |
+| DOC-04 | Phase 36 | Complete |
+| DOC-05 | Phase 36 | Complete |
 | DOC-06 | Phase 36 | Complete |
 | KLIENT-01 | Phase 33 | Complete |
 | KLIENT-02 | Phase 33 | Complete |

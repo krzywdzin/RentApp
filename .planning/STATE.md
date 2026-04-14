@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Client Features & Contract Enhancements
 status: in-progress
-stopped_at: Completed 36-03-PLAN.md
-last_updated: "2026-04-14T12:28:37Z"
+stopped_at: Completed 36-02-PLAN.md (retroactive summary after checkpoint approval)
+last_updated: "2026-04-14T12:35:03.740Z"
 last_activity: 2026-04-14 -- Phase 36 Plan 03 complete (web admin documents section)
 progress:
   total_phases: 7
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 15
-  completed_plans: 14
+  completed_plans: 15
   percent: 93
 ---
 
@@ -73,6 +73,7 @@ Progress: [█████████░] 93%
 - [Phase 36]: frontPhotoKey required in schema; back-only uploads set empty string placeholder
 - [Phase 36]: Document URL uses kebab-case (id-card) mapped to DB enum (ID_CARD) in controller
 - [Phase 36]: Empty placeholder slots (dashed border + 'Brak') for missing document sides in web admin grid
+- [Phase Phase 36]: expo-text-extractor with try/catch fallback for Expo Go compatibility
 
 ### Pending Todos
 
@@ -86,6 +87,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-14T12:28:37Z
-Stopped at: Completed 36-03-PLAN.md
+Last session: 2026-04-14T12:34:59.280Z
+Stopped at: Completed 36-02-PLAN.md (retroactive summary after checkpoint approval)
 Resume file: None
