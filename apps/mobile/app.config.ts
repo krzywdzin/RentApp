@@ -41,7 +41,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     '@react-native-community/datetimepicker',
     '@sentry/react-native',
     'expo-localization',
-    'expo-text-extractor',
   ],
   extra: {
     // API URL with Railway as fallback - never localhost
