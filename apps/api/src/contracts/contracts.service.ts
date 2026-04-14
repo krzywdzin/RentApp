@@ -16,6 +16,8 @@ import { CustomersService } from '../customers/customers.service';
 import { PortalService } from '../portal/portal.service';
 import { SettingsService } from '../settings/settings.service';
 import { RentalDriversService, RentalDriverDto } from '../rental-drivers/rental-drivers.service';
+import { PdfEncryptionService } from './pdf/pdf-encryption.service';
+import { SmsService } from '../notifications/sms/sms.service';
 import { CreateContractDto } from './dto/create-contract.dto';
 import { SignContractDto } from './dto/sign-contract.dto';
 import { ContractsQueryDto } from './dto/contracts-query.dto';
@@ -95,6 +97,8 @@ export class ContractsService {
     private portalService: PortalService,
     private settingsService: SettingsService,
     private rentalDriversService: RentalDriversService,
+    private readonly pdfEncryptionService: PdfEncryptionService,
+    private readonly smsService: SmsService,
   ) {}
 
   private generateContractNumberFromCount(count: number): string {
@@ -547,21 +551,41 @@ export class ContractsService {
         const customerName = `${frozenData.customer.firstName} ${frozenData.customer.lastName}`;
         const vehicleReg = frozenData.vehicle.registration;
         const contractNumber = contract.contractNumber;
+        const insuranceCaseNumber = isV2(frozenData) ? frozenData.rental.insuranceCaseNumber : null;
+        const customerPhone = frozenData.customer.phone;
         setImmediate(() => {
-          this.mailService.sendContractEmail(
-            customerEmail,
-            customerName,
-            vehicleReg,
-            contractNumber,
-            pdfBuffer,
-            portalUrl,
-          ).then(() => {
-            this.logger.log(`Contract email sent for ${contractNumber}`);
-          }).catch((error: unknown) => {
-            this.logger.error(
-              `Failed to send contract email for ${contractNumber}: ${error instanceof Error ? error.message : String(error)}`,
-            );
-          });
+          this.pdfEncryptionService.encrypt(pdfBuffer, vehicleReg)
+            .then((encryptedPdf) =>
+              this.mailService.sendContractEmail(
+                customerEmail,
+                customerName,
+                vehicleReg,
+                contractNumber,
+                encryptedPdf,
+                portalUrl,
+                insuranceCaseNumber,
+              )
+            )
+            .then(() => {
+              this.logger.log(`Contract email sent for ${contractNumber}`);
+              if (customerPhone) {
+                return this.smsService.send(
+                  customerPhone,
+                  `Haslo do PDF umowy: ${vehicleReg}. KITEK`,
+                );
+              }
+            })
+            .then(() => {
+              if (customerPhone) {
+                this.logger.log(`PDF password SMS sent for ${contractNumber}`);
+              }
+            })
+            .catch((error: unknown) => {
+              this.logger.error(
+                `Failed contract delivery for ${contractNumber}: ${error instanceof Error ? error.message : String(error)}`,
+              );
+              // PDF NOT sent if encryption fails — RODO compliant
+            });
         });
       }
 
@@ -727,18 +751,39 @@ export class ContractsService {
       if (customerEmail) {
         try {
           const customerName = `${frozenData.customer.firstName} ${frozenData.customer.lastName}`;
+          const vehicleReg = frozenData.vehicle.registration;
+          const insuranceCaseNumber = isV2(frozenData) ? frozenData.rental.insuranceCaseNumber : null;
+          const encryptedPdf = await this.pdfEncryptionService.encrypt(pdfBuffer, vehicleReg);
           await this.mailService.sendAnnexEmail(
             customerEmail,
             customerName,
             contract.contractNumber,
             annexNumber,
-            pdfBuffer,
+            encryptedPdf,
+            insuranceCaseNumber,
           );
           emailSentAt = new Date();
+          // SMS password notification after successful email
+          const customerPhone = frozenData.customer.phone;
+          if (customerPhone) {
+            try {
+              await this.smsService.send(
+                customerPhone,
+                `Haslo do PDF umowy: ${vehicleReg}. KITEK`,
+              );
+              this.logger.log(`PDF password SMS sent for annex ${annexNumber} of ${contract.contractNumber}`);
+            } catch (smsError: unknown) {
+              this.logger.error(
+                `Failed to send PDF password SMS for annex ${contract.contractNumber}: ${smsError instanceof Error ? smsError.message : String(smsError)}`,
+              );
+              // SMS failure is non-blocking for annex creation
+            }
+          }
         } catch (error: unknown) {
           this.logger.error(
             `Failed to send annex email for ${contract.contractNumber}: ${error instanceof Error ? error.message : String(error)}`,
           );
+          // If encryption fails, email is NOT sent — RODO compliant
         }
       }
     }
