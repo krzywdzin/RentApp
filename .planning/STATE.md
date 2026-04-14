@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Client Features & Contract Enhancements
 status: in-progress
-stopped_at: Completed 36-01-PLAN.md
-last_updated: "2026-04-14T12:23:37.518Z"
-last_activity: 2026-04-14 -- Phase 36 Plan 01 complete (backend document foundation)
+stopped_at: Completed 36-03-PLAN.md
+last_updated: "2026-04-14T12:28:37Z"
+last_activity: 2026-04-14 -- Phase 36 Plan 03 complete (web admin documents section)
 progress:
   total_phases: 7
   completed_phases: 3
   total_plans: 15
-  completed_plans: 13
-  percent: 87
+  completed_plans: 14
+  percent: 93
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-04-12)
 ## Current Position
 
 Phase: 36 of 39 (OCR Document Scanning)
-Plan: 1 of 3 in current phase (36-01 complete)
+Plan: 3 of 3 in current phase (36-03 complete)
 Status: in-progress
-Last activity: 2026-04-14 -- Phase 36 Plan 01 complete (backend document foundation)
+Last activity: 2026-04-14 -- Phase 36 Plan 03 complete (web admin documents section)
 
-Progress: [█████████░] 87%
+Progress: [█████████░] 93%
 
 ## Performance Metrics
 
@@ -72,6 +72,7 @@ Progress: [█████████░] 87%
 - [Phase 36]: Manual SQL migration following Phase 33/34 precedent (no shadow DB)
 - [Phase 36]: frontPhotoKey required in schema; back-only uploads set empty string placeholder
 - [Phase 36]: Document URL uses kebab-case (id-card) mapped to DB enum (ID_CARD) in controller
+- [Phase 36]: Empty placeholder slots (dashed border + 'Brak') for missing document sides in web admin grid
 
 ### Pending Todos
 
@@ -85,6 +86,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-14T12:23:37.516Z
-Stopped at: Completed 36-01-PLAN.md
+Last session: 2026-04-14T12:28:37Z
+Stopped at: Completed 36-03-PLAN.md
 Resume file: None
