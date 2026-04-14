@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Modal, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +12,7 @@ import { AppCard } from '@/components/AppCard';
 import { AppButton } from '@/components/AppButton';
 import { StatusBadge } from '@/components/StatusBadge';
 import { LoadingSkeleton } from '@/components/LoadingSkeleton';
-import { colors, fonts, spacing } from '@/lib/theme';
+import { colors, fonts, spacing, radii } from '@/lib/theme';
 
 const RENTAL_STATUS_LABELS: Record<string, string> = {
   DRAFT: 'Wersja robocza',
@@ -29,6 +29,16 @@ export default function ReturnConfirmRentalScreen() {
   const insets = useSafeAreaInsets();
   const { data: rental, isLoading } = useRental(rentalId ?? '');
   const updateDraft = useReturnDraftStore((s) => s.updateDraft);
+
+  const [vatDismissed, setVatDismissed] = useState(false);
+
+  const vatMessage = rental?.vatPayerStatus === 'FULL_100'
+    ? 'Klient jest platnikiem VAT (100%). Pamietaj o pobraniu faktury VAT lub potwierdzenia przy zwrocie pojazdu.'
+    : rental?.vatPayerStatus === 'HALF_50'
+    ? 'Klient jest platnikiem VAT (50%). Pamietaj o pobraniu odpowiedniej dokumentacji VAT przy zwrocie pojazdu.'
+    : null;
+
+  const showVatModal = !!vatMessage && !vatDismissed;
 
   useEffect(() => {
     if (rentalId) {
@@ -138,6 +148,21 @@ export default function ReturnConfirmRentalScreen() {
           onPress={() => router.push('/return/mileage')}
         />
       </View>
+
+      <Modal visible={showVatModal} transparent animationType="fade" statusBarTranslucent>
+        <View style={s.vatOverlay}>
+          <View style={s.vatDialog}>
+            <Text style={s.vatTitle}>Dokumentacja VAT</Text>
+            <Text style={s.vatBody}>{vatMessage}</Text>
+            <AppButton
+              title="Rozumiem"
+              fullWidth
+              containerStyle={s.vatButtonWrap}
+              onPress={() => setVatDismissed(true)}
+            />
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -171,5 +196,35 @@ const s = StyleSheet.create({
     backgroundColor: colors.cream,
     paddingHorizontal: spacing.base,
     paddingTop: spacing.base,
+  },
+  vatOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(44,44,44,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+  },
+  vatDialog: {
+    backgroundColor: colors.warmStone,
+    borderRadius: radii.lg,
+    padding: 24,
+    width: '100%',
+    maxWidth: 400,
+  },
+  vatTitle: {
+    fontFamily: fonts.display,
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.charcoal,
+  },
+  vatBody: {
+    fontFamily: fonts.body,
+    fontSize: 16,
+    color: colors.warmGray,
+    marginTop: 8,
+    lineHeight: 24,
+  },
+  vatButtonWrap: {
+    marginTop: 24,
   },
 });
