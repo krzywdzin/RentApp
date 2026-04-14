@@ -93,13 +93,17 @@ export class MailService {
     contractNumber: string,
     pdfBuffer: Buffer,
     portalUrl?: string,
+    insuranceCaseNumber?: string | null,
   ): Promise<void> {
     const portalSection = portalUrl
       ? `<p style="margin-top:16px">Twoj portal klienta: <a href="${portalUrl}">Otworz portal</a></p><p style="font-size:12px;color:#666">Link wazny przez 30 dni.</p>`
       : '';
+    const subject = insuranceCaseNumber
+      ? `RentApp - Sprawa ${insuranceCaseNumber} - Umowa najmu ${vehicleRegistration}`
+      : `RentApp - Umowa najmu pojazdu ${vehicleRegistration}`;
     await this.send(
       to,
-      'RentApp - Umowa najmu pojazdu ' + vehicleRegistration,
+      subject,
       `<p>Szanowny/a ${customerName},</p><p>W zalaczniku przesylamy umowe najmu pojazdu ${vehicleRegistration} (nr ${contractNumber}).</p>${portalSection}<p>Prosimy o zachowanie tego dokumentu.</p><p>KITEK - Wynajem Pojazdow</p>`,
       [
         {
@@ -121,10 +125,14 @@ export class MailService {
     contractNumber: string,
     annexNumber: number,
     pdfBuffer: Buffer,
+    insuranceCaseNumber?: string | null,
   ): Promise<void> {
+    const subject = insuranceCaseNumber
+      ? `RentApp - Sprawa ${insuranceCaseNumber} - Aneks nr ${annexNumber} do umowy ${contractNumber}`
+      : `RentApp - Aneks nr ${annexNumber} do umowy ${contractNumber}`;
     await this.send(
       to,
-      `RentApp - Aneks nr ${annexNumber} do umowy ${contractNumber}`,
+      subject,
       `<p>Szanowny/a ${customerName},</p><p>W zalaczniku przesylamy aneks nr ${annexNumber} do umowy ${contractNumber}.</p><p>Prosimy o zachowanie tego dokumentu.</p><p>KITEK - Wynajem Pojazdow</p>`,
       [
         {
