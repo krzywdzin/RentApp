@@ -78,6 +78,9 @@ Progress: [██████████] 95%
 - [Phase 37-01]: jest.spyOn(global, 'setTimeout') for retry delay tests (avoids fake timer async issues with promise chains)
 - [Phase Phase 37-02]: Contract SMS uses fire-and-forget (setImmediate) same as email; annex SMS uses try/catch isolation
 - [Phase 38]: Used raw Modal + View + AppButton instead of ConfirmationDialog to avoid showing cancel button in VAT reminder
+- [Phase 38-01]: Settlement-summary route placed before :id route in controller to avoid UUID param collision
+- [Phase 38-01]: Settlement amount stored in grosze in DB, displayed in PLN with /100 conversion
+- [Phase 38-01]: settledAt auto-set on ROZLICZONY, auto-cleared on NIEROZLICZONY, preserved on other transitions
 
 ### Pending Todos
 
@@ -91,6 +94,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-14T20:46:27.683Z
-Stopped at: Completed 38-02-PLAN.md
+Last session: 2026-04-14T20:51:30Z
+Stopped at: Completed 38-01-PLAN.md (settlement lifecycle backend + web admin UI)
 Resume file: None
