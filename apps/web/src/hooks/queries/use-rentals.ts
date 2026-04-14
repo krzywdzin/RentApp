@@ -254,6 +254,15 @@ export function useUpdateSettlement(id: string) {
   });
 }
 
+export function useReturnProtocol(rentalId: string) {
+  return useQuery({
+    queryKey: ['return-protocol', rentalId],
+    queryFn: () => apiClient<{ id: string; rentalId: string; pdfGeneratedAt?: string; emailSentAt?: string }>(`/return-protocols/${rentalId}`),
+    enabled: !!rentalId,
+    retry: false, // 404 is expected for rentals without protocol
+  });
+}
+
 export function useDeleteRental() {
   const queryClient = useQueryClient();
   return useMutation({

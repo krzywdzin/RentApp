@@ -26,6 +26,7 @@ import {
   useExtendRental,
   useRollbackRental,
   useUpdateSettlement,
+  useReturnProtocol,
 } from '@/hooks/queries/use-rentals';
 import { useContractByRental } from '@/hooks/queries/use-contracts';
 import {
@@ -46,8 +47,10 @@ import {
   RotateCcw,
   Pencil,
   Camera,
+  Download,
 } from 'lucide-react';
 import { AuditTrail } from '@/components/audit/audit-trail';
+import { apiClient } from '@/lib/api-client';
 import Link from 'next/link';
 import { toast } from 'sonner';
 
@@ -74,6 +77,8 @@ export default function RentalDetailPage() {
     isLoading: contractLoading,
     isError: contractError,
   } = useContractByRental(id);
+
+  const { data: protocol } = useReturnProtocol(id);
 
   const [extendOpen, setExtendOpen] = useState(false);
   const [returnOpen, setReturnOpen] = useState(false);
@@ -559,6 +564,36 @@ export default function RentalDetailPage() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Protocol download section */}
+      {rental.status === RentalStatus.RETURNED && protocol && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Protokol zwrotu</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Button
+              variant="outline"
+              onClick={async () => {
+                try {
+                  const { url } = await apiClient<{ url: string }>(`/return-protocols/${rental.id}/download`);
+                  window.open(url, '_blank');
+                } catch {
+                  toast.error('Nie udalo sie pobrac protokolu');
+                }
+              }}
+            >
+              <Download className="mr-2 h-4 w-4" />
+              Pobierz protokol
+            </Button>
+            {protocol.pdfGeneratedAt && (
+              <p className="mt-2 text-sm text-muted-foreground">
+                Wygenerowano: {formatDateTime(protocol.pdfGeneratedAt)}
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Extend dialog */}
       <Dialog open={extendOpen} onOpenChange={setExtendOpen}>
