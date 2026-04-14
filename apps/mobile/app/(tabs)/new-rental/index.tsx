@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, FlatList, KeyboardAvoidingView, Linking, Platform, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -23,7 +23,8 @@ import { DocumentConfirmation } from '@/components/DocumentScanner/DocumentConfi
 import { DocumentDiffView } from '@/components/DocumentScanner/DocumentDiffView';
 import { useDocumentScan } from '@/hooks/use-document-scan';
 import { useRentalDraftStore, useRentalDraftHasHydrated } from '@/stores/rental-draft.store';
-import { useCustomerSearch, useCreateCustomer } from '@/hooks/use-customers';
+import { useCustomerSearch, useCreateCustomer, useCustomer } from '@/hooks/use-customers';
+import apiClient from '@/api/client';
 import { RENTAL_WIZARD_LABELS } from '@/lib/constants';
 import { colors, fonts, spacing } from '@/lib/theme';
 
@@ -57,6 +58,12 @@ export default function CustomerStep() {
   const idScan = useDocumentScan('ID_CARD');
   const licenseScan = useDocumentScan('DRIVER_LICENSE');
   const [showRescanConfirm, setShowRescanConfirm] = useState<'ID_CARD' | 'DRIVER_LICENSE' | null>(null);
+  const [pendingExistingCustomer, setPendingExistingCustomer] = useState<{ id: string; name: string } | null>(null);
+  const [showIdDiff, setShowIdDiff] = useState(false);
+  const [showLicenseDiff, setShowLicenseDiff] = useState(false);
+
+  // Fetch full data for selected existing customer (for diff view)
+  const { data: existingCustomerData } = useCustomer(pendingExistingCustomer?.id ?? '');
 
   const {
     control,
@@ -106,11 +113,75 @@ export default function CustomerStep() {
     setShowNewCustomer(true);
   }, []);
 
+  // ---------- Document photo upload helper ----------
+
+  const uploadDocumentPhotos = useCallback(async (customerId: string) => {
+    const scans: Array<{
+      type: 'id-card' | 'driver-license';
+      frontUri: string | undefined;
+      backUri: string | null | undefined;
+    }> = [];
+
+    if (draft.idCardScan?.confirmed) {
+      scans.push({
+        type: 'id-card',
+        frontUri: draft.idCardScan.frontUri,
+        backUri: draft.idCardScan.backUri,
+      });
+    }
+    if (draft.driverLicenseScan?.confirmed) {
+      scans.push({
+        type: 'driver-license',
+        frontUri: draft.driverLicenseScan.frontUri,
+        backUri: draft.driverLicenseScan.backUri,
+      });
+    }
+
+    for (const scan of scans) {
+      if (scan.frontUri) {
+        try {
+          const formData = new FormData();
+          formData.append('file', {
+            uri: scan.frontUri,
+            name: 'front.jpg',
+            type: 'image/jpeg',
+          } as any);
+          await apiClient.post(
+            `/customers/${customerId}/documents/${scan.type}/front`,
+            formData,
+            { headers: { 'Content-Type': 'multipart/form-data' }, transformRequest: (data: any) => data },
+          );
+        } catch (err) {
+          console.warn(`Document photo upload failed (${scan.type}/front):`, err);
+        }
+      }
+      if (scan.backUri) {
+        try {
+          const formData = new FormData();
+          formData.append('file', {
+            uri: scan.backUri,
+            name: 'back.jpg',
+            type: 'image/jpeg',
+          } as any);
+          await apiClient.post(
+            `/customers/${customerId}/documents/${scan.type}/back`,
+            formData,
+            { headers: { 'Content-Type': 'multipart/form-data' }, transformRequest: (data: any) => data },
+          );
+        } catch (err) {
+          console.warn(`Document photo upload failed (${scan.type}/back):`, err);
+        }
+      }
+    }
+  }, [draft.idCardScan, draft.driverLicenseScan]);
+
   const handleCreateCustomer = useCallback(
     async (data: CreateCustomerInput) => {
       try {
         const customer = await createCustomer.mutateAsync(data);
         const name = `${customer.firstName} ${customer.lastName}`;
+        // Upload document photos to R2
+        await uploadDocumentPhotos(customer.id);
         setShowNewCustomer(false);
         reset();
         handleSelectCustomer(customer.id, name);
@@ -121,7 +192,7 @@ export default function CustomerStep() {
         });
       }
     },
-    [createCustomer, handleSelectCustomer, reset, t],
+    [createCustomer, handleSelectCustomer, reset, t, uploadDocumentPhotos],
   );
 
   const handleDraftResume = useCallback(() => {
@@ -228,6 +299,82 @@ export default function CustomerStep() {
     licenseScan.reset();
   }, [licenseScan]);
 
+  // ---------- Existing customer diff view handlers ----------
+
+  const handleProceedWithExisting = useCallback(async () => {
+    if (!pendingExistingCustomer) return;
+    await uploadDocumentPhotos(pendingExistingCustomer.id);
+    handleSelectCustomer(pendingExistingCustomer.id, pendingExistingCustomer.name);
+    setPendingExistingCustomer(null);
+  }, [pendingExistingCustomer, handleSelectCustomer, uploadDocumentPhotos]);
+
+  // Show diff views when OCR scan completes for existing customer
+  useEffect(() => {
+    if (pendingExistingCustomer && idScan.phase === 'review' && idScan.ocrResult) {
+      setShowIdDiff(true);
+    }
+  }, [pendingExistingCustomer, idScan.phase, idScan.ocrResult]);
+
+  useEffect(() => {
+    if (pendingExistingCustomer && licenseScan.phase === 'review' && licenseScan.ocrResult) {
+      setShowLicenseDiff(true);
+    }
+  }, [pendingExistingCustomer, licenseScan.phase, licenseScan.ocrResult]);
+
+  const handleIdDiffUpdate = useCallback((selectedFields: Record<string, string>) => {
+    draft.updateDraft({
+      idCardScan: {
+        frontUri: idScan.frontUri!,
+        backUri: idScan.backUri,
+        confirmed: true,
+      },
+    });
+    setShowIdDiff(false);
+    idScan.reset();
+  }, [draft, idScan]);
+
+  const handleIdDiffKeep = useCallback(() => {
+    setShowIdDiff(false);
+    idScan.reset();
+  }, [idScan]);
+
+  const handleLicenseDiffUpdate = useCallback((selectedFields: Record<string, string>) => {
+    draft.updateDraft({
+      driverLicenseScan: {
+        frontUri: licenseScan.frontUri!,
+        backUri: licenseScan.backUri,
+        confirmed: true,
+      },
+    });
+    setShowLicenseDiff(false);
+    licenseScan.reset();
+  }, [draft, licenseScan]);
+
+  const handleLicenseDiffKeep = useCallback(() => {
+    setShowLicenseDiff(false);
+    licenseScan.reset();
+  }, [licenseScan]);
+
+  // Build current fields from existing customer data for diff comparison
+  const existingIdFields = useMemo((): Record<string, string | null> => {
+    if (!existingCustomerData) return { firstName: null, lastName: null, pesel: null, documentNumber: null };
+    return {
+      firstName: existingCustomerData.firstName ?? null,
+      lastName: existingCustomerData.lastName ?? null,
+      pesel: existingCustomerData.pesel ?? null,
+      documentNumber: existingCustomerData.idNumber ?? null,
+    };
+  }, [existingCustomerData]);
+
+  const existingLicenseFields = useMemo((): Record<string, string | null> => {
+    if (!existingCustomerData) return { licenseNumber: null, categories: null, expiryDate: null };
+    return {
+      licenseNumber: existingCustomerData.licenseNumber ?? null,
+      categories: existingCustomerData.licenseCategory ?? null,
+      expiryDate: null,
+    };
+  }, [existingCustomerData]);
+
   // Guide overlay instruction text
   const getGuideInstruction = (
     type: 'ID_CARD' | 'DRIVER_LICENSE',
@@ -283,49 +430,80 @@ export default function CustomerStep() {
         </View>
       )}
 
-      <FlatList
-        style={s.list}
-        contentContainerStyle={s.listContent}
-        data={customers ?? []}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <AppCard
-            cardStyle={s.mb12}
-            onPress={() =>
-              handleSelectCustomer(
-                item.id,
-                `${item.firstName} ${item.lastName}`,
-              )
-            }
-          >
-            <Text style={s.custName}>
-              {item.firstName} {item.lastName}
-            </Text>
-            <Text style={s.custSub}>{item.phone}</Text>
-            {item.email && (
-              <Text style={s.custSub}>{item.email}</Text>
-            )}
+      {pendingExistingCustomer && !showNewCustomer ? (
+        <ScrollView style={s.list} contentContainerStyle={s.listContent}>
+          <AppCard cardStyle={s.mb12}>
+            <View style={s.existingCustomerHeader}>
+              <Text style={s.custName}>{pendingExistingCustomer.name}</Text>
+              <TouchableOpacity onPress={() => setPendingExistingCustomer(null)}>
+                <Text style={s.changeButton}>Zmien</Text>
+              </TouchableOpacity>
+            </View>
           </AppCard>
-        )}
-        ListEmptyComponent={
-          searchQuery.length >= 2 && !isLoading ? (
-            <EmptyState
-              heading={t('empty.noCustomer')}
-              body={t('empty.noCustomerBody')}
+
+          <Text style={s.sectionHeading}>Skanowanie dokumentow</Text>
+          <View style={s.scanButtonsContainer}>
+            <DocumentScanButton
+              documentType="ID_CARD"
+              label="Skanuj dowod osobisty"
+              scanData={draft.idCardScan}
+              onPress={handleIdScanPress}
             />
-          ) : null
-        }
-        ListFooterComponent={
-          <View style={s.mt8}>
-            <AppButton
-              title={t('wizard.newCustomer')}
-              variant="secondary"
-              onPress={handleNewCustomer}
-              fullWidth
+            <DocumentScanButton
+              documentType="DRIVER_LICENSE"
+              label="Skanuj prawo jazdy"
+              scanData={draft.driverLicenseScan}
+              onPress={handleLicenseScanPress}
             />
           </View>
-        }
-      />
+
+          <AppButton
+            title="Dalej"
+            onPress={handleProceedWithExisting}
+            fullWidth
+            containerStyle={s.mt8}
+          />
+        </ScrollView>
+      ) : (
+        <FlatList
+          style={s.list}
+          contentContainerStyle={s.listContent}
+          data={customers ?? []}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <AppCard
+              cardStyle={s.mb12}
+              onPress={() => setPendingExistingCustomer({ id: item.id, name: `${item.firstName} ${item.lastName}` })}
+            >
+              <Text style={s.custName}>
+                {item.firstName} {item.lastName}
+              </Text>
+              <Text style={s.custSub}>{item.phone}</Text>
+              {item.email && (
+                <Text style={s.custSub}>{item.email}</Text>
+              )}
+            </AppCard>
+          )}
+          ListEmptyComponent={
+            searchQuery.length >= 2 && !isLoading ? (
+              <EmptyState
+                heading={t('empty.noCustomer')}
+                body={t('empty.noCustomerBody')}
+              />
+            ) : null
+          }
+          ListFooterComponent={
+            <View style={s.mt8}>
+              <AppButton
+                title={t('wizard.newCustomer')}
+                variant="secondary"
+                onPress={handleNewCustomer}
+                fullWidth
+              />
+            </View>
+          }
+        />
+      )}
 
       <Modal
         visible={showNewCustomer}
@@ -711,8 +889,8 @@ export default function CustomerStep() {
         onClose={licenseScan.reset}
       />
 
-      {/* ID card confirmation */}
-      {idScan.phase === 'review' && idScan.ocrResult && idScan.frontUri && (
+      {/* ID card confirmation (new customer path only) */}
+      {!pendingExistingCustomer && idScan.phase === 'review' && idScan.ocrResult && idScan.frontUri && (
         <DocumentConfirmation
           visible
           documentType="ID_CARD"
@@ -723,8 +901,8 @@ export default function CustomerStep() {
         />
       )}
 
-      {/* Driver license confirmation */}
-      {licenseScan.phase === 'review' && licenseScan.ocrResult && licenseScan.frontUri && (
+      {/* Driver license confirmation (new customer path only) */}
+      {!pendingExistingCustomer && licenseScan.phase === 'review' && licenseScan.ocrResult && licenseScan.frontUri && (
         <DocumentConfirmation
           visible
           documentType="DRIVER_LICENSE"
@@ -732,6 +910,30 @@ export default function CustomerStep() {
           ocrFields={licenseScan.ocrResult as DriverLicenseOcrFields}
           onConfirm={handleLicenseConfirm}
           onDiscard={handleLicenseDiscard}
+        />
+      )}
+
+      {/* ID card diff view for existing customer */}
+      {showIdDiff && idScan.ocrResult && existingCustomerData && (
+        <DocumentDiffView
+          visible
+          ocrFields={idScan.ocrResult as unknown as Record<string, string | null>}
+          currentFields={existingIdFields}
+          fieldLabels={ID_FIELD_LABELS}
+          onUpdate={handleIdDiffUpdate}
+          onKeepCurrent={handleIdDiffKeep}
+        />
+      )}
+
+      {/* Driver license diff view for existing customer */}
+      {showLicenseDiff && licenseScan.ocrResult && existingCustomerData && (
+        <DocumentDiffView
+          visible
+          ocrFields={licenseScan.ocrResult as unknown as Record<string, string | null>}
+          currentFields={existingLicenseFields}
+          fieldLabels={LICENSE_FIELD_LABELS}
+          onUpdate={handleLicenseDiffUpdate}
+          onKeepCurrent={handleLicenseDiffKeep}
         />
       )}
     </SafeAreaView>
@@ -765,4 +967,6 @@ const s = StyleSheet.create({
   fieldPostal: { flex: 2 },
   fieldCity: { flex: 3 },
   scanButtonsContainer: { gap: spacing.md, marginBottom: spacing.lg },
+  existingCustomerHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  changeButton: { fontFamily: fonts.body, fontSize: 14, color: colors.forestGreen, fontWeight: '500' },
 });
