@@ -28,6 +28,7 @@ import { VehicleClassesModule } from './vehicle-classes/vehicle-classes.module';
 import { SettingsModule } from './settings/settings.module';
 import { RentalDriversModule } from './rental-drivers/rental-drivers.module';
 import { PlacesModule } from './places/places.module';
+import { DocumentsModule } from './documents/documents.module';
 
 @Module({
   imports: [
@@ -66,6 +67,7 @@ import { PlacesModule } from './places/places.module';
     SettingsModule,
     RentalDriversModule,
     PlacesModule,
+    DocumentsModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
