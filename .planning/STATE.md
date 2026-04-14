@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Client Features & Contract Enhancements
 status: in-progress
-stopped_at: Phase 38 UI-SPEC approved
-last_updated: "2026-04-14T19:38:51.438Z"
-last_activity: 2026-04-14 -- Phase 37 complete (PDF encryption + SMS password delivery)
+stopped_at: Completed 38-02-PLAN.md
+last_updated: "2026-04-14T20:46:27.685Z"
+last_activity: 2026-04-14 -- Phase 38-02 complete (VAT reminder modal in mobile return wizard)
 progress:
   total_phases: 7
   completed_phases: 5
-  total_plans: 18
-  completed_plans: 18
-  percent: 100
+  total_plans: 20
+  completed_plans: 19
+  percent: 95
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-12)
 
 **Core value:** Pracownik w terenie moze w pelni obsluzyc wynajem -- od wypelnienia umowy, przez zweryfikowanie uprawnien kierowcy, zrobienie zdjec auta, po podpis klienta i wysylke PDF -- bez papieru i bez powrotu do biura.
-**Current focus:** v3.0 Phase 37 -- Contract Delivery: PDF Encryption & Email
+**Current focus:** v3.0 Phase 38 -- Settlement & VAT Notification
 
 ## Current Position
 
-Phase: 37 of 39 (Contract Delivery: PDF Encryption & Email)
-Plan: 2 of 2 in current phase (37-02 complete -- phase done)
+Phase: 38 of 39 (Settlement & VAT Notification)
+Plan: 2 of 2 in current phase (38-02 complete)
 Status: in-progress
-Last activity: 2026-04-14 -- Phase 37 complete (PDF encryption + SMS password delivery)
+Last activity: 2026-04-14 -- Phase 38-02 complete (VAT reminder modal in mobile return wizard)
 
-Progress: [██████████] 100%
+Progress: [██████████] 95%
 
 ## Performance Metrics
 
@@ -77,6 +77,7 @@ Progress: [██████████] 100%
 - [Phase 36]: Photo upload failures non-blocking after customer creation (same pattern as signatures.tsx)
 - [Phase 37-01]: jest.spyOn(global, 'setTimeout') for retry delay tests (avoids fake timer async issues with promise chains)
 - [Phase Phase 37-02]: Contract SMS uses fire-and-forget (setImmediate) same as email; annex SMS uses try/catch isolation
+- [Phase 38]: Used raw Modal + View + AppButton instead of ConfirmationDialog to avoid showing cancel button in VAT reminder
 
 ### Pending Todos
 
@@ -90,6 +91,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-14T19:38:51.433Z
-Stopped at: Phase 38 UI-SPEC approved
-Resume file: .planning/phases/38-settlement-vat-notification/38-UI-SPEC.md
+Last session: 2026-04-14T20:46:27.683Z
+Stopped at: Completed 38-02-PLAN.md
+Resume file: None
