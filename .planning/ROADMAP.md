@@ -236,6 +236,6 @@ v3.0: 33 -> 34 -> 35 & 36 (parallel, both depend on 33) -> 37 (after 34) -> 38 (
 | 34. PDF Template | v3.0 | Complete    | 2026-04-12 | 2026-04-12 |
 | 35. Google Places | 3/3 | Complete    | 2026-04-13 | - |
 | 36. OCR Scanning | 4/4 | Complete    | 2026-04-14 | - |
-| 37. PDF Encryption | 2/2 | Complete   | 2026-04-14 | - |
+| 37. PDF Encryption | 2/2 | Complete    | 2026-04-14 | - |
 | 38. Settlement | v3.0 | 0/? | Not started | - |
 | 39. Return Protocol | v3.0 | 0/? | Not started | - |
