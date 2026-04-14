@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import type {
   CustomerDto,
   CustomerSearchResultDto,
+  CustomerDocumentDto,
   CreateCustomerInput,
   UpdateCustomerInput,
 } from '@rentapp/shared';
@@ -81,6 +82,14 @@ export function useUpdateCustomer(id: string) {
     onError: () => {
       toast.error('Wystapil blad podczas zapisywania zmian');
     },
+  });
+}
+
+export function useCustomerDocuments(customerId: string) {
+  return useQuery({
+    queryKey: ['customers', customerId, 'documents'],
+    queryFn: () => apiClient<CustomerDocumentDto[]>(`/customers/${customerId}/documents`),
+    enabled: !!customerId,
   });
 }
 

@@ -21,6 +21,7 @@ import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import { InfoRow } from '@/components/ui/info-row';
 import { ErrorState } from '@/components/ui/error-state';
 import { useCustomer, useArchiveCustomer } from '@/hooks/queries/use-customers';
+import { DocumentsSection } from './documents-section';
 import { useRentals } from '@/hooks/queries/use-rentals';
 import { getRentalStatusBadge } from '../../wynajmy/columns';
 import { formatDate } from '@/lib/format';
@@ -114,6 +115,7 @@ export default function CustomerDetailPage() {
       <Tabs defaultValue="dane">
         <TabsList>
           <TabsTrigger value="dane">Dane</TabsTrigger>
+          <TabsTrigger value="dokumenty">Dokumenty</TabsTrigger>
           <TabsTrigger value="wynajmy">Wynajmy</TabsTrigger>
           <TabsTrigger value="audyt">Audyt</TabsTrigger>
         </TabsList>
@@ -165,6 +167,10 @@ export default function CustomerDetailPage() {
               </Card>
             </div>
           </div>
+        </TabsContent>
+
+        <TabsContent value="dokumenty">
+          <DocumentsSection customerId={params.id} />
         </TabsContent>
 
         <TabsContent value="wynajmy">
