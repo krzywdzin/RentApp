@@ -40,7 +40,7 @@ Declared values (must be multiples of 4):
 | 2xl | 48px | Page-level vertical spacing |
 | 3xl | 64px | Not used this phase |
 
-Mobile spacing follows existing `spacing` tokens from `apps/mobile/src/lib/theme.ts`: xs=4, sm=8, md=12, base=16, lg=20, xl=24, xxl=32, section=40.
+Mobile spacing follows existing `spacing` tokens from `apps/mobile/src/lib/theme.ts`: xs=4, sm=8, md=12, base=16, lg=20, xl=24, xxl=32, section=40. These are inherited mobile system tokens -- pre-existing in apps/mobile/src/lib/theme.ts, exempt from standard set requirement. For new Phase 38 UI components (VAT modal layout), restrict to standard-set values only (4, 8, 16, 24, 32, 48, 64).
 
 Exceptions: Mobile modal overlay uses 24px horizontal padding (established pattern from ConfirmationDialog).
 
@@ -51,13 +51,11 @@ Exceptions: Mobile modal overlay uses 24px horizontal padding (established patte
 | Role | Size | Weight | Line Height | Platform |
 |------|------|--------|-------------|----------|
 | Body | 16px | 400 (regular) | 1.5 | Both |
-| Label / Table header | 14px | 600 (semibold) | 1.4 | Web |
-| Heading (card title) | 18px | 500 (medium) | 1.2 | Both |
-| Page heading | 24px (text-2xl) | 600 (semibold) | 1.2 | Web |
-| Badge | 11px | 600 (semibold) | 1.0 | Web |
-| Summary number | 24px | 600 (semibold) | 1.2 | Web |
+| Label / Table header / Badge | 12px (text-xs) | 600 (semibold) | 1.4 | Web |
+| Heading (card title) | 18px | 600 (semibold) | 1.2 | Both |
+| Page heading / Summary number | 24px (text-2xl) | 600 (semibold) | 1.2 | Web |
 
-Web uses Tailwind utility classes (text-sm, text-base, text-lg, text-2xl). Mobile uses explicit fontSize values matching theme.ts.
+Web uses Tailwind utility classes (text-xs, text-base, text-lg, text-2xl). Mobile uses explicit fontSize values matching theme.ts.
 
 ---
 
@@ -85,7 +83,7 @@ Accent reserved for: "Zapisz rozliczenie" button in rental detail, "Rozliczenia"
 
 ## Component Inventory
 
-### Web Admin — Settlement List Tab (in /wynajmy)
+### Web Admin -- Settlement List Tab (in /wynajmy)
 
 | Component | Source | Notes |
 |-----------|--------|-------|
@@ -106,7 +104,7 @@ Layout: Single Card at top of Rozliczenia tab, horizontal flex with 2 stat group
 | Nierozliczone wynajmy | Integer count | "12" |
 | Laczna kwota nierozliczona | PLN via `formatCurrency()` | "4 500,00 PLN" |
 
-Summary bar uses `flex items-center gap-8` inside a Card with `p-4`. Each stat group: label (text-sm text-muted-foreground) above value (text-2xl font-semibold text-charcoal).
+Summary bar uses `flex items-center gap-8` inside a Card with `p-4`. Each stat group: label (text-xs text-muted-foreground font-semibold) above value (text-2xl font-semibold text-charcoal).
 
 #### Settlement Table Columns (default order)
 
@@ -133,7 +131,7 @@ Default sort: settlementStatus ASC (Nierozliczony first), then startDate DESC.
 
 Filter bar uses `flex flex-wrap items-end gap-4` matching existing RentalFilterBar pattern.
 
-### Web Admin — Settlement Form in Rental Detail
+### Web Admin -- Settlement Form in Rental Detail
 
 New tab "Rozliczenie" added after "Audyt" in the rental detail page TabsList.
 
@@ -150,14 +148,14 @@ Form layout: Single column, `space-y-4` between fields. Labels above inputs. Amo
 
 settledAt displayed as read-only `formatDateTime()` below the form when status is ROZLICZONY (not editable).
 
-### Mobile — VAT Reminder Modal
+### Mobile -- VAT Reminder Modal
 
 | Component | Source | Notes |
 |-----------|--------|-------|
 | Modal | React Native (existing) | transparent, animationType="fade", statusBarTranslucent |
-| View (overlay) | React Native | backgroundColor: rgba(44,44,44,0.5) — matches ConfirmationDialog |
+| View (overlay) | React Native | backgroundColor: rgba(44,44,44,0.5) -- matches ConfirmationDialog |
 | View (dialog) | React Native | backgroundColor: warmStone, borderRadius: radii.lg (8), padding: 24 |
-| Text (title) | React Native | fontSize: 18, fontFamily: fonts.display, fontWeight: 500, color: charcoal |
+| Text (title) | React Native | fontSize: 18, fontFamily: fonts.display, fontWeight: 600, color: charcoal |
 | Text (body) | React Native | fontSize: 16, fontFamily: fonts.body, color: warmGray, marginTop: 8 |
 | AppButton | `@/components/AppButton` (existing) | variant="primary", fullWidth, single button (no cancel) |
 
