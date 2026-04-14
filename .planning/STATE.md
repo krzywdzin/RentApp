@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Client Features & Contract Enhancements
 status: in-progress
-stopped_at: Phase 36 plans verified
-last_updated: "2026-04-14T00:02:46.308Z"
-last_activity: 2026-04-13 -- Phase 35 Plan 03 complete (location display in rental detail views)
+stopped_at: Completed 36-01-PLAN.md
+last_updated: "2026-04-14T12:23:37.518Z"
+last_activity: 2026-04-14 -- Phase 36 Plan 01 complete (backend document foundation)
 progress:
   total_phases: 7
   completed_phases: 3
   total_plans: 15
-  completed_plans: 12
-  percent: 100
+  completed_plans: 13
+  percent: 87
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-12)
 
 **Core value:** Pracownik w terenie moze w pelni obsluzyc wynajem -- od wypelnienia umowy, przez zweryfikowanie uprawnien kierowcy, zrobienie zdjec auta, po podpis klienta i wysylke PDF -- bez papieru i bez powrotu do biura.
-**Current focus:** v3.0 Phase 35 -- Google Places Integration (all 3 plans complete)
+**Current focus:** v3.0 Phase 36 -- OCR Document Scanning (Plan 01 complete)
 
 ## Current Position
 
-Phase: 35 of 39 (Google Places Integration)
-Plan: 3 of 3 in current phase (35-03 complete)
+Phase: 36 of 39 (OCR Document Scanning)
+Plan: 1 of 3 in current phase (36-01 complete)
 Status: in-progress
-Last activity: 2026-04-13 -- Phase 35 Plan 03 complete (location display in rental detail views)
+Last activity: 2026-04-14 -- Phase 36 Plan 01 complete (backend document foundation)
 
-Progress: [██████████] 100%
+Progress: [█████████░] 87%
 
 ## Performance Metrics
 
@@ -69,6 +69,9 @@ Progress: [██████████] 100%
 - [Phase 35-02]: SecureStore.getItemAsync for Bearer token in PlacesAutocomplete (requestUrl bypasses axios interceptor)
 - [Phase 35-02]: z-index 2/1 layering on pickup/return wrappers to prevent dropdown overlap
 - [Phase 35]: Location display uses Lokalizacje section with Miejsce wydania/zdania labels, cast via as-any (mobile) and as-unknown (web)
+- [Phase 36]: Manual SQL migration following Phase 33/34 precedent (no shadow DB)
+- [Phase 36]: frontPhotoKey required in schema; back-only uploads set empty string placeholder
+- [Phase 36]: Document URL uses kebab-case (id-card) mapped to DB enum (ID_CARD) in controller
 
 ### Pending Todos
 
@@ -82,6 +85,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-14T00:02:46.306Z
-Stopped at: Phase 36 plans verified
-Resume file: .planning/phases/36-ocr-document-scanning/36-01-PLAN.md
+Last session: 2026-04-14T12:23:37.516Z
+Stopped at: Completed 36-01-PLAN.md
+Resume file: None
