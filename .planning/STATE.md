@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Client Features & Contract Enhancements
 status: in-progress
-stopped_at: Completed 39-01-PLAN.md
-last_updated: "2026-04-14T22:38:12.353Z"
-last_activity: 2026-04-15 -- Phase 39-01 complete (return protocol backend API)
+stopped_at: Completed 39-03-PLAN.md
+last_updated: "2026-04-14T22:42:20.271Z"
+last_activity: 2026-04-15 -- Phase 39-03 complete (web protocol download section)
 progress:
   total_phases: 7
   completed_phases: 6
   total_plans: 23
-  completed_plans: 21
-  percent: 95
+  completed_plans: 22
+  percent: 96
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-04-12)
 ## Current Position
 
 Phase: 39 of 39 (Return Protocol)
-Plan: 1 of 3 in current phase (39-01 complete)
+Plan: 3 of 3 in current phase (39-03 complete)
 Status: in-progress
-Last activity: 2026-04-15 -- Phase 39-01 complete (return protocol backend API)
+Last activity: 2026-04-15 -- Phase 39-03 complete (web protocol download section)
 
-Progress: [██████████] 95%
+Progress: [██████████] 96%
 
 ## Performance Metrics
 
@@ -84,6 +84,7 @@ Progress: [██████████] 95%
 - [Phase 39-01]: PdfService exported from ContractsModule for reuse by ReturnProtocolsModule
 - [Phase 39-01]: Return protocol PDF uses 20mm margins (differs from contract 15mm) per UI-SPEC
 - [Phase 39-01]: setImmediate fire-and-forget email with DB emailSentAt update on success
+- [Phase 39]: useReturnProtocol hook in use-rentals.ts; protocol section outside Tabs for RETURNED visibility
 
 ### Pending Todos
 
@@ -97,6 +98,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-14T22:38:12.351Z
-Stopped at: Completed 39-01-PLAN.md
+Last session: 2026-04-14T22:42:20.269Z
+Stopped at: Completed 39-03-PLAN.md
 Resume file: None
