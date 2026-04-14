@@ -5,9 +5,9 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
 
-import { DAMAGE_TYPE_LABELS } from '@rentapp/shared';
+import { DAMAGE_TYPE_LABELS, CLEANLINESS_LABELS } from '@rentapp/shared';
 
-import { useRental, useReturnRental } from '@/hooks/use-rentals';
+import { useRental, useReturnRental, useCreateReturnProtocol } from '@/hooks/use-rentals';
 import { useReturnDraftStore, useReturnDraftHasHydrated, RETURN_WIZARD_TOTAL_STEPS } from '@/stores/return-draft.store';
 import { formatMileage } from '@/lib/format';
 import { WizardStepper } from '@/components/WizardStepper';
@@ -22,11 +22,17 @@ export default function ReturnConfirmScreen() {
   const insets = useSafeAreaInsets();
   const hasHydrated = useReturnDraftHasHydrated();
   const returnMutation = useReturnRental();
+  const protocolMutation = useCreateReturnProtocol();
 
   const rentalId = useReturnDraftStore((s) => s.rentalId);
   const returnMileage = useReturnDraftStore((s) => s.returnMileage);
   const damagePins = useReturnDraftStore((s) => s.damagePins);
   const notes = useReturnDraftStore((s) => s.notes);
+  const protocolCleanliness = useReturnDraftStore((s) => s.protocolCleanliness);
+  const protocolCleanlinessNote = useReturnDraftStore((s) => s.protocolCleanlinessNote);
+  const protocolOtherNotes = useReturnDraftStore((s) => s.protocolOtherNotes);
+  const protocolCustomerSignature = useReturnDraftStore((s) => s.protocolCustomerSignature);
+  const protocolWorkerSignature = useReturnDraftStore((s) => s.protocolWorkerSignature);
   const clearDraft = useReturnDraftStore((s) => s.clearDraft);
 
   const { data: rental, isLoading } = useRental(rentalId ?? '');
@@ -56,10 +62,29 @@ export default function ReturnConfirmScreen() {
   const distanceDriven =
     returnMileage != null ? returnMileage - handoverMileage : 0;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!rentalId || returnMileage == null) return;
+    if (!protocolCleanliness || !protocolCustomerSignature || !protocolWorkerSignature) return;
 
-    // Build damage pins summary as general notes
+    // Step 1: Create return protocol
+    try {
+      await protocolMutation.mutateAsync({
+        rentalId,
+        cleanliness: protocolCleanliness,
+        cleanlinessNote: protocolCleanlinessNote || undefined,
+        otherNotes: protocolOtherNotes || undefined,
+        customerSignatureBase64: protocolCustomerSignature,
+        workerSignatureBase64: protocolWorkerSignature,
+      });
+    } catch {
+      Toast.show({
+        type: 'error',
+        text1: 'Nie udalo sie utworzyc protokolu zwrotu. Sprobuj ponownie.',
+      });
+      return;
+    }
+
+    // Step 2: Return the rental (existing logic)
     const damageSummary = damagePins
       .map(
         (p) =>
@@ -90,7 +115,6 @@ export default function ReturnConfirmScreen() {
             type: 'success',
             text1: t('toasts.returnSubmitted'),
           });
-          // Navigate back to rental list (replace ensures predictable destination)
           router.replace('/(tabs)/rentals');
         },
         onError: () => {
@@ -182,6 +206,31 @@ export default function ReturnConfirmScreen() {
           <Text style={s.sectionLabel}>{t('returnWizard.step4')}</Text>
           <Text style={s.valueText}>{notes || 'Brak uwag'}</Text>
         </AppCard>
+
+        {/* Protocol summary */}
+        <AppCard cardStyle={[s.mb12, s.cardStone]}>
+          <Text style={s.sectionLabel}>Protokol zwrotu</Text>
+          <Text style={s.valueText}>
+            Czystosc: {protocolCleanliness ? CLEANLINESS_LABELS[protocolCleanliness] : '-'}
+          </Text>
+          {protocolCleanlinessNote ? (
+            <Text style={s.subText}>{protocolCleanlinessNote}</Text>
+          ) : null}
+          {protocolOtherNotes ? (
+            <>
+              <Text style={[s.smallLabel, { marginTop: 8 }]}>Inne</Text>
+              <Text style={s.valueText}>{protocolOtherNotes}</Text>
+            </>
+          ) : null}
+          <View style={{ marginTop: 8, flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={s.valueText}>
+              Podpis klienta: {protocolCustomerSignature ? 'Podpisano' : 'Brak'}
+            </Text>
+            <Text style={s.valueText}>
+              Podpis pracownika: {protocolWorkerSignature ? 'Podpisano' : 'Brak'}
+            </Text>
+          </View>
+        </AppCard>
       </ScrollView>
 
       {/* Submit button */}
@@ -189,7 +238,7 @@ export default function ReturnConfirmScreen() {
         <AppButton
           title={t('returnWizard.submit')}
           fullWidth
-          loading={returnMutation.isPending}
+          loading={protocolMutation.isPending || returnMutation.isPending}
           onPress={handleSubmit}
         />
       </View>
