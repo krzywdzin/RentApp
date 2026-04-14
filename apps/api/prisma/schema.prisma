@@ -110,6 +110,7 @@ model User {
   cepikChecks           CepikVerification[] @relation("CepikCheckedBy")
   cepikOverrides        CepikVerification[] @relation("CepikOverriddenBy")
   scannedDocuments      CustomerDocument[]  @relation("DocumentScannedBy")
+  createdProtocols      ReturnProtocol[]   @relation("ProtocolCreatedBy")
 
   @@map("users")
 }
@@ -299,6 +300,7 @@ model Rental {
   walkthroughs    PhotoWalkthrough[]
   cepikVerifications  CepikVerification[]
   additionalDriver    RentalDriver?
+  returnProtocol      ReturnProtocol?
 
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
@@ -585,4 +587,29 @@ model CustomerDocument {
   @@unique([customerId, type])
   @@index([customerId])
   @@map("customer_documents")
+}
+
+model ReturnProtocol {
+  id                    String    @id @default(uuid())
+  rentalId              String    @unique
+  customerName          String
+  returnDateTime        DateTime
+  vehicleMakeModel      String
+  vehicleRegistration   String
+  returnLocation        String?
+  cleanliness           String
+  cleanlinessNote       String?
+  otherNotes            String?   @db.Text
+  customerSignatureKey  String
+  workerSignatureKey    String
+  pdfKey                String?
+  pdfGeneratedAt        DateTime?
+  emailSentAt           DateTime?
+  createdById           String
+  createdAt             DateTime  @default(now())
+
+  rental    Rental @relation(fields: [rentalId], references: [id])
+  createdBy User   @relation("ProtocolCreatedBy", fields: [createdById], references: [id])
+
+  @@map("return_protocols")
 }

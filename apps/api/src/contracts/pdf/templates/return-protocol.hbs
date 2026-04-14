@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; font-size: 13px; color: #333; }
+    .page { width: 210mm; min-height: 297mm; padding: 20mm; }
+    .header { margin-bottom: 10mm; }
+    .company-name { font-size: 13px; font-weight: 700; }
+    .company-url { font-size: 11px; color: #0066CC; text-decoration: underline; }
+    .company-phone { font-size: 11px; }
+    .title { font-size: 18px; font-weight: 700; margin: 15mm 0 10mm; }
+    .field { margin: 4mm 0; }
+    .field-num { font-weight: 700; display: inline; }
+    .field-label { font-weight: 700; display: inline; }
+    .field-value { display: inline; }
+    .signatures { display: flex; justify-content: space-between; margin-top: 25mm; }
+    .sig-block { width: 45%; text-align: center; }
+    .sig-img { height: 20mm; max-width: 100%; }
+    .sig-dots { border-top: 1px dotted #333; padding-top: 2mm; }
+    .sig-label { font-size: 11px; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="header">
+      <div class="company-name">KITEK Pawel Romanowski</div>
+      <div class="company-url">www.p-romanowski.pl</div>
+      <div class="company-phone">Tel. (+48) 602 367 100</div>
+    </div>
+    <div class="title">PROTOKOL ZDAWCZO - ODBIORCZY SAMOCHODU</div>
+    <div class="field"><span class="field-num">1. </span><span class="field-label">Zdajacy:</span> <span class="field-value">{{customerName}}</span></div>
+    <div class="field"><span class="field-num">2. </span><span class="field-label">Data i godzina zwrotu:</span> <span class="field-value">{{returnDateTime}}</span></div>
+    <div class="field"><span class="field-num">3. </span><span class="field-label">Marka i model samochodu:</span> <span class="field-value">{{vehicleMakeModel}}</span></div>
+    <div class="field"><span class="field-num">4. </span><span class="field-label">Numer rejestracyjny:</span> <span class="field-value">{{vehicleRegistration}}</span></div>
+    <div class="field"><span class="field-num">5. </span><span class="field-label">Miejsce odbioru:</span> <span class="field-value">{{#if returnLocation}}{{returnLocation}}{{else}}-{{/if}}</span></div>
+    <div class="field"><span class="field-num">6. </span><span class="field-label">Czystosc pojazdu:</span> <span class="field-value">{{cleanlinessLabel}}{{#if cleanlinessNote}} ({{cleanlinessNote}}){{/if}}</span></div>
+    <div class="field"><span class="field-num">7. </span><span class="field-label">Inne:</span> <span class="field-value">{{#if otherNotes}}{{otherNotes}}{{else}}-{{/if}}</span></div>
+    <div class="signatures">
+      <div class="sig-block">
+        {{#if customerSignature}}<img class="sig-img" src="{{customerSignature}}" />{{/if}}
+        <div class="sig-dots"></div>
+        <div class="sig-label">Zdajacy (data i podpis)</div>
+      </div>
+      <div class="sig-block">
+        {{#if workerSignature}}<img class="sig-img" src="{{workerSignature}}" />{{/if}}
+        <div class="sig-dots"></div>
+        <div class="sig-label">Odbierajacy (data i podpis)</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

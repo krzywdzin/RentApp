@@ -1,3 +1,11 @@
+export type ProtocolCleanliness = 'CZYSTY' | 'BRUDNY' | 'DO_MYCIA';
+
+export const CLEANLINESS_LABELS: Record<ProtocolCleanliness, string> = {
+  CZYSTY: 'Czysty',
+  BRUDNY: 'Brudny',
+  DO_MYCIA: 'Do mycia',
+};
+
 export interface PlaceLocation {
   address: string;
   placeId: string;
