@@ -102,6 +102,7 @@ model User {
   inAppNotifications    InAppNotification[]
   cepikChecks           CepikVerification[] @relation("CepikCheckedBy")
   cepikOverrides        CepikVerification[] @relation("CepikOverriddenBy")
+  scannedDocuments      CustomerDocument[]  @relation("DocumentScannedBy")
 
   @@map("users")
 }
@@ -241,6 +242,7 @@ model Customer {
 
   rentals               Rental[]
   cepikVerifications    CepikVerification[]
+  documents             CustomerDocument[]
 
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
@@ -551,4 +553,24 @@ model RentalDriver {
   createdAt             DateTime @default(now())
 
   @@map("rental_drivers")
+}
+
+model CustomerDocument {
+  id            String   @id @default(uuid())
+  customerId    String
+  customer      Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  type          String   // 'ID_CARD' | 'DRIVER_LICENSE'
+  frontPhotoKey String
+  frontThumbKey String?
+  backPhotoKey  String?
+  backThumbKey  String?
+  scannedAt     DateTime @default(now())
+  scannedById   String
+  scannedBy     User     @relation("DocumentScannedBy", fields: [scannedById], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([customerId, type])
+  @@index([customerId])
+  @@map("customer_documents")
 }
