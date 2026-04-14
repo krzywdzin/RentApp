@@ -42,7 +42,9 @@ Declared values from existing `apps/mobile/src/lib/theme.ts`:
 | xxl | 32px | Layout gaps |
 | section | 40px | Major section breaks |
 
-Exceptions: PDF template uses mm-based spacing (20mm page padding, 4mm field spacing, 25mm signature block top margin) -- these mirror the client template layout, not the mobile spacing scale.
+**Spacing Exceptions:** Values 12px (md), 20px (lg), and 40px (section) are pre-existing project tokens defined in `apps/mobile/src/lib/theme.ts`, established before Phase 39. All three are multiples of 4 and are approved project conventions used across the application. For new Phase 39 components, restrict to standard-set values only: {4, 8, 16, 24, 32, 48, 64}. Use existing theme tokens only when composing with pre-existing components that already use them (e.g., AppCard internal padding at 12px).
+
+PDF template uses mm-based spacing (20mm page padding, 4mm field spacing, 25mm signature block top margin) — these mirror the client template layout, not the mobile spacing scale.
 
 ---
 
@@ -50,32 +52,31 @@ Exceptions: PDF template uses mm-based spacing (20mm page padding, 4mm field spa
 
 ### Mobile screens (protocol form + signatures)
 
+2 weights only: 400 (regular) and 600 (semibold).
+
 | Role | Size | Weight | Line Height | Font |
 |------|------|--------|-------------|------|
 | Step title | 20px | 600 (semibold) | 1.2 | Fraunces-Variable |
 | Body / field value | 16px | 400 (regular) | 1.5 | Satoshi-Variable |
-| Section label | 13px | 500 (medium) | 1.4 | Satoshi-Variable |
-| Chip label | 14px | 500 (medium) | 1.3 | Satoshi-Variable |
+| Section label | 13px | 600 (semibold) | 1.4 | Satoshi-Variable |
+| Chip label | 14px | 600 (semibold) | 1.3 | Satoshi-Variable |
 
 ### PDF template
+
+2 weights only: 400 (regular) and 700 (bold).
 
 | Role | Size | Weight | Line Height | Font |
 |------|------|--------|-------------|------|
 | Title | 18px | 700 (bold) | 1.2 | Inter |
 | Field label | 13px | 700 (bold) | 1.5 | Inter |
 | Field value | 13px | 400 (regular) | 1.5 | Inter |
-| Company header | 13px | 600 (semibold) | 1.4 | Inter |
+| Company header | 13px | 700 (bold) | 1.4 | Inter |
 | Company URL/phone | 11px | 400 (regular) | 1.4 | Inter |
 | Signature label | 11px | 400 (regular) | 1.4 | Inter |
 
 ### Web admin (download button area)
 
-| Role | Size | Weight | Line Height |
-|------|------|--------|-------------|
-| Section heading | 14px | 500 | 1.4 |
-| Button label | 14px | 500 | 1.25 |
-
-Uses existing shadcn typography defaults -- no overrides needed.
+Uses existing shadcn typography defaults — no custom weights or sizes. No overrides needed.
 
 ---
 
@@ -107,7 +108,7 @@ Accent reserved for: selected cleanliness chip background, "Dalej" button (via A
 
 ### Web admin
 
-Uses existing shadcn theme colors -- no new tokens. Download button uses default `variant="outline"` or `variant="secondary"`.
+Uses existing shadcn theme colors — no new tokens. Download button uses default `variant="outline"` or `variant="secondary"`.
 
 ---
 
@@ -183,7 +184,7 @@ Uses existing shadcn theme colors -- no new tokens. Download button uses default
 - **Single page A4** (210mm x 297mm)
 - **Margins:** 20mm all sides (matching client template visual spacing)
 - **Header block** (top-left, no logo):
-  - Line 1: "KITEK Pawel Romanowski" (13px, weight 600)
+  - Line 1: "KITEK Pawel Romanowski" (13px, weight 700)
   - Line 2: "www.p-romanowski.pl" (11px, color #0066CC, underlined)
   - Line 3: "Tel. (+48) 602 367 100" (11px)
   - Bottom margin: 10mm
