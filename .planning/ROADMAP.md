@@ -182,10 +182,11 @@ Plans:
   1. Generated contract PDF is encrypted with a password equal to the vehicle registration number
   2. Customer receives an SMS with the PDF password when the contract email is sent (password is NOT in the email)
   3. Contract email subject contains the insurance case number (if present) and the vehicle registration number
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 37-01: TBD
+- [ ] 37-01-PLAN.md — PdfEncryptionService + MailService subject formatting
+- [ ] 37-02-PLAN.md — Encrypt-then-send integration + SMS password notification
 
 ### Phase 38: Settlement & VAT Notification
 **Goal**: Admin has visibility into which rentals are financially settled, and workers are reminded to collect VAT documentation at vehicle return
@@ -195,7 +196,7 @@ Plans:
   1. When a vehicle is returned and the customer is a VAT payer, the worker sees a notification/reminder to collect VAT documentation
   2. Admin can mark any rental as settled or unsettled in the web panel
   3. Admin can view a filtered list of all unsettled rentals in the web panel
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
 - [ ] 38-01: TBD
@@ -207,7 +208,7 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. When a vehicle is returned, the system generates a return protocol PDF following the client-provided template
   2. Return protocol includes vehicle condition, return location, date/time, and signatures from both worker and customer
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
 - [ ] 39-01: TBD
