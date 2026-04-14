@@ -21,6 +21,7 @@ import { ReturnRentalDto } from './dto/return-rental.dto';
 import { CalendarQueryDto } from './dto/calendar-query.dto';
 import { RollbackRentalDto } from './dto/rollback-rental.dto';
 import { RentalsQueryDto } from './dto/rentals-query.dto';
+import { UpdateSettlementDto } from './dto/update-settlement.dto';
 import { validateTransition } from './constants/rental-transitions';
 import { calculatePricing } from './utils/pricing';
 
@@ -180,6 +181,28 @@ export class RentalsService {
     }
     if (insuranceSearch) {
       where.insuranceCaseNumber = { contains: insuranceSearch, mode: 'insensitive' };
+    }
+    if (query.settlementStatus) {
+      where.settlementStatus = query.settlementStatus;
+    }
+    if (query.customerSearch) {
+      where.customer = {
+        OR: [
+          { firstName: { contains: query.customerSearch, mode: 'insensitive' } },
+          { lastName: { contains: query.customerSearch, mode: 'insensitive' } },
+        ],
+      };
+    }
+    if (query.vehicleSearch) {
+      where.vehicle = {
+        registration: { contains: query.vehicleSearch, mode: 'insensitive' },
+      };
+    }
+    if (query.dateFrom) {
+      where.startDate = { ...(where.startDate as object ?? {}), gte: query.dateFrom };
+    }
+    if (query.dateTo) {
+      where.endDate = { ...(where.endDate as object ?? {}), lte: query.dateTo };
     }
 
     const [data, total] = await Promise.all([
@@ -665,6 +688,42 @@ export class RentalsService {
       data: { isArchived: false },
       include: RENTAL_INCLUDE,
     });
+  }
+
+  async updateSettlement(id: string, dto: UpdateSettlementDto): Promise<RentalWithRelations> {
+    const rental = await this.prisma.rental.findUnique({ where: { id } });
+    if (!rental) {
+      throw new NotFoundException(`Rental with ID "${id}" not found`);
+    }
+
+    const settledAt = dto.settlementStatus === 'ROZLICZONY'
+      ? new Date()
+      : dto.settlementStatus === 'NIEROZLICZONY'
+      ? null
+      : rental.settledAt;
+
+    return this.prisma.rental.update({
+      where: { id },
+      data: {
+        settlementStatus: dto.settlementStatus,
+        settlementAmount: dto.settlementAmount ?? null,
+        settlementNotes: dto.settlementNotes ?? null,
+        settledAt,
+      },
+      include: RENTAL_INCLUDE,
+    });
+  }
+
+  async getSettlementSummary(): Promise<{ unsettledCount: number; unsettledAmount: number }> {
+    const result = await this.prisma.rental.aggregate({
+      where: { settlementStatus: 'NIEROZLICZONY', isArchived: false },
+      _count: true,
+      _sum: { totalPriceGross: true },
+    });
+    return {
+      unsettledCount: result._count,
+      unsettledAmount: result._sum.totalPriceGross ?? 0,
+    };
   }
 
   async checkOverlap(

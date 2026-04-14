@@ -78,6 +78,13 @@ enum VatPayerStatus {
   NONE
 }
 
+enum SettlementStatus {
+  NIEROZLICZONY
+  CZESCIOWO_ROZLICZONY
+  ROZLICZONY
+  ANULOWANY
+}
+
 model User {
   id               String    @id @default(uuid())
   email            String?   @unique
@@ -278,6 +285,10 @@ model Rental {
   termsNotes           String?          @db.Text
   pickupLocation       Json?
   returnLocation       Json?
+  settlementStatus   SettlementStatus @default(NIEROZLICZONY)
+  settlementAmount   Int?
+  settlementNotes    String?          @db.Text
+  settledAt          DateTime?
   isArchived      Boolean       @default(false)
 
   vehicle         Vehicle       @relation(fields: [vehicleId], references: [id])
@@ -296,6 +307,7 @@ model Rental {
   @@index([customerId])
   @@index([status])
   @@index([startDate, endDate])
+  @@index([settlementStatus])
   @@map("rentals")
 }
 

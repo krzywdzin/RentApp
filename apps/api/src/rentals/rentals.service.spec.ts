@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { RentalsService } from './rentals.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { RentalStatus } from '@rentapp/shared';
+import { RentalStatus, SettlementStatus } from '@rentapp/shared';
 
 const mockPrisma = {
   rental: {
@@ -16,6 +16,7 @@ const mockPrisma = {
     findUnique: jest.fn(),
     update: jest.fn(),
     count: jest.fn(),
+    aggregate: jest.fn(),
   },
   vehicle: {
     findUnique: jest.fn(),
@@ -896,6 +897,150 @@ describe('RentalsService', () => {
           }),
         }),
       );
+    });
+  });
+
+  // --- Settlement ---
+
+  describe('updateSettlement', () => {
+    it('should set settlement status, amount, and notes on a rental', async () => {
+      const rental = baseDraftRental({ status: RentalStatus.RETURNED });
+      const updatedRental = baseDraftRental({
+        status: RentalStatus.RETURNED,
+        settlementStatus: SettlementStatus.CZESCIOWO_ROZLICZONY,
+        settlementAmount: 50000,
+        settlementNotes: 'Partial payment received',
+      });
+      mockPrisma.rental.findUnique.mockResolvedValue(rental);
+      mockPrisma.rental.update.mockResolvedValue(updatedRental);
+
+      const result = await service.updateSettlement(RENTAL_ID, {
+        settlementStatus: SettlementStatus.CZESCIOWO_ROZLICZONY,
+        settlementAmount: 50000,
+        settlementNotes: 'Partial payment received',
+      });
+
+      expect(result.settlementStatus).toBe(SettlementStatus.CZESCIOWO_ROZLICZONY);
+      expect(mockPrisma.rental.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            settlementStatus: SettlementStatus.CZESCIOWO_ROZLICZONY,
+            settlementAmount: 50000,
+            settlementNotes: 'Partial payment received',
+          }),
+        }),
+      );
+    });
+
+    it('should set settledAt to Date when status is ROZLICZONY', async () => {
+      const rental = baseDraftRental({ status: RentalStatus.RETURNED, settledAt: null });
+      const updatedRental = baseDraftRental({
+        status: RentalStatus.RETURNED,
+        settlementStatus: SettlementStatus.ROZLICZONY,
+        settledAt: new Date(),
+      });
+      mockPrisma.rental.findUnique.mockResolvedValue(rental);
+      mockPrisma.rental.update.mockResolvedValue(updatedRental);
+
+      await service.updateSettlement(RENTAL_ID, {
+        settlementStatus: SettlementStatus.ROZLICZONY,
+      });
+
+      expect(mockPrisma.rental.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            settledAt: expect.any(Date),
+          }),
+        }),
+      );
+    });
+
+    it('should clear settledAt when status changes to NIEROZLICZONY', async () => {
+      const rental = baseDraftRental({
+        status: RentalStatus.RETURNED,
+        settledAt: new Date('2026-04-10'),
+      });
+      const updatedRental = baseDraftRental({
+        status: RentalStatus.RETURNED,
+        settlementStatus: SettlementStatus.NIEROZLICZONY,
+        settledAt: null,
+      });
+      mockPrisma.rental.findUnique.mockResolvedValue(rental);
+      mockPrisma.rental.update.mockResolvedValue(updatedRental);
+
+      await service.updateSettlement(RENTAL_ID, {
+        settlementStatus: SettlementStatus.NIEROZLICZONY,
+      });
+
+      expect(mockPrisma.rental.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            settledAt: null,
+          }),
+        }),
+      );
+    });
+
+    it('should throw NotFoundException for invalid ID', async () => {
+      mockPrisma.rental.findUnique.mockResolvedValue(null);
+
+      await expect(
+        service.updateSettlement('non-existent', {
+          settlementStatus: SettlementStatus.ROZLICZONY,
+        }),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('findAll with settlement filters', () => {
+    it('should filter by settlementStatus when query param provided', async () => {
+      mockPrisma.rental.findMany.mockResolvedValue([]);
+      mockPrisma.rental.count.mockResolvedValue(0);
+
+      await service.findAll({ settlementStatus: SettlementStatus.NIEROZLICZONY } as any);
+
+      expect(mockPrisma.rental.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            settlementStatus: SettlementStatus.NIEROZLICZONY,
+          }),
+        }),
+      );
+    });
+  });
+
+  describe('getSettlementSummary', () => {
+    it('should return count and sum of unsettled rentals', async () => {
+      mockPrisma.rental.aggregate.mockResolvedValue({
+        _count: 5,
+        _sum: { totalPriceGross: 250000 },
+      });
+
+      const result = await service.getSettlementSummary();
+
+      expect(result).toEqual({
+        unsettledCount: 5,
+        unsettledAmount: 250000,
+      });
+      expect(mockPrisma.rental.aggregate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { settlementStatus: 'NIEROZLICZONY', isArchived: false },
+        }),
+      );
+    });
+
+    it('should return 0 unsettledAmount when no rentals exist', async () => {
+      mockPrisma.rental.aggregate.mockResolvedValue({
+        _count: 0,
+        _sum: { totalPriceGross: null },
+      });
+
+      const result = await service.getSettlementSummary();
+
+      expect(result).toEqual({
+        unsettledCount: 0,
+        unsettledAmount: 0,
+      });
     });
   });
 });

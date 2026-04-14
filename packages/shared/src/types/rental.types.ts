@@ -9,6 +9,13 @@ export enum VatPayerStatus {
   NONE = 'NONE',
 }
 
+export enum SettlementStatus {
+  NIEROZLICZONY = 'NIEROZLICZONY',
+  CZESCIOWO_ROZLICZONY = 'CZESCIOWO_ROZLICZONY',
+  ROZLICZONY = 'ROZLICZONY',
+  ANULOWANY = 'ANULOWANY',
+}
+
 export enum RentalStatus {
   DRAFT = 'DRAFT',
   ACTIVE = 'ACTIVE',
@@ -60,6 +67,10 @@ export interface RentalDto {
   insuranceCaseNumber: string | null;
   pickupLocation: PlaceLocation | null;
   returnLocation: PlaceLocation | null;
+  settlementStatus: SettlementStatus;
+  settlementAmount: number | null;
+  settlementNotes: string | null;
+  settledAt: string | null;
   createdAt: string;
   updatedAt: string;
 }

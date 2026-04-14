@@ -1,6 +1,6 @@
 import { IsOptional, IsInt, IsString, IsBoolean, Min, Max, IsEnum, IsUUID, IsIn } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
-import { RentalStatus } from '@rentapp/shared';
+import { RentalStatus, SettlementStatus } from '@rentapp/shared';
 
 export class RentalsQueryDto {
   @IsOptional()
@@ -40,4 +40,24 @@ export class RentalsQueryDto {
   @IsOptional()
   @IsString()
   insuranceSearch?: string;
+
+  @IsOptional()
+  @IsEnum(SettlementStatus)
+  settlementStatus?: SettlementStatus;
+
+  @IsOptional()
+  @IsString()
+  customerSearch?: string;
+
+  @IsOptional()
+  @IsString()
+  vehicleSearch?: string;
+
+  @IsOptional()
+  @Type(() => Date)
+  dateFrom?: Date;
+
+  @IsOptional()
+  @Type(() => Date)
+  dateTo?: Date;
 }

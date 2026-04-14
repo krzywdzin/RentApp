@@ -24,6 +24,7 @@ import { CalendarQueryDto } from './dto/calendar-query.dto';
 import { RollbackRentalDto } from './dto/rollback-rental.dto';
 import { RentalsQueryDto } from './dto/rentals-query.dto';
 import { UpdateRentalTermsDto } from './dto/update-rental-terms.dto';
+import { UpdateSettlementDto } from './dto/update-settlement.dto';
 
 @Controller('rentals')
 export class RentalsController {
@@ -68,10 +69,34 @@ export class RentalsController {
     return this.rentalsService.getCalendar(query);
   }
 
+  @Get('settlement-summary')
+  @Roles(UserRole.ADMIN)
+  async getSettlementSummary() {
+    return this.rentalsService.getSettlementSummary();
+  }
+
   @Get(':id')
   @Roles(UserRole.ADMIN, UserRole.EMPLOYEE)
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.rentalsService.findOne(id);
+  }
+
+  @Patch(':id/settlement')
+  @Roles(UserRole.ADMIN)
+  async updateSettlement(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateSettlementDto,
+  ) {
+    const rental = await this.rentalsService.updateSettlement(id, dto);
+    return {
+      ...rental,
+      __audit: {
+        action: 'rental.settlement',
+        entityType: 'Rental',
+        entityId: id,
+        changes: { settlementStatus: dto.settlementStatus },
+      },
+    };
   }
 
   @Patch(':id/terms')
