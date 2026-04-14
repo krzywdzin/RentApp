@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
 import { CepikService } from './cepik.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { RentalDriversService } from '../rental-drivers/rental-drivers.service';
 import { CepikVerificationStatus, CepikVerificationSource } from '@rentapp/shared';
 
 describe('CepikService', () => {
@@ -49,6 +50,7 @@ describe('CepikService', () => {
       providers: [
         CepikService,
         { provide: PrismaService, useValue: prisma },
+        { provide: RentalDriversService, useValue: {} },
       ],
     }).compile();
 
