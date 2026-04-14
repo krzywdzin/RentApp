@@ -3,11 +3,15 @@ import { ConfigService } from '@nestjs/config';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { ContractsService } from './contracts.service';
 import { PdfService } from './pdf/pdf.service';
+import { PdfEncryptionService } from './pdf/pdf-encryption.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.service';
 import { MailService } from '../mail/mail.service';
 import { CustomersService } from '../customers/customers.service';
 import { PortalService } from '../portal/portal.service';
+import { SettingsService } from '../settings/settings.service';
+import { RentalDriversService } from '../rental-drivers/rental-drivers.service';
+import { SmsService } from '../notifications/sms/sms.service';
 import { ContractStatus } from '@rentapp/shared';
 import type { ContractFrozenData } from '@rentapp/shared';
 
@@ -18,6 +22,8 @@ describe('ContractsService', () => {
   let storageService: any;
   let mailService: any;
   let customersService: any;
+  let pdfEncryptionService: any;
+  let smsService: any;
 
   const mockRental = {
     id: 'rental-1',
@@ -88,6 +94,10 @@ describe('ContractsService', () => {
     prisma = {
       rental: {
         findUnique: jest.fn(),
+        update: jest.fn().mockResolvedValue({}),
+      },
+      vehicle: {
+        update: jest.fn().mockResolvedValue({}),
       },
       contract: {
         findUnique: jest.fn(),
@@ -134,6 +144,14 @@ describe('ContractsService', () => {
       findOne: jest.fn().mockResolvedValue(mockCustomerDto),
     };
 
+    pdfEncryptionService = {
+      encrypt: jest.fn().mockResolvedValue(Buffer.from('encrypted-pdf')),
+    };
+
+    smsService = {
+      send: jest.fn().mockResolvedValue('message-id'),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ContractsService,
@@ -143,6 +161,10 @@ describe('ContractsService', () => {
         { provide: MailService, useValue: mailService },
         { provide: CustomersService, useValue: customersService },
         { provide: PortalService, useValue: { generatePortalToken: jest.fn().mockResolvedValue('https://portal-url') } },
+        { provide: SettingsService, useValue: { get: jest.fn().mockResolvedValue('') } },
+        { provide: RentalDriversService, useValue: { findByRentalId: jest.fn().mockResolvedValue(null) } },
+        { provide: PdfEncryptionService, useValue: pdfEncryptionService },
+        { provide: SmsService, useValue: smsService },
         {
           provide: ConfigService,
           useValue: {
@@ -194,7 +216,7 @@ describe('ContractsService', () => {
       expect(result.status).toBe(ContractStatus.DRAFT);
       expect(prisma.rental.findUnique).toHaveBeenCalledWith({
         where: { id: 'rental-1' },
-        include: { vehicle: true, customer: true },
+        include: { vehicle: { include: { vehicleClass: true } }, customer: true },
       });
       expect(customersService.findOne).toHaveBeenCalledWith('customer-1');
     });
@@ -504,13 +526,18 @@ describe('ContractsService', () => {
       // Email is sent via setImmediate (fire-and-forget), flush the queue
       await flushSetImmediate();
 
+      expect(pdfEncryptionService.encrypt).toHaveBeenCalledWith(
+        expect.any(Buffer),
+        'TO 12345',
+      );
       expect(mailService.sendContractEmail).toHaveBeenCalledWith(
         'jan@example.com',
         'Jan Kowalski',
         'TO 12345',
         'KITEK/2026/0324/0001',
-        expect.any(Buffer),
+        Buffer.from('encrypted-pdf'),
         expect.any(String),
+        null,
       );
     });
   });
@@ -586,12 +613,17 @@ describe('ContractsService', () => {
         createdById: 'user-1',
       });
 
+      expect(pdfEncryptionService.encrypt).toHaveBeenCalledWith(
+        expect.any(Buffer),
+        'TO 12345',
+      );
       expect(mailService.sendAnnexEmail).toHaveBeenCalledWith(
         'jan@example.com',
         'Jan Kowalski',
         'KITEK/2026/0324/0001',
         1,
-        expect.any(Buffer),
+        Buffer.from('encrypted-pdf'),
+        null,
       );
     });
 
@@ -604,6 +636,176 @@ describe('ContractsService', () => {
       });
 
       expect(result).toBeNull();
+    });
+  });
+
+  // UMOWA-05/06: Contract delivery - encryption and SMS
+  describe('contract delivery - encryption and SMS', () => {
+    // Helper to flush setImmediate queue (email is fire-and-forget)
+    const flushSetImmediate = () =>
+      new Promise((resolve) => setImmediate(resolve));
+
+    // Common setup for a fully-signed contract scenario
+    const setupFullySignedContract = () => {
+      prisma.contract.findUnique
+        .mockResolvedValueOnce({ ...mockContract, status: 'PARTIALLY_SIGNED', signatures: [] })
+        .mockResolvedValueOnce({ ...mockContract, status: 'SIGNED', signatures: [] });
+      prisma.contractSignature.upsert.mockResolvedValue({});
+      prisma.contractSignature.count.mockResolvedValue(4);
+      prisma.contractSignature.findUnique.mockResolvedValue({
+        signatureKey: 'contracts/rental-1/signatures/sig.png',
+      });
+      prisma.contract.update.mockResolvedValue({});
+      prisma.rental.findUnique.mockResolvedValue({ customerId: 'customer-1', status: 'DRAFT', vehicleId: 'vehicle-1' });
+    };
+
+    const signLastSignature = () =>
+      service.sign(
+        'contract-1',
+        {
+          signatureType: 'employee_page2',
+          signatureBase64: Buffer.from('sig').toString('base64'),
+        },
+        'user-1',
+        '127.0.0.1',
+      );
+
+    it('encrypts PDF before sending contract email', async () => {
+      setupFullySignedContract();
+
+      await signLastSignature();
+      await flushSetImmediate();
+
+      expect(pdfEncryptionService.encrypt).toHaveBeenCalledWith(
+        expect.any(Buffer),
+        'TO 12345',
+      );
+      expect(mailService.sendContractEmail).toHaveBeenCalledWith(
+        'jan@example.com',
+        'Jan Kowalski',
+        'TO 12345',
+        'KITEK/2026/0324/0001',
+        Buffer.from('encrypted-pdf'),
+        expect.any(String),
+        null,
+      );
+    });
+
+    it('sends SMS with password after successful contract email', async () => {
+      setupFullySignedContract();
+
+      await signLastSignature();
+      await flushSetImmediate();
+
+      expect(smsService.send).toHaveBeenCalledWith(
+        '+48123456789',
+        'Haslo do PDF umowy: TO 12345. KITEK',
+      );
+    });
+
+    it('does NOT send SMS if encryption fails for contract', async () => {
+      setupFullySignedContract();
+      pdfEncryptionService.encrypt.mockRejectedValue(new Error('encryption failed'));
+
+      await signLastSignature();
+      await flushSetImmediate();
+
+      expect(mailService.sendContractEmail).not.toHaveBeenCalled();
+      expect(smsService.send).not.toHaveBeenCalled();
+    });
+
+    it('does NOT send SMS if contract email fails', async () => {
+      setupFullySignedContract();
+      mailService.sendContractEmail.mockRejectedValue(new Error('email failed'));
+
+      await signLastSignature();
+      await flushSetImmediate();
+
+      expect(pdfEncryptionService.encrypt).toHaveBeenCalled();
+      expect(smsService.send).not.toHaveBeenCalled();
+    });
+
+    it('encrypts PDF before sending annex email', async () => {
+      prisma.contract.findFirst.mockResolvedValue(mockContract);
+      prisma.contractAnnex.count.mockResolvedValue(0);
+      prisma.contractAnnex.create.mockResolvedValue({
+        id: 'annex-1',
+        contractId: 'contract-1',
+        annexNumber: 1,
+        changes: {},
+        pdfKey: 'key',
+        pdfGeneratedAt: new Date(),
+        emailSentAt: new Date(),
+        createdAt: new Date(),
+      });
+
+      await service.createAnnex('rental-1', {
+        newEndDate: '2026-03-15',
+        createdById: 'user-1',
+      });
+
+      // Encryption is called before sendAnnexEmail
+      expect(pdfEncryptionService.encrypt).toHaveBeenCalledWith(
+        expect.any(Buffer),
+        'TO 12345',
+      );
+      expect(mailService.sendAnnexEmail).toHaveBeenCalledWith(
+        'jan@example.com',
+        'Jan Kowalski',
+        'KITEK/2026/0324/0001',
+        1,
+        Buffer.from('encrypted-pdf'),
+        null,
+      );
+    });
+
+    it('sends SMS with password after successful annex email', async () => {
+      prisma.contract.findFirst.mockResolvedValue(mockContract);
+      prisma.contractAnnex.count.mockResolvedValue(0);
+      prisma.contractAnnex.create.mockResolvedValue({
+        id: 'annex-1',
+        contractId: 'contract-1',
+        annexNumber: 1,
+        changes: {},
+        pdfKey: 'key',
+        pdfGeneratedAt: new Date(),
+        emailSentAt: new Date(),
+        createdAt: new Date(),
+      });
+
+      await service.createAnnex('rental-1', {
+        newEndDate: '2026-03-15',
+        createdById: 'user-1',
+      });
+
+      expect(smsService.send).toHaveBeenCalledWith(
+        '+48123456789',
+        'Haslo do PDF umowy: TO 12345. KITEK',
+      );
+    });
+
+    it('does NOT send annex email or SMS if encryption fails', async () => {
+      prisma.contract.findFirst.mockResolvedValue(mockContract);
+      prisma.contractAnnex.count.mockResolvedValue(0);
+      prisma.contractAnnex.create.mockResolvedValue({
+        id: 'annex-1',
+        contractId: 'contract-1',
+        annexNumber: 1,
+        changes: {},
+        pdfKey: 'key',
+        pdfGeneratedAt: new Date(),
+        emailSentAt: null,
+        createdAt: new Date(),
+      });
+      pdfEncryptionService.encrypt.mockRejectedValue(new Error('encryption failed'));
+
+      await service.createAnnex('rental-1', {
+        newEndDate: '2026-03-15',
+        createdById: 'user-1',
+      });
+
+      expect(mailService.sendAnnexEmail).not.toHaveBeenCalled();
+      expect(smsService.send).not.toHaveBeenCalled();
     });
   });
 });
