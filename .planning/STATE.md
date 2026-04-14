@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Client Features & Contract Enhancements
 status: in-progress
-stopped_at: Completed 36-02-PLAN.md (retroactive summary after checkpoint approval)
-last_updated: "2026-04-14T12:35:03.740Z"
+stopped_at: Completed 36-04-PLAN.md (gap closure)
+last_updated: "2026-04-14T12:54:38.958Z"
 last_activity: 2026-04-14 -- Phase 36 Plan 03 complete (web admin documents section)
 progress:
   total_phases: 7
   completed_phases: 4
-  total_plans: 15
-  completed_plans: 15
+  total_plans: 16
+  completed_plans: 16
   percent: 93
 ---
 
@@ -26,16 +26,16 @@ See: .planning/PROJECT.md (updated 2026-04-12)
 ## Current Position
 
 Phase: 36 of 39 (OCR Document Scanning)
-Plan: 3 of 3 in current phase (36-03 complete)
+Plan: 4 of 4 in current phase (36-04 complete)
 Status: in-progress
-Last activity: 2026-04-14 -- Phase 36 Plan 03 complete (web admin documents section)
+Last activity: 2026-04-14 -- Phase 36 Plan 04 complete (gap closure)
 
-Progress: [█████████░] 93%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 107 (37 v1.0 + 14 v1.1 + 7 v2.0 + 26 v2.1 + 2 v2.2 + 9 v2.3 + 12 v3.0)
+- Total plans completed: 108 (37 v1.0 + 14 v1.1 + 7 v2.0 + 26 v2.1 + 2 v2.2 + 9 v2.3 + 13 v3.0)
 - Phases completed: 33 + 1 inserted (9.1)
 
 ## Accumulated Context
@@ -74,6 +74,7 @@ Progress: [█████████░] 93%
 - [Phase 36]: Document URL uses kebab-case (id-card) mapped to DB enum (ID_CARD) in controller
 - [Phase 36]: Empty placeholder slots (dashed border + 'Brak') for missing document sides in web admin grid
 - [Phase Phase 36]: expo-text-extractor with try/catch fallback for Expo Go compatibility
+- [Phase 36]: Photo upload failures non-blocking after customer creation (same pattern as signatures.tsx)
 
 ### Pending Todos
 
@@ -87,6 +88,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-14T12:34:59.280Z
-Stopped at: Completed 36-02-PLAN.md (retroactive summary after checkpoint approval)
+Last session: 2026-04-14T12:54:38.957Z
+Stopped at: Completed 36-04-PLAN.md (gap closure)
 Resume file: None
