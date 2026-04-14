@@ -38,10 +38,10 @@ created: 2026-04-14
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 36-01-01 | 01 | 1 | DOC-06 | unit | `pnpm --filter api test -- customer-documents` | ❌ W0 | ⬜ pending |
-| 36-01-02 | 01 | 1 | DOC-06 | unit | `pnpm --filter api test -- customer-documents` | ❌ W0 | ⬜ pending |
-| 36-02-01 | 02 | 2 | DOC-01,DOC-02 | manual | N/A (camera capture) | N/A | ⬜ pending |
-| 36-02-02 | 02 | 2 | DOC-03,DOC-04 | unit | `pnpm --filter mobile test -- ocr-parser` | ❌ W0 | ⬜ pending |
+| 36-01-01 | 01 | 1 | DOC-06 | unit | `pnpm --filter api test -- documents.service` | ❌ W0 | ⬜ pending |
+| 36-01-02 | 01 | 1 | DOC-01,DOC-02,DOC-06 | unit | `pnpm --filter api test -- documents.service` | ❌ W0 | ⬜ pending |
+| 36-02-01 | 02 | 2 | DOC-01,DOC-02 | unit+manual | `pnpm --filter mobile test -- ocr/__tests__` (parsers); camera capture is manual | ❌ W0 | ⬜ pending |
+| 36-02-02 | 02 | 2 | DOC-03,DOC-04 | unit | `pnpm --filter mobile test -- ocr/__tests__` | ❌ W0 | ⬜ pending |
 | 36-02-03 | 02 | 2 | DOC-05 | manual | N/A (confirmation screen UI) | N/A | ⬜ pending |
 | 36-03-01 | 03 | 2 | DOC-06 | manual | N/A (admin panel UI) | N/A | ⬜ pending |
 
@@ -51,8 +51,9 @@ created: 2026-04-14
 
 ## Wave 0 Requirements
 
-- [ ] `apps/api/src/customer-documents/__tests__/` — stubs for DOC-06 (upload, storage, retrieval)
-- [ ] `apps/mobile/src/utils/__tests__/ocr-parser.test.ts` — stubs for DOC-03, DOC-04 (regex extraction)
+- [ ] `apps/api/src/documents/documents.service.spec.ts` — stubs for DOC-06 (upload, storage, retrieval) — created by Plan 01 Task 2
+- [ ] `apps/mobile/src/lib/ocr/__tests__/parse-id-card.test.ts` — stubs for DOC-03 (ID card OCR extraction)
+- [ ] `apps/mobile/src/lib/ocr/__tests__/parse-driver-license.test.ts` — stubs for DOC-04 (license OCR extraction)
 
 *Existing test infrastructure covers framework setup.*
 
