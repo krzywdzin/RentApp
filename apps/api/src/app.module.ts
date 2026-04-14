@@ -29,6 +29,7 @@ import { SettingsModule } from './settings/settings.module';
 import { RentalDriversModule } from './rental-drivers/rental-drivers.module';
 import { PlacesModule } from './places/places.module';
 import { DocumentsModule } from './documents/documents.module';
+import { ReturnProtocolsModule } from './return-protocols/return-protocols.module';
 
 @Module({
   imports: [
@@ -68,6 +69,7 @@ import { DocumentsModule } from './documents/documents.module';
     RentalDriversModule,
     PlacesModule,
     DocumentsModule,
+    ReturnProtocolsModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

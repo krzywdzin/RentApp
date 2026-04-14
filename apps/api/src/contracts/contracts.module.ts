@@ -16,6 +16,6 @@ import { RentalExtendedListener } from './listeners/rental-extended.listener';
   imports: [RentalsModule, CustomersModule, MailModule, PortalModule, SettingsModule, RentalDriversModule, NotificationsModule],
   controllers: [ContractsController],
   providers: [ContractsService, PdfService, PdfEncryptionService, RentalExtendedListener],
-  exports: [ContractsService],
+  exports: [ContractsService, PdfService],
 })
 export class ContractsModule {}

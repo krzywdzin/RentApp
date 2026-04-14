@@ -27,6 +27,19 @@ export type ContractPdfData = ContractFrozenData & {
   };
 }
 
+export interface ReturnProtocolPdfData {
+  customerName: string;
+  returnDateTime: string;
+  vehicleMakeModel: string;
+  vehicleRegistration: string;
+  returnLocation: string | null;
+  cleanlinessLabel: string;
+  cleanlinessNote: string | null;
+  otherNotes: string | null;
+  customerSignature: string; // base64 data URI
+  workerSignature: string;   // base64 data URI
+}
+
 export interface AnnexPdfData {
   annexNumber: number;
   contractNumber: string;
@@ -48,6 +61,7 @@ export class PdfService implements OnModuleInit, OnModuleDestroy {
   private browser!: Browser;
   private contractTemplate!: Handlebars.TemplateDelegate;
   private annexTemplate!: Handlebars.TemplateDelegate;
+  private returnProtocolTemplate!: Handlebars.TemplateDelegate;
 
   async onModuleInit() {
     this.browser = await puppeteer.launch({
@@ -110,6 +124,12 @@ export class PdfService implements OnModuleInit, OnModuleDestroy {
     );
     this.annexTemplate = Handlebars.compile(annexSource);
 
+    const protocolSource = readFileSync(
+      join(__dirname, 'templates', 'return-protocol.hbs'),
+      'utf-8',
+    );
+    this.returnProtocolTemplate = Handlebars.compile(protocolSource);
+
     this.logger.log('Handlebars templates compiled');
   }
 
@@ -130,6 +150,23 @@ export class PdfService implements OnModuleInit, OnModuleDestroy {
         format: 'A4',
         printBackground: true,
         margin: { top: '15mm', bottom: '15mm', left: '15mm', right: '15mm' },
+      });
+      return Buffer.from(pdf);
+    } finally {
+      await page.close();
+    }
+  }
+
+  async generateReturnProtocolPdf(data: ReturnProtocolPdfData): Promise<Buffer> {
+    const html = this.returnProtocolTemplate(data);
+    const page = await this.browser.newPage();
+    try {
+      await page.setContent(html, { waitUntil: 'networkidle0' });
+      await page.evaluateHandle('document.fonts.ready');
+      const pdf = await page.pdf({
+        format: 'A4',
+        printBackground: true,
+        margin: { top: '20mm', bottom: '20mm', left: '20mm', right: '20mm' },
       });
       return Buffer.from(pdf);
     } finally {

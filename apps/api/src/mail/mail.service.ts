@@ -119,6 +119,30 @@ export class MailService {
     await this.send(to, subject, html);
   }
 
+  async sendReturnProtocolEmail(
+    to: string,
+    customerName: string,
+    vehicleRegistration: string,
+    pdfBuffer: Buffer,
+    insuranceCaseNumber?: string | null,
+  ): Promise<void> {
+    const subject = insuranceCaseNumber
+      ? `RentApp - Sprawa ${insuranceCaseNumber} - Protokol zwrotu ${vehicleRegistration}`
+      : `RentApp - Protokol zwrotu pojazdu ${vehicleRegistration}`;
+    await this.send(
+      to,
+      subject,
+      `<p>Szanowny/a ${customerName},</p><p>W zalaczniku przesylamy protokol zdawczo-odbiorczy pojazdu ${vehicleRegistration}.</p><p>Prosimy o zachowanie tego dokumentu.</p><p>KITEK - Wynajem Pojazdow</p>`,
+      [
+        {
+          filename: `protokol-zwrotu-${vehicleRegistration}.pdf`,
+          content: pdfBuffer,
+          contentType: 'application/pdf',
+        },
+      ],
+    );
+  }
+
   async sendAnnexEmail(
     to: string,
     customerName: string,
