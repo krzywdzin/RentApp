@@ -7,6 +7,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Modal, ScrollView, TouchableOpacity } from 'react-native';
 import { CreateCustomerSchema, type CreateCustomerInput } from '@rentapp/shared';
+import type { IdCardOcrFields, DriverLicenseOcrFields } from '@rentapp/shared';
 import Toast from 'react-native-toast-message';
 
 import { WizardStepper } from '@/components/WizardStepper';
@@ -16,10 +17,29 @@ import { AppButton } from '@/components/AppButton';
 import { AppInput } from '@/components/AppInput';
 import { EmptyState } from '@/components/EmptyState';
 import { ConfirmationDialog } from '@/components/ConfirmationDialog';
+import { DocumentScanButton } from '@/components/DocumentScanner/DocumentScanButton';
+import { DocumentGuideOverlay } from '@/components/DocumentScanner/DocumentGuideOverlay';
+import { DocumentConfirmation } from '@/components/DocumentScanner/DocumentConfirmation';
+import { DocumentDiffView } from '@/components/DocumentScanner/DocumentDiffView';
+import { useDocumentScan } from '@/hooks/use-document-scan';
 import { useRentalDraftStore, useRentalDraftHasHydrated } from '@/stores/rental-draft.store';
 import { useCustomerSearch, useCreateCustomer } from '@/hooks/use-customers';
 import { RENTAL_WIZARD_LABELS } from '@/lib/constants';
 import { colors, fonts, spacing } from '@/lib/theme';
+
+// Field label mapping for diff view
+const ID_FIELD_LABELS: Record<string, string> = {
+  firstName: 'Imie',
+  lastName: 'Nazwisko',
+  pesel: 'PESEL',
+  documentNumber: 'Nr dowodu',
+};
+
+const LICENSE_FIELD_LABELS: Record<string, string> = {
+  licenseNumber: 'Nr prawa jazdy',
+  categories: 'Kategorie',
+  expiryDate: 'Data waznosci',
+};
 
 export default function CustomerStep() {
   const { t } = useTranslation();
@@ -33,10 +53,16 @@ export default function CustomerStep() {
   const { data: customers, isLoading, isFetching } = useCustomerSearch(searchQuery);
   const createCustomer = useCreateCustomer();
 
+  // Document scanning
+  const idScan = useDocumentScan('ID_CARD');
+  const licenseScan = useDocumentScan('DRIVER_LICENSE');
+  const [showRescanConfirm, setShowRescanConfirm] = useState<'ID_CARD' | 'DRIVER_LICENSE' | null>(null);
+
   const {
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<CreateCustomerInput>({
     resolver: zodResolver(CreateCustomerSchema),
@@ -121,6 +147,106 @@ export default function CustomerStep() {
     setShowDraftResume(false);
     draft.clearDraft();
   }, [draft]);
+
+  // ---------- Document scan handlers ----------
+
+  const handleIdScanPress = useCallback(() => {
+    if (draft.idCardScan) {
+      setShowRescanConfirm('ID_CARD');
+    } else {
+      idScan.startScan();
+    }
+  }, [draft.idCardScan, idScan]);
+
+  const handleLicenseScanPress = useCallback(() => {
+    if (draft.driverLicenseScan) {
+      setShowRescanConfirm('DRIVER_LICENSE');
+    } else {
+      licenseScan.startScan();
+    }
+  }, [draft.driverLicenseScan, licenseScan]);
+
+  const handleRescanConfirm = useCallback(() => {
+    const type = showRescanConfirm;
+    setShowRescanConfirm(null);
+    if (type === 'ID_CARD') {
+      draft.updateDraft({ idCardScan: null });
+      idScan.startScan();
+    } else if (type === 'DRIVER_LICENSE') {
+      draft.updateDraft({ driverLicenseScan: null });
+      licenseScan.startScan();
+    }
+  }, [showRescanConfirm, draft, idScan, licenseScan]);
+
+  const handleIdConfirm = useCallback(
+    (fields: Record<string, string>) => {
+      // Populate form fields from OCR
+      if (fields.firstName) setValue('firstName', fields.firstName);
+      if (fields.lastName) setValue('lastName', fields.lastName);
+      if (fields.pesel) setValue('pesel', fields.pesel);
+      if (fields.documentNumber) setValue('idNumber', fields.documentNumber);
+      if (fields.street) setValue('street', fields.street);
+      if (fields.houseNumber) setValue('houseNumber', fields.houseNumber);
+      if (fields.postalCode) setValue('postalCode', fields.postalCode);
+      if (fields.city) setValue('city', fields.city);
+
+      // Store scan in draft
+      draft.updateDraft({
+        idCardScan: {
+          frontUri: idScan.frontUri!,
+          backUri: idScan.backUri,
+          confirmed: true,
+        },
+      });
+      idScan.reset();
+    },
+    [setValue, draft, idScan],
+  );
+
+  const handleLicenseConfirm = useCallback(
+    (fields: Record<string, string>) => {
+      if (fields.licenseNumber) setValue('licenseNumber', fields.licenseNumber);
+      if (fields.categories) setValue('licenseCategory', fields.categories);
+
+      draft.updateDraft({
+        driverLicenseScan: {
+          frontUri: licenseScan.frontUri!,
+          backUri: licenseScan.backUri,
+          confirmed: true,
+        },
+      });
+      licenseScan.reset();
+    },
+    [setValue, draft, licenseScan],
+  );
+
+  const handleIdDiscard = useCallback(() => {
+    idScan.reset();
+  }, [idScan]);
+
+  const handleLicenseDiscard = useCallback(() => {
+    licenseScan.reset();
+  }, [licenseScan]);
+
+  // Guide overlay instruction text
+  const getGuideInstruction = (
+    type: 'ID_CARD' | 'DRIVER_LICENSE',
+    phase: string,
+  ) => {
+    if (type === 'ID_CARD') {
+      return phase === 'front_guide' || phase === 'front_captured'
+        ? 'Umiesc przod dowodu w ramce'
+        : 'Umiesc tyl dowodu w ramce';
+    }
+    return phase === 'front_guide' || phase === 'front_captured'
+      ? 'Umiesc przod prawa jazdy w ramce'
+      : 'Umiesc tyl prawa jazdy w ramce';
+  };
+
+  const getGuideStep = (phase: string) =>
+    phase === 'front_guide' || phase === 'front_captured'
+      ? 'Przod (1/2)'
+      : 'Tyl (2/2)';
 
   // snapPoints removed - using Modal instead of BottomSheet
 
@@ -351,6 +477,24 @@ export default function CustomerStep() {
             )}
           />
 
+          {/* Document scan buttons */}
+          <Text style={s.sectionHeading}>Skanowanie dokumentow</Text>
+
+          <View style={s.scanButtonsContainer}>
+            <DocumentScanButton
+              documentType="ID_CARD"
+              label="Skanuj dowod osobisty"
+              scanData={draft.idCardScan}
+              onPress={handleIdScanPress}
+            />
+            <DocumentScanButton
+              documentType="DRIVER_LICENSE"
+              label="Skanuj prawo jazdy"
+              scanData={draft.driverLicenseScan}
+              onPress={handleLicenseScanPress}
+            />
+          </View>
+
           <Controller
             control={control}
             name="licenseNumber"
@@ -537,6 +681,59 @@ export default function CustomerStep() {
         onConfirm={handleDraftResume}
         onCancel={handleDraftReset}
       />
+
+      {/* Re-scan confirmation dialog */}
+      <ConfirmationDialog
+        visible={showRescanConfirm !== null}
+        title="Skanuj ponownie?"
+        body="Poprzednie zdjecia i dane ze skanu zostana zastapione."
+        confirmLabel="Skanuj ponownie"
+        cancelLabel="Nie, zachowaj"
+        onConfirm={handleRescanConfirm}
+        onCancel={() => setShowRescanConfirm(null)}
+      />
+
+      {/* ID card guide overlay */}
+      <DocumentGuideOverlay
+        visible={idScan.phase === 'front_guide' || idScan.phase === 'back_guide'}
+        instruction={getGuideInstruction('ID_CARD', idScan.phase)}
+        step={getGuideStep(idScan.phase)}
+        onCapture={idScan.capturePhoto}
+        onClose={idScan.reset}
+      />
+
+      {/* Driver license guide overlay */}
+      <DocumentGuideOverlay
+        visible={licenseScan.phase === 'front_guide' || licenseScan.phase === 'back_guide'}
+        instruction={getGuideInstruction('DRIVER_LICENSE', licenseScan.phase)}
+        step={getGuideStep(licenseScan.phase)}
+        onCapture={licenseScan.capturePhoto}
+        onClose={licenseScan.reset}
+      />
+
+      {/* ID card confirmation */}
+      {idScan.phase === 'review' && idScan.ocrResult && idScan.frontUri && (
+        <DocumentConfirmation
+          visible
+          documentType="ID_CARD"
+          frontUri={idScan.frontUri}
+          ocrFields={idScan.ocrResult as IdCardOcrFields}
+          onConfirm={handleIdConfirm}
+          onDiscard={handleIdDiscard}
+        />
+      )}
+
+      {/* Driver license confirmation */}
+      {licenseScan.phase === 'review' && licenseScan.ocrResult && licenseScan.frontUri && (
+        <DocumentConfirmation
+          visible
+          documentType="DRIVER_LICENSE"
+          frontUri={licenseScan.frontUri}
+          ocrFields={licenseScan.ocrResult as DriverLicenseOcrFields}
+          onConfirm={handleLicenseConfirm}
+          onDiscard={handleLicenseDiscard}
+        />
+      )}
     </SafeAreaView>
   );
 }
@@ -567,4 +764,5 @@ const s = StyleSheet.create({
   fieldRowPostal: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.md },
   fieldPostal: { flex: 2 },
   fieldCity: { flex: 3 },
+  scanButtonsContainer: { gap: spacing.md, marginBottom: spacing.lg },
 });

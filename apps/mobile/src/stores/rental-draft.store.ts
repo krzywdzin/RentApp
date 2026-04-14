@@ -46,6 +46,8 @@ interface RentalDraft {
   secondDriverCepikStatus: string | null;
   pickupLocation: { address: string; placeId: string } | null;
   returnLocation: { address: string; placeId: string } | null;
+  idCardScan: { frontUri: string; backUri: string | null; confirmed: boolean } | null;
+  driverLicenseScan: { frontUri: string; backUri: string | null; confirmed: boolean } | null;
 }
 
 interface RentalDraftState extends RentalDraft {
@@ -83,6 +85,8 @@ const initialDraft: RentalDraft = {
   secondDriverCepikStatus: null,
   pickupLocation: null,
   returnLocation: null,
+  idCardScan: null,
+  driverLicenseScan: null,
 };
 
 /**
