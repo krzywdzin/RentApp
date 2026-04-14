@@ -5,7 +5,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useTranslation } from 'react-i18next';
 
 import { useRental } from '@/hooks/use-rentals';
-import { useReturnDraftStore } from '@/stores/return-draft.store';
+import { useReturnDraftStore, RETURN_WIZARD_TOTAL_STEPS } from '@/stores/return-draft.store';
 import { formatDate, formatMileage } from '@/lib/format';
 import { WizardStepper } from '@/components/WizardStepper';
 import { AppCard } from '@/components/AppCard';
@@ -50,7 +50,7 @@ export default function ReturnConfirmRentalScreen() {
     return (
       <SafeAreaView style={s.safeArea}>
         <View style={s.padWrap}>
-          <WizardStepper currentStep={1} totalSteps={5} />
+          <WizardStepper currentStep={1} totalSteps={RETURN_WIZARD_TOTAL_STEPS} />
           <LoadingSkeleton variant="card" count={3} />
         </View>
       </SafeAreaView>
@@ -83,7 +83,7 @@ export default function ReturnConfirmRentalScreen() {
   return (
     <SafeAreaView style={s.safeArea}>
       <View style={s.padWrapSmall}>
-        <WizardStepper currentStep={1} totalSteps={5} />
+        <WizardStepper currentStep={1} totalSteps={RETURN_WIZARD_TOTAL_STEPS} />
       </View>
 
       <ScrollView

@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { CreateRentalInput, ReturnRentalInput, ExtendRentalInput } from '@rentapp/shared';
 import { rentalsApi } from '@/api/rentals.api';
+import apiClient from '@/api/client';
 
 export const rentalKeys = {
   all: ['rentals'] as const,
@@ -47,6 +48,19 @@ export function useReturnRental() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: rentalKeys.all });
     },
+  });
+}
+
+export function useCreateReturnProtocol() {
+  return useMutation({
+    mutationFn: (data: {
+      rentalId: string;
+      cleanliness: string;
+      cleanlinessNote?: string;
+      otherNotes?: string;
+      customerSignatureBase64: string;
+      workerSignatureBase64: string;
+    }) => apiClient.post('/return-protocols', data),
   });
 }
 

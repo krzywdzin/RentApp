@@ -8,7 +8,7 @@ import Toast from 'react-native-toast-message';
 import { DAMAGE_TYPE_LABELS } from '@rentapp/shared';
 
 import { useRental, useReturnRental } from '@/hooks/use-rentals';
-import { useReturnDraftStore, useReturnDraftHasHydrated } from '@/stores/return-draft.store';
+import { useReturnDraftStore, useReturnDraftHasHydrated, RETURN_WIZARD_TOTAL_STEPS } from '@/stores/return-draft.store';
 import { formatMileage } from '@/lib/format';
 import { WizardStepper } from '@/components/WizardStepper';
 import { LoadingSkeleton } from '@/components/LoadingSkeleton';
@@ -43,7 +43,7 @@ export default function ReturnConfirmScreen() {
     return (
       <SafeAreaView style={s.safeArea}>
         <View style={s.padWrap}>
-          <WizardStepper currentStep={5} totalSteps={5} />
+          <WizardStepper currentStep={8} totalSteps={RETURN_WIZARD_TOTAL_STEPS} />
           <View style={{ marginTop: 16 }}>
             <LoadingSkeleton variant="card" count={4} />
           </View>
@@ -106,7 +106,7 @@ export default function ReturnConfirmScreen() {
   return (
     <SafeAreaView style={s.safeArea}>
       <View style={s.padWrap}>
-        <WizardStepper currentStep={5} totalSteps={5} />
+        <WizardStepper currentStep={8} totalSteps={RETURN_WIZARD_TOTAL_STEPS} />
       </View>
 
       <ScrollView

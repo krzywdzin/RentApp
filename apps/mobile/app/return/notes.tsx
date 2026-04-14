@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 
-import { useReturnDraftStore } from '@/stores/return-draft.store';
+import { useReturnDraftStore, RETURN_WIZARD_TOTAL_STEPS } from '@/stores/return-draft.store';
 import { WizardStepper } from '@/components/WizardStepper';
 import { AppButton } from '@/components/AppButton';
 import { colors, fonts, spacing } from '@/lib/theme';
@@ -20,13 +20,13 @@ export default function ReturnNotesScreen() {
 
   const handleNext = () => {
     updateDraft({ notes, step: 4 });
-    router.push('/return/confirm');
+    router.push('/return/protocol');
   };
 
   return (
     <SafeAreaView style={s.safeArea}>
       <View style={s.padWrap}>
-        <WizardStepper currentStep={4} totalSteps={5} />
+        <WizardStepper currentStep={4} totalSteps={RETURN_WIZARD_TOTAL_STEPS} />
       </View>
 
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={s.flex1}>

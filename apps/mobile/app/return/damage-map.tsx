@@ -14,7 +14,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useTranslation } from 'react-i18next';
 import { DAMAGE_TYPE_LABELS, type DamagePin, type DamageType } from '@rentapp/shared';
 
-import { useReturnDraftStore, useReturnDraftHasHydrated } from '@/stores/return-draft.store';
+import { useReturnDraftStore, useReturnDraftHasHydrated, RETURN_WIZARD_TOTAL_STEPS } from '@/stores/return-draft.store';
 import { createWalkthrough, createDamageReport, confirmNoDamage } from '@/api/damage.api';
 import { CarDamageMap } from '@/components/CarDamageMap';
 import { DamageDetailModal } from '@/components/DamageDetailModal';
@@ -147,7 +147,7 @@ export default function ReturnDamageMapScreen() {
     return (
       <SafeAreaView style={s.safeArea}>
         <View style={s.padWrap}>
-          <WizardStepper currentStep={3} totalSteps={5} />
+          <WizardStepper currentStep={3} totalSteps={RETURN_WIZARD_TOTAL_STEPS} />
         </View>
         <View style={s.loadingWrap}>
           {loading && <ActivityIndicator size="large" color={colors.forestGreen} />}
@@ -167,7 +167,7 @@ export default function ReturnDamageMapScreen() {
   return (
     <SafeAreaView style={s.safeArea}>
       <View style={s.padWrap}>
-        <WizardStepper currentStep={3} totalSteps={5} />
+        <WizardStepper currentStep={3} totalSteps={RETURN_WIZARD_TOTAL_STEPS} />
       </View>
 
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={s.flex1}>

@@ -5,7 +5,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useTranslation } from 'react-i18next';
 
 import { useRental } from '@/hooks/use-rentals';
-import { useReturnDraftStore, useReturnDraftHasHydrated } from '@/stores/return-draft.store';
+import { useReturnDraftStore, useReturnDraftHasHydrated, RETURN_WIZARD_TOTAL_STEPS } from '@/stores/return-draft.store';
 import { formatMileage } from '@/lib/format';
 import { WizardStepper } from '@/components/WizardStepper';
 import { LoadingSkeleton } from '@/components/LoadingSkeleton';
@@ -42,7 +42,7 @@ export default function ReturnMileageScreen() {
     return (
       <SafeAreaView style={s.safeArea}>
         <View style={s.padWrap}>
-          <WizardStepper currentStep={2} totalSteps={5} />
+          <WizardStepper currentStep={2} totalSteps={RETURN_WIZARD_TOTAL_STEPS} />
           <View style={{ marginTop: 16 }}>
             <LoadingSkeleton variant="card" count={3} />
           </View>
@@ -81,7 +81,7 @@ export default function ReturnMileageScreen() {
   return (
     <SafeAreaView style={s.safeArea}>
       <View style={s.padWrap}>
-        <WizardStepper currentStep={2} totalSteps={5} />
+        <WizardStepper currentStep={2} totalSteps={RETURN_WIZARD_TOTAL_STEPS} />
       </View>
 
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={s.flex1}>

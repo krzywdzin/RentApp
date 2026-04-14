@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { DamagePin } from '@rentapp/shared';
+import type { DamagePin, ProtocolCleanliness } from '@rentapp/shared';
+
+export const RETURN_WIZARD_TOTAL_STEPS = 8;
 
 interface ChecklistItem {
   damaged: boolean;
@@ -17,6 +19,11 @@ interface ReturnDraft {
   notes: string;
   walkthroughId: string | null;
   damagePins: DamagePin[];
+  protocolCleanliness: ProtocolCleanliness | null;
+  protocolCleanlinessNote: string;
+  protocolOtherNotes: string;
+  protocolCustomerSignature: string | null;
+  protocolWorkerSignature: string | null;
 }
 
 interface ReturnDraftState extends ReturnDraft {
@@ -33,6 +40,11 @@ const initialDraft: ReturnDraft = {
   notes: '',
   walkthroughId: null,
   damagePins: [],
+  protocolCleanliness: null,
+  protocolCleanlinessNote: '',
+  protocolOtherNotes: '',
+  protocolCustomerSignature: null,
+  protocolWorkerSignature: null,
 };
 
 /**

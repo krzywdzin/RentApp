@@ -70,6 +70,24 @@ export default function ReturnLayout() {
           }}
         />
         <Stack.Screen
+          name="protocol"
+          listeners={{
+            beforeRemove: handleBeforeRemove,
+          }}
+        />
+        <Stack.Screen
+          name="protocol-sign-customer"
+          listeners={{
+            beforeRemove: handleBeforeRemove,
+          }}
+        />
+        <Stack.Screen
+          name="protocol-sign-worker"
+          listeners={{
+            beforeRemove: handleBeforeRemove,
+          }}
+        />
+        <Stack.Screen
           name="confirm"
           listeners={{
             beforeRemove: handleBeforeRemove,
