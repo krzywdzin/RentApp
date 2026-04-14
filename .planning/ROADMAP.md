@@ -166,12 +166,13 @@ Plans:
   2. Worker can photograph a client's driver license and the system extracts license number, categories, and expiry date
   3. Worker can review and correct all OCR-extracted fields before saving to the customer record
   4. Photographed document images are stored in R2 and linked to the customer record
-**Plans**: 3 plans
+**Plans**: 4 plans
 
 Plans:
-- [ ] 36-01-PLAN.md — Prisma CustomerDocument model, migration, shared document types, Documents NestJS module
-- [ ] 36-02-PLAN.md — Mobile OCR parsers, scan hook, scanner UI components, customer wizard integration
-- [ ] 36-03-PLAN.md — Web admin DocumentsSection on customer detail page
+- [x] 36-01-PLAN.md — Prisma CustomerDocument model, migration, shared document types, Documents NestJS module
+- [x] 36-02-PLAN.md — Mobile OCR parsers, scan hook, scanner UI components, customer wizard integration
+- [x] 36-03-PLAN.md — Web admin DocumentsSection on customer detail page
+- [ ] 36-04-PLAN.md — Gap closure: expo-text-extractor plugin, DocumentDiffView wiring, photo upload to R2
 
 ### Phase 37: Contract Delivery -- PDF Encryption & Email
 **Goal**: Contract PDFs are encrypted for RODO compliance, customers receive the password via SMS, and email subjects are informative for inbox filtering
@@ -233,7 +234,7 @@ v3.0: 33 -> 34 -> 35 & 36 (parallel, both depend on 33) -> 37 (after 34) -> 38 (
 | 33. Foundation | v3.0 | 4/4 | Complete | 2026-04-12 |
 | 34. PDF Template | v3.0 | Complete    | 2026-04-12 | 2026-04-12 |
 | 35. Google Places | 3/3 | Complete    | 2026-04-13 | - |
-| 36. OCR Scanning | 3/3 | Complete   | 2026-04-14 | - |
+| 36. OCR Scanning | 3/4 | In progress | 2026-04-14 | - |
 | 37. PDF Encryption | v3.0 | 0/? | Not started | - |
 | 38. Settlement | v3.0 | 0/? | Not started | - |
 | 39. Return Protocol | v3.0 | 0/? | Not started | - |
