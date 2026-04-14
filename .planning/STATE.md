@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: Client Features & Contract Enhancements
 status: in-progress
-stopped_at: Phase 39 UI-SPEC approved
-last_updated: "2026-04-14T22:10:59.114Z"
-last_activity: 2026-04-14 -- Phase 38-02 complete (VAT reminder modal in mobile return wizard)
+stopped_at: Completed 39-01-PLAN.md
+last_updated: "2026-04-14T22:38:12.353Z"
+last_activity: 2026-04-15 -- Phase 39-01 complete (return protocol backend API)
 progress:
   total_phases: 7
   completed_phases: 6
-  total_plans: 20
-  completed_plans: 20
+  total_plans: 23
+  completed_plans: 21
   percent: 95
 ---
 
@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-04-12)
 
 ## Current Position
 
-Phase: 38 of 39 (Settlement & VAT Notification)
-Plan: 2 of 2 in current phase (38-02 complete)
+Phase: 39 of 39 (Return Protocol)
+Plan: 1 of 3 in current phase (39-01 complete)
 Status: in-progress
-Last activity: 2026-04-14 -- Phase 38-02 complete (VAT reminder modal in mobile return wizard)
+Last activity: 2026-04-15 -- Phase 39-01 complete (return protocol backend API)
 
 Progress: [██████████] 95%
 
@@ -81,6 +81,9 @@ Progress: [██████████] 95%
 - [Phase 38-01]: Settlement-summary route placed before :id route in controller to avoid UUID param collision
 - [Phase 38-01]: Settlement amount stored in grosze in DB, displayed in PLN with /100 conversion
 - [Phase 38-01]: settledAt auto-set on ROZLICZONY, auto-cleared on NIEROZLICZONY, preserved on other transitions
+- [Phase 39-01]: PdfService exported from ContractsModule for reuse by ReturnProtocolsModule
+- [Phase 39-01]: Return protocol PDF uses 20mm margins (differs from contract 15mm) per UI-SPEC
+- [Phase 39-01]: setImmediate fire-and-forget email with DB emailSentAt update on success
 
 ### Pending Todos
 
@@ -94,6 +97,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-14T22:10:59.112Z
-Stopped at: Phase 39 UI-SPEC approved
-Resume file: .planning/phases/39-return-protocol/39-UI-SPEC.md
+Last session: 2026-04-14T22:38:12.351Z
+Stopped at: Completed 39-01-PLAN.md
+Resume file: None

@@ -54,7 +54,7 @@ Requirements for v3.0 Client Features & Contract Enhancements. Each maps to road
 
 ### Zwrot i rozliczenie (ZWROT)
 
-- [ ] **ZWROT-01**: Przy zwrocie pojazdu generowany jest protokol zwrotu wg wzoru klienta
+- [x] **ZWROT-01**: Przy zwrocie pojazdu generowany jest protokol zwrotu wg wzoru klienta
 - [x] **ZWROT-02**: Pracownik otrzymuje powiadomienie o koniecznosci pobrania VAT przy zwrocie (jesli klient jest platnikiem VAT)
 - [x] **ZWROT-03**: Admin moze oznaczyc wynajem jako rozliczony/nierozliczony w panelu webowym
 - [x] **ZWROT-04**: Panel webowy wyswietla liste nierozliczonych wynajmow z filtrowaniem
@@ -113,7 +113,7 @@ Requirements for v3.0 Client Features & Contract Enhancements. Each maps to road
 | NAJEM-05 | Phase 34 | Complete |
 | NAJEM-06 | Phase 34 | Complete |
 | NAJEM-07 | Phase 34 | Complete |
-| ZWROT-01 | Phase 39 | Pending |
+| ZWROT-01 | Phase 39 | Complete |
 | ZWROT-02 | Phase 38 | Complete |
 | ZWROT-03 | Phase 38 | Complete |
 | ZWROT-04 | Phase 38 | Complete |
