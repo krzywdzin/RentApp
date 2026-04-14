@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { type RentalWithRelations, RentalStatus, ContractStatus } from '@rentapp/shared';
+import { type RentalWithRelations, RentalStatus, ContractStatus, SettlementStatus } from '@rentapp/shared';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -25,9 +25,18 @@ import {
   useReturnRental,
   useExtendRental,
   useRollbackRental,
+  useUpdateSettlement,
 } from '@/hooks/queries/use-rentals';
 import { useContractByRental } from '@/hooks/queries/use-contracts';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { getRentalStatusBadge } from '../columns';
+import { getSettlementStatusBadge } from '../settlement-columns';
 import { formatDateTime, formatCurrency } from '@/lib/format';
 import {
   Loader2,
@@ -77,6 +86,24 @@ export default function RentalDetailPage() {
   // Return form
   const [returnMileage, setReturnMileage] = useState('');
   const [returnNotes, setReturnNotes] = useState('');
+
+  // Settlement form
+  const updateSettlement = useUpdateSettlement(id);
+  const [settlementForm, setSettlementForm] = useState({
+    settlementStatus: '' as SettlementStatus,
+    settlementAmount: '',
+    settlementNotes: '',
+  });
+
+  useEffect(() => {
+    if (rental) {
+      setSettlementForm({
+        settlementStatus: (rental as any).settlementStatus ?? 'NIEROZLICZONY',
+        settlementAmount: (rental as any).settlementAmount != null ? String((rental as any).settlementAmount / 100) : '',
+        settlementNotes: (rental as any).settlementNotes ?? '',
+      });
+    }
+  }, [rental]);
 
   if (isLoading) {
     return (
@@ -226,6 +253,7 @@ export default function RentalDetailPage() {
           <TabsTrigger value="umowa">Umowa</TabsTrigger>
           <TabsTrigger value="inspekcja">Inspekcja</TabsTrigger>
           <TabsTrigger value="audyt">Audyt</TabsTrigger>
+          <TabsTrigger value="rozliczenie">Rozliczenie</TabsTrigger>
         </TabsList>
 
         <TabsContent value="szczegoly">
@@ -475,6 +503,60 @@ export default function RentalDetailPage() {
 
         <TabsContent value="audyt">
           <AuditTrail entityType="Rental" entityId={id} />
+        </TabsContent>
+
+        <TabsContent value="rozliczenie">
+          <Card>
+            <CardHeader><CardTitle>Rozliczenie</CardTitle></CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label>Status rozliczenia</Label>
+                <Select value={settlementForm.settlementStatus} onValueChange={(v) => setSettlementForm(f => ({...f, settlementStatus: v as SettlementStatus}))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="NIEROZLICZONY">Nierozliczony</SelectItem>
+                    <SelectItem value="CZESCIOWO_ROZLICZONY">Czesciowo rozliczony</SelectItem>
+                    <SelectItem value="ROZLICZONY">Rozliczony</SelectItem>
+                    <SelectItem value="ANULOWANY">Anulowany</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Zebrana kwota</Label>
+                <div className="flex items-center gap-2">
+                  <Input type="number" placeholder="0,00" value={settlementForm.settlementAmount}
+                    onChange={(e) => setSettlementForm(f => ({...f, settlementAmount: e.target.value}))} />
+                  <span className="text-sm text-muted-foreground">PLN</span>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Notatki</Label>
+                <Textarea placeholder="Opcjonalne uwagi do rozliczenia..." value={settlementForm.settlementNotes}
+                  onChange={(e) => setSettlementForm(f => ({...f, settlementNotes: e.target.value}))} />
+              </div>
+
+              {(rental as any)?.settledAt && (rental as any)?.settlementStatus === 'ROZLICZONY' && (
+                <div className="space-y-1">
+                  <Label>Data rozliczenia</Label>
+                  <p className="text-sm font-data">{formatDateTime((rental as any).settledAt)}</p>
+                </div>
+              )}
+
+              <Button onClick={() => {
+                const amountGrosze = settlementForm.settlementAmount ? Math.round(parseFloat(settlementForm.settlementAmount.replace(',', '.')) * 100) : undefined;
+                updateSettlement.mutate({
+                  settlementStatus: settlementForm.settlementStatus,
+                  settlementAmount: amountGrosze,
+                  settlementNotes: settlementForm.settlementNotes || undefined,
+                });
+              }} disabled={updateSettlement.isPending}>
+                {updateSettlement.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Zapisz rozliczenie
+              </Button>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
 

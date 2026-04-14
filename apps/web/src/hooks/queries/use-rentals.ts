@@ -9,6 +9,7 @@ import type {
   ReturnRentalInput,
   CreateRentalInput,
 } from '@rentapp/shared';
+import { SettlementStatus } from '@rentapp/shared';
 
 export const rentalKeys = {
   all: ['rentals'] as const,
@@ -198,6 +199,57 @@ export function useUnarchiveRental() {
     },
     onError: () => {
       toast.error('Wystapil blad podczas przywracania wynajmu');
+    },
+  });
+}
+
+export function useSettlementRentals(filters?: {
+  settlementStatus?: SettlementStatus;
+  customerSearch?: string;
+  vehicleSearch?: string;
+  dateFrom?: string;
+  dateTo?: string;
+}) {
+  const params = new URLSearchParams();
+  if (filters?.settlementStatus) params.set('settlementStatus', filters.settlementStatus);
+  if (filters?.customerSearch) params.set('customerSearch', filters.customerSearch);
+  if (filters?.vehicleSearch) params.set('vehicleSearch', filters.vehicleSearch);
+  if (filters?.dateFrom) params.set('dateFrom', filters.dateFrom);
+  if (filters?.dateTo) params.set('dateTo', filters.dateTo);
+  const query = params.toString();
+  return useQuery({
+    queryKey: rentalKeys.list({ view: 'settlement', ...filters } as Record<string, unknown>),
+    queryFn: async () => {
+      const res = await apiClient<{ data: RentalDto[]; total: number; page: number; limit: number }>(
+        `/rentals${query ? `?${query}` : ''}`
+      );
+      return res.data;
+    },
+  });
+}
+
+export function useSettlementSummary() {
+  return useQuery({
+    queryKey: [...rentalKeys.all, 'settlement-summary'] as const,
+    queryFn: () => apiClient<{ unsettledCount: number; unsettledAmount: number }>('/rentals/settlement-summary'),
+  });
+}
+
+export function useUpdateSettlement(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: { settlementStatus: SettlementStatus; settlementAmount?: number; settlementNotes?: string }) =>
+      apiClient<RentalDto>(`/rentals/${id}/settlement`, {
+        method: 'PATCH',
+        body: JSON.stringify(data),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: rentalKeys.all });
+      queryClient.invalidateQueries({ queryKey: rentalKeys.detail(id) });
+      toast.success('Rozliczenie zapisane.');
+    },
+    onError: () => {
+      toast.error('Nie udalo sie zapisac rozliczenia. Sprobuj ponownie.');
     },
   });
 }

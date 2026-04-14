@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { type PaginationState, type SortingState } from '@tanstack/react-table';
 import { Plus } from 'lucide-react';
-import { type RentalDto, type RentalWithRelations, RentalStatus } from '@rentapp/shared';
+import { type RentalDto, type RentalWithRelations, RentalStatus, SettlementStatus } from '@rentapp/shared';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
@@ -22,10 +22,14 @@ import {
   useArchiveRental,
   useUnarchiveRental,
   useDeleteRental,
+  useSettlementRentals,
 } from '@/hooks/queries/use-rentals';
 import { getRentalColumns, getArchivedRentalColumns } from './columns';
 import { RentalFilterBar } from './filter-bar';
 import { CalendarView } from './calendar-view';
+import { SettlementSummaryBar } from './settlement-summary-bar';
+import { SettlementFilterBar } from './settlement-filter-bar';
+import { getSettlementColumns } from './settlement-columns';
 
 export default function RentalsPage() {
   const router = useRouter();
@@ -52,6 +56,32 @@ export default function RentalsPage() {
     pageSize: 25,
   });
   const [archivedSorting, setArchivedSorting] = useState<SortingState>([]);
+
+  // Settlement tab state
+  const [settlementStatus, setSettlementStatus] = useState<SettlementStatus | 'ALL'>('ALL');
+  const [settlementDateFrom, setSettlementDateFrom] = useState<Date | undefined>();
+  const [settlementDateTo, setSettlementDateTo] = useState<Date | undefined>();
+  const [customerSearch, setCustomerSearch] = useState('');
+  const [vehicleSearch, setVehicleSearch] = useState('');
+  const [settlementPagination, setSettlementPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 25 });
+  const [settlementSorting, setSettlementSorting] = useState<SortingState>([]);
+
+  const { data: settlementRentals, isLoading: settlementLoading } = useSettlementRentals({
+    settlementStatus: settlementStatus !== 'ALL' ? settlementStatus : undefined,
+    customerSearch: customerSearch || undefined,
+    vehicleSearch: vehicleSearch || undefined,
+    dateFrom: settlementDateFrom?.toISOString(),
+    dateTo: settlementDateTo?.toISOString(),
+  });
+
+  const settlementFiltered = useMemo(() => settlementRentals ?? [], [settlementRentals]);
+  const settlementPageCount = Math.ceil(settlementFiltered.length / settlementPagination.pageSize);
+  const settlementPageData = useMemo(() => {
+    const start = settlementPagination.pageIndex * settlementPagination.pageSize;
+    return settlementFiltered.slice(start, start + settlementPagination.pageSize);
+  }, [settlementFiltered, settlementPagination]);
+
+  const settlementColumns = useMemo(() => getSettlementColumns(), []);
 
   // Delete confirmation dialog
   const [deleteTarget, setDeleteTarget] = useState<RentalWithRelations | null>(null);
@@ -134,6 +164,7 @@ export default function RentalsPage() {
         <TabsList>
           <TabsTrigger value="lista">Lista</TabsTrigger>
           <TabsTrigger value="kalendarz">Kalendarz</TabsTrigger>
+          <TabsTrigger value="rozliczenia">Rozliczenia</TabsTrigger>
           <TabsTrigger value="zarchiwizowane">Zarchiwizowane</TabsTrigger>
         </TabsList>
 
@@ -190,6 +221,43 @@ export default function RentalsPage() {
 
         <TabsContent value="kalendarz">
           <CalendarView />
+        </TabsContent>
+
+        <TabsContent value="rozliczenia" className="space-y-4">
+          <SettlementSummaryBar />
+          <SettlementFilterBar
+            settlementStatus={settlementStatus}
+            onSettlementStatusChange={(v) => { setSettlementStatus(v); setSettlementPagination(p => ({...p, pageIndex: 0})); }}
+            dateFrom={settlementDateFrom}
+            dateTo={settlementDateTo}
+            onDateFromChange={(v) => { setSettlementDateFrom(v); setSettlementPagination(p => ({...p, pageIndex: 0})); }}
+            onDateToChange={(v) => { setSettlementDateTo(v); setSettlementPagination(p => ({...p, pageIndex: 0})); }}
+            customerSearch={customerSearch}
+            onCustomerSearchChange={(v) => { setCustomerSearch(v); setSettlementPagination(p => ({...p, pageIndex: 0})); }}
+            vehicleSearch={vehicleSearch}
+            onVehicleSearchChange={(v) => { setVehicleSearch(v); setSettlementPagination(p => ({...p, pageIndex: 0})); }}
+          />
+
+          {!settlementLoading && settlementFiltered.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <p className="text-lg font-medium">Brak wynajmow do rozliczenia</p>
+              <p className="text-sm text-muted-foreground">
+                Wszystkie wynajmy sa rozliczone.
+              </p>
+            </div>
+          ) : (
+            <DataTable
+              columns={settlementColumns}
+              data={settlementPageData}
+              pageCount={settlementPageCount}
+              pagination={settlementPagination}
+              onPaginationChange={setSettlementPagination}
+              sorting={settlementSorting}
+              onSortingChange={setSettlementSorting}
+              onRowClick={(row: RentalDto) => router.push(`/wynajmy/${row.id}`)}
+              isLoading={settlementLoading}
+            />
+          )}
         </TabsContent>
 
         <TabsContent value="zarchiwizowane" className="space-y-4">
