@@ -71,6 +71,15 @@ interface RentalForContract {
   insuranceCaseNumber: string | null;
   rentalTerms: string | null;
   termsNotes: string | null;
+  dailyKmLimit: number | null;
+  excessKmRate: number | null;
+  deposit: number | null;
+  returnDeadlineHour: string | null;
+  lateReturnPenalty: number | null;
+  fuelLevelRequired: string | null;
+  fuelCharge: number | null;
+  crossBorderAllowed: boolean;
+  dirtyReturnFee: number | null;
 }
 
 interface VehicleForContract {
@@ -127,7 +136,12 @@ export class ContractsService {
       customer: {
         firstName: customer.firstName,
         lastName: customer.lastName,
-        address: [customer.street, customer.houseNumber, customer.apartmentNumber].filter(Boolean).join(' ') + (customer.postalCode ? `, ${customer.postalCode}` : '') + (customer.city ? ` ${customer.city}` : '') || null,
+        address:
+          [customer.street, customer.houseNumber, customer.apartmentNumber]
+            .filter(Boolean)
+            .join(' ') +
+            (customer.postalCode ? `, ${customer.postalCode}` : '') +
+            (customer.city ? ` ${customer.city}` : '') || null,
         pesel: customer.pesel,
         idNumber: customer.idNumber,
         idIssuedBy: customer.idIssuedBy ?? null,
@@ -145,7 +159,8 @@ export class ContractsService {
         mileage: vehicle.mileage,
       },
       rental: {
-        startDate: rental.startDate instanceof Date ? rental.startDate.toISOString() : rental.startDate,
+        startDate:
+          rental.startDate instanceof Date ? rental.startDate.toISOString() : rental.startDate,
         endDate: rental.endDate instanceof Date ? rental.endDate.toISOString() : rental.endDate,
         dailyRateNet: rental.dailyRateNet,
         totalPriceNet: rental.totalPriceNet,
@@ -164,16 +179,21 @@ export class ContractsService {
     termsHtml: string,
     secondDriver: RentalDriverDto | null,
   ): ContractFrozenDataV2 {
-    const customerAddress = [
-      [customer.street, customer.houseNumber].filter(Boolean).join(' '),
-      [customer.postalCode, customer.city].filter(Boolean).join(' '),
-    ].filter(Boolean).join(', ') || null;
+    const customerAddress =
+      [
+        [customer.street, customer.houseNumber].filter(Boolean).join(' '),
+        [customer.postalCode, customer.city].filter(Boolean).join(' '),
+      ]
+        .filter(Boolean)
+        .join(', ') || null;
 
     const secondDriverAddress = secondDriver
       ? [
           [secondDriver.street, secondDriver.houseNumber].filter(Boolean).join(' '),
           [secondDriver.postalCode, secondDriver.city].filter(Boolean).join(' '),
-        ].filter(Boolean).join(', ') || null
+        ]
+          .filter(Boolean)
+          .join(', ') || null
       : null;
 
     return {
@@ -210,7 +230,8 @@ export class ContractsService {
         vehicleClassName: vehicle.vehicleClass?.name ?? null,
       },
       rental: {
-        startDate: rental.startDate instanceof Date ? rental.startDate.toISOString() : rental.startDate,
+        startDate:
+          rental.startDate instanceof Date ? rental.startDate.toISOString() : rental.startDate,
         endDate: rental.endDate instanceof Date ? rental.endDate.toISOString() : rental.endDate,
         dailyRateNet: rental.dailyRateNet,
         totalPriceNet: rental.totalPriceNet,
@@ -223,18 +244,29 @@ export class ContractsService {
         insuranceCaseNumber: rental.insuranceCaseNumber ?? null,
         termsHtml,
         termsNotes: rental.termsNotes ?? null,
+        dailyKmLimit: rental.dailyKmLimit ?? null,
+        excessKmRate: rental.excessKmRate ?? null,
+        deposit: rental.deposit ?? null,
+        returnDeadlineHour: rental.returnDeadlineHour ?? null,
+        lateReturnPenalty: rental.lateReturnPenalty ?? null,
+        fuelLevelRequired: rental.fuelLevelRequired ?? null,
+        fuelCharge: rental.fuelCharge ?? null,
+        crossBorderAllowed: rental.crossBorderAllowed,
+        dirtyReturnFee: rental.dirtyReturnFee ?? null,
       },
       conditions,
-      secondDriver: secondDriver ? {
-        firstName: secondDriver.firstName,
-        lastName: secondDriver.lastName,
-        pesel: secondDriver.pesel,
-        idNumber: secondDriver.idNumber,
-        licenseNumber: secondDriver.licenseNumber,
-        licenseCategory: secondDriver.licenseCategory ?? null,
-        address: secondDriverAddress,
-        phone: secondDriver.phone ?? null,
-      } : null,
+      secondDriver: secondDriver
+        ? {
+            firstName: secondDriver.firstName,
+            lastName: secondDriver.lastName,
+            pesel: secondDriver.pesel,
+            idNumber: secondDriver.idNumber,
+            licenseNumber: secondDriver.licenseNumber,
+            licenseCategory: secondDriver.licenseCategory ?? null,
+            address: secondDriverAddress,
+            phone: secondDriver.phone ?? null,
+          }
+        : null,
     };
   }
 
@@ -245,7 +277,9 @@ export class ContractsService {
       if (Array.isArray(obj)) return '[' + obj.map(sortedStringify).join(',') + ']';
       const record = obj as Record<string, unknown>;
       const keys = Object.keys(record).sort();
-      return '{' + keys.map((k) => JSON.stringify(k) + ':' + sortedStringify(record[k])).join(',') + '}';
+      return (
+        '{' + keys.map((k) => JSON.stringify(k) + ':' + sortedStringify(record[k])).join(',') + '}'
+      );
     };
     const serialized = sortedStringify(data);
     return crypto.createHash('sha256').update(serialized, 'utf-8').digest('hex');
@@ -269,9 +303,7 @@ export class ContractsService {
       },
     });
     if (existingContract) {
-      throw new BadRequestException(
-        'An active contract already exists for this rental',
-      );
+      throw new BadRequestException('An active contract already exists for this rental');
     }
 
     // 3. Get decrypted customer data
@@ -279,7 +311,8 @@ export class ContractsService {
 
     // 4. Fetch second driver and resolve terms (v2)
     const secondDriver = await this.rentalDriversService.findByRentalId(rental.id);
-    const termsHtml = rental.rentalTerms ?? await this.settingsService.get('default_rental_terms') ?? '';
+    const termsHtml =
+      rental.rentalTerms ?? (await this.settingsService.get('default_rental_terms')) ?? '';
 
     // 5. Build frozen data v2
     const conditions = {
@@ -287,7 +320,14 @@ export class ContractsService {
       dailyRateNet: rental.dailyRateNet,
       lateFeeNet: dto.lateFeeNet ?? null,
     };
-    const frozenData = this.buildFrozenDataV2(rental, customer, rental.vehicle, conditions, termsHtml, secondDriver);
+    const frozenData = this.buildFrozenDataV2(
+      rental,
+      customer,
+      rental.vehicle,
+      conditions,
+      termsHtml,
+      secondDriver,
+    );
 
     // 5. Generate content hash
     const contentHash = this.generateContentHash(frozenData);
@@ -342,12 +382,9 @@ export class ContractsService {
       } catch (error: unknown) {
         const prismaError = error as { code?: string; meta?: { target?: string[] } };
         const isUniqueViolation =
-          prismaError?.code === 'P2002' ||
-          prismaError?.meta?.target?.includes('contractNumber');
+          prismaError?.code === 'P2002' || prismaError?.meta?.target?.includes('contractNumber');
         if (isUniqueViolation && attempt < MAX_RETRIES) {
-          this.logger.warn(
-            `Contract number collision on attempt ${attempt + 1}, retrying...`,
-          );
+          this.logger.warn(`Contract number collision on attempt ${attempt + 1}, retrying...`);
           continue;
         }
         throw error;
@@ -374,9 +411,7 @@ export class ContractsService {
 
     // 2. Validate status
     if (contract.status === 'SIGNED' || contract.status === 'VOIDED') {
-      throw new BadRequestException(
-        `Cannot sign a contract with status ${contract.status}`,
-      );
+      throw new BadRequestException(`Cannot sign a contract with status ${contract.status}`);
     }
 
     // 3. Verify content hash
@@ -397,9 +432,10 @@ export class ContractsService {
     );
 
     // 5. Determine signer role and ID
-    const signerRole: SignerRole = dto.signatureType.startsWith('customer') || dto.signatureType.startsWith('second_customer')
-      ? 'customer'
-      : 'employee';
+    const signerRole: SignerRole =
+      dto.signatureType.startsWith('customer') || dto.signatureType.startsWith('second_customer')
+        ? 'customer'
+        : 'employee';
     const signerId = signerRole === 'employee' ? userId : null;
 
     // 6. Upsert signature record
@@ -454,9 +490,7 @@ export class ContractsService {
       // b. Fetch damage sketch as base64 if exists
       let damageSketch: string | undefined;
       if (contract.damageSketchKey) {
-        const sketchBuffer = await this.storageService.getBuffer(
-          contract.damageSketchKey,
-        );
+        const sketchBuffer = await this.storageService.getBuffer(contract.damageSketchKey);
         damageSketch = sketchBuffer.toString('base64');
       }
 
@@ -486,9 +520,7 @@ export class ContractsService {
               ? `data:image/png;base64,${signatures['secondCustomerPage2']}`
               : undefined,
           },
-          damageSketch: damageSketch
-            ? `data:image/png;base64,${damageSketch}`
-            : undefined,
+          damageSketch: damageSketch ? `data:image/png;base64,${damageSketch}` : undefined,
           rodoConsent: {
             accepted: !!contract.rodoConsentAt,
             timestamp: contract.rodoConsentAt?.toISOString() ?? null,
@@ -537,9 +569,7 @@ export class ContractsService {
             select: { customerId: true },
           });
           if (rental) {
-            portalUrl = await this.portalService.generatePortalToken(
-              rental.customerId,
-            );
+            portalUrl = await this.portalService.generatePortalToken(rental.customerId);
           }
         } catch (error: unknown) {
           this.logger.error(
@@ -555,7 +585,8 @@ export class ContractsService {
         const customerPhone = frozenData.customer.phone;
         // Send encrypted email — independent from SMS
         setImmediate(() => {
-          this.pdfEncryptionService.encrypt(pdfBuffer, vehicleReg)
+          this.pdfEncryptionService
+            .encrypt(pdfBuffer, vehicleReg)
             .then((encryptedPdf) =>
               this.mailService.sendContractEmail(
                 customerEmail,
@@ -565,7 +596,7 @@ export class ContractsService {
                 encryptedPdf,
                 portalUrl,
                 insuranceCaseNumber,
-              )
+              ),
             )
             .then(() => {
               this.logger.log(`Contract email sent for ${contractNumber}`);
@@ -581,10 +612,8 @@ export class ContractsService {
         // Send PDF password SMS independently — must not depend on email success
         if (customerPhone) {
           setImmediate(() => {
-            this.smsService.send(
-              customerPhone,
-              `Haslo do PDF umowy: ${vehicleReg}. KITEK`,
-            )
+            this.smsService
+              .send(customerPhone, `Haslo do PDF umowy: ${vehicleReg}. KITEK`)
               .then(() => {
                 this.logger.log(`PDF password SMS sent for ${contractNumber}`);
               })
@@ -634,7 +663,9 @@ export class ContractsService {
     return this.toDto(updated!);
   }
 
-  async findAll(query: ContractsQueryDto): Promise<{ data: ContractDto[]; total: number; page: number; limit: number }> {
+  async findAll(
+    query: ContractsQueryDto,
+  ): Promise<{ data: ContractDto[]; total: number; page: number; limit: number }> {
     const { page = 1, limit = 20 } = query;
 
     const [contracts, total] = await Promise.all([
@@ -661,11 +692,7 @@ export class ContractsService {
     return this.toDto(contract);
   }
 
-  async voidContract(
-    id: string,
-    reason: string,
-    userId: string,
-  ): Promise<ContractDto> {
+  async voidContract(id: string, reason: string, userId: string): Promise<ContractDto> {
     const contract = await this.prisma.contract.findUnique({
       where: { id },
       include: CONTRACT_INCLUDE,
@@ -727,9 +754,7 @@ export class ContractsService {
     });
 
     if (!contract) {
-      this.logger.warn(
-        `No signed contract found for rental ${rentalId} — skipping annex creation`,
-      );
+      this.logger.warn(`No signed contract found for rental ${rentalId} — skipping annex creation`);
       return null;
     }
 
@@ -801,7 +826,9 @@ export class ContractsService {
         try {
           const customerName = `${frozenData.customer.firstName} ${frozenData.customer.lastName}`;
           const vehicleReg = frozenData.vehicle.registration;
-          const insuranceCaseNumber = isV2(frozenData) ? frozenData.rental.insuranceCaseNumber : null;
+          const insuranceCaseNumber = isV2(frozenData)
+            ? frozenData.rental.insuranceCaseNumber
+            : null;
           const encryptedPdf = await this.pdfEncryptionService.encrypt(pdfBuffer, vehicleReg);
           await this.mailService.sendAnnexEmail(
             customerEmail,
@@ -816,11 +843,10 @@ export class ContractsService {
           const customerPhone = frozenData.customer.phone;
           if (customerPhone) {
             try {
-              await this.smsService.send(
-                customerPhone,
-                `Haslo do PDF umowy: ${vehicleReg}. KITEK`,
+              await this.smsService.send(customerPhone, `Haslo do PDF umowy: ${vehicleReg}. KITEK`);
+              this.logger.log(
+                `PDF password SMS sent for annex ${annexNumber} of ${contract.contractNumber}`,
               );
-              this.logger.log(`PDF password SMS sent for annex ${annexNumber} of ${contract.contractNumber}`);
             } catch (smsError: unknown) {
               this.logger.error(
                 `Failed to send PDF password SMS for annex ${contract.contractNumber}: ${smsError instanceof Error ? smsError.message : String(smsError)}`,
@@ -871,18 +897,20 @@ export class ContractsService {
       pdfGeneratedAt: contract.pdfGeneratedAt?.toISOString() ?? null,
       emailSentAt: contract.emailSentAt?.toISOString() ?? null,
       emailSentTo: contract.emailSentTo,
-      signatures: (contract.signatures ?? []).map((s: ContractSignature): ContractSignatureDto => ({
-        id: s.id,
-        contractId: s.contractId,
-        signatureType: s.signatureType as ContractSignatureDto['signatureType'],
-        signerRole: s.signerRole as ContractSignatureDto['signerRole'],
-        signerId: s.signerId,
-        signatureKey: s.signatureKey,
-        contentHash: s.contentHash,
-        deviceInfo: s.deviceInfo,
-        ipAddress: s.ipAddress,
-        signedAt: s.signedAt instanceof Date ? s.signedAt.toISOString() : String(s.signedAt),
-      })),
+      signatures: (contract.signatures ?? []).map(
+        (s: ContractSignature): ContractSignatureDto => ({
+          id: s.id,
+          contractId: s.contractId,
+          signatureType: s.signatureType as ContractSignatureDto['signatureType'],
+          signerRole: s.signerRole as ContractSignatureDto['signerRole'],
+          signerId: s.signerId,
+          signatureKey: s.signatureKey,
+          contentHash: s.contentHash,
+          deviceInfo: s.deviceInfo,
+          ipAddress: s.ipAddress,
+          signedAt: s.signedAt instanceof Date ? s.signedAt.toISOString() : String(s.signedAt),
+        }),
+      ),
       annexes: (contract.annexes ?? []).map((a: ContractAnnex) => this.toAnnexDto(a)),
       createdAt: contract.createdAt?.toISOString() ?? contract.createdAt,
       updatedAt: contract.updatedAt?.toISOString() ?? contract.updatedAt,

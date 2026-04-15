@@ -31,14 +31,26 @@ export enum RentalStatus {
   RETURNED = 'RETURNED',
 }
 
+export enum FuelLevelRequired {
+  FULL = 'FULL',
+  SAME_AS_PICKUP = 'SAME_AS_PICKUP',
+  ANY = 'ANY',
+}
+
 export type ConditionRating = 'good' | 'minor_damage' | 'major_damage' | 'missing';
 
 export const INSPECTION_AREAS = [
-  'front', 'rear', 'left', 'right',
-  'roof', 'interior', 'trunk', 'engine',
+  'front',
+  'rear',
+  'left',
+  'right',
+  'roof',
+  'interior',
+  'trunk',
+  'engine',
 ] as const;
 
-export type InspectionArea = typeof INSPECTION_AREAS[number];
+export type InspectionArea = (typeof INSPECTION_AREAS)[number];
 
 export interface AreaInspection {
   area: InspectionArea;
@@ -79,6 +91,15 @@ export interface RentalDto {
   settlementAmount: number | null;
   settlementNotes: string | null;
   settledAt: string | null;
+  dailyKmLimit: number | null;
+  excessKmRate: number | null;
+  deposit: number | null;
+  returnDeadlineHour: string | null;
+  lateReturnPenalty: number | null;
+  fuelLevelRequired: FuelLevelRequired | null;
+  fuelCharge: number | null;
+  crossBorderAllowed: boolean;
+  dirtyReturnFee: number | null;
   createdAt: string;
   updatedAt: string;
 }

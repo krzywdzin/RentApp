@@ -285,6 +285,15 @@ model Rental {
   insuranceCaseNumber  String?
   rentalTerms          String?          @db.Text
   termsNotes           String?          @db.Text
+  dailyKmLimit         Int?
+  excessKmRate         Int?
+  deposit              Int?
+  returnDeadlineHour   String?          @db.VarChar(5)
+  lateReturnPenalty    Int?
+  fuelLevelRequired    String?          @db.VarChar(20)
+  fuelCharge           Int?
+  crossBorderAllowed   Boolean          @default(false)
+  dirtyReturnFee       Int?
   pickupLocation       Json?
   returnLocation       Json?
   settlementStatus   SettlementStatus @default(NIEROZLICZONY)

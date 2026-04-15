@@ -5,7 +5,13 @@ export enum ContractStatus {
   VOIDED = 'VOIDED',
 }
 
-export type SignatureType = 'customer_page1' | 'employee_page1' | 'customer_page2' | 'employee_page2' | 'second_customer_page1' | 'second_customer_page2';
+export type SignatureType =
+  | 'customer_page1'
+  | 'employee_page1'
+  | 'customer_page2'
+  | 'employee_page2'
+  | 'second_customer_page1'
+  | 'second_customer_page2';
 export type SignerRole = 'customer' | 'employee';
 
 export interface ContractSignatureDto {
@@ -59,19 +65,32 @@ export interface ContractDto {
 export interface ContractFrozenDataV1 {
   company: { name: string; owner: string; address: string; phone: string };
   customer: {
-    firstName: string; lastName: string; address: string | null;
-    pesel: string; idNumber: string; idIssuedBy: string | null;
-    licenseNumber: string; licenseCategory: string | null;
-    phone: string; email: string | null;
+    firstName: string;
+    lastName: string;
+    address: string | null;
+    pesel: string;
+    idNumber: string;
+    idIssuedBy: string | null;
+    licenseNumber: string;
+    licenseCategory: string | null;
+    phone: string;
+    email: string | null;
   };
   vehicle: {
-    registration: string; make: string; model: string;
-    year: number; vin: string; mileage: number;
+    registration: string;
+    make: string;
+    model: string;
+    year: number;
+    vin: string;
+    mileage: number;
   };
   rental: {
-    startDate: string; endDate: string;
-    dailyRateNet: number; totalPriceNet: number;
-    totalPriceGross: number; vatRate: number;
+    startDate: string;
+    endDate: string;
+    dailyRateNet: number;
+    totalPriceNet: number;
+    totalPriceGross: number;
+    vatRate: number;
   };
   conditions: {
     depositAmount: number | null;
@@ -85,23 +104,37 @@ export interface ContractFrozenDataV2 {
   version: 2;
   company: { name: string; owner: string; address: string; phone: string };
   customer: {
-    firstName: string; lastName: string;
-    street: string | null; houseNumber: string | null;
-    postalCode: string | null; city: string | null;
+    firstName: string;
+    lastName: string;
+    street: string | null;
+    houseNumber: string | null;
+    postalCode: string | null;
+    city: string | null;
     address: string | null; // backward compat: computed full address string
-    pesel: string; idNumber: string; idIssuedBy: string | null;
-    licenseNumber: string; licenseCategory: string | null;
-    phone: string; email: string | null;
+    pesel: string;
+    idNumber: string;
+    idIssuedBy: string | null;
+    licenseNumber: string;
+    licenseCategory: string | null;
+    phone: string;
+    email: string | null;
   };
   vehicle: {
-    registration: string; make: string; model: string;
-    year: number; vin: string; mileage: number;
+    registration: string;
+    make: string;
+    model: string;
+    year: number;
+    vin: string;
+    mileage: number;
     vehicleClassName: string | null;
   };
   rental: {
-    startDate: string; endDate: string;
-    dailyRateNet: number; totalPriceNet: number;
-    totalPriceGross: number; vatRate: number;
+    startDate: string;
+    endDate: string;
+    dailyRateNet: number;
+    totalPriceNet: number;
+    totalPriceGross: number;
+    vatRate: number;
     isCompanyRental: boolean;
     companyName: string | null;
     companyNip: string | null;
@@ -109,6 +142,15 @@ export interface ContractFrozenDataV2 {
     insuranceCaseNumber: string | null;
     termsHtml: string;
     termsNotes: string | null;
+    dailyKmLimit: number | null;
+    excessKmRate: number | null;
+    deposit: number | null;
+    returnDeadlineHour: string | null;
+    lateReturnPenalty: number | null;
+    fuelLevelRequired: string | null;
+    fuelCharge: number | null;
+    crossBorderAllowed: boolean;
+    dirtyReturnFee: number | null;
   };
   conditions: {
     depositAmount: number | null;
@@ -116,10 +158,14 @@ export interface ContractFrozenDataV2 {
     lateFeeNet: number | null;
   };
   secondDriver: {
-    firstName: string; lastName: string;
-    pesel: string; idNumber: string;
-    licenseNumber: string; licenseCategory: string | null;
-    address: string | null; phone: string | null;
+    firstName: string;
+    lastName: string;
+    pesel: string;
+    idNumber: string;
+    licenseNumber: string;
+    licenseCategory: string | null;
+    address: string | null;
+    phone: string | null;
   } | null;
 }
 

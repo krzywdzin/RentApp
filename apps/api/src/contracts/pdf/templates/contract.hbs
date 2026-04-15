@@ -279,6 +279,70 @@
       </div>
     </div>
 
+    {{#if (eq version 2)}}
+    <div class="section">
+      <div class="section-title">Warunki szczegolowe najmu</div>
+      <div class="two-columns">
+        <div>
+          {{#if rental.dailyKmLimit}}
+          <div class="field-row">
+            <span class="field-label">Limit km/dobe:</span>
+            <span class="field-value">{{rental.dailyKmLimit}} km</span>
+          </div>
+          {{/if}}
+          {{#if rental.excessKmRate}}
+          <div class="field-row">
+            <span class="field-label">Nadprzebieg (PLN/km netto):</span>
+            <span class="field-value">{{formatMoney rental.excessKmRate}}</span>
+          </div>
+          {{/if}}
+          {{#if rental.deposit}}
+          <div class="field-row">
+            <span class="field-label">Kaucja:</span>
+            <span class="field-value">{{formatMoney rental.deposit}}</span>
+          </div>
+          {{/if}}
+          {{#if rental.returnDeadlineHour}}
+          <div class="field-row">
+            <span class="field-label">Godzina zwrotu:</span>
+            <span class="field-value">{{rental.returnDeadlineHour}}</span>
+          </div>
+          {{/if}}
+          {{#if rental.lateReturnPenalty}}
+          <div class="field-row">
+            <span class="field-label">Kara za spoznienie (PLN/dobe):</span>
+            <span class="field-value">{{formatMoney rental.lateReturnPenalty}}</span>
+          </div>
+          {{/if}}
+        </div>
+        <div>
+          {{#if rental.fuelLevelRequired}}
+          <div class="field-row">
+            <span class="field-label">Wymagany poziom paliwa:</span>
+            <span class="field-value">{{formatFuelLevel rental.fuelLevelRequired}}</span>
+          </div>
+          {{/if}}
+          {{#if rental.fuelCharge}}
+          <div class="field-row">
+            <span class="field-label">Oplata za brak paliwa:</span>
+            <span class="field-value">{{formatMoney rental.fuelCharge}}</span>
+          </div>
+          {{/if}}
+          <div class="field-row">
+            <span class="field-label">Wyjazd za granice:</span>
+            <span class="field-value">{{#if rental.crossBorderAllowed}}Tak{{else}}Nie{{/if}}</span>
+          </div>
+          {{#if rental.dirtyReturnFee}}
+          <div class="field-row">
+            <span class="field-label">Oplata za brudne auto:</span>
+            <span class="field-value">{{formatMoney rental.dirtyReturnFee}}</span>
+          </div>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+    {{/if}}
+
     <div class="rodo-consent">
       <strong>Klauzula RODO:</strong> Wyrazam zgode na przetwarzanie moich danych osobowych przez KITEK - Pawel Romanowski w celu realizacji umowy najmu pojazdu, zgodnie z Rozporzadzeniem Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. (RODO). Podanie danych jest dobrowolne, ale niezbedne do zawarcia umowy. Przesluguje mi prawo dostepu do tresci moich danych, ich sprostowania, usuniecia, ograniczenia przetwarzania oraz przenoszenia.
       {{#if rodoConsent.accepted}}

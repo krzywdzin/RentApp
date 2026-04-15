@@ -41,6 +41,15 @@ interface RentalDraft {
   rentalTerms: string | null;
   termsNotes: string | null;
   termsAcceptedAt: string | null;
+  dailyKmLimit: number | null;
+  excessKmRate: number | null;
+  deposit: number | null;
+  returnDeadlineHour: string | null;
+  lateReturnPenalty: number | null;
+  fuelLevelRequired: 'FULL' | 'SAME_AS_PICKUP' | 'ANY' | null;
+  fuelCharge: number | null;
+  crossBorderAllowed: boolean;
+  dirtyReturnFee: number | null;
   secondDriver: SecondDriverData | null;
   secondDriverId: string | null;
   secondDriverCepikStatus: string | null;
@@ -80,6 +89,15 @@ const initialDraft: RentalDraft = {
   rentalTerms: null,
   termsNotes: null,
   termsAcceptedAt: null,
+  dailyKmLimit: null,
+  excessKmRate: null,
+  deposit: null,
+  returnDeadlineHour: null,
+  lateReturnPenalty: null,
+  fuelLevelRequired: null,
+  fuelCharge: null,
+  crossBorderAllowed: false,
+  dirtyReturnFee: null,
   secondDriver: null,
   secondDriverId: null,
   secondDriverCepikStatus: null,
@@ -95,14 +113,10 @@ const initialDraft: RentalDraft = {
  * false redirects before draft data is loaded from storage.
  */
 export function useRentalDraftHasHydrated(): boolean {
-  const [hydrated, setHydrated] = useState(
-    useRentalDraftStore.persist.hasHydrated(),
-  );
+  const [hydrated, setHydrated] = useState(useRentalDraftStore.persist.hasHydrated());
 
   useEffect(() => {
-    const unsub = useRentalDraftStore.persist.onFinishHydration(() =>
-      setHydrated(true),
-    );
+    const unsub = useRentalDraftStore.persist.onFinishHydration(() => setHydrated(true));
     return () => {
       unsub();
     };

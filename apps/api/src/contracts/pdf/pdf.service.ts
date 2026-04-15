@@ -25,7 +25,7 @@ export type ContractPdfData = ContractFrozenData & {
     accepted: boolean;
     timestamp: string | null;
   };
-}
+};
 
 export interface ReturnProtocolPdfData {
   customerName: string;
@@ -37,7 +37,7 @@ export interface ReturnProtocolPdfData {
   cleanlinessNote: string | null;
   otherNotes: string | null;
   customerSignature: string; // base64 data URI
-  workerSignature: string;   // base64 data URI
+  workerSignature: string; // base64 data URI
 }
 
 export interface AnnexPdfData {
@@ -97,31 +97,43 @@ export class PdfService implements OnModuleInit, OnModuleDestroy {
       return `${zloty} zl`;
     });
 
-    Handlebars.registerHelper('eq', function(a: unknown, b: unknown) {
+    Handlebars.registerHelper('eq', function (a: unknown, b: unknown) {
       return a === b;
     });
 
-    Handlebars.registerHelper('formatVatStatus', function(status: string | null) {
+    Handlebars.registerHelper('formatFuelLevel', function (level: string | null) {
+      if (!level) return '-';
+      switch (level) {
+        case 'FULL':
+          return 'Pelny';
+        case 'SAME_AS_PICKUP':
+          return 'Jak przy wydaniu';
+        case 'ANY':
+          return 'Dowolny';
+        default:
+          return level;
+      }
+    });
+
+    Handlebars.registerHelper('formatVatStatus', function (status: string | null) {
       if (!status) return '-';
       switch (status) {
-        case 'FULL_100': return '100%';
-        case 'HALF_50': return '50%';
-        case 'NONE': return 'Nie';
-        default: return status;
+        case 'FULL_100':
+          return '100%';
+        case 'HALF_50':
+          return '50%';
+        case 'NONE':
+          return 'Nie';
+        default:
+          return status;
       }
     });
 
     // Compile templates
-    const contractSource = readFileSync(
-      join(__dirname, 'templates', 'contract.hbs'),
-      'utf-8',
-    );
+    const contractSource = readFileSync(join(__dirname, 'templates', 'contract.hbs'), 'utf-8');
     this.contractTemplate = Handlebars.compile(contractSource);
 
-    const annexSource = readFileSync(
-      join(__dirname, 'templates', 'annex.hbs'),
-      'utf-8',
-    );
+    const annexSource = readFileSync(join(__dirname, 'templates', 'annex.hbs'), 'utf-8');
     this.annexTemplate = Handlebars.compile(annexSource);
 
     const protocolSource = readFileSync(

@@ -17,7 +17,7 @@ import {
 import { DateAfterValidator } from '../../common/validators/date-after.validator';
 import { IsValidNip } from '../../common/validators/nip.validator';
 import { Type } from 'class-transformer';
-import { RentalStatus, VatPayerStatus } from '@rentapp/shared';
+import { RentalStatus, VatPayerStatus, FuelLevelRequired } from '@rentapp/shared';
 
 class PlaceLocationDto {
   @IsString()
@@ -134,4 +134,47 @@ export class CreateRentalDto {
   @ValidateNested()
   @Type(() => PlaceLocationDto)
   returnLocation?: PlaceLocationDto;
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  dailyKmLimit?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  excessKmRate?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  deposit?: number;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(5)
+  returnDeadlineHour?: string;
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  lateReturnPenalty?: number;
+
+  @IsOptional()
+  @IsEnum(FuelLevelRequired)
+  fuelLevelRequired?: FuelLevelRequired;
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  fuelCharge?: number;
+
+  @IsOptional()
+  @IsBoolean()
+  crossBorderAllowed?: boolean;
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  dirtyReturnFee?: number;
 }

@@ -9,8 +9,14 @@ export const PlaceLocationSchema = z.object({
 const ConditionRatingSchema = z.enum(['good', 'minor_damage', 'major_damage', 'missing']);
 
 const InspectionAreaSchema = z.enum([
-  'front', 'rear', 'left', 'right',
-  'roof', 'interior', 'trunk', 'engine',
+  'front',
+  'rear',
+  'left',
+  'right',
+  'roof',
+  'interior',
+  'trunk',
+  'engine',
 ]);
 
 const AreaInspectionSchema = z.object({
@@ -44,6 +50,15 @@ export const CreateRentalSchema = z
     insuranceCaseNumber: z.string().max(100).nullable().optional(),
     pickupLocation: PlaceLocationSchema.nullable().optional(),
     returnLocation: PlaceLocationSchema.nullable().optional(),
+    dailyKmLimit: z.number().int().min(0).nullable().optional(),
+    excessKmRate: z.number().int().min(0).nullable().optional(),
+    deposit: z.number().int().min(0).nullable().optional(),
+    returnDeadlineHour: z.string().max(5).nullable().optional(),
+    lateReturnPenalty: z.number().int().min(0).nullable().optional(),
+    fuelLevelRequired: z.enum(['FULL', 'SAME_AS_PICKUP', 'ANY']).nullable().optional(),
+    fuelCharge: z.number().int().min(0).nullable().optional(),
+    crossBorderAllowed: z.boolean().default(false),
+    dirtyReturnFee: z.number().int().min(0).nullable().optional(),
   })
   .refine((data) => data.dailyRateNet != null || data.totalPriceNet != null, {
     message: 'Either dailyRateNet or totalPriceNet must be provided',
@@ -51,14 +66,14 @@ export const CreateRentalSchema = z
   .refine((data) => new Date(data.endDate) > new Date(data.startDate), {
     message: 'endDate must be after startDate',
   })
-  .refine(
-    (data) => !data.isCompanyRental || (data.companyNip && data.companyNip.length === 10),
-    { message: 'NIP jest wymagany dla wynajmu firmowego', path: ['companyNip'] },
-  )
-  .refine(
-    (data) => !data.companyNip || isValidNip(data.companyNip),
-    { message: 'Nieprawidlowy NIP', path: ['companyNip'] },
-  );
+  .refine((data) => !data.isCompanyRental || (data.companyNip && data.companyNip.length === 10), {
+    message: 'NIP jest wymagany dla wynajmu firmowego',
+    path: ['companyNip'],
+  })
+  .refine((data) => !data.companyNip || isValidNip(data.companyNip), {
+    message: 'Nieprawidlowy NIP',
+    path: ['companyNip'],
+  });
 
 export const ExtendRentalSchema = z.object({
   newEndDate: z.string().datetime(),
