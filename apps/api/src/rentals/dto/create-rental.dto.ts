@@ -19,6 +19,18 @@ import { IsValidNip } from '../../common/validators/nip.validator';
 import { Type } from 'class-transformer';
 import { RentalStatus, VatPayerStatus } from '@rentapp/shared';
 
+class PlaceLocationDto {
+  @IsString()
+  @MinLength(1)
+  @MaxLength(500)
+  address!: string;
+
+  @IsString()
+  @MinLength(1)
+  @MaxLength(300)
+  placeId!: string;
+}
+
 class AreaInspectionDto {
   @IsString()
   area!: string;
@@ -122,16 +134,4 @@ export class CreateRentalDto {
   @ValidateNested()
   @Type(() => PlaceLocationDto)
   returnLocation?: PlaceLocationDto;
-}
-
-class PlaceLocationDto {
-  @IsString()
-  @MinLength(1)
-  @MaxLength(500)
-  address!: string;
-
-  @IsString()
-  @MinLength(1)
-  @MaxLength(300)
-  placeId!: string;
 }
