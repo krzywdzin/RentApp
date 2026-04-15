@@ -45,19 +45,28 @@ export class OcrService {
       model: 'gemini-2.5-flash-preview-05-20',
     });
 
-    const prompt = `You are an OCR post-processor for Polish ID cards (dowód osobisty).
-Given the following raw OCR text blocks extracted from a photo of a Polish ID card, extract these fields:
-- firstName: the person's first name (imię)
-- lastName: the person's surname (nazwisko)
-- pesel: the 11-digit PESEL number
-- documentNumber: the document number (3 letters + 6 digits, e.g. ABC123456)
+    const prompt = `You are an expert OCR post-processor for Polish national ID cards (dowód osobisty).
 
-Polish names may contain diacritics: ą, ć, ę, ł, ń, ó, ś, ź, ż.
-Names should be in Title Case (first letter uppercase, rest lowercase).
-The OCR text may contain noise, misspellings, or formatting artifacts — do your best to extract the correct values.
-If a field cannot be determined, use null.
+TASK: Extract personal data from raw OCR text of a Polish ID card photo.
 
-Respond ONLY with a JSON object, no markdown, no explanation:
+FIELDS TO EXTRACT:
+- firstName: the person's FIRST NAME (imię) — this is NOT nationality, NOT citizenship, NOT document type
+- lastName: the person's SURNAME (nazwisko) — a family name like Kowalski, Nowak, Krzywdziński
+- pesel: exactly 11 consecutive digits — the PESEL number
+- documentNumber: 3 letters followed by 6 digits (e.g. ABC123456)
+
+CRITICAL RULES:
+1. "POLSKIE" / "POLSKIEEOO" / "POLSKA" / "POLAND" / "POLISH" = nationality/country label, NEVER a person's name
+2. "OBYWATELSTWO" / "NATIONALITY" / "CITIZENSHIP" = field LABEL, NEVER a name. The VALUE next to it (like "POLSKIE") is also NOT a name.
+3. Labels like "NAZWISKO/SURNAME", "IMIĘ/GIVEN NAMES", "DATA URODZENIA/DATE OF BIRTH" etc. are NOT names
+4. The firstName is typically found AFTER the label "IMIĘ (IMIONA) / GIVEN NAMES"
+5. The lastName is typically found AFTER the label "NAZWISKO / SURNAME"
+6. Names contain Polish diacritics: ą, ć, ę, ł, ń, ó, ś, ź, ż
+7. Names should be Title Case (Antoni, Krzywdziński — not ANTONI, KRZYWDZIŃSKI)
+8. If OCR produced garbage characters, try to reconstruct the likely Polish name
+9. If you cannot determine a field with reasonable confidence, return null
+
+Respond ONLY with a raw JSON object, no markdown fences, no explanation:
 {"firstName": "...", "lastName": "...", "pesel": "...", "documentNumber": "..."}
 
 OCR text blocks:
