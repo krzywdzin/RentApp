@@ -44,6 +44,8 @@ describe('RentalExtendedNotificationListener', () => {
       'customer-1',
       '2026-04-01T14:00:00.000Z',
       'rental-1',
+      undefined,
+      undefined,
     );
   });
 
