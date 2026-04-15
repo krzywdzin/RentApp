@@ -18,21 +18,29 @@ export function parseIdCard(ocrTexts: string[]): IdCardOcrFields {
   const docNumMatch = fullText.match(/[A-Z]{3}\d{6}/);
 
   // Names: filter lines that look like Polish proper names
+  // OCR often returns ALL CAPS — normalize to title case for matching
   // Exclude known headers, labels, and non-name lines
-  const nameLines = ocrTexts.filter((line) => {
-    const trimmed = line.trim();
-    return (
-      trimmed.length > 1 &&
-      !/RZECZPOSPOLITA|DOWÓD|DOWOD|POLSKA|POLAND|IDENTITY|CARD|KARTA|Surname|Name|Date|Nationality|Sex|Obywatelstwo|Plec|Data|Nazwisko|Imion|PESEL|Nr\s*dok/i.test(
-        trimmed,
-      ) &&
-      /^[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż-]+$/.test(trimmed)
+  const excludePattern =
+    /RZECZPOSPOLITA|DOWÓD|DOWOD|POLSKA|POLAND|IDENTITY|CARD|KARTA|TOŻSAMOŚCI|TOZSAMOSCI|REPUBLIC|SURNAME|NAME|DATE|NATIONALITY|SEX|OBYWATELSTWO|PLEC|PŁEĆ|DATA|NAZWISKO|IMION|IMIĘ|PESEL|WIEK|NR\s*DOK|DOKUMENT|ORGAN|WYDAJĄCY|WAŻN|WAZN|URODZENIA/i;
+
+  const nameLines = ocrTexts
+    .map((line) => line.trim())
+    .filter((line) => {
+      return (
+        line.length >= 2 &&
+        line.length <= 30 &&
+        !excludePattern.test(line) &&
+        !/\d/.test(line) &&
+        /^[A-ZĄĆĘŁŃÓŚŹŻ][A-ZĄĆĘŁŃÓŚŹŻa-ząćęłńóśźż-]+$/i.test(line)
+      );
+    })
+    .map((name) =>
+      name.charAt(0).toUpperCase() + name.slice(1).toLowerCase(),
     );
-  });
 
   return {
-    firstName: nameLines[1]?.trim() ?? null,
-    lastName: nameLines[0]?.trim() ?? null,
+    firstName: nameLines[1] ?? null,
+    lastName: nameLines[0] ?? null,
     pesel: peselMatch?.[0] ?? null,
     documentNumber: docNumMatch?.[0] ?? null,
   };

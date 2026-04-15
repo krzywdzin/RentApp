@@ -102,4 +102,31 @@ describe('parseIdCard', () => {
     expect(result.lastName).toBe('Wójcik');
     expect(result.firstName).toBe('Łukasz');
   });
+
+  it('handles ALL CAPS names from OCR and normalizes to title case', () => {
+    const ocrTexts = [
+      'RZECZPOSPOLITA POLSKA',
+      'DOWÓD OSOBISTY',
+      'KOWALSKI',
+      'JAN',
+      'ABC123456',
+      '02271409876',
+    ];
+    const result = parseIdCard(ocrTexts);
+    expect(result.lastName).toBe('Kowalski');
+    expect(result.firstName).toBe('Jan');
+  });
+
+  it('handles ALL CAPS names with Polish diacritics', () => {
+    const ocrTexts = [
+      'RZECZPOSPOLITA POLSKA',
+      'WÓJCIK',
+      'ŁUKASZ',
+      'DEF789012',
+      '85032156789',
+    ];
+    const result = parseIdCard(ocrTexts);
+    expect(result.lastName).toBe('Wójcik');
+    expect(result.firstName).toBe('Łukasz');
+  });
 });
