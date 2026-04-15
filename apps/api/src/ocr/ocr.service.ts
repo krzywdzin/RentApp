@@ -23,7 +23,7 @@ export class OcrService {
 
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
-        const model = this.genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+        const model = this.genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
         const result = await model.generateContent([
           {
@@ -66,7 +66,7 @@ If a field is unreadable, use null.`,
 
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
-        const model = this.genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+        const model = this.genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
         const result = await model.generateContent([
           {
@@ -138,7 +138,7 @@ If a field is unreadable, use null.`,
 
   private async parseIdCardWithGemini(texts: string[]): Promise<IdCardOcrFields> {
     const model = this.genAI!.getGenerativeModel({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-2.5-flash',
     });
 
     const prompt = `You are an expert OCR post-processor for Polish national ID cards (dowód osobisty).
@@ -180,7 +180,7 @@ ${texts.map((t, i) => `[${i}] ${t}`).join('\n')}`;
 
   private async parseDriverLicenseWithGemini(texts: string[]): Promise<DriverLicenseOcrFields> {
     const model = this.genAI!.getGenerativeModel({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-2.5-flash',
     });
 
     const prompt = `You are an OCR post-processor for Polish driver licenses (prawo jazdy).
