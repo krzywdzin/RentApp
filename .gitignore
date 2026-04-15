@@ -22,3 +22,5 @@ apps/web/.next/
 # iOS prebuild (non-CNG, regenerated)
 apps/mobile/ios/
 .superpowers/
+.claude/
+.aider*

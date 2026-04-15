@@ -94,12 +94,12 @@ export default function CustomerStep() {
     },
   });
 
-  // Check for existing draft on mount
+  // Check for existing draft on mount (wait for store hydration)
   useEffect(() => {
-    if (draft.customerId) {
+    if (hydrated && draft.customerId) {
       setShowDraftResume(true);
     }
-  }, []);
+  }, [hydrated]);
 
   const handleSelectCustomer = useCallback(
     (id: string, name: string) => {
@@ -115,7 +115,7 @@ export default function CustomerStep() {
 
   // ---------- Document photo upload helper ----------
 
-  const uploadDocumentPhotos = useCallback(async (customerId: string) => {
+  const uploadDocumentPhotos = useCallback(async (customerId: string): Promise<boolean> => {
     const scans: Array<{
       type: 'id-card' | 'driver-license';
       frontUri: string | undefined;
@@ -137,6 +137,8 @@ export default function CustomerStep() {
       });
     }
 
+    let failed = false;
+
     for (const scan of scans) {
       if (scan.frontUri) {
         try {
@@ -153,6 +155,7 @@ export default function CustomerStep() {
           );
         } catch (err) {
           console.warn(`Document photo upload failed (${scan.type}/front):`, err);
+          failed = true;
         }
       }
       if (scan.backUri) {
@@ -170,9 +173,20 @@ export default function CustomerStep() {
           );
         } catch (err) {
           console.warn(`Document photo upload failed (${scan.type}/back):`, err);
+          failed = true;
         }
       }
     }
+
+    if (failed) {
+      Toast.show({
+        type: 'error',
+        text1: 'Blad przesylania dokumentow',
+        text2: 'Nie udalo sie wyslac zdjec dokumentow. Sprobuj ponownie.',
+      });
+    }
+
+    return !failed;
   }, [draft.idCardScan, draft.driverLicenseScan]);
 
   const handleCreateCustomer = useCallback(
@@ -181,7 +195,8 @@ export default function CustomerStep() {
         const customer = await createCustomer.mutateAsync(data);
         const name = `${customer.firstName} ${customer.lastName}`;
         // Upload document photos to R2
-        await uploadDocumentPhotos(customer.id);
+        const uploaded = await uploadDocumentPhotos(customer.id);
+        if (!uploaded) return;
         setShowNewCustomer(false);
         reset();
         handleSelectCustomer(customer.id, name);

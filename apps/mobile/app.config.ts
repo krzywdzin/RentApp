@@ -5,6 +5,7 @@ const RAILWAY_API_URL = 'https://api-production-977b.up.railway.app';
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
+  owner: 'krzywdzinek',
   name: 'KITEK Rental',
   slug: 'kitek-rental',
   version: '1.0.0',

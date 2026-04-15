@@ -156,7 +156,7 @@ export class RentalsService {
     this.eventEmitter.emit('rental.created', { rental: result });
 
     // 9. Return
-    return result;
+    return result as RentalWithRelations | { rental: null; conflicts: OverlapConflict[] };
   }
 
   async findAll(query: RentalsQueryDto): Promise<{ data: RentalWithRelations[]; total: number; page: number; limit: number }> {
@@ -252,7 +252,7 @@ export class RentalsService {
     if (!rental) {
       throw new NotFoundException(`Rental with ID "${id}" not found`);
     }
-    return result;
+    return rental;
   }
 
   async activate(
@@ -660,7 +660,7 @@ export class RentalsService {
       });
     });
 
-    return result;
+    return rental;
   }
 
   async archive(id: string): Promise<RentalWithRelations> {
