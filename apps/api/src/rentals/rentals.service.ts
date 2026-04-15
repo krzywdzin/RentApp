@@ -128,14 +128,20 @@ export class RentalsService {
           totalPriceNet: pricing.totalPriceNet,
           totalPriceGross: pricing.totalPriceGross,
           vatRate: pricing.vatRate,
-          handoverData: dto.handoverData ? (dto.handoverData as unknown as Prisma.InputJsonValue) : undefined,
+          handoverData: dto.handoverData
+            ? (dto.handoverData as unknown as Prisma.InputJsonValue)
+            : undefined,
           notes: dto.notes,
           isCompanyRental: dto.isCompanyRental ?? false,
           companyNip: dto.companyNip ?? null,
           vatPayerStatus: dto.vatPayerStatus ?? null,
           insuranceCaseNumber: dto.insuranceCaseNumber ?? null,
-          pickupLocation: dto.pickupLocation ? (dto.pickupLocation as unknown as Prisma.InputJsonValue) : undefined,
-          returnLocation: dto.returnLocation ? (dto.returnLocation as unknown as Prisma.InputJsonValue) : undefined,
+          pickupLocation: dto.pickupLocation
+            ? (dto.pickupLocation as unknown as Prisma.InputJsonValue)
+            : undefined,
+          returnLocation: dto.returnLocation
+            ? (dto.returnLocation as unknown as Prisma.InputJsonValue)
+            : undefined,
           overrodeConflict: conflicts.length > 0,
         },
         include: RENTAL_INCLUDE,
@@ -159,8 +165,19 @@ export class RentalsService {
     return result as RentalWithRelations | { rental: null; conflicts: OverlapConflict[] };
   }
 
-  async findAll(query: RentalsQueryDto): Promise<{ data: RentalWithRelations[]; total: number; page: number; limit: number }> {
-    const { page = 1, limit = 20, status, customerId, vehicleId, filter = 'active', hasInsurance, insuranceSearch } = query;
+  async findAll(
+    query: RentalsQueryDto,
+  ): Promise<{ data: RentalWithRelations[]; total: number; page: number; limit: number }> {
+    const {
+      page = 1,
+      limit = 20,
+      status,
+      customerId,
+      vehicleId,
+      filter = 'active',
+      hasInsurance,
+      insuranceSearch,
+    } = query;
     const where: Prisma.RentalWhereInput = {};
 
     if (filter === 'archived') {
@@ -172,6 +189,9 @@ export class RentalsService {
 
     if (status) {
       where.status = status;
+    } else if (filter !== 'all') {
+      // Hide DRAFT rentals unless explicitly filtered by status
+      where.status = { not: RentalStatus.DRAFT };
     }
     if (customerId) {
       where.customerId = customerId;
@@ -205,10 +225,10 @@ export class RentalsService {
     }
     // Overlap logic: rental overlaps [dateFrom, dateTo] when startDate <= dateTo AND endDate >= dateFrom
     if (query.dateFrom) {
-      where.endDate = { ...(where.endDate as object ?? {}), gte: query.dateFrom };
+      where.endDate = { ...((where.endDate as object) ?? {}), gte: query.dateFrom };
     }
     if (query.dateTo) {
-      where.startDate = { ...(where.startDate as object ?? {}), lte: query.dateTo };
+      where.startDate = { ...((where.startDate as object) ?? {}), lte: query.dateTo };
     }
 
     const [data, total] = await Promise.all([
@@ -225,10 +245,7 @@ export class RentalsService {
     return { data, total, page, limit };
   }
 
-  async updateTerms(
-    id: string,
-    dto: UpdateRentalTermsDto,
-  ): Promise<RentalWithRelations> {
+  async updateTerms(id: string, dto: UpdateRentalTermsDto): Promise<RentalWithRelations> {
     const rental = await this.prisma.rental.findUnique({ where: { id } });
     if (!rental) {
       throw new NotFoundException(`Rental with ID "${id}" not found`);
@@ -255,11 +272,7 @@ export class RentalsService {
     return rental;
   }
 
-  async activate(
-    id: string,
-    dto: ActivateRentalDto,
-    userId: string,
-  ): Promise<RentalWithRelations> {
+  async activate(id: string, dto: ActivateRentalDto, userId: string): Promise<RentalWithRelations> {
     // 1. Find rental
     const rental = await this.prisma.rental.findUnique({
       where: { id },
@@ -277,7 +290,9 @@ export class RentalsService {
         where: { id },
         data: {
           status: RentalStatus.ACTIVE,
-          handoverData: dto.handoverData ? (dto.handoverData as unknown as Prisma.InputJsonValue) : undefined,
+          handoverData: dto.handoverData
+            ? (dto.handoverData as unknown as Prisma.InputJsonValue)
+            : undefined,
         },
         include: RENTAL_INCLUDE,
       });
@@ -297,7 +312,11 @@ export class RentalsService {
     return updated;
   }
 
-  async processReturn(id: string, dto: ReturnRentalDto, userId: string): Promise<RentalAuditResult> {
+  async processReturn(
+    id: string,
+    dto: ReturnRentalDto,
+    userId: string,
+  ): Promise<RentalAuditResult> {
     // 1. Find rental with vehicle
     const rental = await this.prisma.rental.findUnique({
       where: { id },
@@ -318,7 +337,9 @@ export class RentalsService {
         data: {
           status: RentalStatus.RETURNED,
           returnMileage: dto.returnMileage,
-          returnData: dto.returnData ? (dto.returnData as unknown as Prisma.InputJsonValue) : Prisma.JsonNull,
+          returnData: dto.returnData
+            ? (dto.returnData as unknown as Prisma.InputJsonValue)
+            : Prisma.JsonNull,
           ...(dto.notes ? { notes: dto.notes } : {}),
         },
       });
@@ -382,12 +403,7 @@ export class RentalsService {
     }
 
     // 4. Check overlaps with new date range
-    const conflicts = await this.checkOverlap(
-      rental.vehicleId,
-      rental.startDate,
-      newEndDate,
-      id,
-    );
+    const conflicts = await this.checkOverlap(rental.vehicleId, rental.startDate, newEndDate, id);
     if (conflicts.length > 0) {
       throw new ConflictException({
         message: 'Extension would cause scheduling conflict',
@@ -398,9 +414,7 @@ export class RentalsService {
     // 5. Calculate new pricing
     const newDays = Math.max(
       1,
-      Math.ceil(
-        (newEndDate.getTime() - rental.startDate.getTime()) / (1000 * 60 * 60 * 24),
-      ),
+      Math.ceil((newEndDate.getTime() - rental.startDate.getTime()) / (1000 * 60 * 60 * 24)),
     );
 
     let totalPriceNet: number;
@@ -478,8 +492,7 @@ export class RentalsService {
     validateTransition(oldStatus, dto.targetStatus, true);
 
     // 3. Determine vehicle status side effect
-    const vehicleStatus =
-      dto.targetStatus === RentalStatus.DRAFT ? 'AVAILABLE' : 'RENTED';
+    const vehicleStatus = dto.targetStatus === RentalStatus.DRAFT ? 'AVAILABLE' : 'RENTED';
 
     // 4. Determine if we should clear return data
     const clearReturnData = oldStatus === RentalStatus.RETURNED;
@@ -490,9 +503,7 @@ export class RentalsService {
         where: { id },
         data: {
           status: dto.targetStatus,
-          ...(clearReturnData
-            ? { returnMileage: null, returnData: Prisma.JsonNull }
-            : {}),
+          ...(clearReturnData ? { returnMileage: null, returnData: Prisma.JsonNull } : {}),
         },
       });
 
@@ -571,9 +582,7 @@ export class RentalsService {
         // Check if this rental overlaps with any other rental for the same vehicle
         const hasConflict = vehicleRentals.some(
           (other) =>
-            other.id !== r.id &&
-            other.startDate < r.endDate &&
-            other.endDate > r.startDate,
+            other.id !== r.id && other.startDate < r.endDate && other.endDate > r.startDate,
         );
 
         return {
@@ -704,11 +713,12 @@ export class RentalsService {
       throw new NotFoundException(`Rental with ID "${id}" not found`);
     }
 
-    const settledAt = dto.settlementStatus === 'ROZLICZONY'
-      ? new Date()
-      : dto.settlementStatus === 'NIEROZLICZONY'
-      ? null
-      : rental.settledAt;
+    const settledAt =
+      dto.settlementStatus === 'ROZLICZONY'
+        ? new Date()
+        : dto.settlementStatus === 'NIEROZLICZONY'
+          ? null
+          : rental.settledAt;
 
     return this.prisma.rental.update({
       where: { id },
