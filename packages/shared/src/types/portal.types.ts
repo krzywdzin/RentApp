@@ -24,6 +24,10 @@ export interface PortalRentalDto {
   contractId: string | null;
   contractNumber: string | null;
   contractPdfUrl: string | null;
+  secondDriver: {
+    firstName: string;
+    lastName: string;
+  } | null;
   createdAt: string;
 }
 

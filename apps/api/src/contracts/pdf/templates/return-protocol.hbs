@@ -33,7 +33,7 @@
     </div>
     <div class="title">PROTOKOL ZDAWCZO - ODBIORCZY SAMOCHODU</div>
     <div class="field"><span class="field-num">1. </span><span class="field-label">Zdajacy:</span> <span class="field-value">{{customerName}}</span></div>
-    <div class="field"><span class="field-num">2. </span><span class="field-label">Data i godzina zwrotu:</span> <span class="field-value">{{returnDateTime}}</span></div>
+    <div class="field"><span class="field-num">2. </span><span class="field-label">Data i godzina zwrotu:</span> <span class="field-value">{{formatDateTime returnDateTime}}</span></div>
     <div class="field"><span class="field-num">3. </span><span class="field-label">Marka i model samochodu:</span> <span class="field-value">{{vehicleMakeModel}}</span></div>
     <div class="field"><span class="field-num">4. </span><span class="field-label">Numer rejestracyjny:</span> <span class="field-value">{{vehicleRegistration}}</span></div>
     <div class="field"><span class="field-num">5. </span><span class="field-label">Miejsce odbioru:</span> <span class="field-value">{{#if returnLocation}}{{returnLocation}}{{else}}-{{/if}}</span></div>
