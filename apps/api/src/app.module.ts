@@ -30,6 +30,7 @@ import { RentalDriversModule } from './rental-drivers/rental-drivers.module';
 import { PlacesModule } from './places/places.module';
 import { DocumentsModule } from './documents/documents.module';
 import { ReturnProtocolsModule } from './return-protocols/return-protocols.module';
+import { OcrModule } from './ocr/ocr.module';
 
 @Module({
   imports: [
@@ -70,6 +71,7 @@ import { ReturnProtocolsModule } from './return-protocols/return-protocols.modul
     PlacesModule,
     DocumentsModule,
     ReturnProtocolsModule,
+    OcrModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

@@ -6,6 +6,7 @@ import type { DocumentType, IdCardOcrFields, DriverLicenseOcrFields } from '@ren
 import type { ScanPhase, ScanState } from '@/lib/ocr/ocr-types';
 import { parseIdCard } from '@/lib/ocr/parse-id-card';
 import { parseDriverLicense } from '@/lib/ocr/parse-driver-license';
+import { ocrApi } from '@/api/ocr.api';
 
 // ---------- State machine ----------
 
@@ -67,10 +68,7 @@ async function tryExtractText(uri: string): Promise<string[]> {
   }
 }
 
-function mergeIdCardResults(
-  front: IdCardOcrFields,
-  back: IdCardOcrFields,
-): IdCardOcrFields {
+function mergeIdCardResults(front: IdCardOcrFields, back: IdCardOcrFields): IdCardOcrFields {
   return {
     firstName: front.firstName ?? back.firstName,
     lastName: front.lastName ?? back.lastName,
@@ -78,6 +76,24 @@ function mergeIdCardResults(
     pesel: back.pesel ?? front.pesel,
     documentNumber: front.documentNumber ?? back.documentNumber,
   };
+}
+
+// ---------- API-first parsing with local fallback ----------
+
+async function parseIdCardWithFallback(texts: string[]): Promise<IdCardOcrFields> {
+  try {
+    return await ocrApi.parseIdCard(texts);
+  } catch {
+    return parseIdCard(texts);
+  }
+}
+
+async function parseDriverLicenseWithFallback(texts: string[]): Promise<DriverLicenseOcrFields> {
+  try {
+    return await ocrApi.parseDriverLicense(texts);
+  } catch {
+    return parseDriverLicense(texts);
+  }
 }
 
 // ---------- Hook ----------
@@ -139,26 +155,23 @@ export function useDocumentScan(documentType: DocumentType) {
       dispatch({ type: 'PROCESSING' });
 
       try {
-        const frontTexts = state.frontUri
-          ? await tryExtractText(state.frontUri)
-          : [];
+        const frontTexts = state.frontUri ? await tryExtractText(state.frontUri) : [];
         const backTexts = uri ? await tryExtractText(uri) : [];
 
         let ocrResult: IdCardOcrFields | DriverLicenseOcrFields;
 
         if (documentType === 'ID_CARD') {
-          const frontParsed = parseIdCard(frontTexts);
-          const backParsed = parseIdCard(backTexts);
+          const frontParsed = await parseIdCardWithFallback(frontTexts);
+          const backParsed = await parseIdCardWithFallback(backTexts);
           ocrResult = mergeIdCardResults(frontParsed, backParsed);
         } else {
           // For driver license, combine front and back text
-          ocrResult = parseDriverLicense([...frontTexts, ...backTexts]);
+          ocrResult = await parseDriverLicenseWithFallback([...frontTexts, ...backTexts]);
         }
 
         dispatch({ type: 'REVIEW', ocrResult });
       } catch (err) {
-        const message =
-          err instanceof Error ? err.message : 'Blad odczytu dokumentu';
+        const message = err instanceof Error ? err.message : 'Blad odczytu dokumentu';
         dispatch({ type: 'ERROR', message });
         Toast.show({
           type: 'error',
@@ -174,22 +187,19 @@ export function useDocumentScan(documentType: DocumentType) {
     dispatch({ type: 'PROCESSING' });
 
     try {
-      const frontTexts = state.frontUri
-        ? await tryExtractText(state.frontUri)
-        : [];
+      const frontTexts = state.frontUri ? await tryExtractText(state.frontUri) : [];
 
       let ocrResult: IdCardOcrFields | DriverLicenseOcrFields;
 
       if (documentType === 'ID_CARD') {
-        ocrResult = parseIdCard(frontTexts);
+        ocrResult = await parseIdCardWithFallback(frontTexts);
       } else {
-        ocrResult = parseDriverLicense(frontTexts);
+        ocrResult = await parseDriverLicenseWithFallback(frontTexts);
       }
 
       dispatch({ type: 'REVIEW', ocrResult });
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : 'Blad odczytu dokumentu';
+      const message = err instanceof Error ? err.message : 'Blad odczytu dokumentu';
       dispatch({ type: 'ERROR', message });
     }
   }, [state.frontUri, documentType]);
