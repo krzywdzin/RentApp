@@ -71,6 +71,8 @@ export class NotificationsService {
     customerId: string,
     newEndDate: string,
     rentalId: string,
+    totalPriceGross?: number,
+    dailyRateNet?: number,
   ): Promise<void> {
     const customer = await this.prisma.customer.findUnique({
       where: { id: customerId },
@@ -87,6 +89,8 @@ export class NotificationsService {
       newReturnDate: date,
       newReturnTime: time,
       companyPhone: this.companyPhone,
+      totalPriceGross,
+      dailyRateNet,
     });
 
     const notification = await this.prisma.notification.create({

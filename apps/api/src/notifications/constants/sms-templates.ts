@@ -18,8 +18,13 @@ export function extensionSms(params: {
   newReturnDate: string;
   newReturnTime: string;
   companyPhone: string;
+  totalPriceGross?: number;
+  dailyRateNet?: number;
 }): string {
-  return `Wynajem zostal przedluzony. Nowy termin zwrotu: ${params.newReturnDate} do godz. ${params.newReturnTime}. Kontakt: ${params.companyPhone}`;
+  const pricing = params.totalPriceGross != null
+    ? ` Nowa cena: ${(params.totalPriceGross / 100).toFixed(2)} PLN brutto${params.dailyRateNet != null ? ` (${(params.dailyRateNet / 100).toFixed(2)} PLN/dzien netto)` : ''}.`
+    : '';
+  return `Wynajem zostal przedluzony. Nowy termin zwrotu: ${params.newReturnDate} do godz. ${params.newReturnTime}.${pricing} Kontakt: ${params.companyPhone}`;
 }
 
 export function rentalCreatedSms(params: {

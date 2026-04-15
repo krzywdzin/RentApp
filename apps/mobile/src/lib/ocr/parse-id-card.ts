@@ -15,8 +15,8 @@ export function parseIdCard(ocrTexts: string[]): IdCardOcrFields {
   // PESEL: exactly 11 consecutive digits (not part of a longer number)
   const peselMatch = fullText.match(/(?<!\d)\d{11}(?!\d)/);
 
-  // Document number: 3 uppercase letters + 6 digits (e.g., ABC123456)
-  const docNumMatch = fullText.match(/[A-Z]{3}\d{6}/);
+  // Document number: 3 letters + 6 digits (e.g., ABC123456) — case-insensitive for OCR
+  const docNumMatch = fullText.match(/[A-Za-z]{3}\d{6}/);
 
   // Strategy 1: Label-based extraction (most reliable)
   // Polish ID cards have bilingual labels like "NAZWISKO / SURNAME" or
@@ -41,11 +41,11 @@ export function parseIdCard(ocrTexts: string[]): IdCardOcrFields {
 
   // Strategy 2: Label and value on the same line (e.g., "NAZWISKO KOWALSKI")
   if (!lastName) {
-    const surnameInline = fullText.match(/(?:NAZWISKO|SURNAME)\s*[:/]?\s*([A-ZĄĆĘŁŃÓŚŹŻ][A-ZĄĆĘŁŃÓŚŹŻa-ząćęłńóśźż-]+)/i);
+    const surnameInline = fullText.match(/(?:NAZWISKO|SURNAME)[^\S\n]*[:/]?[^\S\n]*([A-ZĄĆĘŁŃÓŚŹŻ][A-ZĄĆĘŁŃÓŚŹŻa-ząćęłńóśźż' -]*[A-ZĄĆĘŁŃÓŚŹŻa-ząćęłńóśźż'])/i);
     if (surnameInline) lastName = toTitleCase(surnameInline[1]);
   }
   if (!firstName) {
-    const nameInline = fullText.match(/(?:IMI[EĘŹ]|IMION\w*)\s*[:/]?\s*([A-ZĄĆĘŁŃÓŚŹŻ][A-ZĄĆĘŁŃÓŚŹŻa-ząćęłńóśźż-]+)/i);
+    const nameInline = fullText.match(/(?:IMI[EĘŹ]|IMION\w*)[^\S\n]*[:/]?[^\S\n]*([A-ZĄĆĘŁŃÓŚŹŻ][A-ZĄĆĘŁŃÓŚŹŻa-ząćęłńóśźż' -]*[A-ZĄĆĘŁŃÓŚŹŻa-ząćęłńóśźż'])/i);
     if (nameInline) firstName = toTitleCase(nameInline[1]);
   }
 
@@ -57,10 +57,10 @@ export function parseIdCard(ocrTexts: string[]): IdCardOcrFields {
     const candidates = lines
       .filter((line) =>
         line.length >= 2 &&
-        line.length <= 25 &&
+        line.length <= 30 &&
         !headerPattern.test(line) &&
         !/\d/.test(line) &&
-        /^[A-ZĄĆĘŁŃÓŚŹŻ][A-ZĄĆĘŁŃÓŚŹŻa-ząćęłńóśźż-]+$/i.test(line),
+        /^[A-ZĄĆĘŁŃÓŚŹŻ][A-ZĄĆĘŁŃÓŚŹŻa-ząćęłńóśźż'-]+$/i.test(line),
       )
       .map(toTitleCase);
 
@@ -72,7 +72,7 @@ export function parseIdCard(ocrTexts: string[]): IdCardOcrFields {
     firstName,
     lastName,
     pesel: peselMatch?.[0] ?? null,
-    documentNumber: docNumMatch?.[0] ?? null,
+    documentNumber: docNumMatch?.[0]?.toUpperCase() ?? null,
   };
 }
 
@@ -84,10 +84,10 @@ function isNameLike(text: string): boolean {
   const trimmed = text.trim();
   return (
     trimmed.length >= 2 &&
-    trimmed.length <= 25 &&
+    trimmed.length <= 30 &&
     !/\d/.test(trimmed) &&
     !LABEL_WORDS.test(trimmed) &&
-    /^[A-ZĄĆĘŁŃÓŚŹŻ][A-ZĄĆĘŁŃÓŚŹŻa-ząćęłńóśźż-]+$/i.test(trimmed)
+    /^[A-ZĄĆĘŁŃÓŚŹŻ][A-ZĄĆĘŁŃÓŚŹŻa-ząćęłńóśźż'-]+$/i.test(trimmed)
   );
 }
 
@@ -100,5 +100,8 @@ function findNextNameValue(lines: string[], startIdx: number): string | null {
 }
 
 function toTitleCase(name: string): string {
-  return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+  return name
+    .split(/(?<=[-\s])/)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join('');
 }

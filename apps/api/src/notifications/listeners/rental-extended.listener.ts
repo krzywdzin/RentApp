@@ -18,12 +18,16 @@ export class RentalExtendedNotificationListener {
     customerId: string;
     newEndDate: string;
     extendedBy: string;
+    totalPriceGross?: number;
+    dailyRateNet?: number;
   }) {
     try {
       await this.notificationsService.sendExtensionSms(
         payload.customerId,
         payload.newEndDate,
         payload.rentalId,
+        payload.totalPriceGross,
+        payload.dailyRateNet,
       );
     } catch (error: unknown) {
       this.logger.error(

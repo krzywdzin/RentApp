@@ -203,11 +203,12 @@ export class RentalsService {
         registration: { contains: query.vehicleSearch, mode: 'insensitive' },
       };
     }
+    // Overlap logic: rental overlaps [dateFrom, dateTo] when startDate <= dateTo AND endDate >= dateFrom
     if (query.dateFrom) {
-      where.startDate = { ...(where.startDate as object ?? {}), gte: query.dateFrom };
+      where.endDate = { ...(where.endDate as object ?? {}), gte: query.dateFrom };
     }
     if (query.dateTo) {
-      where.endDate = { ...(where.endDate as object ?? {}), lte: query.dateTo };
+      where.startDate = { ...(where.startDate as object ?? {}), lte: query.dateTo };
     }
 
     const [data, total] = await Promise.all([
@@ -443,6 +444,8 @@ export class RentalsService {
       customerId: rental.customerId,
       newEndDate: newEndDate.toISOString(),
       extendedBy: userId,
+      totalPriceGross,
+      dailyRateNet,
     });
 
     // 8. Return with audit metadata
