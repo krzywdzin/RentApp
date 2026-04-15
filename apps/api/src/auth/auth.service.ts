@@ -47,11 +47,16 @@ export class AuthService {
   }
 
   async validateUser(login: string, password: string) {
-    // Rate-limiting is best-effort: if Redis is down, skip lockout check
-    const lockout = await this.safeRedis(
-      () => this.redis.get(`lockout:${login}`),
-      'lockout-check',
-    );
+    // Fail-secure: if Redis is down, reject login to prevent lockout bypass
+    let lockout: string | null;
+    try {
+      lockout = await this.redis.get(`lockout:${login}`);
+    } catch (err: any) {
+      this.logger.warn(`Login rejected: Redis unavailable, cannot verify lockout for ${login}: ${err.message}`);
+      throw new UnauthorizedException(
+        'Service temporarily unavailable. Please try again later.',
+      );
+    }
     if (lockout) {
       this.logger.warn(`Login rejected: account locked for ${login}`);
       throw new UnauthorizedException(
