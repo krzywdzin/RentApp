@@ -294,6 +294,8 @@ model Rental {
   fuelCharge           Int?
   crossBorderAllowed   Boolean          @default(false)
   dirtyReturnFee       Int?
+  deductible           Int?
+  deductibleWaiverFee  Int?
   pickupLocation       Json?
   returnLocation       Json?
   settlementStatus   SettlementStatus @default(NIEROZLICZONY)

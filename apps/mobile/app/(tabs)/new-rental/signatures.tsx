@@ -116,6 +116,8 @@ export default function SignaturesStep() {
           fuelCharge: draft.fuelCharge ?? undefined,
           crossBorderAllowed: draft.crossBorderAllowed,
           dirtyReturnFee: draft.dirtyReturnFee ?? undefined,
+          deductible: draft.deductible ?? undefined,
+          deductibleWaiverFee: draft.deductibleWaiverFee ?? undefined,
         });
         draft.updateDraft({ rentalId: rental.id });
 

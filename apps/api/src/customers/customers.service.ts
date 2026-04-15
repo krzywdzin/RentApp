@@ -1,24 +1,12 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { Customer, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import {
-  encrypt,
-  decrypt,
-  hmacIndex,
-  EncryptedValue,
-} from '../common/crypto/field-encryption';
+import { encrypt, decrypt, hmacIndex, EncryptedValue } from '../common/crypto/field-encryption';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { SearchCustomerDto } from './dto/search-customer.dto';
 import { CustomersQueryDto } from './dto/customers-query.dto';
-import {
-  CustomerDto,
-  CustomerSearchResultDto,
-} from '@rentapp/shared';
+import { CustomerDto, CustomerSearchResultDto } from '@rentapp/shared';
 
 const SENSITIVE_FIELDS = ['pesel', 'idNumber', 'licenseNumber'] as const;
 
@@ -41,17 +29,11 @@ export class CustomersService {
     }
 
     // Encrypt sensitive fields
-    const peselEncrypted = encrypt(
-      normalizedPesel,
-    ) as unknown as Prisma.InputJsonValue;
+    const peselEncrypted = encrypt(normalizedPesel) as unknown as Prisma.InputJsonValue;
     const peselHmac = hmacIndex(normalizedPesel);
-    const idNumberEncrypted = encrypt(
-      dto.idNumber,
-    ) as unknown as Prisma.InputJsonValue;
+    const idNumberEncrypted = encrypt(dto.idNumber) as unknown as Prisma.InputJsonValue;
     const idNumberHmac = hmacIndex(dto.idNumber);
-    const licenseNumEncrypted = encrypt(
-      dto.licenseNumber,
-    ) as unknown as Prisma.InputJsonValue;
+    const licenseNumEncrypted = encrypt(dto.licenseNumber) as unknown as Prisma.InputJsonValue;
     const licenseNumHmac = hmacIndex(dto.licenseNumber);
 
     const retentionExpiresAt = new Date(Date.now() + RETENTION_PERIOD_MS);
@@ -74,9 +56,7 @@ export class CustomersService {
         licenseNumEncrypted,
         licenseNumHmac,
         idIssuedBy: dto.idIssuedBy ?? null,
-        idIssuedDate: dto.idIssuedDate
-          ? new Date(dto.idIssuedDate)
-          : null,
+        idIssuedDate: dto.idIssuedDate ? new Date(dto.idIssuedDate) : null,
         licenseCategory: dto.licenseCategory ?? null,
         licenseIssuedBy: dto.licenseIssuedBy ?? null,
         retentionExpiresAt,
@@ -86,7 +66,9 @@ export class CustomersService {
     return this.toDto(customer);
   }
 
-  async findAll(query: CustomersQueryDto): Promise<{ data: CustomerDto[]; total: number; page: number; limit: number }> {
+  async findAll(
+    query: CustomersQueryDto,
+  ): Promise<{ data: CustomerDto[]; total: number; page: number; limit: number }> {
     const { page = 1, limit = 20, includeArchived = false } = query;
     const where = includeArchived ? {} : { isArchived: false };
 
@@ -157,25 +139,19 @@ export class CustomersService {
     // Sensitive fields -- mask values as "[ENCRYPTED]" in audit
     if (dto.pesel !== undefined) {
       const normalizedPesel = dto.pesel.replace(/[\s-]/g, '');
-      data['peselEncrypted'] = encrypt(
-        normalizedPesel,
-      ) as unknown as Prisma.InputJsonValue;
+      data['peselEncrypted'] = encrypt(normalizedPesel) as unknown as Prisma.InputJsonValue;
       data['peselHmac'] = hmacIndex(normalizedPesel);
       oldValues['pesel'] = { old: '[ENCRYPTED]', new: '[ENCRYPTED]' };
     }
 
     if (dto.idNumber !== undefined) {
-      data['idNumberEncrypted'] = encrypt(
-        dto.idNumber,
-      ) as unknown as Prisma.InputJsonValue;
+      data['idNumberEncrypted'] = encrypt(dto.idNumber) as unknown as Prisma.InputJsonValue;
       data['idNumberHmac'] = hmacIndex(dto.idNumber);
       oldValues['idNumber'] = { old: '[ENCRYPTED]', new: '[ENCRYPTED]' };
     }
 
     if (dto.licenseNumber !== undefined) {
-      data['licenseNumEncrypted'] = encrypt(
-        dto.licenseNumber,
-      ) as unknown as Prisma.InputJsonValue;
+      data['licenseNumEncrypted'] = encrypt(dto.licenseNumber) as unknown as Prisma.InputJsonValue;
       data['licenseNumHmac'] = hmacIndex(dto.licenseNumber);
       oldValues['licenseNumber'] = { old: '[ENCRYPTED]', new: '[ENCRYPTED]' };
     }
@@ -247,16 +223,14 @@ export class CustomersService {
       postalCode: customer.postalCode ?? null,
       city: customer.city ?? null,
       pesel: decrypt(customer.peselEncrypted as unknown as EncryptedValue),
-      idNumber: decrypt(
-        customer.idNumberEncrypted as unknown as EncryptedValue,
-      ),
-      licenseNumber: decrypt(
-        customer.licenseNumEncrypted as unknown as EncryptedValue,
-      ),
+      idNumber: decrypt(customer.idNumberEncrypted as unknown as EncryptedValue),
+      licenseNumber: decrypt(customer.licenseNumEncrypted as unknown as EncryptedValue),
       idIssuedBy: customer.idIssuedBy ?? null,
       idIssuedDate: customer.idIssuedDate?.toISOString() ?? null,
       licenseCategory: customer.licenseCategory ?? null,
       licenseIssuedBy: customer.licenseIssuedBy ?? null,
+      idExpiryDate: customer.idExpiryDate?.toISOString() ?? null,
+      licenseBookletNumber: customer.licenseBookletNumber ?? null,
       isArchived: customer.isArchived,
       createdAt: customer.createdAt.toISOString(),
       updatedAt: customer.updatedAt.toISOString(),

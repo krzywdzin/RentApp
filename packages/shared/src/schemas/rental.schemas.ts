@@ -59,6 +59,8 @@ export const CreateRentalSchema = z
     fuelCharge: z.number().int().min(0).nullable().optional(),
     crossBorderAllowed: z.boolean().default(false),
     dirtyReturnFee: z.number().int().min(0).nullable().optional(),
+    deductible: z.number().int().min(0).nullable().optional(),
+    deductibleWaiverFee: z.number().int().min(0).nullable().optional(),
   })
   .refine((data) => data.dailyRateNet != null || data.totalPriceNet != null, {
     message: 'Either dailyRateNet or totalPriceNet must be provided',

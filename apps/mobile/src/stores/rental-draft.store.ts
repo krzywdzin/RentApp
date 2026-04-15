@@ -50,6 +50,8 @@ interface RentalDraft {
   fuelCharge: number | null;
   crossBorderAllowed: boolean;
   dirtyReturnFee: number | null;
+  deductible: number | null;
+  deductibleWaiverFee: number | null;
   secondDriver: SecondDriverData | null;
   secondDriverId: string | null;
   secondDriverCepikStatus: string | null;
@@ -98,6 +100,8 @@ const initialDraft: RentalDraft = {
   fuelCharge: null,
   crossBorderAllowed: false,
   dirtyReturnFee: null,
+  deductible: null,
+  deductibleWaiverFee: null,
   secondDriver: null,
   secondDriverId: null,
   secondDriverCepikStatus: null,

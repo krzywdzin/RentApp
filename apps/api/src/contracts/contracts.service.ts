@@ -80,6 +80,8 @@ interface RentalForContract {
   fuelCharge: number | null;
   crossBorderAllowed: boolean;
   dirtyReturnFee: number | null;
+  deductible: number | null;
+  deductibleWaiverFee: number | null;
 }
 
 interface VehicleForContract {
@@ -253,6 +255,8 @@ export class ContractsService {
         fuelCharge: rental.fuelCharge ?? null,
         crossBorderAllowed: rental.crossBorderAllowed,
         dirtyReturnFee: rental.dirtyReturnFee ?? null,
+        deductible: rental.deductible ?? null,
+        deductibleWaiverFee: rental.deductibleWaiverFee ?? null,
       },
       conditions,
       secondDriver: secondDriver

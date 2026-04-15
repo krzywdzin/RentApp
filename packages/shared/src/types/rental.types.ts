@@ -100,6 +100,8 @@ export interface RentalDto {
   fuelCharge: number | null;
   crossBorderAllowed: boolean;
   dirtyReturnFee: number | null;
+  deductible: number | null;
+  deductibleWaiverFee: number | null;
   createdAt: string;
   updatedAt: string;
 }

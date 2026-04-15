@@ -177,4 +177,14 @@ export class CreateRentalDto {
   @IsInt()
   @Min(0)
   dirtyReturnFee?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  deductible?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  deductibleWaiverFee?: number;
 }

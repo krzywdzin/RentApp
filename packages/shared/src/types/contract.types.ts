@@ -151,6 +151,8 @@ export interface ContractFrozenDataV2 {
     fuelCharge: number | null;
     crossBorderAllowed: boolean;
     dirtyReturnFee: number | null;
+    deductible: number | null;
+    deductibleWaiverFee: number | null;
   };
   conditions: {
     depositAmount: number | null;

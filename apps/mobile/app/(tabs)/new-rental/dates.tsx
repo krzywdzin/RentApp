@@ -52,6 +52,8 @@ const DatesSchema = z
     fuelCharge: z.string().optional(),
     crossBorderAllowed: z.boolean(),
     dirtyReturnFee: z.string().optional(),
+    deductible: z.string().optional(),
+    deductibleWaiverFee: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.isCompanyRental && (!data.companyNip || !/^\d{10}$/.test(data.companyNip))) {
@@ -104,6 +106,8 @@ export default function DatesStep() {
       fuelCharge: draft.fuelCharge ? String(draft.fuelCharge / 100) : '',
       crossBorderAllowed: draft.crossBorderAllowed ?? false,
       dirtyReturnFee: draft.dirtyReturnFee ? String(draft.dirtyReturnFee / 100) : '',
+      deductible: draft.deductible ? String(draft.deductible / 100) : '',
+      deductibleWaiverFee: draft.deductibleWaiverFee ? String(draft.deductibleWaiverFee / 100) : '',
     },
   });
 
@@ -227,6 +231,8 @@ export default function DatesStep() {
         fuelCharge: parseGrosze(data.fuelCharge),
         crossBorderAllowed: data.crossBorderAllowed,
         dirtyReturnFee: parseGrosze(data.dirtyReturnFee),
+        deductible: parseGrosze(data.deductible),
+        deductibleWaiverFee: parseGrosze(data.deductibleWaiverFee),
         step: 3,
       });
       router.push('/(tabs)/new-rental/contract');
@@ -536,6 +542,38 @@ export default function DatesStep() {
                   onBlur={onBlur}
                   keyboardType="decimal-pad"
                   placeholder="np. 150"
+                  containerStyle={{ marginTop: spacing.md }}
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="deductible"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <AppInput
+                  label="Udzial wlasny w szkodzie (PLN)"
+                  value={value ?? ''}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  keyboardType="decimal-pad"
+                  placeholder="np. 3000"
+                  containerStyle={{ marginTop: spacing.md }}
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="deductibleWaiverFee"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <AppInput
+                  label="Zniesienie udzialu wlasnego (PLN/dobe)"
+                  value={value ?? ''}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  keyboardType="decimal-pad"
+                  placeholder="np. 50"
                   containerStyle={{ marginTop: spacing.md }}
                 />
               )}

@@ -101,6 +101,7 @@ export default function NewRentalPage() {
       status: data.status,
       overrideConflict: false,
       isCompanyRental: false,
+      crossBorderAllowed: false,
     };
 
     try {
