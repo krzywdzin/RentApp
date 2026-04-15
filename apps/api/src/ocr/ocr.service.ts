@@ -18,31 +18,43 @@ export class OcrService {
 
   async parseIdCard(texts: string[]): Promise<IdCardOcrFields> {
     if (this.genAI) {
-      try {
-        return await this.parseIdCardWithGemini(texts);
-      } catch (err) {
-        this.logger.error('Gemini ID card parsing failed, using regex fallback', err);
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          return await this.parseIdCardWithGemini(texts);
+        } catch (err) {
+          this.logger.warn(`Gemini ID card attempt ${attempt + 1}/3 failed: ${err}`);
+          if (attempt < 2) await this.delay(2000 * (attempt + 1));
+        }
       }
+      this.logger.error('All Gemini attempts failed, using regex fallback');
     }
     return this.parseIdCardRegex(texts);
   }
 
   async parseDriverLicense(texts: string[]): Promise<DriverLicenseOcrFields> {
     if (this.genAI) {
-      try {
-        return await this.parseDriverLicenseWithGemini(texts);
-      } catch (err) {
-        this.logger.error('Gemini driver license parsing failed, using regex fallback', err);
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          return await this.parseDriverLicenseWithGemini(texts);
+        } catch (err) {
+          this.logger.warn(`Gemini license attempt ${attempt + 1}/3 failed: ${err}`);
+          if (attempt < 2) await this.delay(2000 * (attempt + 1));
+        }
       }
+      this.logger.error('All Gemini attempts failed, using regex fallback');
     }
     return this.parseDriverLicenseRegex(texts);
+  }
+
+  private delay(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   // ---------- Gemini parsing ----------
 
   private async parseIdCardWithGemini(texts: string[]): Promise<IdCardOcrFields> {
     const model = this.genAI!.getGenerativeModel({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-2.0-flash-lite',
     });
 
     const prompt = `You are an expert OCR post-processor for Polish national ID cards (dowód osobisty).
@@ -84,7 +96,7 @@ ${texts.map((t, i) => `[${i}] ${t}`).join('\n')}`;
 
   private async parseDriverLicenseWithGemini(texts: string[]): Promise<DriverLicenseOcrFields> {
     const model = this.genAI!.getGenerativeModel({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-2.0-flash-lite',
     });
 
     const prompt = `You are an OCR post-processor for Polish driver licenses (prawo jazdy).
