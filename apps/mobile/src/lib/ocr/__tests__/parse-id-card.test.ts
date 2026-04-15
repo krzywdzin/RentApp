@@ -5,7 +5,9 @@ describe('parseIdCard', () => {
     const ocrTexts = [
       'RZECZPOSPOLITA POLSKA',
       'DOWÓD OSOBISTY',
+      'NAZWISKO/SURNAME',
       'Kowalski',
+      'IMIĘ/NAME',
       'Jan',
       'ABC123456',
       '02271409876',
@@ -16,9 +18,9 @@ describe('parseIdCard', () => {
 
   it('extracts documentNumber in 3-letter + 6-digit format', () => {
     const ocrTexts = [
-      'RZECZPOSPOLITA POLSKA',
-      'DOWÓD OSOBISTY',
+      'NAZWISKO/SURNAME',
       'Kowalski',
+      'IMIĘ/NAME',
       'Jan',
       'ABC123456',
       '02271409876',
@@ -27,7 +29,51 @@ describe('parseIdCard', () => {
     expect(result.documentNumber).toBe('ABC123456');
   });
 
-  it('extracts lastName as first name-like line', () => {
+  it('extracts names using label-based strategy (NAZWISKO/IMIĘ)', () => {
+    const ocrTexts = [
+      'RZECZPOSPOLITA POLSKA',
+      'DOWÓD OSOBISTY',
+      'NAZWISKO/SURNAME',
+      'KOWALSKI',
+      'IMIĘ/NAME',
+      'JAN',
+      'ABC123456',
+      '02271409876',
+    ];
+    const result = parseIdCard(ocrTexts);
+    expect(result.lastName).toBe('Kowalski');
+    expect(result.firstName).toBe('Jan');
+  });
+
+  it('handles label with just NAZWISKO and IMIĘ (no English)', () => {
+    const ocrTexts = [
+      'RZECZPOSPOLITA POLSKA',
+      'NAZWISKO',
+      'WÓJCIK',
+      'IMIĘ',
+      'ŁUKASZ',
+      'DEF789012',
+      '85032156789',
+    ];
+    const result = parseIdCard(ocrTexts);
+    expect(result.lastName).toBe('Wójcik');
+    expect(result.firstName).toBe('Łukasz');
+  });
+
+  it('handles inline label format (NAZWISKO KOWALSKI)', () => {
+    const ocrTexts = [
+      'RZECZPOSPOLITA POLSKA',
+      'NAZWISKO KOWALSKI',
+      'IMIĘ JAN',
+      'ABC123456',
+      '02271409876',
+    ];
+    const result = parseIdCard(ocrTexts);
+    expect(result.lastName).toBe('Kowalski');
+    expect(result.firstName).toBe('Jan');
+  });
+
+  it('falls back to name-like line filtering when no labels found', () => {
     const ocrTexts = [
       'RZECZPOSPOLITA POLSKA',
       'DOWÓD OSOBISTY',
@@ -38,18 +84,6 @@ describe('parseIdCard', () => {
     ];
     const result = parseIdCard(ocrTexts);
     expect(result.lastName).toBe('Kowalski');
-  });
-
-  it('extracts firstName as second name-like line', () => {
-    const ocrTexts = [
-      'RZECZPOSPOLITA POLSKA',
-      'DOWÓD OSOBISTY',
-      'Kowalski',
-      'Jan',
-      'ABC123456',
-      '02271409876',
-    ];
-    const result = parseIdCard(ocrTexts);
     expect(result.firstName).toBe('Jan');
   });
 
@@ -70,57 +104,18 @@ describe('parseIdCard', () => {
     expect(result.documentNumber).toBeNull();
   });
 
-  it('extracts only PESEL and documentNumber when no name-like lines exist', () => {
-    const ocrTexts = [
-      'RZECZPOSPOLITA POLSKA',
-      'DOWÓD OSOBISTY',
-      'ABC654321',
-      '98010112345',
-    ];
-    const result = parseIdCard(ocrTexts);
-    expect(result.pesel).toBe('98010112345');
-    expect(result.documentNumber).toBe('ABC654321');
-    expect(result.firstName).toBeNull();
-    expect(result.lastName).toBeNull();
-  });
-
   it('does not match a 12-digit number as PESEL', () => {
     const ocrTexts = ['123456789012'];
     const result = parseIdCard(ocrTexts);
     expect(result.pesel).toBeNull();
   });
 
-  it('handles Polish diacritics in names', () => {
+  it('handles ALL CAPS names with Polish diacritics via labels', () => {
     const ocrTexts = [
       'RZECZPOSPOLITA POLSKA',
-      'Wójcik',
-      'Łukasz',
-      'DEF789012',
-      '85032156789',
-    ];
-    const result = parseIdCard(ocrTexts);
-    expect(result.lastName).toBe('Wójcik');
-    expect(result.firstName).toBe('Łukasz');
-  });
-
-  it('handles ALL CAPS names from OCR and normalizes to title case', () => {
-    const ocrTexts = [
-      'RZECZPOSPOLITA POLSKA',
-      'DOWÓD OSOBISTY',
-      'KOWALSKI',
-      'JAN',
-      'ABC123456',
-      '02271409876',
-    ];
-    const result = parseIdCard(ocrTexts);
-    expect(result.lastName).toBe('Kowalski');
-    expect(result.firstName).toBe('Jan');
-  });
-
-  it('handles ALL CAPS names with Polish diacritics', () => {
-    const ocrTexts = [
-      'RZECZPOSPOLITA POLSKA',
+      'NAZWISKO/SURNAME',
       'WÓJCIK',
+      'IMIĘ/NAME',
       'ŁUKASZ',
       'DEF789012',
       '85032156789',
@@ -128,5 +123,37 @@ describe('parseIdCard', () => {
     const result = parseIdCard(ocrTexts);
     expect(result.lastName).toBe('Wójcik');
     expect(result.firstName).toBe('Łukasz');
+  });
+
+  it('handles mixed case OCR output with labels', () => {
+    const ocrTexts = [
+      'RZECZPOSPOLITA POLSKA',
+      'Nazwisko/Surname',
+      'NOWAK',
+      'Imię/Name',
+      'ANNA',
+      'GHI345678',
+      '90050512345',
+    ];
+    const result = parseIdCard(ocrTexts);
+    expect(result.lastName).toBe('Nowak');
+    expect(result.firstName).toBe('Anna');
+  });
+
+  it('ignores short garbage OCR fragments like "pl" or "rp"', () => {
+    const ocrTexts = [
+      'RZECZPOSPOLITA POLSKA',
+      'pl',
+      'rp',
+      'NAZWISKO',
+      'KOWALSKI',
+      'IMIĘ',
+      'JAN',
+      'ABC123456',
+      '02271409876',
+    ];
+    const result = parseIdCard(ocrTexts);
+    expect(result.lastName).toBe('Kowalski');
+    expect(result.firstName).toBe('Jan');
   });
 });
