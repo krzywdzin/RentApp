@@ -53,7 +53,12 @@ export default function VehicleClassesPage() {
     if (!name.trim()) return;
     createClass.mutate(
       { name: name.trim() },
-      { onSuccess: () => { setCreateOpen(false); setName(''); } },
+      {
+        onSuccess: () => {
+          setCreateOpen(false);
+          setName('');
+        },
+      },
     );
   }
 
@@ -153,7 +158,10 @@ export default function VehicleClassesPage() {
         <EditDialogWrapper
           vehicleClass={editTarget}
           initialName={name}
-          onClose={() => { setEditTarget(null); setName(''); }}
+          onClose={() => {
+            setEditTarget(null);
+            setName('');
+          }}
         />
       )}
 
@@ -162,19 +170,13 @@ export default function VehicleClassesPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Usun klase &quot;{deleteTarget?.name}&quot;?</DialogTitle>
-            <DialogDescription>
-              Tej operacji nie mozna cofnac.
-            </DialogDescription>
+            <DialogDescription>Tej operacji nie mozna cofnac.</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteTarget(null)}>
               Nie, wroc
             </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDelete}
-              disabled={deleteClass.isPending}
-            >
+            <Button variant="destructive" onClick={handleDelete} disabled={deleteClass.isPending}>
               {deleteClass.isPending ? 'Usuwanie...' : 'Usun klase'}
             </Button>
           </DialogFooter>
@@ -261,16 +263,15 @@ function EditDialogWrapper({
 
   function handleUpdate() {
     if (!name.trim()) return;
-    updateClass.mutate(
-      { name: name.trim() },
-      { onSuccess: () => onClose() },
-    );
+    updateClass.mutate({ name: name.trim() }, { onSuccess: () => onClose() });
   }
 
   return (
     <CreateEditDialog
       open={true}
-      onOpenChange={(open) => { if (!open) onClose(); }}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
       title="Edytuj klase"
       confirmLabel="Zapisz nazwe"
       name={name}

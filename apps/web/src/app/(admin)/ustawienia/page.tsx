@@ -4,13 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TipTapEditor } from '@/components/tiptap-editor';
 import { apiClient } from '@/lib/api-client';
@@ -26,14 +20,11 @@ export default function SettingsPage() {
   const [termsHtml, setTermsHtml] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
     async function loadTerms() {
       try {
-        const data = await apiClient<SettingResponse>(
-          `/settings/${SETTING_KEY}`,
-        );
+        const data = await apiClient<SettingResponse>(`/settings/${SETTING_KEY}`);
         setTermsHtml(data.value);
       } catch {
         // Setting may not exist yet -- start with empty editor
@@ -64,9 +55,7 @@ export default function SettingsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="font-display font-semibold text-xl text-charcoal">
-          Ustawienia
-        </h1>
+        <h1 className="font-display font-semibold text-xl text-charcoal">Ustawienia</h1>
       </div>
 
       {/* Default rental terms section */}
@@ -74,8 +63,8 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle>Domyslne warunki najmu</CardTitle>
           <CardDescription>
-            Warunki wyswietlane na stronie 2 umowy. Mozna je dostosowac
-            indywidualnie dla kazdego wynajmu.
+            Warunki wyswietlane na stronie 2 umowy. Mozna je dostosowac indywidualnie dla kazdego
+            wynajmu.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -86,11 +75,7 @@ export default function SettingsPage() {
             </div>
           ) : (
             <>
-              <TipTapEditor
-                content={termsHtml}
-                onChange={setTermsHtml}
-                editable={true}
-              />
+              <TipTapEditor content={termsHtml} onChange={setTermsHtml} editable={true} />
               <div className="flex justify-end">
                 <Button onClick={handleSave} disabled={saving}>
                   <Save className="mr-2 h-4 w-4" />

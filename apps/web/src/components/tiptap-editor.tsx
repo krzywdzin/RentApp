@@ -4,14 +4,7 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import {
-  Bold,
-  Italic,
-  List,
-  ListOrdered,
-  Heading2,
-  Heading3,
-} from 'lucide-react';
+import { Bold, Italic, List, ListOrdered, Heading2, Heading3 } from 'lucide-react';
 
 interface TipTapEditorProps {
   content: string;
@@ -20,12 +13,7 @@ interface TipTapEditorProps {
   className?: string;
 }
 
-export function TipTapEditor({
-  content,
-  onChange,
-  editable = true,
-  className,
-}: TipTapEditorProps) {
+export function TipTapEditor({ content, onChange, editable = true, className }: TipTapEditorProps) {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -90,12 +78,8 @@ export function TipTapEditor({
             type="button"
             variant="ghost"
             size="sm"
-            className={cn(
-              editor.isActive('heading', { level: 2 }) && 'bg-muted',
-            )}
-            onClick={() =>
-              editor.chain().focus().toggleHeading({ level: 2 }).run()
-            }
+            className={cn(editor.isActive('heading', { level: 2 }) && 'bg-muted')}
+            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
           >
             <Heading2 className="h-4 w-4" />
           </Button>
@@ -103,12 +87,8 @@ export function TipTapEditor({
             type="button"
             variant="ghost"
             size="sm"
-            className={cn(
-              editor.isActive('heading', { level: 3 }) && 'bg-muted',
-            )}
-            onClick={() =>
-              editor.chain().focus().toggleHeading({ level: 3 }).run()
-            }
+            className={cn(editor.isActive('heading', { level: 3 }) && 'bg-muted')}
+            onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
           >
             <Heading3 className="h-4 w-4" />
           </Button>

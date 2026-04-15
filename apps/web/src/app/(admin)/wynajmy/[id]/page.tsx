@@ -2,7 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { type RentalWithRelations, RentalStatus, ContractStatus, SettlementStatus } from '@rentapp/shared';
+import {
+  type RentalWithRelations,
+  RentalStatus,
+  ContractStatus,
+  SettlementStatus,
+} from '@rentapp/shared';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -37,7 +42,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { getRentalStatusBadge } from '../columns';
-import { getSettlementStatusBadge } from '../settlement-columns';
 import { formatDateTime, formatCurrency } from '@/lib/format';
 import {
   Loader2,
@@ -104,7 +108,10 @@ export default function RentalDetailPage() {
     if (rental) {
       setSettlementForm({
         settlementStatus: (rental as any).settlementStatus ?? 'NIEROZLICZONY',
-        settlementAmount: (rental as any).settlementAmount != null ? String((rental as any).settlementAmount / 100) : '',
+        settlementAmount:
+          (rental as any).settlementAmount != null
+            ? String((rental as any).settlementAmount / 100)
+            : '',
         settlementNotes: (rental as any).settlementNotes ?? '',
       });
     }
@@ -335,7 +342,8 @@ export default function RentalDetailPage() {
                       <dt className="font-body text-sm text-warm-gray">Platnik VAT</dt>
                       <dd className="font-body text-sm">
                         {(() => {
-                          const vat = (rental as unknown as { vatPayerStatus?: string }).vatPayerStatus;
+                          const vat = (rental as unknown as { vatPayerStatus?: string })
+                            .vatPayerStatus;
                           if (vat === 'FULL_100') return '100%';
                           if (vat === 'HALF_50') return '50%';
                           if (vat === 'NONE') return 'Nie';
@@ -354,24 +362,33 @@ export default function RentalDetailPage() {
                   </div>
                 )}
                 {((rental as unknown as { pickupLocation?: { address: string } }).pickupLocation ||
-                  (rental as unknown as { returnLocation?: { address: string } }).returnLocation) && (
+                  (rental as unknown as { returnLocation?: { address: string } })
+                    .returnLocation) && (
                   <>
                     <div className="col-span-full border-t pt-4 mt-2">
                       <dt className="font-body text-sm font-medium text-charcoal">Lokalizacje</dt>
                     </div>
-                    {(rental as unknown as { pickupLocation?: { address: string } }).pickupLocation && (
+                    {(rental as unknown as { pickupLocation?: { address: string } })
+                      .pickupLocation && (
                       <div>
                         <dt className="font-body text-sm text-warm-gray">Miejsce wydania</dt>
                         <dd className="font-body text-sm">
-                          {(rental as unknown as { pickupLocation: { address: string } }).pickupLocation.address}
+                          {
+                            (rental as unknown as { pickupLocation: { address: string } })
+                              .pickupLocation.address
+                          }
                         </dd>
                       </div>
                     )}
-                    {(rental as unknown as { returnLocation?: { address: string } }).returnLocation && (
+                    {(rental as unknown as { returnLocation?: { address: string } })
+                      .returnLocation && (
                       <div>
                         <dt className="font-body text-sm text-warm-gray">Miejsce zdania</dt>
                         <dd className="font-body text-sm">
-                          {(rental as unknown as { returnLocation: { address: string } }).returnLocation.address}
+                          {
+                            (rental as unknown as { returnLocation: { address: string } })
+                              .returnLocation.address
+                          }
                         </dd>
                       </div>
                     )}
@@ -512,12 +529,21 @@ export default function RentalDetailPage() {
 
         <TabsContent value="rozliczenie">
           <Card>
-            <CardHeader><CardTitle>Rozliczenie</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle>Rozliczenie</CardTitle>
+            </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label>Status rozliczenia</Label>
-                <Select value={settlementForm.settlementStatus} onValueChange={(v) => setSettlementForm(f => ({...f, settlementStatus: v as SettlementStatus}))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                <Select
+                  value={settlementForm.settlementStatus}
+                  onValueChange={(v) =>
+                    setSettlementForm((f) => ({ ...f, settlementStatus: v as SettlementStatus }))
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="NIEROZLICZONY">Nierozliczony</SelectItem>
                     <SelectItem value="CZESCIOWO_ROZLICZONY">Czesciowo rozliczony</SelectItem>
@@ -530,16 +556,27 @@ export default function RentalDetailPage() {
               <div className="space-y-2">
                 <Label>Zebrana kwota</Label>
                 <div className="flex items-center gap-2">
-                  <Input type="number" placeholder="0,00" value={settlementForm.settlementAmount}
-                    onChange={(e) => setSettlementForm(f => ({...f, settlementAmount: e.target.value}))} />
+                  <Input
+                    type="number"
+                    placeholder="0,00"
+                    value={settlementForm.settlementAmount}
+                    onChange={(e) =>
+                      setSettlementForm((f) => ({ ...f, settlementAmount: e.target.value }))
+                    }
+                  />
                   <span className="text-sm text-muted-foreground">PLN</span>
                 </div>
               </div>
 
               <div className="space-y-2">
                 <Label>Notatki</Label>
-                <Textarea placeholder="Opcjonalne uwagi do rozliczenia..." value={settlementForm.settlementNotes}
-                  onChange={(e) => setSettlementForm(f => ({...f, settlementNotes: e.target.value}))} />
+                <Textarea
+                  placeholder="Opcjonalne uwagi do rozliczenia..."
+                  value={settlementForm.settlementNotes}
+                  onChange={(e) =>
+                    setSettlementForm((f) => ({ ...f, settlementNotes: e.target.value }))
+                  }
+                />
               </div>
 
               {(rental as any)?.settledAt && (rental as any)?.settlementStatus === 'ROZLICZONY' && (
@@ -549,14 +586,21 @@ export default function RentalDetailPage() {
                 </div>
               )}
 
-              <Button onClick={() => {
-                const amountGrosze = settlementForm.settlementAmount ? Math.round(parseFloat(settlementForm.settlementAmount.replace(',', '.')) * 100) : undefined;
-                updateSettlement.mutate({
-                  settlementStatus: settlementForm.settlementStatus,
-                  settlementAmount: amountGrosze,
-                  settlementNotes: settlementForm.settlementNotes || undefined,
-                });
-              }} disabled={updateSettlement.isPending}>
+              <Button
+                onClick={() => {
+                  const amountGrosze = settlementForm.settlementAmount
+                    ? Math.round(
+                        parseFloat(settlementForm.settlementAmount.replace(',', '.')) * 100,
+                      )
+                    : undefined;
+                  updateSettlement.mutate({
+                    settlementStatus: settlementForm.settlementStatus,
+                    settlementAmount: amountGrosze,
+                    settlementNotes: settlementForm.settlementNotes || undefined,
+                  });
+                }}
+                disabled={updateSettlement.isPending}
+              >
                 {updateSettlement.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Zapisz rozliczenie
               </Button>
@@ -576,7 +620,9 @@ export default function RentalDetailPage() {
               variant="outline"
               onClick={async () => {
                 try {
-                  const { url } = await apiClient<{ url: string }>(`/return-protocols/${rental.id}/download`);
+                  const { url } = await apiClient<{ url: string }>(
+                    `/return-protocols/${rental.id}/download`,
+                  );
                   window.open(url, '_blank');
                 } catch {
                   toast.error('Nie udalo sie pobrac protokolu');

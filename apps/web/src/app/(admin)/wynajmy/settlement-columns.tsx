@@ -35,7 +35,9 @@ export function getSettlementColumns(): ColumnDef<RentalDto, unknown>[] {
       accessorKey: 'customer',
       header: ({ column }) => <DataTableColumnHeader column={column} title="Klient" />,
       cell: ({ row }) => {
-        const customer = (row.original as unknown as { customer?: { firstName: string; lastName: string } }).customer;
+        const customer = (
+          row.original as unknown as { customer?: { firstName: string; lastName: string } }
+        ).customer;
         return (
           <span className="font-body text-sm">
             {customer ? `${customer.firstName} ${customer.lastName}` : '-'}
@@ -47,7 +49,11 @@ export function getSettlementColumns(): ColumnDef<RentalDto, unknown>[] {
       accessorKey: 'vehicle',
       header: ({ column }) => <DataTableColumnHeader column={column} title="Pojazd" />,
       cell: ({ row }) => {
-        const vehicle = (row.original as unknown as { vehicle?: { make: string; model: string; registration: string } }).vehicle;
+        const vehicle = (
+          row.original as unknown as {
+            vehicle?: { make: string; model: string; registration: string };
+          }
+        ).vehicle;
         return (
           <span className="font-data text-sm">
             {vehicle ? `${vehicle.make} ${vehicle.model} ${vehicle.registration}` : '-'}
@@ -68,7 +74,8 @@ export function getSettlementColumns(): ColumnDef<RentalDto, unknown>[] {
       accessorKey: 'settlementStatus',
       header: ({ column }) => <DataTableColumnHeader column={column} title="Status rozliczenia" />,
       cell: ({ row }) => {
-        const status = (row.original as unknown as { settlementStatus?: SettlementStatus }).settlementStatus;
+        const status = (row.original as unknown as { settlementStatus?: SettlementStatus })
+          .settlementStatus;
         return status ? getSettlementStatusBadge(status) : '-';
       },
     },
@@ -76,11 +83,10 @@ export function getSettlementColumns(): ColumnDef<RentalDto, unknown>[] {
       accessorKey: 'settlementAmount',
       header: ({ column }) => <DataTableColumnHeader column={column} title="Kwota" />,
       cell: ({ row }) => {
-        const amount = (row.original as unknown as { settlementAmount?: number | null }).settlementAmount;
+        const amount = (row.original as unknown as { settlementAmount?: number | null })
+          .settlementAmount;
         return (
-          <span className="font-data text-sm">
-            {amount != null ? formatCurrency(amount) : '-'}
-          </span>
+          <span className="font-data text-sm">{amount != null ? formatCurrency(amount) : '-'}</span>
         );
       },
     },
@@ -90,9 +96,7 @@ export function getSettlementColumns(): ColumnDef<RentalDto, unknown>[] {
       cell: ({ row }) => {
         const settledAt = (row.original as unknown as { settledAt?: string | null }).settledAt;
         return (
-          <span className="font-data text-sm">
-            {settledAt ? formatDateTime(settledAt) : '-'}
-          </span>
+          <span className="font-data text-sm">{settledAt ? formatDateTime(settledAt) : '-'}</span>
         );
       },
     },

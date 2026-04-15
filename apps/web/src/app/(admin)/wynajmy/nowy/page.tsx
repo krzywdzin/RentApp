@@ -80,7 +80,9 @@ export default function NewRentalPage() {
 
   const pricing = useMemo(() => {
     if (!startDate || !endDate || !dailyRateNet) return null;
-    const days = Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / 86400000);
+    const days = Math.ceil(
+      (new Date(endDate).getTime() - new Date(startDate).getTime()) / 86400000,
+    );
     if (days <= 0) return null;
     const totalNet = dailyRateNet * days;
     const totalGross = Math.round(totalNet * (1 + (vatRate || 23) / 100));
@@ -98,6 +100,7 @@ export default function NewRentalPage() {
       notes: data.notes || null,
       status: data.status,
       overrideConflict: false,
+      isCompanyRental: false,
     };
 
     try {

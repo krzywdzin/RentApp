@@ -130,7 +130,11 @@ export function RentalFilterBar({
         />
       )}
 
-      {(dateFrom || dateTo || statusFilter !== 'ALL' || insuranceFilter !== 'ALL' || insuranceSearch) && (
+      {(dateFrom ||
+        dateTo ||
+        statusFilter !== 'ALL' ||
+        insuranceFilter !== 'ALL' ||
+        insuranceSearch) && (
         <Button
           variant="ghost"
           size="sm"

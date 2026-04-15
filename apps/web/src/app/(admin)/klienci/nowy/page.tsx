@@ -29,7 +29,6 @@ export default function NewCustomerPage() {
       lastName: '',
       phone: '',
       email: '',
-      address: '',
       pesel: '',
       idNumber: '',
       licenseNumber: '',
@@ -51,7 +50,11 @@ export default function NewCustomerPage() {
     // Convert date fields from "YYYY-MM-DD" to ISO datetime string
     const dateFields = ['idIssuedDate', 'idExpiryDate', 'dateOfBirth', 'birthDate'];
     for (const field of dateFields) {
-      if (cleaned[field] && typeof cleaned[field] === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(cleaned[field] as string)) {
+      if (
+        cleaned[field] &&
+        typeof cleaned[field] === 'string' &&
+        /^\d{4}-\d{2}-\d{2}$/.test(cleaned[field] as string)
+      ) {
         cleaned[field] = new Date(cleaned[field] as string).toISOString();
       }
     }
@@ -126,24 +129,6 @@ export default function NewCustomerPage() {
                         <Input
                           type="email"
                           placeholder="np. jan@przyklad.pl"
-                          {...field}
-                          value={field.value ?? ''}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="address"
-                  render={({ field }) => (
-                    <FormItem className="md:col-span-2">
-                      <FormLabel>Adres</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="np. ul. Przykladowa 1, 00-001 Warszawa"
                           {...field}
                           value={field.value ?? ''}
                         />

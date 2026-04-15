@@ -43,7 +43,9 @@ export default function CustomerDetailPage() {
   const generatePortalLink = async () => {
     setPortalLinkLoading(true);
     try {
-      const res = await apiClient<{ url: string }>(`/customers/${params.id}/portal-link`, { method: 'POST' });
+      const res = await apiClient<{ url: string }>(`/customers/${params.id}/portal-link`, {
+        method: 'POST',
+      });
       setPortalLink(res.url);
       setShowPortalDialog(true);
     } catch {

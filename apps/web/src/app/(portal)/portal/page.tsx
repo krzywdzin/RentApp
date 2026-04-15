@@ -38,7 +38,8 @@ function PortalContent() {
         <div className="text-5xl">🔐</div>
         <h2 className="text-xl font-semibold">Witaj w Portalu Klienta</h2>
         <p className="text-muted-foreground max-w-sm">
-          Aby zobaczyć swoje wynajmy, skorzystaj z linku który otrzymałeś w wiadomości email lub SMS od wypożyczalni.
+          Aby zobaczyć swoje wynajmy, skorzystaj z linku który otrzymałeś w wiadomości email lub SMS
+          od wypożyczalni.
         </p>
         <p className="text-sm text-muted-foreground">
           Link wygasa po 24 godzinach. W razie problemów — skontaktuj się z wypożyczalnią.

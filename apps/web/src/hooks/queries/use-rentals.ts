@@ -220,9 +220,12 @@ export function useSettlementRentals(filters?: {
   return useQuery({
     queryKey: rentalKeys.list({ view: 'settlement', ...filters } as Record<string, unknown>),
     queryFn: async () => {
-      const res = await apiClient<{ data: RentalDto[]; total: number; page: number; limit: number }>(
-        `/rentals${query ? `?${query}` : ''}`
-      );
+      const res = await apiClient<{
+        data: RentalDto[];
+        total: number;
+        page: number;
+        limit: number;
+      }>(`/rentals${query ? `?${query}` : ''}`);
       return res.data;
     },
   });
@@ -231,14 +234,19 @@ export function useSettlementRentals(filters?: {
 export function useSettlementSummary() {
   return useQuery({
     queryKey: [...rentalKeys.all, 'settlement-summary'] as const,
-    queryFn: () => apiClient<{ unsettledCount: number; unsettledAmount: number }>('/rentals/settlement-summary'),
+    queryFn: () =>
+      apiClient<{ unsettledCount: number; unsettledAmount: number }>('/rentals/settlement-summary'),
   });
 }
 
 export function useUpdateSettlement(id: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: { settlementStatus: SettlementStatus; settlementAmount?: number; settlementNotes?: string }) =>
+    mutationFn: (data: {
+      settlementStatus: SettlementStatus;
+      settlementAmount?: number;
+      settlementNotes?: string;
+    }) =>
       apiClient<RentalDto>(`/rentals/${id}/settlement`, {
         method: 'PATCH',
         body: JSON.stringify(data),
@@ -257,7 +265,10 @@ export function useUpdateSettlement(id: string) {
 export function useReturnProtocol(rentalId: string) {
   return useQuery({
     queryKey: ['return-protocol', rentalId],
-    queryFn: () => apiClient<{ id: string; rentalId: string; pdfGeneratedAt?: string; emailSentAt?: string }>(`/return-protocols/${rentalId}`),
+    queryFn: () =>
+      apiClient<{ id: string; rentalId: string; pdfGeneratedAt?: string; emailSentAt?: string }>(
+        `/return-protocols/${rentalId}`,
+      ),
     enabled: !!rentalId,
     retry: false, // 404 is expected for rentals without protocol
   });

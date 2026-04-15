@@ -4,7 +4,12 @@ import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { type PaginationState, type SortingState } from '@tanstack/react-table';
 import { Plus } from 'lucide-react';
-import { type RentalDto, type RentalWithRelations, RentalStatus, SettlementStatus } from '@rentapp/shared';
+import {
+  type RentalDto,
+  type RentalWithRelations,
+  RentalStatus,
+  SettlementStatus,
+} from '@rentapp/shared';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
@@ -63,7 +68,10 @@ export default function RentalsPage() {
   const [settlementDateTo, setSettlementDateTo] = useState<Date | undefined>();
   const [customerSearch, setCustomerSearch] = useState('');
   const [vehicleSearch, setVehicleSearch] = useState('');
-  const [settlementPagination, setSettlementPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 25 });
+  const [settlementPagination, setSettlementPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 25,
+  });
   const [settlementSorting, setSettlementSorting] = useState<SortingState>([]);
 
   const { data: settlementRentals, isLoading: settlementLoading } = useSettlementRentals({
@@ -95,7 +103,11 @@ export default function RentalsPage() {
       const caseNumber = (r as unknown as { insuranceCaseNumber?: string }).insuranceCaseNumber;
       if (insuranceFilter === 'YES' && !caseNumber) return false;
       if (insuranceFilter === 'NO' && caseNumber) return false;
-      if (insuranceSearch && (!caseNumber || !caseNumber.toLowerCase().includes(insuranceSearch.toLowerCase()))) return false;
+      if (
+        insuranceSearch &&
+        (!caseNumber || !caseNumber.toLowerCase().includes(insuranceSearch.toLowerCase()))
+      )
+        return false;
       return true;
     });
   }, [rentals, statusFilter, dateFrom, dateTo, insuranceFilter, insuranceSearch]);
@@ -227,23 +239,36 @@ export default function RentalsPage() {
           <SettlementSummaryBar />
           <SettlementFilterBar
             settlementStatus={settlementStatus}
-            onSettlementStatusChange={(v) => { setSettlementStatus(v); setSettlementPagination(p => ({...p, pageIndex: 0})); }}
+            onSettlementStatusChange={(v) => {
+              setSettlementStatus(v);
+              setSettlementPagination((p) => ({ ...p, pageIndex: 0 }));
+            }}
             dateFrom={settlementDateFrom}
             dateTo={settlementDateTo}
-            onDateFromChange={(v) => { setSettlementDateFrom(v); setSettlementPagination(p => ({...p, pageIndex: 0})); }}
-            onDateToChange={(v) => { setSettlementDateTo(v); setSettlementPagination(p => ({...p, pageIndex: 0})); }}
+            onDateFromChange={(v) => {
+              setSettlementDateFrom(v);
+              setSettlementPagination((p) => ({ ...p, pageIndex: 0 }));
+            }}
+            onDateToChange={(v) => {
+              setSettlementDateTo(v);
+              setSettlementPagination((p) => ({ ...p, pageIndex: 0 }));
+            }}
             customerSearch={customerSearch}
-            onCustomerSearchChange={(v) => { setCustomerSearch(v); setSettlementPagination(p => ({...p, pageIndex: 0})); }}
+            onCustomerSearchChange={(v) => {
+              setCustomerSearch(v);
+              setSettlementPagination((p) => ({ ...p, pageIndex: 0 }));
+            }}
             vehicleSearch={vehicleSearch}
-            onVehicleSearchChange={(v) => { setVehicleSearch(v); setSettlementPagination(p => ({...p, pageIndex: 0})); }}
+            onVehicleSearchChange={(v) => {
+              setVehicleSearch(v);
+              setSettlementPagination((p) => ({ ...p, pageIndex: 0 }));
+            }}
           />
 
           {!settlementLoading && settlementFiltered.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <p className="text-lg font-medium">Brak wynajmow do rozliczenia</p>
-              <p className="text-sm text-muted-foreground">
-                Wszystkie wynajmy sa rozliczone.
-              </p>
+              <p className="text-sm text-muted-foreground">Wszystkie wynajmy sa rozliczone.</p>
             </div>
           ) : (
             <DataTable
