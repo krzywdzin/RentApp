@@ -39,11 +39,18 @@ export function useCustomer(id: string) {
   });
 }
 
+function detectSearchParam(query: string): string {
+  const digits = query.replace(/\D/g, '');
+  if (/^\d{11}$/.test(digits)) return `pesel=${encodeURIComponent(digits)}`;
+  if (/^\+?\d{7,15}$/.test(digits)) return `phone=${encodeURIComponent(query.trim())}`;
+  return `lastName=${encodeURIComponent(query.trim())}`;
+}
+
 export function useSearchCustomers(query: string) {
   return useQuery({
     queryKey: customerKeys.search(query),
     queryFn: () =>
-      apiClient<CustomerSearchResultDto[]>(`/customers/search?q=${encodeURIComponent(query)}`),
+      apiClient<CustomerSearchResultDto[]>(`/customers/search?${detectSearchParam(query)}`),
     enabled: query.length >= 2,
   });
 }

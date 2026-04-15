@@ -81,8 +81,12 @@ export class ReturnProtocolsService {
       cleanlinessLabel,
       cleanlinessNote: dto.cleanlinessNote ?? null,
       otherNotes: dto.otherNotes ?? null,
-      customerSignature: `data:image/png;base64,${dto.customerSignatureBase64}`,
-      workerSignature: `data:image/png;base64,${dto.workerSignatureBase64}`,
+      customerSignature: dto.customerSignatureBase64.startsWith('data:')
+        ? dto.customerSignatureBase64
+        : `data:image/png;base64,${dto.customerSignatureBase64}`,
+      workerSignature: dto.workerSignatureBase64.startsWith('data:')
+        ? dto.workerSignatureBase64
+        : `data:image/png;base64,${dto.workerSignatureBase64}`,
     };
 
     // 6. Generate PDF
