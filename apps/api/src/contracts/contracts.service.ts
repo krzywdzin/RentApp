@@ -553,6 +553,7 @@ export class ContractsService {
         const contractNumber = contract.contractNumber;
         const insuranceCaseNumber = isV2(frozenData) ? frozenData.rental.insuranceCaseNumber : null;
         const customerPhone = frozenData.customer.phone;
+        // Send encrypted email — independent from SMS
         setImmediate(() => {
           this.pdfEncryptionService.encrypt(pdfBuffer, vehicleReg)
             .then((encryptedPdf) =>
@@ -568,17 +569,6 @@ export class ContractsService {
             )
             .then(() => {
               this.logger.log(`Contract email sent for ${contractNumber}`);
-              if (customerPhone) {
-                return this.smsService.send(
-                  customerPhone,
-                  `Haslo do PDF umowy: ${vehicleReg}. KITEK`,
-                );
-              }
-            })
-            .then(() => {
-              if (customerPhone) {
-                this.logger.log(`PDF password SMS sent for ${contractNumber}`);
-              }
             })
             .catch((error: unknown) => {
               this.logger.error(
@@ -587,6 +577,24 @@ export class ContractsService {
               // PDF NOT sent if encryption fails — RODO compliant
             });
         });
+
+        // Send PDF password SMS independently — must not depend on email success
+        if (customerPhone) {
+          setImmediate(() => {
+            this.smsService.send(
+              customerPhone,
+              `Haslo do PDF umowy: ${vehicleReg}. KITEK`,
+            )
+              .then(() => {
+                this.logger.log(`PDF password SMS sent for ${contractNumber}`);
+              })
+              .catch((error: unknown) => {
+                this.logger.error(
+                  `Failed SMS for ${contractNumber}: ${error instanceof Error ? error.message : String(error)}`,
+                );
+              });
+          });
+        }
       }
 
       // g. Update contract status to SIGNED
@@ -651,6 +659,47 @@ export class ContractsService {
       throw new NotFoundException(`Contract with ID "${id}" not found`);
     }
     return this.toDto(contract);
+  }
+
+  async voidContract(
+    id: string,
+    reason: string,
+    userId: string,
+  ): Promise<ContractDto> {
+    const contract = await this.prisma.contract.findUnique({
+      where: { id },
+      include: CONTRACT_INCLUDE,
+    });
+
+    if (!contract) {
+      throw new NotFoundException(`Contract with ID "${id}" not found`);
+    }
+
+    if (contract.status === 'VOIDED') {
+      throw new BadRequestException('Contract is already voided');
+    }
+
+    if (contract.status === 'SIGNED') {
+      throw new BadRequestException(
+        'Signed contracts cannot be voided — use annex or manual process',
+      );
+    }
+
+    const updated = await this.prisma.contract.update({
+      where: { id },
+      data: {
+        status: ContractStatus.VOIDED,
+        contractData: {
+          ...(contract.contractData as Record<string, unknown>),
+          voidReason: reason,
+          voidedAt: new Date().toISOString(),
+          voidedById: userId,
+        },
+      },
+      include: CONTRACT_INCLUDE,
+    });
+
+    return this.toDto(updated);
   }
 
   async findByRental(rentalId: string): Promise<ContractDto[]> {
