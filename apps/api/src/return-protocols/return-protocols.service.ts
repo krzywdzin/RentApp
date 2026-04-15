@@ -113,29 +113,31 @@ export class ReturnProtocolsService {
     });
 
     // 9. Fire-and-forget email
-    setImmediate(() => {
-      this.mailService
-        .sendReturnProtocolEmail(
-          rental.customer.email!,
-          customerName,
-          vehicleRegistration,
-          pdfBuffer,
-          rental.insuranceCaseNumber,
-        )
-        .then(() => {
-          this.prisma.returnProtocol
-            .update({
-              where: { id: protocol.id },
-              data: { emailSentAt: new Date() },
-            })
-            .catch(() => {});
-        })
-        .catch((err: Error) => {
-          this.logger.error(
-            `Failed to send protocol email for rental ${dto.rentalId}: ${err.message}`,
-          );
-        });
-    });
+    if (rental.customer.email) {
+      setImmediate(() => {
+        this.mailService
+          .sendReturnProtocolEmail(
+            rental.customer.email!,
+            customerName,
+            vehicleRegistration,
+            pdfBuffer,
+            rental.insuranceCaseNumber,
+          )
+          .then(() => {
+            this.prisma.returnProtocol
+              .update({
+                where: { id: protocol.id },
+                data: { emailSentAt: new Date() },
+              })
+              .catch(() => {});
+          })
+          .catch((err: Error) => {
+            this.logger.error(
+              `Failed to send protocol email for rental ${dto.rentalId}: ${err.message}`,
+            );
+          });
+      });
+    }
 
     return protocol;
   }
