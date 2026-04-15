@@ -16,6 +16,90 @@ export class OcrService {
     }
   }
 
+  async parseIdCardImage(imageBase64: string): Promise<IdCardOcrFields> {
+    if (!this.genAI) {
+      throw new Error('GEMINI_API_KEY not configured');
+    }
+
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const model = this.genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+
+        const result = await model.generateContent([
+          {
+            inlineData: {
+              data: imageBase64,
+              mimeType: 'image/jpeg',
+            },
+          },
+          `You are reading a Polish national ID card (dowód osobisty) from a photo.
+Extract EXACTLY these fields from what you SEE on the card:
+- firstName: the person first name (imię) — found after label IMIĘ/IMIONA/GIVEN NAMES on the card. This is a Polish first name like Antoni, Jan, Katarzyna. It is NEVER "Given Names", "Polskie", "Polska" etc.
+- lastName: the person surname (nazwisko) — found after label NAZWISKO/SURNAME
+- pesel: the 11-digit PESEL number
+- documentNumber: the document number — 3 LETTERS + 6 DIGITS format (e.g. DKF187165). Look at the card carefully — OCR often confuses similar letters (E↔F, O↔0, I↔1, S↔5). The first 3 characters are ALWAYS letters.
+
+Return ONLY raw JSON: {"firstName": "...", "lastName": "...", "pesel": "...", "documentNumber": "..."}
+If a field is unreadable, use null.`,
+        ]);
+
+        const text = result.response.text().trim();
+        return this.parseJsonResponse<IdCardOcrFields>(text, {
+          firstName: null,
+          lastName: null,
+          pesel: null,
+          documentNumber: null,
+        });
+      } catch (err) {
+        this.logger.warn(`Gemini Vision ID card attempt ${attempt + 1}/3 failed: ${err}`);
+        if (attempt < 2) await this.delay(2000 * (attempt + 1));
+      }
+    }
+
+    throw new Error('All Gemini Vision attempts failed');
+  }
+
+  async parseDriverLicenseImage(imageBase64: string): Promise<DriverLicenseOcrFields> {
+    if (!this.genAI) {
+      throw new Error('GEMINI_API_KEY not configured');
+    }
+
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const model = this.genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+
+        const result = await model.generateContent([
+          {
+            inlineData: {
+              data: imageBase64,
+              mimeType: 'image/jpeg',
+            },
+          },
+          `You are reading a Polish driver license (prawo jazdy) from a photo.
+Extract EXACTLY these fields from what you SEE on the card:
+- licenseNumber: the license number in format XXXXX/XX/XXXX (e.g. 12345/67/8901)
+- categories: driving categories separated by comma+space (e.g. "B", "B, B+E", "A2, B")
+- expiryDate: expiry date in ISO format YYYY-MM-DD
+
+Return ONLY raw JSON: {"licenseNumber": "...", "categories": "...", "expiryDate": "..."}
+If a field is unreadable, use null.`,
+        ]);
+
+        const text = result.response.text().trim();
+        return this.parseJsonResponse<DriverLicenseOcrFields>(text, {
+          licenseNumber: null,
+          categories: null,
+          expiryDate: null,
+        });
+      } catch (err) {
+        this.logger.warn(`Gemini Vision license attempt ${attempt + 1}/3 failed: ${err}`);
+        if (attempt < 2) await this.delay(2000 * (attempt + 1));
+      }
+    }
+
+    throw new Error('All Gemini Vision attempts failed');
+  }
+
   async parseIdCard(texts: string[]): Promise<IdCardOcrFields> {
     if (this.genAI) {
       for (let attempt = 0; attempt < 3; attempt++) {

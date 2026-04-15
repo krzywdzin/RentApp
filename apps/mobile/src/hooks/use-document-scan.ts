@@ -1,5 +1,6 @@
 import { useCallback, useReducer } from 'react';
 import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
 import Toast from 'react-native-toast-message';
 
 import type { DocumentType, IdCardOcrFields, DriverLicenseOcrFields } from '@rentapp/shared';
@@ -78,22 +79,63 @@ function mergeIdCardResults(front: IdCardOcrFields, back: IdCardOcrFields): IdCa
   };
 }
 
-// ---------- API-first parsing with local fallback ----------
+// ---------- Image to base64 ----------
 
-async function parseIdCardWithFallback(texts: string[]): Promise<IdCardOcrFields> {
-  try {
-    return await ocrApi.parseIdCard(texts);
-  } catch {
-    return parseIdCard(texts);
-  }
+async function readImageAsBase64(uri: string): Promise<string> {
+  const base64 = await FileSystem.readAsStringAsync(uri, {
+    encoding: FileSystem.EncodingType.Base64,
+  });
+  return base64;
 }
 
-async function parseDriverLicenseWithFallback(texts: string[]): Promise<DriverLicenseOcrFields> {
+// ---------- Vision-first, then text-based, then local regex ----------
+
+async function parseIdCardVisionFirst(uri: string): Promise<IdCardOcrFields> {
+  // 1. Try vision API (send photo directly to Gemini)
   try {
-    return await ocrApi.parseDriverLicense(texts);
+    const imageBase64 = await readImageAsBase64(uri);
+    return await ocrApi.parseIdCardImage(imageBase64);
   } catch {
-    return parseDriverLicense(texts);
+    // Vision failed, fall through to text-based
   }
+
+  // 2. Try text extraction + server-side LLM
+  try {
+    const texts = await tryExtractText(uri);
+    if (texts.length > 0) {
+      return await ocrApi.parseIdCard(texts);
+    }
+  } catch {
+    // Text-based API failed, fall through to local regex
+  }
+
+  // 3. Local regex fallback
+  const texts = await tryExtractText(uri);
+  return parseIdCard(texts);
+}
+
+async function parseDriverLicenseVisionFirst(uri: string): Promise<DriverLicenseOcrFields> {
+  // 1. Try vision API
+  try {
+    const imageBase64 = await readImageAsBase64(uri);
+    return await ocrApi.parseDriverLicenseImage(imageBase64);
+  } catch {
+    // Vision failed, fall through
+  }
+
+  // 2. Try text extraction + server-side LLM
+  try {
+    const texts = await tryExtractText(uri);
+    if (texts.length > 0) {
+      return await ocrApi.parseDriverLicense(texts);
+    }
+  } catch {
+    // fall through
+  }
+
+  // 3. Local regex fallback
+  const texts = await tryExtractText(uri);
+  return parseDriverLicense(texts);
 }
 
 // ---------- Hook ----------
@@ -155,18 +197,22 @@ export function useDocumentScan(documentType: DocumentType) {
       dispatch({ type: 'PROCESSING' });
 
       try {
-        const frontTexts = state.frontUri ? await tryExtractText(state.frontUri) : [];
-        const backTexts = uri ? await tryExtractText(uri) : [];
-
         let ocrResult: IdCardOcrFields | DriverLicenseOcrFields;
 
         if (documentType === 'ID_CARD') {
-          const frontParsed = await parseIdCardWithFallback(frontTexts);
-          const backParsed = await parseIdCardWithFallback(backTexts);
+          const frontParsed = state.frontUri
+            ? await parseIdCardVisionFirst(state.frontUri)
+            : { firstName: null, lastName: null, pesel: null, documentNumber: null };
+          const backParsed = uri
+            ? await parseIdCardVisionFirst(uri)
+            : { firstName: null, lastName: null, pesel: null, documentNumber: null };
           ocrResult = mergeIdCardResults(frontParsed, backParsed);
         } else {
-          // For driver license, combine front and back text
-          ocrResult = await parseDriverLicenseWithFallback([...frontTexts, ...backTexts]);
+          // For driver license, use front photo (main side)
+          const photoUri = state.frontUri ?? uri;
+          ocrResult = photoUri
+            ? await parseDriverLicenseVisionFirst(photoUri)
+            : { licenseNumber: null, categories: null, expiryDate: null };
         }
 
         dispatch({ type: 'REVIEW', ocrResult });
@@ -187,14 +233,17 @@ export function useDocumentScan(documentType: DocumentType) {
     dispatch({ type: 'PROCESSING' });
 
     try {
-      const frontTexts = state.frontUri ? await tryExtractText(state.frontUri) : [];
-
       let ocrResult: IdCardOcrFields | DriverLicenseOcrFields;
 
-      if (documentType === 'ID_CARD') {
-        ocrResult = await parseIdCardWithFallback(frontTexts);
+      if (!state.frontUri) {
+        ocrResult =
+          documentType === 'ID_CARD'
+            ? { firstName: null, lastName: null, pesel: null, documentNumber: null }
+            : { licenseNumber: null, categories: null, expiryDate: null };
+      } else if (documentType === 'ID_CARD') {
+        ocrResult = await parseIdCardVisionFirst(state.frontUri);
       } else {
-        ocrResult = await parseDriverLicenseWithFallback(frontTexts);
+        ocrResult = await parseDriverLicenseVisionFirst(state.frontUri);
       }
 
       dispatch({ type: 'REVIEW', ocrResult });
