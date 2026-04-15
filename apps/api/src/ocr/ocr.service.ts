@@ -42,7 +42,7 @@ export class OcrService {
 
   private async parseIdCardWithGemini(texts: string[]): Promise<IdCardOcrFields> {
     const model = this.genAI!.getGenerativeModel({
-      model: 'gemini-2.5-flash-preview-05-20',
+      model: 'gemini-2.0-flash',
     });
 
     const prompt = `You are an expert OCR post-processor for Polish national ID cards (dowód osobisty).
@@ -84,7 +84,7 @@ ${texts.map((t, i) => `[${i}] ${t}`).join('\n')}`;
 
   private async parseDriverLicenseWithGemini(texts: string[]): Promise<DriverLicenseOcrFields> {
     const model = this.genAI!.getGenerativeModel({
-      model: 'gemini-2.5-flash-preview-05-20',
+      model: 'gemini-2.0-flash',
     });
 
     const prompt = `You are an OCR post-processor for Polish driver licenses (prawo jazdy).
