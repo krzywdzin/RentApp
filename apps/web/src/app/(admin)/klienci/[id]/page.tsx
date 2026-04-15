@@ -154,6 +154,10 @@ export default function CustomerDetailPage() {
                     label="Data wydania"
                     value={customer.idIssuedDate ? formatDate(customer.idIssuedDate) : null}
                   />
+                  <InfoRow
+                    label="Data waznosci"
+                    value={customer.idExpiryDate ? formatDate(customer.idExpiryDate) : null}
+                  />
                 </CardContent>
               </Card>
 
@@ -165,6 +169,7 @@ export default function CustomerDetailPage() {
                   <InfoRow label="Numer" value={customer.licenseNumber} />
                   <InfoRow label="Kategoria" value={customer.licenseCategory} />
                   <InfoRow label="Organ wydajacy" value={customer.licenseIssuedBy} />
+                  <InfoRow label="Nr blankietu" value={customer.licenseBookletNumber} />
                 </CardContent>
               </Card>
             </div>
@@ -230,10 +235,9 @@ export default function CustomerDetailPage() {
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Usunac klienta?</DialogTitle>
+            <DialogTitle>Archiwizowac klienta?</DialogTitle>
             <DialogDescription>
-              Dane klienta {customer.firstName} {customer.lastName} zostana trwale usuniete. Tej
-              operacji nie mozna cofnac.
+              Klient {customer.firstName} {customer.lastName} zostanie przeniesiony do archiwum.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -249,7 +253,7 @@ export default function CustomerDetailPage() {
                 });
               }}
             >
-              {archiveCustomer.isPending ? 'Usuwanie...' : 'Usun klienta'}
+              {archiveCustomer.isPending ? 'Archiwizowanie...' : 'Archiwizuj'}
             </Button>
           </DialogFooter>
         </DialogContent>

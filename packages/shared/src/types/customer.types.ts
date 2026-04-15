@@ -14,8 +14,10 @@ export interface CustomerDto {
   licenseNumber: string;
   idIssuedBy: string | null;
   idIssuedDate: string | null;
+  idExpiryDate: string | null;
   licenseCategory: string | null;
   licenseIssuedBy: string | null;
+  licenseBookletNumber: string | null;
   isArchived: boolean;
   createdAt: string;
   updatedAt: string;
