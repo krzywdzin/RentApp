@@ -28,6 +28,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { ConfirmationDialog } from '@/components/ConfirmationDialog';
 import { DocumentScanButton } from '@/components/DocumentScanner/DocumentScanButton';
 import { DocumentGuideOverlay } from '@/components/DocumentScanner/DocumentGuideOverlay';
+import { BackScanPrompt } from '@/components/DocumentScanner/BackScanPrompt';
 import { DocumentConfirmation } from '@/components/DocumentScanner/DocumentConfirmation';
 import { DocumentDiffView } from '@/components/DocumentScanner/DocumentDiffView';
 import { useDocumentScan } from '@/hooks/use-document-scan';
@@ -421,19 +422,9 @@ export default function CustomerStep() {
   }, [existingCustomerData]);
 
   // Guide overlay instruction text
-  const getGuideInstruction = (type: 'ID_CARD' | 'DRIVER_LICENSE', phase: string) => {
-    if (type === 'ID_CARD') {
-      return phase === 'front_guide' || phase === 'front_captured'
-        ? 'Umiesc przod dowodu w ramce'
-        : 'Umiesc tyl dowodu w ramce';
-    }
-    return phase === 'front_guide' || phase === 'front_captured'
-      ? 'Umiesc przod prawa jazdy w ramce'
-      : 'Umiesc tyl prawa jazdy w ramce';
+  const getGuideInstruction = (type: 'ID_CARD' | 'DRIVER_LICENSE') => {
+    return type === 'ID_CARD' ? 'Umiesc przod dowodu w ramce' : 'Umiesc przod prawa jazdy w ramce';
   };
-
-  const getGuideStep = (phase: string) =>
-    phase === 'front_guide' || phase === 'front_captured' ? 'Przod (1/2)' : 'Tyl (2/2)';
 
   // snapPoints removed - using Modal instead of BottomSheet
 
@@ -915,21 +906,37 @@ export default function CustomerStep() {
         onCancel={() => setShowRescanConfirm(null)}
       />
 
-      {/* ID card guide overlay */}
+      {/* ID card guide overlay (front only) */}
       <DocumentGuideOverlay
-        visible={idScan.phase === 'front_guide' || idScan.phase === 'back_guide'}
-        instruction={getGuideInstruction('ID_CARD', idScan.phase)}
-        step={getGuideStep(idScan.phase)}
+        visible={idScan.phase === 'front_guide'}
+        instruction={getGuideInstruction('ID_CARD')}
+        step="Przod (1/2)"
         onCapture={idScan.capturePhoto}
         onClose={idScan.reset}
       />
 
-      {/* Driver license guide overlay */}
+      {/* ID card: front captured → prompt for back */}
+      <BackScanPrompt
+        visible={idScan.phase === 'front_captured'}
+        onScanBack={idScan.captureBackPhoto}
+        onSkip={idScan.skipBack}
+        onClose={idScan.reset}
+      />
+
+      {/* Driver license guide overlay (front only) */}
       <DocumentGuideOverlay
-        visible={licenseScan.phase === 'front_guide' || licenseScan.phase === 'back_guide'}
-        instruction={getGuideInstruction('DRIVER_LICENSE', licenseScan.phase)}
-        step={getGuideStep(licenseScan.phase)}
+        visible={licenseScan.phase === 'front_guide'}
+        instruction={getGuideInstruction('DRIVER_LICENSE')}
+        step="Przod (1/2)"
         onCapture={licenseScan.capturePhoto}
+        onClose={licenseScan.reset}
+      />
+
+      {/* Driver license: front captured → prompt for back */}
+      <BackScanPrompt
+        visible={licenseScan.phase === 'front_captured'}
+        onScanBack={licenseScan.captureBackPhoto}
+        onSkip={licenseScan.skipBack}
         onClose={licenseScan.reset}
       />
 

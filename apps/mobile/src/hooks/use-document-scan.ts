@@ -178,71 +178,71 @@ export function useDocumentScan(documentType: DocumentType) {
     if (!hasPermission) return;
 
     const uri = await launchCamera();
-
-    if (state.phase === 'front_guide') {
-      if (!uri) {
-        // Canceled at front -> return to idle
-        dispatch({ type: 'RESET' });
-        return;
-      }
-      dispatch({ type: 'FRONT_CAPTURED', uri });
-      dispatch({ type: 'SHOW_BACK_GUIDE' });
-    } else if (state.phase === 'back_guide') {
-      if (!uri) {
-        // Canceled at back -> proceed to processing without back photo
-        dispatch({ type: 'SKIP_BACK' });
-      } else {
-        dispatch({ type: 'BACK_CAPTURED', uri });
-      }
-
-      // Start OCR processing
-      dispatch({ type: 'PROCESSING' });
-
-      try {
-        let ocrResult: IdCardOcrFields | DriverLicenseOcrFields;
-
-        if (documentType === 'ID_CARD') {
-          const frontParsed = state.frontUri
-            ? await parseIdCardVisionFirst(state.frontUri)
-            : {
-                firstName: null,
-                lastName: null,
-                pesel: null,
-                documentNumber: null,
-                issuedBy: null,
-                expiryDate: null,
-              };
-          const backParsed = uri
-            ? await parseIdCardVisionFirst(uri)
-            : {
-                firstName: null,
-                lastName: null,
-                pesel: null,
-                documentNumber: null,
-                issuedBy: null,
-                expiryDate: null,
-              };
-          ocrResult = mergeIdCardResults(frontParsed, backParsed);
-        } else {
-          // For driver license, use front photo (main side)
-          const photoUri = state.frontUri ?? uri;
-          ocrResult = photoUri
-            ? await parseDriverLicenseVisionFirst(photoUri)
-            : { licenseNumber: null, categories: null, expiryDate: null };
-        }
-
-        dispatch({ type: 'REVIEW', ocrResult });
-      } catch (err) {
-        const message = err instanceof Error ? err.message : 'Blad odczytu dokumentu';
-        dispatch({ type: 'ERROR', message });
-        Toast.show({
-          type: 'error',
-          text1: 'Blad OCR',
-          text2: message,
-        });
-      }
+    if (!uri) {
+      dispatch({ type: 'RESET' });
+      return;
     }
-  }, [state.phase, state.frontUri, documentType, requestCameraPermission, launchCamera]);
+
+    dispatch({ type: 'FRONT_CAPTURED', uri });
+  }, [requestCameraPermission, launchCamera]);
+
+  const captureBackPhoto = useCallback(async () => {
+    const hasPermission = await requestCameraPermission();
+    if (!hasPermission) return;
+
+    const uri = await launchCamera();
+
+    if (uri) {
+      dispatch({ type: 'BACK_CAPTURED', uri });
+    } else {
+      dispatch({ type: 'SKIP_BACK' });
+    }
+
+    dispatch({ type: 'PROCESSING' });
+
+    try {
+      let ocrResult: IdCardOcrFields | DriverLicenseOcrFields;
+
+      if (documentType === 'ID_CARD') {
+        const frontParsed = state.frontUri
+          ? await parseIdCardVisionFirst(state.frontUri)
+          : {
+              firstName: null,
+              lastName: null,
+              pesel: null,
+              documentNumber: null,
+              issuedBy: null,
+              expiryDate: null,
+            };
+        const backParsed = uri
+          ? await parseIdCardVisionFirst(uri)
+          : {
+              firstName: null,
+              lastName: null,
+              pesel: null,
+              documentNumber: null,
+              issuedBy: null,
+              expiryDate: null,
+            };
+        ocrResult = mergeIdCardResults(frontParsed, backParsed);
+      } else {
+        const photoUri = state.frontUri ?? uri;
+        ocrResult = photoUri
+          ? await parseDriverLicenseVisionFirst(photoUri)
+          : { licenseNumber: null, categories: null, expiryDate: null };
+      }
+
+      dispatch({ type: 'REVIEW', ocrResult });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Blad odczytu dokumentu';
+      dispatch({ type: 'ERROR', message });
+      Toast.show({
+        type: 'error',
+        text1: 'Blad OCR',
+        text2: message,
+      });
+    }
+  }, [state.frontUri, documentType, requestCameraPermission, launchCamera]);
 
   const skipBack = useCallback(async () => {
     dispatch({ type: 'SKIP_BACK' });
@@ -288,6 +288,7 @@ export function useDocumentScan(documentType: DocumentType) {
     error: state.error,
     startScan,
     capturePhoto,
+    captureBackPhoto,
     skipBack,
     reset,
   };
