@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { differenceInDays } from 'date-fns';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -81,7 +80,7 @@ export default function NewRentalPage() {
 
   const pricing = useMemo(() => {
     if (!startDate || !endDate || !dailyRateNet) return null;
-    const days = differenceInDays(new Date(endDate), new Date(startDate));
+    const days = Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / 86400000);
     if (days <= 0) return null;
     const totalNet = dailyRateNet * days;
     const totalGross = Math.round(totalNet * (1 + (vatRate || 23) / 100));
