@@ -19,21 +19,23 @@ export function parseIdCard(ocrTexts: string[]): IdCardOcrFields {
   const docNumMatch = fullText.match(/[A-Z]{3}\d{6}/);
 
   // Strategy 1: Label-based extraction (most reliable)
-  // Polish ID cards have labels like "NAZWISKO/SURNAME" followed by the value
+  // Polish ID cards have bilingual labels like "NAZWISKO / SURNAME" or
+  // "IMIĘ (IMIONA) / GIVEN NAMES" — value follows on the next non-label line
   let lastName: string | null = null;
   let firstName: string | null = null;
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    const nextLine = lines[i + 1];
 
-    // Look for surname label, value is on the next line
-    if (/NAZWISKO|SURNAME/i.test(line) && nextLine && isNameLike(nextLine)) {
-      lastName = toTitleCase(nextLine);
+    // Look for surname label, then scan forward for first real name value
+    if (/NAZWISKO|SURNAME/i.test(line) && !lastName) {
+      const value = findNextNameValue(lines, i + 1);
+      if (value) lastName = toTitleCase(value);
     }
-    // Look for first name label, value is on the next line
-    if (/IMI[EĘŹ]|IMION|NAME\b/i.test(line) && !/SURNAME|NAZWISKO/i.test(line) && nextLine && isNameLike(nextLine)) {
-      firstName = toTitleCase(nextLine);
+    // Look for first name label, then scan forward for first real name value
+    if ((/IMI[EĘŹ]|IMION/i.test(line) || (/\bNAME/i.test(line) && !/SURNAME|NAZWISKO/i.test(line))) && !firstName) {
+      const value = findNextNameValue(lines, i + 1);
+      if (value) firstName = toTitleCase(value);
     }
   }
 
@@ -50,7 +52,7 @@ export function parseIdCard(ocrTexts: string[]): IdCardOcrFields {
   // Strategy 3: Fallback — filter name-like lines (least reliable)
   if (!lastName || !firstName) {
     const headerPattern =
-      /RZECZPOSPOLITA|DOW[OÓ]D|POLSKA|POLAND|IDENTITY|CARD|KARTA|TO[ZŻ]SAMO|REPUBLIC|SURNAME|NAME|DATE|NATIONALITY|SEX|OBYWATEL|PLE[CĆ]|DATA|NAZWISKO|IMI[EĘŹ]|IMION|PESEL|NR\s*DOK|DOKUMENT|ORGAN|WYDAJ|WA[ZŻ]N|URODZ/i;
+      /RZECZPOSPOLITA|DOW[OÓ]D|POLSKA|POLAND|IDENTITY|CARD|KARTA|TO[ZŻ]SAMO|REPUBLIC|SURNAME|GIVEN|NAMES?|DATE|NATIONALITY|SEX|OBYWATEL|PLE[CĆ]|DATA|NAZWISKO|IMI[EĘŹ]|IMION|PESEL|NR\s*DOK|DOKUMENT|ORGAN|WYDAJ|WA[ZŻ]N|URODZ|MIEJSCE|PLACE|BIRTH|PERSONAL|NUMMER|NUMBER/i;
 
     const candidates = lines
       .filter((line) =>
@@ -74,14 +76,27 @@ export function parseIdCard(ocrTexts: string[]): IdCardOcrFields {
   };
 }
 
+// Words that appear as part of bilingual ID card labels — NOT actual names
+const LABEL_WORDS =
+  /^(GIVEN|NAMES?|SURNAME|NAZWISKO|IMI[EĘŹ]|IMIONA|IMION|DATE|BIRTH|OBYWATELSTWO|NATIONALITY|SEX|PLE[CĆ]|PŁEĆ|DATA|WYDANIA|WAŻNOŚCI|WAZNOSCI|ORGAN|OF|THE|PERSONAL|IDENTITY|CARD|DOCUMENT|NUMMER|NUMBER|NR|DOK|MIEJSCE|URODZENIA|PLACE|RODZINNE)$/i;
+
 function isNameLike(text: string): boolean {
   const trimmed = text.trim();
   return (
     trimmed.length >= 2 &&
     trimmed.length <= 25 &&
     !/\d/.test(trimmed) &&
+    !LABEL_WORDS.test(trimmed) &&
     /^[A-ZĄĆĘŁŃÓŚŹŻ][A-ZĄĆĘŁŃÓŚŹŻa-ząćęłńóśźż-]+$/i.test(trimmed)
   );
+}
+
+// Scan forward from startIdx to find the first line that is a real name (not a label word)
+function findNextNameValue(lines: string[], startIdx: number): string | null {
+  for (let j = startIdx; j < Math.min(startIdx + 3, lines.length); j++) {
+    if (isNameLike(lines[j])) return lines[j];
+  }
+  return null;
 }
 
 function toTitleCase(name: string): string {

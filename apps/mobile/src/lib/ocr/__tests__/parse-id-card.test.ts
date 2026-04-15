@@ -156,4 +156,38 @@ describe('parseIdCard', () => {
     expect(result.lastName).toBe('Kowalski');
     expect(result.firstName).toBe('Jan');
   });
+
+  it('skips "GIVEN" and "NAMES" label words after IMIĘ label', () => {
+    const ocrTexts = [
+      'RZECZPOSPOLITA POLSKA',
+      'DOWÓD OSOBISTY',
+      'NAZWISKO / SURNAME',
+      'KOWALSKI',
+      'IMIĘ (IMIONA)',
+      'GIVEN NAMES',
+      'JAN',
+      'ABC123456',
+      '02271409876',
+    ];
+    const result = parseIdCard(ocrTexts);
+    expect(result.lastName).toBe('Kowalski');
+    expect(result.firstName).toBe('Jan');
+  });
+
+  it('skips "GIVEN" as separate OCR line after name label', () => {
+    const ocrTexts = [
+      'NAZWISKO',
+      'SURNAME',
+      'KOWALSKI',
+      'IMIĘ',
+      'GIVEN',
+      'NAMES',
+      'ANNA',
+      'DEF789012',
+      '90050512345',
+    ];
+    const result = parseIdCard(ocrTexts);
+    expect(result.lastName).toBe('Kowalski');
+    expect(result.firstName).toBe('Anna');
+  });
 });
