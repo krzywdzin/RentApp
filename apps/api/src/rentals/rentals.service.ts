@@ -100,17 +100,22 @@ export class RentalsService {
       vatRate: dto.vatRate,
     });
 
-    // 5. Check overlap
-    const conflicts = await this.checkOverlap(dto.vehicleId, startDate, endDate);
-
-    // 6. If conflicts and no override, return conflict response
-    if (conflicts.length > 0 && !dto.overrideConflict) {
-      return { rental: null, conflicts };
-    }
-
-    // 7. Create in transaction
+    // 5. Check overlap + create in transaction (atomic to prevent race condition)
     const status = dto.status ?? RentalStatus.DRAFT;
-    const rental = await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    const result = await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+      const conflicts = await tx.$queryRaw<OverlapConflict[]>`
+        SELECT id, "startDate", "endDate", status
+        FROM rentals
+        WHERE "vehicleId" = ${dto.vehicleId}
+          AND status NOT IN ('RETURNED')
+          AND tstzrange("startDate", "endDate", '[)') && tstzrange(${startDate}::timestamptz, ${endDate}::timestamptz, '[)')
+      `;
+
+      // 6. If conflicts and no override, return conflict response
+      if (conflicts.length > 0 && !dto.overrideConflict) {
+        return { rental: null as RentalWithRelations | null, conflicts };
+      }
+
       const created = await tx.rental.create({
         data: {
           vehicleId: dto.vehicleId,
@@ -148,10 +153,10 @@ export class RentalsService {
     });
 
     // 8. Emit event
-    this.eventEmitter.emit('rental.created', { rental });
+    this.eventEmitter.emit('rental.created', { rental: result });
 
     // 9. Return
-    return rental;
+    return result;
   }
 
   async findAll(query: RentalsQueryDto): Promise<{ data: RentalWithRelations[]; total: number; page: number; limit: number }> {
@@ -246,7 +251,7 @@ export class RentalsService {
     if (!rental) {
       throw new NotFoundException(`Rental with ID "${id}" not found`);
     }
-    return rental;
+    return result;
   }
 
   async activate(
@@ -652,7 +657,7 @@ export class RentalsService {
       });
     });
 
-    return rental;
+    return result;
   }
 
   async archive(id: string): Promise<RentalWithRelations> {
