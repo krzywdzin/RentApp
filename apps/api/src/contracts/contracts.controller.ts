@@ -11,6 +11,7 @@ import {
   HttpCode,
   HttpStatus,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { Response, Request } from 'express';
 import { UserRole } from '@rentapp/shared';
@@ -74,6 +75,33 @@ export class ContractsController {
           signatureType: dto.signatureType,
           status: contract.status,
         },
+      },
+    };
+  }
+
+  @Post(':id/void')
+  @HttpCode(200)
+  @Roles(UserRole.ADMIN)
+  async voidContract(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body('reason') reason: string,
+    @CurrentUser('id') userId: string,
+  ) {
+    if (!reason || typeof reason !== 'string' || reason.trim().length === 0) {
+      throw new BadRequestException('Reason is required to void a contract');
+    }
+    const contract = await this.contractsService.voidContract(
+      id,
+      reason.trim(),
+      userId,
+    );
+    return {
+      ...contract,
+      __audit: {
+        action: 'contract.void',
+        entityType: 'Contract',
+        entityId: id,
+        changes: { status: contract.status, reason: reason.trim() },
       },
     };
   }
