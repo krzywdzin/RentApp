@@ -118,6 +118,7 @@ export default function ReturnConfirmScreen() {
           router.replace('/(tabs)/rentals');
         },
         onError: () => {
+          clearDraft();
           Toast.show({
             type: 'error',
             text1: t('errors.returnFailed'),
