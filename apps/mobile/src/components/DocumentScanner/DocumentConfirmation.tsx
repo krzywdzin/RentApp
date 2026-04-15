@@ -1,20 +1,8 @@
 import React from 'react';
-import {
-  Image,
-  Modal,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Image, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useForm, Controller } from 'react-hook-form';
-import type {
-  DocumentType,
-  IdCardOcrFields,
-  DriverLicenseOcrFields,
-} from '@rentapp/shared';
+import type { DocumentType, IdCardOcrFields, DriverLicenseOcrFields } from '@rentapp/shared';
 import { AppInput } from '@/components/AppInput';
 import { AppButton } from '@/components/AppButton';
 import { colors, fonts, spacing } from '@/lib/theme';
@@ -28,16 +16,19 @@ interface DocumentConfirmationProps {
   onDiscard: () => void;
 }
 
-const ID_FIELD_KEYS: Array<{ key: keyof IdCardOcrFields; label: string }> = [
+const ID_FIELD_KEYS: Array<{ key: keyof IdCardOcrFields; label: string; placeholder?: string }> = [
   { key: 'firstName', label: 'Imie' },
   { key: 'lastName', label: 'Nazwisko' },
   { key: 'pesel', label: 'PESEL' },
   { key: 'documentNumber', label: 'Nr dowodu' },
+  { key: 'issuedBy', label: 'Organ wydajacy', placeholder: 'np. Prezydent m.st. Warszawy' },
+  { key: 'expiryDate', label: 'Data waznosci dowodu', placeholder: 'RRRR-MM-DD' },
 ];
 
 const LICENSE_FIELD_KEYS: Array<{
   key: keyof DriverLicenseOcrFields;
   label: string;
+  placeholder?: string;
 }> = [
   { key: 'licenseNumber', label: 'Nr prawa jazdy' },
   { key: 'categories', label: 'Kategorie' },
@@ -61,8 +52,7 @@ export function DocumentConfirmation({
 }: DocumentConfirmationProps) {
   const insets = useSafeAreaInsets();
 
-  const fieldKeys =
-    documentType === 'ID_CARD' ? ID_FIELD_KEYS : LICENSE_FIELD_KEYS;
+  const fieldKeys = documentType === 'ID_CARD' ? ID_FIELD_KEYS : LICENSE_FIELD_KEYS;
 
   // Build default values from OCR fields
   const defaultValues: Record<string, string> = {};
@@ -75,7 +65,11 @@ export function DocumentConfirmation({
     }
   }
 
-  const { control, handleSubmit, formState: { errors } } = useForm({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
     defaultValues,
   });
 
@@ -83,10 +77,7 @@ export function DocumentConfirmation({
     onConfirm(data);
   });
 
-  const title =
-    documentType === 'ID_CARD'
-      ? 'Dane z dowodu osobistego'
-      : 'Dane z prawa jazdy';
+  const title = documentType === 'ID_CARD' ? 'Dane z dowodu osobistego' : 'Dane z prawa jazdy';
 
   return (
     <Modal
@@ -96,10 +87,7 @@ export function DocumentConfirmation({
       onRequestClose={onDiscard}
     >
       <View style={[s.root, { paddingTop: insets.top }]}>
-        <ScrollView
-          contentContainerStyle={s.scrollContent}
-          keyboardShouldPersistTaps="handled"
-        >
+        <ScrollView contentContainerStyle={s.scrollContent} keyboardShouldPersistTaps="handled">
           {/* Document thumbnail */}
           <View style={s.thumbContainer}>
             <Image source={{ uri: frontUri }} style={s.thumbnail} />
@@ -109,9 +97,8 @@ export function DocumentConfirmation({
           <Text style={s.sectionTitle}>{title}</Text>
 
           {/* OCR fields */}
-          {fieldKeys.map(({ key, label }) => {
-            const value =
-              (ocrFields as unknown as Record<string, string | null>)[key];
+          {fieldKeys.map(({ key, label, placeholder }) => {
+            const value = (ocrFields as unknown as Record<string, string | null>)[key];
             const extracted = value != null;
 
             return (
@@ -120,8 +107,7 @@ export function DocumentConfirmation({
                 control={control}
                 name={key}
                 rules={
-                  documentType === 'ID_CARD' &&
-                  (key === 'firstName' || key === 'lastName')
+                  documentType === 'ID_CARD' && (key === 'firstName' || key === 'lastName')
                     ? { required: `${label} jest wymagane` }
                     : undefined
                 }
@@ -132,21 +118,16 @@ export function DocumentConfirmation({
                       value={fieldValue}
                       onChangeText={onChange}
                       onBlur={onBlur}
+                      placeholder={placeholder}
                       error={(errors as Record<string, { message?: string }>)[key]?.message}
                       containerStyle={{
                         marginBottom: spacing.md,
-                        backgroundColor: extracted
-                          ? colors.sageTint
-                          : colors.terracottaTint,
+                        backgroundColor: extracted ? colors.sageTint : colors.terracottaTint,
                         borderRadius: 8,
                         padding: 4,
                       }}
                     />
-                    {!extracted && (
-                      <Text style={s.fieldHint}>
-                        Nie odczytano -- wpisz recznie
-                      </Text>
-                    )}
+                    {!extracted && <Text style={s.fieldHint}>Nie odczytano -- wpisz recznie</Text>}
                   </View>
                 )}
               />
@@ -166,9 +147,7 @@ export function DocumentConfirmation({
                   key={key}
                   control={control}
                   name={key}
-                  render={({
-                    field: { onChange, onBlur, value: fieldValue },
-                  }) => (
+                  render={({ field: { onChange, onBlur, value: fieldValue } }) => (
                     <AppInput
                       label={label}
                       value={fieldValue}
@@ -189,17 +168,8 @@ export function DocumentConfirmation({
         </ScrollView>
 
         {/* Bottom action bar */}
-        <View
-          style={[
-            s.bottomBar,
-            { paddingBottom: Math.max(insets.bottom, 16) },
-          ]}
-        >
-          <AppButton
-            title="Zatwierdz"
-            onPress={handleConfirm}
-            fullWidth
-          />
+        <View style={[s.bottomBar, { paddingBottom: Math.max(insets.bottom, 16) }]}>
+          <AppButton title="Zatwierdz" onPress={handleConfirm} fullWidth />
           <Pressable style={s.discardButton} onPress={onDiscard}>
             <Text style={s.discardText}>Odrzuc skan</Text>
           </Pressable>
