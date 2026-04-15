@@ -200,27 +200,21 @@ export class AuthService {
   }
 
   async setupPassword(token: string, password: string) {
-    const users = await this.prisma.user.findMany({
+    const identifier = token.slice(0, 8);
+    const matchedUser = await this.prisma.user.findFirst({
       where: {
+        setupTokenIdentifier: identifier,
         setupToken: { not: null },
         setupTokenExpiry: { gt: new Date() },
       },
     });
 
-    let matchedUser = null;
-    for (const user of users) {
-      try {
-        const isMatch = await argon2.verify(user.setupToken!, token);
-        if (isMatch) {
-          matchedUser = user;
-          break;
-        }
-      } catch {
-        // hash verification failed, continue
-      }
+    if (!matchedUser) {
+      throw new UnauthorizedException('Invalid or expired token');
     }
 
-    if (!matchedUser) {
+    const isMatch = await argon2.verify(matchedUser.setupToken!, token);
+    if (!isMatch) {
       throw new UnauthorizedException('Invalid or expired token');
     }
 
@@ -231,6 +225,7 @@ export class AuthService {
       data: {
         passwordHash,
         setupToken: null,
+        setupTokenIdentifier: null,
         setupTokenExpiry: null,
       },
     });

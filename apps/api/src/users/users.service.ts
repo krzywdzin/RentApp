@@ -47,6 +47,8 @@ export class UsersService {
 
     const setupTokenExpiry = new Date(Date.now() + 72 * 60 * 60 * 1000);
 
+    const setupTokenIdentifier = rawToken.slice(0, 8);
+
     const user = await this.prisma.user.create({
       data: {
         email: dto.email,
@@ -55,6 +57,7 @@ export class UsersService {
         role: dto.role,
         passwordHash: null,
         setupToken: hashedToken,
+        setupTokenIdentifier,
         setupTokenExpiry,
       },
     });
@@ -197,11 +200,13 @@ export class UsersService {
     });
 
     const setupTokenExpiry = new Date(Date.now() + 72 * 60 * 60 * 1000);
+    const setupTokenIdentifier = rawToken.slice(0, 8);
 
     await this.prisma.user.update({
       where: { id },
       data: {
         setupToken: hashedToken,
+        setupTokenIdentifier,
         setupTokenExpiry,
       },
     });
@@ -228,11 +233,13 @@ export class UsersService {
     });
 
     const resetTokenExpiry = new Date(Date.now() + 1 * 60 * 60 * 1000);
+    const setupTokenIdentifier = rawToken.slice(0, 8);
 
     await this.prisma.user.update({
       where: { id: user.id },
       data: {
         setupToken: hashedToken,
+        setupTokenIdentifier,
         setupTokenExpiry: resetTokenExpiry,
       },
     });

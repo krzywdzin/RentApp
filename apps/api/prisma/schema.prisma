@@ -92,8 +92,9 @@ model User {
   name             String
   role             UserRole  @default(EMPLOYEE)
   passwordHash     String?
-  setupToken       String?
-  setupTokenExpiry DateTime?
+  setupToken            String?
+  setupTokenIdentifier  String?
+  setupTokenExpiry      DateTime?
   isActive         Boolean   @default(true)
   isArchived       Boolean   @default(false)
   failedAttempts   Int       @default(0)
