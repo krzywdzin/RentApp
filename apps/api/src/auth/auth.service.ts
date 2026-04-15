@@ -16,6 +16,7 @@ const REFRESH_TOKEN_TTL = 86400; // 24 hours in seconds
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
   private redis: Redis;
+  private redisAvailable = true;
 
   constructor(
     private prisma: PrismaService,
@@ -23,13 +24,34 @@ export class AuthService {
     private config: ConfigService,
   ) {
     this.redis = new Redis(this.config.get<string>('REDIS_URL')!);
-    this.redis.on('error', (err) =>
-      this.logger.error('Redis connection error', err.stack),
-    );
+    this.redis.on('error', (err) => {
+      this.redisAvailable = false;
+      this.logger.error('Redis connection error', err.stack);
+    });
+    this.redis.on('ready', () => {
+      this.redisAvailable = true;
+    });
+  }
+
+  /**
+   * Safely execute a Redis command. Returns null on failure instead of throwing.
+   * This prevents Redis outages (e.g., Upstash request limit) from breaking auth.
+   */
+  private async safeRedis<T>(operation: () => Promise<T>, context: string): Promise<T | null> {
+    try {
+      return await operation();
+    } catch (err: any) {
+      this.logger.warn(`Redis operation failed (${context}): ${err.message}`);
+      return null;
+    }
   }
 
   async validateUser(login: string, password: string) {
-    const lockout = await this.redis.get(`lockout:${login}`);
+    // Rate-limiting is best-effort: if Redis is down, skip lockout check
+    const lockout = await this.safeRedis(
+      () => this.redis.get(`lockout:${login}`),
+      'lockout-check',
+    );
     if (lockout) {
       this.logger.warn(`Login rejected: account locked for ${login}`);
       throw new UnauthorizedException(
@@ -56,7 +78,11 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    await this.redis.del(`attempts:${login}`);
+    // Clear failed attempts (best-effort)
+    await this.safeRedis(
+      () => this.redis.del(`attempts:${login}`),
+      'clear-attempts',
+    );
     this.logger.log(`Login successful for ${login}`);
 
     const { passwordHash, setupToken, setupTokenExpiry, ...result } = user;
@@ -64,13 +90,29 @@ export class AuthService {
   }
 
   private async trackFailedAttempt(identifier: string): Promise<void> {
-    const count = await this.redis.incr(`attempts:${identifier}`);
-    await this.redis.expire(`attempts:${identifier}`, LOCKOUT_TTL);
+    // Rate-limiting is best-effort: if Redis is unavailable, we still reject
+    // the login attempt but skip the lockout tracking
+    const count = await this.safeRedis(
+      () => this.redis.incr(`attempts:${identifier}`),
+      'track-attempt',
+    );
+    if (count === null) return; // Redis unavailable, skip tracking
+
+    await this.safeRedis(
+      () => this.redis.expire(`attempts:${identifier}`, LOCKOUT_TTL),
+      'expire-attempts',
+    );
     this.logger.warn(`Failed login attempt for ${identifier} (attempt ${count})`);
 
     if (count >= MAX_FAILED_ATTEMPTS) {
-      await this.redis.setex(`lockout:${identifier}`, LOCKOUT_TTL, '1');
-      await this.redis.del(`attempts:${identifier}`);
+      await this.safeRedis(
+        () => this.redis.setex(`lockout:${identifier}`, LOCKOUT_TTL, '1'),
+        'set-lockout',
+      );
+      await this.safeRedis(
+        () => this.redis.del(`attempts:${identifier}`),
+        'clear-locked-attempts',
+      );
       this.logger.warn(
         `Account locked: ${identifier} after ${MAX_FAILED_ATTEMPTS} failed attempts`,
       );
@@ -86,18 +128,11 @@ export class AuthService {
     }
 
     // Validate role matches context
-    // ADMIN -> can only login to 'admin' context (web panel)
-    // EMPLOYEE -> can only login to 'mobile' context (mobile app)
-    // CUSTOMER -> can only login to 'mobile' context (future customer portal)
-    if (context === 'admin' && user.role !== UserRole.ADMIN) {
-      this.logger.warn(`Access denied: ${user.email} (${user.role}) attempted admin context login`);
-      throw new ForbiddenException('Access denied: Admin panel requires administrator role');
-    }
     // ADMIN can access both web and mobile
     // EMPLOYEE can only access mobile
     if (context === 'admin' && user.role !== UserRole.ADMIN) {
       this.logger.warn(`Access denied: ${user.email} (${user.role}) attempted admin context login`);
-      throw new ForbiddenException('Access denied: Web admin panel is for administrators only');
+      throw new ForbiddenException('Access denied: Admin panel requires administrator role');
     }
 
     const payload = { sub: userId, role: user.role, aud: context };
@@ -112,17 +147,27 @@ export class AuthService {
     const rawRefresh = crypto.randomBytes(40).toString('base64url');
     const hashedRefresh = await argon2.hash(rawRefresh, ARGON2_OPTIONS);
 
-    await this.redis.setex(
-      `refresh:${userId}:${deviceId}`,
-      REFRESH_TOKEN_TTL,
-      hashedRefresh,
+    // Store refresh token in Redis (best-effort: login succeeds even if Redis is down)
+    const stored = await this.safeRedis(
+      () => this.redis.setex(
+        `refresh:${userId}:${deviceId}`,
+        REFRESH_TOKEN_TTL,
+        hashedRefresh,
+      ),
+      'store-refresh-token',
     );
+    if (!stored) {
+      this.logger.warn(`Refresh token could not be stored in Redis for user ${userId} — token refresh will not work until Redis recovers`);
+    }
 
     return { accessToken, refreshToken: rawRefresh, deviceId };
   }
 
   async refresh(userId: string, deviceId: string, rawToken: string, context: 'admin' | 'mobile' = 'admin') {
-    const stored = await this.redis.get(`refresh:${userId}:${deviceId}`);
+    const stored = await this.safeRedis(
+      () => this.redis.get(`refresh:${userId}:${deviceId}`),
+      'refresh-get-token',
+    );
     if (!stored) {
       throw new UnauthorizedException('Session expired');
     }
@@ -133,15 +178,24 @@ export class AuthService {
       this.logger.warn(
         `Token reuse detected for user ${userId}, invalidating all sessions`,
       );
-      const keys = await this.redis.keys(`refresh:${userId}:*`);
-      if (keys.length > 0) {
-        await this.redis.del(...keys);
+      const keys = await this.safeRedis(
+        () => this.redis.keys(`refresh:${userId}:*`),
+        'refresh-reuse-keys',
+      );
+      if (keys && keys.length > 0) {
+        await this.safeRedis(
+          () => this.redis.del(...keys),
+          'refresh-reuse-del',
+        );
       }
       throw new UnauthorizedException('Token reuse detected');
     }
 
     // Delete old token and issue new pair
-    await this.redis.del(`refresh:${userId}:${deviceId}`);
+    await this.safeRedis(
+      () => this.redis.del(`refresh:${userId}:${deviceId}`),
+      'refresh-del-old-token',
+    );
     return this.login(userId, deviceId, context);
   }
 
@@ -190,7 +244,10 @@ export class AuthService {
   }
 
   async logout(userId: string, deviceId: string) {
-    await this.redis.del(`refresh:${userId}:${deviceId}`);
+    await this.safeRedis(
+      () => this.redis.del(`refresh:${userId}:${deviceId}`),
+      'logout',
+    );
     return { message: 'Logged out successfully' };
   }
 }
