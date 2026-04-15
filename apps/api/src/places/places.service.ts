@@ -6,13 +6,16 @@ export class PlacesService {
   private readonly apiKey: string;
 
   constructor(private configService: ConfigService) {
-    this.apiKey = this.configService.getOrThrow<string>('GOOGLE_PLACES_API_KEY');
+    this.apiKey = this.configService.get<string>('GOOGLE_PLACES_API_KEY', '');
   }
 
   async autocomplete(
     input: string,
     sessionToken?: string,
   ): Promise<Record<string, unknown>> {
+    if (!this.apiKey) {
+      throw new HttpException('Google Places API key not configured', 503);
+    }
     const params = new URLSearchParams({
       input,
       key: this.apiKey,
