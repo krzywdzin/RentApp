@@ -119,6 +119,9 @@ export class PortalService {
           orderBy: { createdAt: 'desc' },
           take: 1,
         },
+        additionalDriver: {
+          select: { firstName: true, lastName: true },
+        },
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -160,6 +163,9 @@ export class PortalService {
         contractId: contract?.id ?? null,
         contractNumber: contract?.contractNumber ?? null,
         contractPdfUrl,
+        secondDriver: rental.additionalDriver
+          ? { firstName: rental.additionalDriver.firstName, lastName: rental.additionalDriver.lastName }
+          : null,
         createdAt: rental.createdAt.toISOString(),
       });
     }
@@ -190,6 +196,9 @@ export class PortalService {
           where: { status: 'SIGNED' },
           orderBy: { createdAt: 'desc' },
           take: 1,
+        },
+        additionalDriver: {
+          select: { firstName: true, lastName: true },
         },
       },
     });
@@ -232,6 +241,9 @@ export class PortalService {
       contractId: contract?.id ?? null,
       contractNumber: contract?.contractNumber ?? null,
       contractPdfUrl,
+      secondDriver: rental.additionalDriver
+        ? { firstName: rental.additionalDriver.firstName, lastName: rental.additionalDriver.lastName }
+        : null,
       createdAt: rental.createdAt.toISOString(),
     };
   }
