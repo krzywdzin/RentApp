@@ -51,13 +51,7 @@ export function getCustomerColumns({
       id: 'address',
       header: ({ column }) => <DataTableColumnHeader column={column} title="Adres" />,
       cell: ({ row }) => {
-        const c = row.original as unknown as {
-          street?: string | null;
-          houseNumber?: string | null;
-          apartmentNumber?: string | null;
-          postalCode?: string | null;
-          city?: string | null;
-        };
+        const c = row.original;
         const parts: string[] = [];
         if (c.street) {
           let streetPart = c.street;

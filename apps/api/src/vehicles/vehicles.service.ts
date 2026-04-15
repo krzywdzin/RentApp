@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import * as XLSX from 'xlsx';
 import { PrismaService } from '../prisma/prisma.service';
@@ -32,7 +28,7 @@ export class VehiclesService {
     return this.prisma.vehicle.create({
       data: {
         ...vehicleData,
-        vehicleClass: { connect: { id: vehicleClassId } },
+        ...(vehicleClassId ? { vehicleClass: { connect: { id: vehicleClassId } } } : {}),
         insurance: insurance
           ? {
               create: {
@@ -55,11 +51,7 @@ export class VehiclesService {
 
   async findAll(filter: 'active' | 'archived' | 'all' = 'active') {
     const where =
-      filter === 'all'
-        ? {}
-        : filter === 'archived'
-          ? { isArchived: true }
-          : { isArchived: false };
+      filter === 'all' ? {} : filter === 'archived' ? { isArchived: true } : { isArchived: false };
     return this.prisma.vehicle.findMany({
       where,
       include: VEHICLE_INCLUDE,
@@ -83,18 +75,10 @@ export class VehiclesService {
 
     // Status transition validation
     if (dto.status) {
-      if (
-        dto.status === VehicleStatus.RENTED ||
-        dto.status === VehicleStatus.RESERVED
-      ) {
-        throw new BadRequestException(
-          'Status RENTED/RESERVED is managed by rental lifecycle',
-        );
+      if (dto.status === VehicleStatus.RENTED || dto.status === VehicleStatus.RESERVED) {
+        throw new BadRequestException('Status RENTED/RESERVED is managed by rental lifecycle');
       }
-      if (
-        existing.status === VehicleStatus.RETIRED &&
-        dto.status !== VehicleStatus.RETIRED
-      ) {
+      if (existing.status === VehicleStatus.RETIRED && dto.status !== VehicleStatus.RETIRED) {
         throw new BadRequestException('Cannot reactivate a retired vehicle');
       }
     }
@@ -181,9 +165,7 @@ export class VehiclesService {
       },
     });
     if (activeRentals > 0) {
-      throw new BadRequestException(
-        'Cannot delete vehicle with active rentals',
-      );
+      throw new BadRequestException('Cannot delete vehicle with active rentals');
     }
 
     await this.prisma.$transaction(async (tx) => {
@@ -196,11 +178,7 @@ export class VehiclesService {
     return vehicle;
   }
 
-  async uploadDocument(
-    vehicleId: string,
-    file: Express.Multer.File,
-    label: string,
-  ) {
+  async uploadDocument(vehicleId: string, file: Express.Multer.File, label: string) {
     await this.findOne(vehicleId); // Ensure exists
     const ext = file.originalname.split('.').pop() || 'bin';
     const key = `vehicles/${vehicleId}/documents/${label}-${uuidv4()}.${ext}`;
@@ -305,10 +283,7 @@ export class VehiclesService {
     for (const { rowNum, normalized } of normalizedRows) {
       // Validate required fields
       const missingFields = requiredFields.filter(
-        (f) =>
-          normalized[f] === undefined ||
-          normalized[f] === null ||
-          normalized[f] === '',
+        (f) => normalized[f] === undefined || normalized[f] === null || normalized[f] === '',
       );
       if (missingFields.length > 0) {
         skipped++;
@@ -366,12 +341,8 @@ export class VehiclesService {
             color: normalized.color ? String(normalized.color) : undefined,
             fuelType: String(normalized.fuelType) as FuelType,
             transmission: String(normalized.transmission) as TransmissionType,
-            seatCount: normalized.seatCount
-              ? Number(normalized.seatCount)
-              : undefined,
-            mileage: normalized.mileage
-              ? Number(normalized.mileage)
-              : undefined,
+            seatCount: normalized.seatCount ? Number(normalized.seatCount) : undefined,
+            mileage: normalized.mileage ? Number(normalized.mileage) : undefined,
             notes: normalized.notes ? String(normalized.notes) : undefined,
             vehicleClass: {
               connectOrCreate: {
@@ -438,9 +409,7 @@ export class VehiclesService {
             expiryDate: vehicle.insurance.expiryDate.toISOString(),
             coverageType: vehicle.insurance.coverageType,
             documentUrl: vehicle.insurance.documentKey
-              ? await this.storage.getPresignedDownloadUrl(
-                  vehicle.insurance.documentKey,
-                )
+              ? await this.storage.getPresignedDownloadUrl(vehicle.insurance.documentKey)
               : null,
           }
         : null,
@@ -449,9 +418,7 @@ export class VehiclesService {
             id: vehicle.inspection.id,
             expiryDate: vehicle.inspection.expiryDate.toISOString(),
             documentUrl: vehicle.inspection.documentKey
-              ? await this.storage.getPresignedDownloadUrl(
-                  vehicle.inspection.documentKey,
-                )
+              ? await this.storage.getPresignedDownloadUrl(vehicle.inspection.documentKey)
               : null,
           }
         : null,

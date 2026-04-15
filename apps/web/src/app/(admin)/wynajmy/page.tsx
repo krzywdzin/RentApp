@@ -100,7 +100,7 @@ export default function RentalsPage() {
       if (statusFilter !== 'ALL' && r.status !== statusFilter) return false;
       if (dateFrom && new Date(r.startDate) < dateFrom) return false;
       if (dateTo && new Date(r.endDate) > dateTo) return false;
-      const caseNumber = (r as unknown as { insuranceCaseNumber?: string }).insuranceCaseNumber;
+      const caseNumber = r.insuranceCaseNumber;
       if (insuranceFilter === 'YES' && !caseNumber) return false;
       if (insuranceFilter === 'NO' && caseNumber) return false;
       if (

@@ -160,8 +160,8 @@ model Vehicle {
   photoKey        String?
   isArchived      Boolean           @default(false)
   requiredLicenseCategory  String   @default("B")
-  vehicleClassId  String
-  vehicleClass    VehicleClass      @relation(fields: [vehicleClassId], references: [id])
+  vehicleClassId  String?
+  vehicleClass    VehicleClass?     @relation(fields: [vehicleClassId], references: [id])
 
   insurance       VehicleInsurance?
   inspection      VehicleInspection?

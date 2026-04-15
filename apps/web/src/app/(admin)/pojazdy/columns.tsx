@@ -88,8 +88,7 @@ export function getVehicleColumns({
     },
     {
       id: 'vehicleClass',
-      accessorFn: (row) =>
-        (row as unknown as { vehicleClass?: { name: string } }).vehicleClass?.name,
+      accessorFn: (row) => row.vehicleClass?.name,
       header: ({ column }) => <DataTableColumnHeader column={column} title="Klasa" />,
       cell: ({ row }) => {
         const className = row.getValue('vehicleClass') as string | undefined;

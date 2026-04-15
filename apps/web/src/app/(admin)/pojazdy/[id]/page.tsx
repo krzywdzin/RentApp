@@ -279,9 +279,9 @@ export default function VehicleDetailPage() {
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Usunac pojazd?</DialogTitle>
+            <DialogTitle>Archiwizowac pojazd?</DialogTitle>
             <DialogDescription>
-              Pojazd {vehicle.registration} zostanie trwale usuniety. Tej operacji nie mozna cofnac.
+              Pojazd {vehicle.registration} zostanie przeniesiony do archiwum.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -297,7 +297,7 @@ export default function VehicleDetailPage() {
                 });
               }}
             >
-              {archiveVehicle.isPending ? 'Usuwanie...' : 'Usun pojazd'}
+              {archiveVehicle.isPending ? 'Archiwizowanie...' : 'Archiwizuj'}
             </Button>
           </DialogFooter>
         </DialogContent>

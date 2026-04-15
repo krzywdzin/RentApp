@@ -107,12 +107,10 @@ export default function RentalDetailPage() {
   useEffect(() => {
     if (rental) {
       setSettlementForm({
-        settlementStatus: (rental as any).settlementStatus ?? 'NIEROZLICZONY',
+        settlementStatus: rental.settlementStatus ?? 'NIEROZLICZONY',
         settlementAmount:
-          (rental as any).settlementAmount != null
-            ? String((rental as any).settlementAmount / 100)
-            : '',
-        settlementNotes: (rental as any).settlementNotes ?? '',
+          rental.settlementAmount != null ? String(rental.settlementAmount / 100) : '',
+        settlementNotes: rental.settlementNotes ?? '',
       });
     }
   }, [rental]);
@@ -319,31 +317,20 @@ export default function RentalDetailPage() {
                   <dt className="font-body text-sm text-warm-gray">VAT</dt>
                   <dd className="font-data text-sm">{rental.vatRate}%</dd>
                 </div>
-                {(rental as unknown as { vehicleClassName?: string }).vehicleClassName && (
-                  <div>
-                    <dt className="font-body text-sm text-warm-gray">Klasa pojazdu</dt>
-                    <dd className="font-body text-sm">
-                      {(rental as unknown as { vehicleClassName?: string }).vehicleClassName}
-                    </dd>
-                  </div>
-                )}
-                {(rental as unknown as { isCompanyRental?: boolean }).isCompanyRental && (
+                {rental.isCompanyRental && (
                   <>
                     <div className="col-span-full border-t pt-4 mt-2">
                       <dt className="font-body text-sm font-medium text-charcoal">Dane firmy</dt>
                     </div>
                     <div>
                       <dt className="font-body text-sm text-warm-gray">NIP</dt>
-                      <dd className="font-data text-sm">
-                        {(rental as unknown as { companyNip?: string }).companyNip ?? '-'}
-                      </dd>
+                      <dd className="font-data text-sm">{rental.companyNip ?? '-'}</dd>
                     </div>
                     <div>
                       <dt className="font-body text-sm text-warm-gray">Platnik VAT</dt>
                       <dd className="font-body text-sm">
                         {(() => {
-                          const vat = (rental as unknown as { vatPayerStatus?: string })
-                            .vatPayerStatus;
+                          const vat = rental.vatPayerStatus;
                           if (vat === 'FULL_100') return '100%';
                           if (vat === 'HALF_50') return '50%';
                           if (vat === 'NONE') return 'Nie';
@@ -353,43 +340,27 @@ export default function RentalDetailPage() {
                     </div>
                   </>
                 )}
-                {(rental as unknown as { insuranceCaseNumber?: string }).insuranceCaseNumber && (
+                {rental.insuranceCaseNumber && (
                   <div>
                     <dt className="font-body text-sm text-warm-gray">Nr sprawy ubezpieczeniowej</dt>
-                    <dd className="font-data text-sm">
-                      {(rental as unknown as { insuranceCaseNumber?: string }).insuranceCaseNumber}
-                    </dd>
+                    <dd className="font-data text-sm">{rental.insuranceCaseNumber}</dd>
                   </div>
                 )}
-                {((rental as unknown as { pickupLocation?: { address: string } }).pickupLocation ||
-                  (rental as unknown as { returnLocation?: { address: string } })
-                    .returnLocation) && (
+                {(rental.pickupLocation || rental.returnLocation) && (
                   <>
                     <div className="col-span-full border-t pt-4 mt-2">
                       <dt className="font-body text-sm font-medium text-charcoal">Lokalizacje</dt>
                     </div>
-                    {(rental as unknown as { pickupLocation?: { address: string } })
-                      .pickupLocation && (
+                    {rental.pickupLocation && (
                       <div>
                         <dt className="font-body text-sm text-warm-gray">Miejsce wydania</dt>
-                        <dd className="font-body text-sm">
-                          {
-                            (rental as unknown as { pickupLocation: { address: string } })
-                              .pickupLocation.address
-                          }
-                        </dd>
+                        <dd className="font-body text-sm">{rental.pickupLocation.address}</dd>
                       </div>
                     )}
-                    {(rental as unknown as { returnLocation?: { address: string } })
-                      .returnLocation && (
+                    {rental.returnLocation && (
                       <div>
                         <dt className="font-body text-sm text-warm-gray">Miejsce zdania</dt>
-                        <dd className="font-body text-sm">
-                          {
-                            (rental as unknown as { returnLocation: { address: string } })
-                              .returnLocation.address
-                          }
-                        </dd>
+                        <dd className="font-body text-sm">{rental.returnLocation.address}</dd>
                       </div>
                     )}
                   </>
@@ -579,10 +550,10 @@ export default function RentalDetailPage() {
                 />
               </div>
 
-              {(rental as any)?.settledAt && (rental as any)?.settlementStatus === 'ROZLICZONY' && (
+              {rental.settledAt && rental.settlementStatus === 'ROZLICZONY' && (
                 <div className="space-y-1">
                   <Label>Data rozliczenia</Label>
-                  <p className="text-sm font-data">{formatDateTime((rental as any).settledAt)}</p>
+                  <p className="text-sm font-data">{formatDateTime(rental.settledAt)}</p>
                 </div>
               )}
 

@@ -48,7 +48,7 @@ export default function EditVehiclePage() {
         vin: vehicle.vin,
         make: vehicle.make,
         model: vehicle.model,
-        vehicleClassId: (vehicle as unknown as { vehicleClassId?: string }).vehicleClassId ?? '',
+        vehicleClassId: vehicle.vehicleClassId ?? '',
         year: vehicle.year,
         color: vehicle.color,
         fuelType: vehicle.fuelType,

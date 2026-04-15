@@ -12,11 +12,7 @@ import {
   IsISO8601,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import {
-  FuelType,
-  TransmissionType,
-  InsuranceCoverageType,
-} from '@rentapp/shared';
+import { FuelType, TransmissionType, InsuranceCoverageType } from '@rentapp/shared';
 import { IsValidVin } from '../../common/validators/vin.validator';
 
 export class CreateInsuranceDto {
@@ -86,8 +82,9 @@ export class CreateVehicleDto {
   @IsString()
   notes?: string;
 
+  @IsOptional()
   @IsUUID()
-  vehicleClassId!: string;
+  vehicleClassId?: string;
 
   @IsOptional()
   @ValidateNested()

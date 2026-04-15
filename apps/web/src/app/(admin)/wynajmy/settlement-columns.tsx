@@ -1,7 +1,7 @@
 'use client';
 
 import { type ColumnDef } from '@tanstack/react-table';
-import { type RentalDto, SettlementStatus } from '@rentapp/shared';
+import { type RentalWithRelations, SettlementStatus } from '@rentapp/shared';
 import { Badge } from '@/components/ui/badge';
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
 import { formatDate, formatDateTime, formatCurrency } from '@/lib/format';
@@ -29,15 +29,13 @@ export function getSettlementStatusBadge(status: SettlementStatus) {
   }
 }
 
-export function getSettlementColumns(): ColumnDef<RentalDto, unknown>[] {
+export function getSettlementColumns(): ColumnDef<RentalWithRelations, unknown>[] {
   return [
     {
       accessorKey: 'customer',
       header: ({ column }) => <DataTableColumnHeader column={column} title="Klient" />,
       cell: ({ row }) => {
-        const customer = (
-          row.original as unknown as { customer?: { firstName: string; lastName: string } }
-        ).customer;
+        const customer = row.original.customer;
         return (
           <span className="font-body text-sm">
             {customer ? `${customer.firstName} ${customer.lastName}` : '-'}
@@ -49,11 +47,7 @@ export function getSettlementColumns(): ColumnDef<RentalDto, unknown>[] {
       accessorKey: 'vehicle',
       header: ({ column }) => <DataTableColumnHeader column={column} title="Pojazd" />,
       cell: ({ row }) => {
-        const vehicle = (
-          row.original as unknown as {
-            vehicle?: { make: string; model: string; registration: string };
-          }
-        ).vehicle;
+        const vehicle = row.original.vehicle;
         return (
           <span className="font-data text-sm">
             {vehicle ? `${vehicle.make} ${vehicle.model} ${vehicle.registration}` : '-'}
@@ -73,32 +67,27 @@ export function getSettlementColumns(): ColumnDef<RentalDto, unknown>[] {
     {
       accessorKey: 'settlementStatus',
       header: ({ column }) => <DataTableColumnHeader column={column} title="Status rozliczenia" />,
-      cell: ({ row }) => {
-        const status = (row.original as unknown as { settlementStatus?: SettlementStatus })
-          .settlementStatus;
-        return status ? getSettlementStatusBadge(status) : '-';
-      },
+      cell: ({ row }) => getSettlementStatusBadge(row.original.settlementStatus),
     },
     {
       accessorKey: 'settlementAmount',
       header: ({ column }) => <DataTableColumnHeader column={column} title="Kwota" />,
-      cell: ({ row }) => {
-        const amount = (row.original as unknown as { settlementAmount?: number | null })
-          .settlementAmount;
-        return (
-          <span className="font-data text-sm">{amount != null ? formatCurrency(amount) : '-'}</span>
-        );
-      },
+      cell: ({ row }) => (
+        <span className="font-data text-sm">
+          {row.original.settlementAmount != null
+            ? formatCurrency(row.original.settlementAmount)
+            : '-'}
+        </span>
+      ),
     },
     {
       accessorKey: 'settledAt',
       header: ({ column }) => <DataTableColumnHeader column={column} title="Data rozliczenia" />,
-      cell: ({ row }) => {
-        const settledAt = (row.original as unknown as { settledAt?: string | null }).settledAt;
-        return (
-          <span className="font-data text-sm">{settledAt ? formatDateTime(settledAt) : '-'}</span>
-        );
-      },
+      cell: ({ row }) => (
+        <span className="font-data text-sm">
+          {row.original.settledAt ? formatDateTime(row.original.settledAt) : '-'}
+        </span>
+      ),
     },
   ];
 }

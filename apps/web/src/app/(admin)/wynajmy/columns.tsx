@@ -121,8 +121,7 @@ export function getRentalColumns({
       id: 'insurance',
       header: ({ column }) => <DataTableColumnHeader column={column} title="Ubezp." />,
       cell: ({ row }) => {
-        const caseNumber = (row.original as unknown as { insuranceCaseNumber?: string })
-          .insuranceCaseNumber;
+        const caseNumber = row.original.insuranceCaseNumber;
         return caseNumber ? (
           <Badge variant="outline" className="text-xs">
             {caseNumber}

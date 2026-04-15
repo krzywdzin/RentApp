@@ -48,7 +48,9 @@ export interface VehicleDto {
   status: VehicleStatus;
   photoUrl: string | null;
   isArchived: boolean;
+  vehicleClassId?: string | null;
   vehicleClassName?: string;
+  vehicleClass?: VehicleClassDto | null;
   insurance: VehicleInsuranceDto | null;
   inspection: VehicleInspectionDto | null;
   createdAt: string;
