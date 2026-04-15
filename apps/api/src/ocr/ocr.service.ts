@@ -33,16 +33,20 @@ export class OcrService {
             },
           },
           `You are reading a Polish national ID card (dowód osobisty) from a photo.
-Extract EXACTLY these fields from what you SEE on the card:
-- firstName: the person first name (imię) — found after label IMIĘ/IMIONA/GIVEN NAMES on the card. This is a Polish first name like Antoni, Jan, Katarzyna. It is NEVER "Given Names", "Polskie", "Polska" etc.
-- lastName: the person surname (nazwisko) — found after label NAZWISKO/SURNAME
+This may be the FRONT or BACK of the ID card. Extract whatever fields you can see.
+
+The FRONT side typically has:
+- firstName: the person's first name (imię) — found after label IMIĘ/IMIONA/GIVEN NAMES. This is a Polish first name like Antoni, Jan, Katarzyna. It is NEVER "Given Names", "Polskie", "Polska" etc.
+- lastName: the person's surname (nazwisko) — found after label NAZWISKO/SURNAME
 - pesel: the 11-digit PESEL number
-- documentNumber: the document number — 3 LETTERS + 6 DIGITS format (e.g. DKF187165). Look at the card carefully — OCR often confuses similar letters (E↔F, O↔0, I↔1, S↔5). The first 3 characters are ALWAYS letters.
+- documentNumber: the document number — 3 LETTERS + 6 DIGITS format (e.g. DKF187165). The first 3 characters are ALWAYS letters.
+
+The BACK side typically has:
 - issuedBy: the issuing authority (organ wydający) — e.g. "PREZYDENT MIASTA BYDGOSZCZY", "STAROSTA POZNAŃSKI". Found after label ORGAN WYDAJĄCY/AUTHORITY.
-- expiryDate: the expiry date (data ważności) in ISO format YYYY-MM-DD — found after label WAŻNY DO/EXPIRY DATE or DATA WAŻNOŚCI/DATE OF EXPIRY.
+- expiryDate: the expiry date (data ważności) in ISO format YYYY-MM-DD — found after label WAŻNY DO/EXPIRY DATE or DATA WAŻNOŚCI/DATE OF EXPIRY. Convert DD.MM.YYYY to YYYY-MM-DD.
 
 Return ONLY raw JSON: {"firstName": "...", "lastName": "...", "pesel": "...", "documentNumber": "...", "issuedBy": "...", "expiryDate": "..."}
-If a field is unreadable, use null.`,
+If a field is not visible on this side of the card, use null.`,
         ]);
 
         const text = result.response.text().trim();
