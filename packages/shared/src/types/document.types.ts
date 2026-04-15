@@ -9,6 +9,8 @@ export interface IdCardOcrFields {
   lastName: string | null;
   pesel: string | null;
   documentNumber: string | null;
+  issuedBy: string | null;
+  expiryDate: string | null;
 }
 
 export interface DriverLicenseOcrFields {

@@ -76,6 +76,8 @@ function mergeIdCardResults(front: IdCardOcrFields, back: IdCardOcrFields): IdCa
     // PESEL is often on the back of modern Polish ID cards
     pesel: back.pesel ?? front.pesel,
     documentNumber: front.documentNumber ?? back.documentNumber,
+    issuedBy: front.issuedBy ?? back.issuedBy,
+    expiryDate: front.expiryDate ?? back.expiryDate,
   };
 }
 
@@ -202,10 +204,24 @@ export function useDocumentScan(documentType: DocumentType) {
         if (documentType === 'ID_CARD') {
           const frontParsed = state.frontUri
             ? await parseIdCardVisionFirst(state.frontUri)
-            : { firstName: null, lastName: null, pesel: null, documentNumber: null };
+            : {
+                firstName: null,
+                lastName: null,
+                pesel: null,
+                documentNumber: null,
+                issuedBy: null,
+                expiryDate: null,
+              };
           const backParsed = uri
             ? await parseIdCardVisionFirst(uri)
-            : { firstName: null, lastName: null, pesel: null, documentNumber: null };
+            : {
+                firstName: null,
+                lastName: null,
+                pesel: null,
+                documentNumber: null,
+                issuedBy: null,
+                expiryDate: null,
+              };
           ocrResult = mergeIdCardResults(frontParsed, backParsed);
         } else {
           // For driver license, use front photo (main side)
@@ -238,7 +254,14 @@ export function useDocumentScan(documentType: DocumentType) {
       if (!state.frontUri) {
         ocrResult =
           documentType === 'ID_CARD'
-            ? { firstName: null, lastName: null, pesel: null, documentNumber: null }
+            ? {
+                firstName: null,
+                lastName: null,
+                pesel: null,
+                documentNumber: null,
+                issuedBy: null,
+                expiryDate: null,
+              }
             : { licenseNumber: null, categories: null, expiryDate: null };
       } else if (documentType === 'ID_CARD') {
         ocrResult = await parseIdCardVisionFirst(state.frontUri);

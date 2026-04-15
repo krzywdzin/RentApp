@@ -33,7 +33,10 @@ export function parseIdCard(ocrTexts: string[]): IdCardOcrFields {
       if (value) lastName = toTitleCase(value);
     }
     // Look for first name label, then scan forward for first real name value
-    if ((/IMI[EĘŹ]|IMION/i.test(line) || (/\bNAME/i.test(line) && !/SURNAME|NAZWISKO/i.test(line))) && !firstName) {
+    if (
+      (/IMI[EĘŹ]|IMION/i.test(line) || (/\bNAME/i.test(line) && !/SURNAME|NAZWISKO/i.test(line))) &&
+      !firstName
+    ) {
       const value = findNextNameValue(lines, i + 1);
       if (value) firstName = toTitleCase(value);
     }
@@ -41,11 +44,15 @@ export function parseIdCard(ocrTexts: string[]): IdCardOcrFields {
 
   // Strategy 2: Label and value on the same line (e.g., "NAZWISKO KOWALSKI")
   if (!lastName) {
-    const surnameInline = fullText.match(/(?:NAZWISKO|SURNAME)[^\S\n]*[:/]?[^\S\n]*([A-ZĄĆĘŁŃÓŚŹŻ][A-ZĄĆĘŁŃÓŚŹŻa-ząćęłńóśźż' -]*[A-ZĄĆĘŁŃÓŚŹŻa-ząćęłńóśźż'])/i);
+    const surnameInline = fullText.match(
+      /(?:NAZWISKO|SURNAME)[^\S\n]*[:/]?[^\S\n]*([A-ZĄĆĘŁŃÓŚŹŻ][A-ZĄĆĘŁŃÓŚŹŻa-ząćęłńóśźż' -]*[A-ZĄĆĘŁŃÓŚŹŻa-ząćęłńóśźż'])/i,
+    );
     if (surnameInline) lastName = toTitleCase(surnameInline[1]);
   }
   if (!firstName) {
-    const nameInline = fullText.match(/(?:IMI[EĘŹ]|IMION\w*)[^\S\n]*[:/]?[^\S\n]*([A-ZĄĆĘŁŃÓŚŹŻ][A-ZĄĆĘŁŃÓŚŹŻa-ząćęłńóśźż' -]*[A-ZĄĆĘŁŃÓŚŹŻa-ząćęłńóśźż'])/i);
+    const nameInline = fullText.match(
+      /(?:IMI[EĘŹ]|IMION\w*)[^\S\n]*[:/]?[^\S\n]*([A-ZĄĆĘŁŃÓŚŹŻ][A-ZĄĆĘŁŃÓŚŹŻa-ząćęłńóśźż' -]*[A-ZĄĆĘŁŃÓŚŹŻa-ząćęłńóśźż'])/i,
+    );
     if (nameInline) firstName = toTitleCase(nameInline[1]);
   }
 
@@ -55,12 +62,13 @@ export function parseIdCard(ocrTexts: string[]): IdCardOcrFields {
       /RZECZPOSPOLITA|DOW[OÓ]D|POLSKA|POLAND|IDENTITY|CARD|KARTA|TO[ZŻ]SAMO|REPUBLIC|SURNAME|GIVEN|NAMES?|DATE|NATIONALITY|SEX|OBYWATEL|PLE[CĆ]|DATA|NAZWISKO|IMI[EĘŹ]|IMION|PESEL|NR\s*DOK|DOKUMENT|ORGAN|WYDAJ|WA[ZŻ]N|URODZ|MIEJSCE|PLACE|BIRTH|PERSONAL|NUMMER|NUMBER/i;
 
     const candidates = lines
-      .filter((line) =>
-        line.length >= 2 &&
-        line.length <= 30 &&
-        !headerPattern.test(line) &&
-        !/\d/.test(line) &&
-        /^[A-ZĄĆĘŁŃÓŚŹŻ][A-ZĄĆĘŁŃÓŚŹŻa-ząćęłńóśźż'-]+$/i.test(line),
+      .filter(
+        (line) =>
+          line.length >= 2 &&
+          line.length <= 30 &&
+          !headerPattern.test(line) &&
+          !/\d/.test(line) &&
+          /^[A-ZĄĆĘŁŃÓŚŹŻ][A-ZĄĆĘŁŃÓŚŹŻa-ząćęłńóśźż'-]+$/i.test(line),
       )
       .map(toTitleCase);
 
@@ -68,11 +76,50 @@ export function parseIdCard(ocrTexts: string[]): IdCardOcrFields {
     if (!firstName && candidates[1]) firstName = candidates[1];
   }
 
+  // Issuing authority: after "ORGAN WYDAJĄCY" or "AUTHORITY" label
+  let issuedBy: string | null = null;
+  for (let i = 0; i < lines.length; i++) {
+    if (/ORGAN\s*WYDAJ|AUTHORITY/i.test(lines[i])) {
+      for (let j = i + 1; j < Math.min(i + 3, lines.length); j++) {
+        const candidate = lines[j];
+        if (
+          candidate.length >= 3 &&
+          !/ORGAN|WYDAJ|AUTHORITY|WA[ZŻ]N|EXPIRY|DATA/i.test(candidate) &&
+          !/^\d+$/.test(candidate)
+        ) {
+          issuedBy = candidate;
+          break;
+        }
+      }
+      break;
+    }
+  }
+
+  // Expiry date: pick the latest valid DD.MM.YYYY / DD/MM/YYYY date
+  let expiryDate: string | null = null;
+  const dateMatches = fullText.match(/(?<!\d[/])\b\d{2}[./]\d{2}[./]\d{4}\b/g) ?? [];
+  let latestTs = -Infinity;
+
+  for (const raw of dateMatches) {
+    const parts = raw.split(/[./]/);
+    if (parts.length !== 3) continue;
+    const [dd, mm, yyyy] = parts;
+    const d = new Date(`${yyyy}-${mm}-${dd}T00:00:00`);
+    if (isNaN(d.getTime())) continue;
+    if (d.getDate() !== Number(dd) || d.getMonth() + 1 !== Number(mm)) continue;
+    if (d.getTime() > latestTs) {
+      latestTs = d.getTime();
+      expiryDate = `${yyyy}-${mm}-${dd}`;
+    }
+  }
+
   return {
     firstName,
     lastName,
     pesel: peselMatch?.[0] ?? null,
     documentNumber: docNumMatch?.[0]?.toUpperCase() ?? null,
+    issuedBy,
+    expiryDate,
   };
 }
 

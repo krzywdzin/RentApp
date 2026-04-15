@@ -1,5 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, KeyboardAvoidingView, Linking, Platform, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  KeyboardAvoidingView,
+  Linking,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -34,6 +43,8 @@ const ID_FIELD_LABELS: Record<string, string> = {
   lastName: 'Nazwisko',
   pesel: 'PESEL',
   documentNumber: 'Nr dowodu',
+  issuedBy: 'Organ wydajacy',
+  expiryDate: 'Data waznosci',
 };
 
 const LICENSE_FIELD_LABELS: Record<string, string> = {
@@ -57,8 +68,13 @@ export default function CustomerStep() {
   // Document scanning
   const idScan = useDocumentScan('ID_CARD');
   const licenseScan = useDocumentScan('DRIVER_LICENSE');
-  const [showRescanConfirm, setShowRescanConfirm] = useState<'ID_CARD' | 'DRIVER_LICENSE' | null>(null);
-  const [pendingExistingCustomer, setPendingExistingCustomer] = useState<{ id: string; name: string } | null>(null);
+  const [showRescanConfirm, setShowRescanConfirm] = useState<'ID_CARD' | 'DRIVER_LICENSE' | null>(
+    null,
+  );
+  const [pendingExistingCustomer, setPendingExistingCustomer] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
   const [showIdDiff, setShowIdDiff] = useState(false);
   const [showLicenseDiff, setShowLicenseDiff] = useState(false);
 
@@ -115,79 +131,84 @@ export default function CustomerStep() {
 
   // ---------- Document photo upload helper ----------
 
-  const uploadDocumentPhotos = useCallback(async (customerId: string): Promise<boolean> => {
-    const scans: Array<{
-      type: 'id-card' | 'driver-license';
-      frontUri: string | undefined;
-      backUri: string | null | undefined;
-    }> = [];
+  const uploadDocumentPhotos = useCallback(
+    async (customerId: string): Promise<boolean> => {
+      const scans: Array<{
+        type: 'id-card' | 'driver-license';
+        frontUri: string | undefined;
+        backUri: string | null | undefined;
+      }> = [];
 
-    if (draft.idCardScan?.confirmed) {
-      scans.push({
-        type: 'id-card',
-        frontUri: draft.idCardScan.frontUri,
-        backUri: draft.idCardScan.backUri,
-      });
-    }
-    if (draft.driverLicenseScan?.confirmed) {
-      scans.push({
-        type: 'driver-license',
-        frontUri: draft.driverLicenseScan.frontUri,
-        backUri: draft.driverLicenseScan.backUri,
-      });
-    }
+      if (draft.idCardScan?.confirmed) {
+        scans.push({
+          type: 'id-card',
+          frontUri: draft.idCardScan.frontUri,
+          backUri: draft.idCardScan.backUri,
+        });
+      }
+      if (draft.driverLicenseScan?.confirmed) {
+        scans.push({
+          type: 'driver-license',
+          frontUri: draft.driverLicenseScan.frontUri,
+          backUri: draft.driverLicenseScan.backUri,
+        });
+      }
 
-    let failed = false;
+      let failed = false;
 
-    for (const scan of scans) {
-      if (scan.frontUri) {
-        try {
-          const formData = new FormData();
-          formData.append('file', {
-            uri: scan.frontUri,
-            name: 'front.jpg',
-            type: 'image/jpeg',
-          } as any);
-          await apiClient.post(
-            `/customers/${customerId}/documents/${scan.type}/front`,
-            formData,
-            { headers: { 'Content-Type': 'multipart/form-data' }, transformRequest: (data: any) => data },
-          );
-        } catch (err) {
-          console.warn(`Document photo upload failed (${scan.type}/front):`, err);
-          failed = true;
+      for (const scan of scans) {
+        if (scan.frontUri) {
+          try {
+            const formData = new FormData();
+            formData.append('file', {
+              uri: scan.frontUri,
+              name: 'front.jpg',
+              type: 'image/jpeg',
+            } as any);
+            await apiClient.post(
+              `/customers/${customerId}/documents/${scan.type}/front`,
+              formData,
+              {
+                headers: { 'Content-Type': 'multipart/form-data' },
+                transformRequest: (data: any) => data,
+              },
+            );
+          } catch (err) {
+            console.warn(`Document photo upload failed (${scan.type}/front):`, err);
+            failed = true;
+          }
+        }
+        if (scan.backUri) {
+          try {
+            const formData = new FormData();
+            formData.append('file', {
+              uri: scan.backUri,
+              name: 'back.jpg',
+              type: 'image/jpeg',
+            } as any);
+            await apiClient.post(`/customers/${customerId}/documents/${scan.type}/back`, formData, {
+              headers: { 'Content-Type': 'multipart/form-data' },
+              transformRequest: (data: any) => data,
+            });
+          } catch (err) {
+            console.warn(`Document photo upload failed (${scan.type}/back):`, err);
+            failed = true;
+          }
         }
       }
-      if (scan.backUri) {
-        try {
-          const formData = new FormData();
-          formData.append('file', {
-            uri: scan.backUri,
-            name: 'back.jpg',
-            type: 'image/jpeg',
-          } as any);
-          await apiClient.post(
-            `/customers/${customerId}/documents/${scan.type}/back`,
-            formData,
-            { headers: { 'Content-Type': 'multipart/form-data' }, transformRequest: (data: any) => data },
-          );
-        } catch (err) {
-          console.warn(`Document photo upload failed (${scan.type}/back):`, err);
-          failed = true;
-        }
+
+      if (failed) {
+        Toast.show({
+          type: 'error',
+          text1: 'Blad przesylania dokumentow',
+          text2: 'Nie udalo sie wyslac zdjec dokumentow. Sprobuj ponownie.',
+        });
       }
-    }
 
-    if (failed) {
-      Toast.show({
-        type: 'error',
-        text1: 'Blad przesylania dokumentow',
-        text2: 'Nie udalo sie wyslac zdjec dokumentow. Sprobuj ponownie.',
-      });
-    }
-
-    return !failed;
-  }, [draft.idCardScan, draft.driverLicenseScan]);
+      return !failed;
+    },
+    [draft.idCardScan, draft.driverLicenseScan],
+  );
 
   const handleCreateCustomer = useCallback(
     async (data: CreateCustomerInput) => {
@@ -271,6 +292,8 @@ export default function CustomerStep() {
       if (fields.lastName) setValue('lastName', fields.lastName);
       if (fields.pesel) setValue('pesel', fields.pesel);
       if (fields.documentNumber) setValue('idNumber', fields.documentNumber);
+      if (fields.issuedBy) setValue('idIssuedBy', fields.issuedBy);
+      if (fields.expiryDate) setValue('idExpiryDate', fields.expiryDate);
       if (fields.street) setValue('street', fields.street);
       if (fields.houseNumber) setValue('houseNumber', fields.houseNumber);
       if (fields.postalCode) setValue('postalCode', fields.postalCode);
@@ -336,34 +359,40 @@ export default function CustomerStep() {
     }
   }, [pendingExistingCustomer, licenseScan.phase, licenseScan.ocrResult]);
 
-  const handleIdDiffUpdate = useCallback((selectedFields: Record<string, string>) => {
-    draft.updateDraft({
-      idCardScan: {
-        frontUri: idScan.frontUri!,
-        backUri: idScan.backUri,
-        confirmed: true,
-      },
-    });
-    setShowIdDiff(false);
-    idScan.reset();
-  }, [draft, idScan]);
+  const handleIdDiffUpdate = useCallback(
+    (selectedFields: Record<string, string>) => {
+      draft.updateDraft({
+        idCardScan: {
+          frontUri: idScan.frontUri!,
+          backUri: idScan.backUri,
+          confirmed: true,
+        },
+      });
+      setShowIdDiff(false);
+      idScan.reset();
+    },
+    [draft, idScan],
+  );
 
   const handleIdDiffKeep = useCallback(() => {
     setShowIdDiff(false);
     idScan.reset();
   }, [idScan]);
 
-  const handleLicenseDiffUpdate = useCallback((selectedFields: Record<string, string>) => {
-    draft.updateDraft({
-      driverLicenseScan: {
-        frontUri: licenseScan.frontUri!,
-        backUri: licenseScan.backUri,
-        confirmed: true,
-      },
-    });
-    setShowLicenseDiff(false);
-    licenseScan.reset();
-  }, [draft, licenseScan]);
+  const handleLicenseDiffUpdate = useCallback(
+    (selectedFields: Record<string, string>) => {
+      draft.updateDraft({
+        driverLicenseScan: {
+          frontUri: licenseScan.frontUri!,
+          backUri: licenseScan.backUri,
+          confirmed: true,
+        },
+      });
+      setShowLicenseDiff(false);
+      licenseScan.reset();
+    },
+    [draft, licenseScan],
+  );
 
   const handleLicenseDiffKeep = useCallback(() => {
     setShowLicenseDiff(false);
@@ -372,7 +401,8 @@ export default function CustomerStep() {
 
   // Build current fields from existing customer data for diff comparison
   const existingIdFields = useMemo((): Record<string, string | null> => {
-    if (!existingCustomerData) return { firstName: null, lastName: null, pesel: null, documentNumber: null };
+    if (!existingCustomerData)
+      return { firstName: null, lastName: null, pesel: null, documentNumber: null };
     return {
       firstName: existingCustomerData.firstName ?? null,
       lastName: existingCustomerData.lastName ?? null,
@@ -391,10 +421,7 @@ export default function CustomerStep() {
   }, [existingCustomerData]);
 
   // Guide overlay instruction text
-  const getGuideInstruction = (
-    type: 'ID_CARD' | 'DRIVER_LICENSE',
-    phase: string,
-  ) => {
+  const getGuideInstruction = (type: 'ID_CARD' | 'DRIVER_LICENSE', phase: string) => {
     if (type === 'ID_CARD') {
       return phase === 'front_guide' || phase === 'front_captured'
         ? 'Umiesc przod dowodu w ramce'
@@ -406,9 +433,7 @@ export default function CustomerStep() {
   };
 
   const getGuideStep = (phase: string) =>
-    phase === 'front_guide' || phase === 'front_captured'
-      ? 'Przod (1/2)'
-      : 'Tyl (2/2)';
+    phase === 'front_guide' || phase === 'front_captured' ? 'Przod (1/2)' : 'Tyl (2/2)';
 
   // snapPoints removed - using Modal instead of BottomSheet
 
@@ -417,15 +442,9 @@ export default function CustomerStep() {
 
   return (
     <SafeAreaView style={s.safeArea} edges={['top']}>
-      <WizardStepper
-        currentStep={1}
-        totalSteps={6}
-        labels={RENTAL_WIZARD_LABELS}
-      />
+      <WizardStepper currentStep={1} totalSteps={6} labels={RENTAL_WIZARD_LABELS} />
 
-      <Text style={s.stepTitle}>
-        {t('wizard.step1')}
-      </Text>
+      <Text style={s.stepTitle}>{t('wizard.step1')}</Text>
 
       <View style={s.mt16}>
         <SearchBar
@@ -488,23 +507,23 @@ export default function CustomerStep() {
           renderItem={({ item }) => (
             <AppCard
               cardStyle={s.mb12}
-              onPress={() => setPendingExistingCustomer({ id: item.id, name: `${item.firstName} ${item.lastName}` })}
+              onPress={() =>
+                setPendingExistingCustomer({
+                  id: item.id,
+                  name: `${item.firstName} ${item.lastName}`,
+                })
+              }
             >
               <Text style={s.custName}>
                 {item.firstName} {item.lastName}
               </Text>
               <Text style={s.custSub}>{item.phone}</Text>
-              {item.email && (
-                <Text style={s.custSub}>{item.email}</Text>
-              )}
+              {item.email && <Text style={s.custSub}>{item.email}</Text>}
             </AppCard>
           )}
           ListEmptyComponent={
             searchQuery.length >= 2 && !isLoading ? (
-              <EmptyState
-                heading={t('empty.noCustomer')}
-                body={t('empty.noCustomerBody')}
-              />
+              <EmptyState heading={t('empty.noCustomer')} body={t('empty.noCustomerBody')} />
             ) : null
           }
           ListFooterComponent={
@@ -533,334 +552,344 @@ export default function CustomerStep() {
               <Text style={s.modalClose}>Zamknij</Text>
             </TouchableOpacity>
           </View>
-          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={s.flex1}>
-          <ScrollView
-            contentContainerStyle={s.modalScroll}
-            keyboardShouldPersistTaps="handled"
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={s.flex1}
           >
-          <Text style={s.modalHeading}>
-            {t('wizard.newCustomer')}
-          </Text>
+            <ScrollView contentContainerStyle={s.modalScroll} keyboardShouldPersistTaps="handled">
+              <Text style={s.modalHeading}>{t('wizard.newCustomer')}</Text>
 
-          <Controller
-            control={control}
-            name="firstName"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <AppInput
-                label="Imie"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                error={errors.firstName?.message}
-                containerStyle={s.mb12}
+              <Controller
+                control={control}
+                name="firstName"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <AppInput
+                    label="Imie"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    error={errors.firstName?.message}
+                    containerStyle={s.mb12}
+                  />
+                )}
               />
-            )}
-          />
 
-          <Controller
-            control={control}
-            name="lastName"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <AppInput
-                label="Nazwisko"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                error={errors.lastName?.message}
-                containerStyle={s.mb12}
+              <Controller
+                control={control}
+                name="lastName"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <AppInput
+                    label="Nazwisko"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    error={errors.lastName?.message}
+                    containerStyle={s.mb12}
+                  />
+                )}
               />
-            )}
-          />
 
-          <Controller
-            control={control}
-            name="phone"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <AppInput
-                label="Telefon"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                keyboardType="phone-pad"
-                error={errors.phone?.message}
-                containerStyle={s.mb12}
+              <Controller
+                control={control}
+                name="phone"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <AppInput
+                    label="Telefon"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    keyboardType="phone-pad"
+                    error={errors.phone?.message}
+                    containerStyle={s.mb12}
+                  />
+                )}
               />
-            )}
-          />
 
-          <Controller
-            control={control}
-            name="email"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <AppInput
-                label="Email"
-                value={value ?? ''}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                error={errors.email?.message}
-                containerStyle={s.mb12}
+              <Controller
+                control={control}
+                name="email"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <AppInput
+                    label="Email"
+                    value={value ?? ''}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    error={errors.email?.message}
+                    containerStyle={s.mb12}
+                  />
+                )}
               />
-            )}
-          />
 
-          <Controller
-            control={control}
-            name="pesel"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <AppInput
-                label="PESEL"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                keyboardType="numeric"
-                maxLength={11}
-                error={errors.pesel?.message}
-                containerStyle={s.mb12}
+              <Controller
+                control={control}
+                name="pesel"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <AppInput
+                    label="PESEL"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    keyboardType="numeric"
+                    maxLength={11}
+                    error={errors.pesel?.message}
+                    containerStyle={s.mb12}
+                  />
+                )}
               />
-            )}
-          />
 
-          <Controller
-            control={control}
-            name="idNumber"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <AppInput
-                label="Numer dowodu"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                autoCapitalize="characters"
-                error={errors.idNumber?.message}
-                containerStyle={s.mb12}
+              <Controller
+                control={control}
+                name="idNumber"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <AppInput
+                    label="Numer dowodu"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    autoCapitalize="characters"
+                    error={errors.idNumber?.message}
+                    containerStyle={s.mb12}
+                  />
+                )}
               />
-            )}
-          />
 
-          <Controller
-            control={control}
-            name="idIssuedBy"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <AppInput
-                label="Organ wydający dowód"
-                value={value ?? ''}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                placeholder="np. Prezydent m.st. Warszawy"
-                error={(errors as Record<string, {message?: string}>).idIssuedBy?.message}
-                containerStyle={s.mb12}
+              <Controller
+                control={control}
+                name="idIssuedBy"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <AppInput
+                    label="Organ wydający dowód"
+                    value={value ?? ''}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    placeholder="np. Prezydent m.st. Warszawy"
+                    error={(errors as Record<string, { message?: string }>).idIssuedBy?.message}
+                    containerStyle={s.mb12}
+                  />
+                )}
               />
-            )}
-          />
 
-          <Controller
-            control={control}
-            name="idExpiryDate"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <AppInput
-                label="Data ważności dowodu"
-                value={value ?? ''}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                placeholder="RRRR-MM-DD"
-                error={(errors as Record<string, {message?: string}>).idExpiryDate?.message}
-                containerStyle={s.mb12}
+              <Controller
+                control={control}
+                name="idExpiryDate"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <AppInput
+                    label="Data ważności dowodu"
+                    value={value ?? ''}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    placeholder="RRRR-MM-DD"
+                    error={(errors as Record<string, { message?: string }>).idExpiryDate?.message}
+                    containerStyle={s.mb12}
+                  />
+                )}
               />
-            )}
-          />
 
-          {/* Document scan buttons */}
-          <Text style={s.sectionHeading}>Skanowanie dokumentow</Text>
+              {/* Document scan buttons */}
+              <Text style={s.sectionHeading}>Skanowanie dokumentow</Text>
 
-          <View style={s.scanButtonsContainer}>
-            <DocumentScanButton
-              documentType="ID_CARD"
-              label="Skanuj dowod osobisty"
-              scanData={draft.idCardScan}
-              onPress={handleIdScanPress}
-            />
-            <DocumentScanButton
-              documentType="DRIVER_LICENSE"
-              label="Skanuj prawo jazdy"
-              scanData={draft.driverLicenseScan}
-              onPress={handleLicenseScanPress}
-            />
-          </View>
-
-          <Controller
-            control={control}
-            name="licenseNumber"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <AppInput
-                label="Numer prawa jazdy"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                autoCapitalize="characters"
-                error={errors.licenseNumber?.message}
-                containerStyle={s.mb12}
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="licenseCategory"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <AppInput
-                label="Kategoria prawa jazdy"
-                value={value ?? ''}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                placeholder="np. B, B+E, C"
-                autoCapitalize="characters"
-                error={(errors as Record<string, {message?: string}>).licenseCategory?.message}
-                containerStyle={s.mb12}
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="licenseIssuedBy"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <AppInput
-                label="Organ wydający prawo jazdy"
-                value={value ?? ''}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                placeholder="np. Starosta bydgoski"
-                error={(errors as Record<string, {message?: string}>).licenseIssuedBy?.message}
-                containerStyle={s.mb12}
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="licenseBookletNumber"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <AppInput
-                label="Nr blankietu prawa jazdy"
-                value={value ?? ''}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                placeholder="np. MC 1234567"
-                autoCapitalize="characters"
-                error={(errors as Record<string, {message?: string}>).licenseBookletNumber?.message}
-                containerStyle={s.mb12}
-              />
-            )}
-          />
-
-          {/* Address section */}
-          <Text style={s.sectionHeading}>Adres klienta</Text>
-
-          <Controller
-            control={control}
-            name="street"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <AppInput
-                label="Ulica"
-                value={value ?? ''}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                error={(errors as Record<string, {message?: string}>).street?.message}
-                containerStyle={s.mb12}
-              />
-            )}
-          />
-
-          <View style={s.fieldRow}>
-            <Controller
-              control={control}
-              name="houseNumber"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <AppInput
-                  label="Numer domu"
-                  value={value ?? ''}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  error={(errors as Record<string, {message?: string}>).houseNumber?.message}
-                  containerStyle={s.fieldHalf}
+              <View style={s.scanButtonsContainer}>
+                <DocumentScanButton
+                  documentType="ID_CARD"
+                  label="Skanuj dowod osobisty"
+                  scanData={draft.idCardScan}
+                  onPress={handleIdScanPress}
                 />
-              )}
-            />
-            <Controller
-              control={control}
-              name="apartmentNumber"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <AppInput
-                  label="Numer mieszkania"
-                  value={value ?? ''}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  error={(errors as Record<string, {message?: string}>).apartmentNumber?.message}
-                  containerStyle={s.fieldHalf}
+                <DocumentScanButton
+                  documentType="DRIVER_LICENSE"
+                  label="Skanuj prawo jazdy"
+                  scanData={draft.driverLicenseScan}
+                  onPress={handleLicenseScanPress}
                 />
-              )}
-            />
-          </View>
+              </View>
 
-          <View style={s.fieldRowPostal}>
-            <Controller
-              control={control}
-              name="postalCode"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <AppInput
-                  label="Kod pocztowy"
-                  value={value ?? ''}
-                  onChangeText={(text: string) => {
-                    // Auto-insert dash after 2 digits
-                    const digits = text.replace(/[^0-9]/g, '');
-                    if (digits.length <= 2) {
-                      onChange(digits);
-                    } else {
-                      onChange(`${digits.slice(0, 2)}-${digits.slice(2, 5)}`);
+              <Controller
+                control={control}
+                name="licenseNumber"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <AppInput
+                    label="Numer prawa jazdy"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    autoCapitalize="characters"
+                    error={errors.licenseNumber?.message}
+                    containerStyle={s.mb12}
+                  />
+                )}
+              />
+
+              <Controller
+                control={control}
+                name="licenseCategory"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <AppInput
+                    label="Kategoria prawa jazdy"
+                    value={value ?? ''}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    placeholder="np. B, B+E, C"
+                    autoCapitalize="characters"
+                    error={
+                      (errors as Record<string, { message?: string }>).licenseCategory?.message
                     }
-                  }}
-                  onBlur={onBlur}
-                  keyboardType="numeric"
-                  maxLength={6}
-                  placeholder="XX-XXX"
-                  error={(errors as Record<string, {message?: string}>).postalCode?.message}
-                  containerStyle={s.fieldPostal}
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name="city"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <AppInput
-                  label="Miasto"
-                  value={value ?? ''}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  error={(errors as Record<string, {message?: string}>).city?.message}
-                  containerStyle={s.fieldCity}
-                />
-              )}
-            />
-          </View>
+                    containerStyle={s.mb12}
+                  />
+                )}
+              />
 
-          <AppButton
-            title="🔍 Sprawdź uprawnienia kierowcy (gov.pl)"
-            onPress={() => Linking.openURL('https://moj.gov.pl/uslugi/engine/ng/index?xFormsAppName=UprawnieniaKierowcow&xFormsOrigin=EXTERNAL')}
-            variant="secondary"
-            fullWidth
-            containerStyle={s.mb12}
-          />
+              <Controller
+                control={control}
+                name="licenseIssuedBy"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <AppInput
+                    label="Organ wydający prawo jazdy"
+                    value={value ?? ''}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    placeholder="np. Starosta bydgoski"
+                    error={
+                      (errors as Record<string, { message?: string }>).licenseIssuedBy?.message
+                    }
+                    containerStyle={s.mb12}
+                  />
+                )}
+              />
 
-          <AppButton
-            title={t('common.save')}
-            onPress={handleSubmit(handleCreateCustomer)}
-            loading={createCustomer.isPending}
-            fullWidth
-            containerStyle={s.mt8}
-          />
-          </ScrollView>
+              <Controller
+                control={control}
+                name="licenseBookletNumber"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <AppInput
+                    label="Nr blankietu prawa jazdy"
+                    value={value ?? ''}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    placeholder="np. MC 1234567"
+                    autoCapitalize="characters"
+                    error={
+                      (errors as Record<string, { message?: string }>).licenseBookletNumber?.message
+                    }
+                    containerStyle={s.mb12}
+                  />
+                )}
+              />
+
+              {/* Address section */}
+              <Text style={s.sectionHeading}>Adres klienta</Text>
+
+              <Controller
+                control={control}
+                name="street"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <AppInput
+                    label="Ulica"
+                    value={value ?? ''}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    error={(errors as Record<string, { message?: string }>).street?.message}
+                    containerStyle={s.mb12}
+                  />
+                )}
+              />
+
+              <View style={s.fieldRow}>
+                <Controller
+                  control={control}
+                  name="houseNumber"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <AppInput
+                      label="Numer domu"
+                      value={value ?? ''}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      error={(errors as Record<string, { message?: string }>).houseNumber?.message}
+                      containerStyle={s.fieldHalf}
+                    />
+                  )}
+                />
+                <Controller
+                  control={control}
+                  name="apartmentNumber"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <AppInput
+                      label="Numer mieszkania"
+                      value={value ?? ''}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      error={
+                        (errors as Record<string, { message?: string }>).apartmentNumber?.message
+                      }
+                      containerStyle={s.fieldHalf}
+                    />
+                  )}
+                />
+              </View>
+
+              <View style={s.fieldRowPostal}>
+                <Controller
+                  control={control}
+                  name="postalCode"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <AppInput
+                      label="Kod pocztowy"
+                      value={value ?? ''}
+                      onChangeText={(text: string) => {
+                        // Auto-insert dash after 2 digits
+                        const digits = text.replace(/[^0-9]/g, '');
+                        if (digits.length <= 2) {
+                          onChange(digits);
+                        } else {
+                          onChange(`${digits.slice(0, 2)}-${digits.slice(2, 5)}`);
+                        }
+                      }}
+                      onBlur={onBlur}
+                      keyboardType="numeric"
+                      maxLength={6}
+                      placeholder="XX-XXX"
+                      error={(errors as Record<string, { message?: string }>).postalCode?.message}
+                      containerStyle={s.fieldPostal}
+                    />
+                  )}
+                />
+                <Controller
+                  control={control}
+                  name="city"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <AppInput
+                      label="Miasto"
+                      value={value ?? ''}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      error={(errors as Record<string, { message?: string }>).city?.message}
+                      containerStyle={s.fieldCity}
+                    />
+                  )}
+                />
+              </View>
+
+              <AppButton
+                title="🔍 Sprawdź uprawnienia kierowcy (gov.pl)"
+                onPress={() =>
+                  Linking.openURL(
+                    'https://moj.gov.pl/uslugi/engine/ng/index?xFormsAppName=UprawnieniaKierowcow&xFormsOrigin=EXTERNAL',
+                  )
+                }
+                variant="secondary"
+                fullWidth
+                containerStyle={s.mb12}
+              />
+
+              <AppButton
+                title={t('common.save')}
+                onPress={handleSubmit(handleCreateCustomer)}
+                loading={createCustomer.isPending}
+                fullWidth
+                containerStyle={s.mt8}
+              />
+            </ScrollView>
           </KeyboardAvoidingView>
         </View>
       </Modal>
@@ -905,28 +934,34 @@ export default function CustomerStep() {
       />
 
       {/* ID card confirmation (new customer path only) */}
-      {!pendingExistingCustomer && idScan.phase === 'review' && idScan.ocrResult && idScan.frontUri && (
-        <DocumentConfirmation
-          visible
-          documentType="ID_CARD"
-          frontUri={idScan.frontUri}
-          ocrFields={idScan.ocrResult as IdCardOcrFields}
-          onConfirm={handleIdConfirm}
-          onDiscard={handleIdDiscard}
-        />
-      )}
+      {!pendingExistingCustomer &&
+        idScan.phase === 'review' &&
+        idScan.ocrResult &&
+        idScan.frontUri && (
+          <DocumentConfirmation
+            visible
+            documentType="ID_CARD"
+            frontUri={idScan.frontUri}
+            ocrFields={idScan.ocrResult as IdCardOcrFields}
+            onConfirm={handleIdConfirm}
+            onDiscard={handleIdDiscard}
+          />
+        )}
 
       {/* Driver license confirmation (new customer path only) */}
-      {!pendingExistingCustomer && licenseScan.phase === 'review' && licenseScan.ocrResult && licenseScan.frontUri && (
-        <DocumentConfirmation
-          visible
-          documentType="DRIVER_LICENSE"
-          frontUri={licenseScan.frontUri}
-          ocrFields={licenseScan.ocrResult as DriverLicenseOcrFields}
-          onConfirm={handleLicenseConfirm}
-          onDiscard={handleLicenseDiscard}
-        />
-      )}
+      {!pendingExistingCustomer &&
+        licenseScan.phase === 'review' &&
+        licenseScan.ocrResult &&
+        licenseScan.frontUri && (
+          <DocumentConfirmation
+            visible
+            documentType="DRIVER_LICENSE"
+            frontUri={licenseScan.frontUri}
+            ocrFields={licenseScan.ocrResult as DriverLicenseOcrFields}
+            onConfirm={handleLicenseConfirm}
+            onDiscard={handleLicenseDiscard}
+          />
+        )}
 
       {/* ID card diff view for existing customer */}
       {showIdDiff && idScan.ocrResult && existingCustomerData && (
@@ -957,7 +992,14 @@ export default function CustomerStep() {
 
 const s = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.cream },
-  stepTitle: { marginTop: spacing.base, paddingHorizontal: spacing.base, fontFamily: fonts.display, fontSize: 20, fontWeight: '600', color: colors.charcoal },
+  stepTitle: {
+    marginTop: spacing.base,
+    paddingHorizontal: spacing.base,
+    fontFamily: fonts.display,
+    fontSize: 20,
+    fontWeight: '600',
+    color: colors.charcoal,
+  },
   mt16: { marginTop: spacing.base },
   mt8: { marginTop: spacing.sm },
   mb12: { marginBottom: spacing.md },
@@ -967,21 +1009,67 @@ const s = StyleSheet.create({
   custSub: { marginTop: 4, fontFamily: fonts.body, fontSize: 13, color: colors.warmGray },
   flex1: { flex: 1 },
   modalRoot: { flex: 1, backgroundColor: colors.cream },
-  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: spacing.base, borderBottomWidth: 1, borderBottomColor: colors.sand },
-  modalTitle: { fontFamily: fonts.display, fontSize: 18, fontWeight: '600', color: colors.charcoal },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: spacing.base,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.sand,
+  },
+  modalTitle: {
+    fontFamily: fonts.display,
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.charcoal,
+  },
   modalClose: { fontFamily: fonts.body, color: colors.forestGreen, fontSize: 16 },
   modalScroll: { padding: spacing.base, paddingBottom: 40 },
-  modalHeading: { marginBottom: spacing.base, fontFamily: fonts.display, fontSize: 20, fontWeight: '600', color: colors.charcoal },
-  searchHint: { paddingHorizontal: spacing.base, marginTop: spacing.sm, fontFamily: fonts.body, fontSize: 13, color: colors.warmGray },
-  spinnerRow: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.base, marginTop: spacing.sm, gap: 8 },
+  modalHeading: {
+    marginBottom: spacing.base,
+    fontFamily: fonts.display,
+    fontSize: 20,
+    fontWeight: '600',
+    color: colors.charcoal,
+  },
+  searchHint: {
+    paddingHorizontal: spacing.base,
+    marginTop: spacing.sm,
+    fontFamily: fonts.body,
+    fontSize: 13,
+    color: colors.warmGray,
+  },
+  spinnerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.base,
+    marginTop: spacing.sm,
+    gap: 8,
+  },
   spinnerText: { fontFamily: fonts.body, fontSize: 13, color: colors.warmGray },
-  sectionHeading: { marginTop: spacing.lg, marginBottom: spacing.base, fontFamily: fonts.display, fontSize: 20, fontWeight: '600', color: colors.charcoal },
+  sectionHeading: {
+    marginTop: spacing.lg,
+    marginBottom: spacing.base,
+    fontFamily: fonts.display,
+    fontSize: 20,
+    fontWeight: '600',
+    color: colors.charcoal,
+  },
   fieldRow: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.md },
   fieldHalf: { flex: 1 },
   fieldRowPostal: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.md },
   fieldPostal: { flex: 2 },
   fieldCity: { flex: 3 },
   scanButtonsContainer: { gap: spacing.md, marginBottom: spacing.lg },
-  existingCustomerHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  changeButton: { fontFamily: fonts.body, fontSize: 14, color: colors.forestGreen, fontWeight: '500' },
+  existingCustomerHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  changeButton: {
+    fontFamily: fonts.body,
+    fontSize: 14,
+    color: colors.forestGreen,
+    fontWeight: '500',
+  },
 });

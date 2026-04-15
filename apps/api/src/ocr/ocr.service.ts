@@ -38,8 +38,10 @@ Extract EXACTLY these fields from what you SEE on the card:
 - lastName: the person surname (nazwisko) — found after label NAZWISKO/SURNAME
 - pesel: the 11-digit PESEL number
 - documentNumber: the document number — 3 LETTERS + 6 DIGITS format (e.g. DKF187165). Look at the card carefully — OCR often confuses similar letters (E↔F, O↔0, I↔1, S↔5). The first 3 characters are ALWAYS letters.
+- issuedBy: the issuing authority (organ wydający) — e.g. "PREZYDENT MIASTA BYDGOSZCZY", "STAROSTA POZNAŃSKI". Found after label ORGAN WYDAJĄCY/AUTHORITY.
+- expiryDate: the expiry date (data ważności) in ISO format YYYY-MM-DD — found after label WAŻNY DO/EXPIRY DATE or DATA WAŻNOŚCI/DATE OF EXPIRY.
 
-Return ONLY raw JSON: {"firstName": "...", "lastName": "...", "pesel": "...", "documentNumber": "..."}
+Return ONLY raw JSON: {"firstName": "...", "lastName": "...", "pesel": "...", "documentNumber": "...", "issuedBy": "...", "expiryDate": "..."}
 If a field is unreadable, use null.`,
         ]);
 
@@ -49,6 +51,8 @@ If a field is unreadable, use null.`,
           lastName: null,
           pesel: null,
           documentNumber: null,
+          issuedBy: null,
+          expiryDate: null,
         });
       } catch (err) {
         this.logger.warn(`Gemini Vision ID card attempt ${attempt + 1}/3 failed: ${err}`);
@@ -150,6 +154,8 @@ FIELDS TO EXTRACT:
 - lastName: the person's SURNAME (nazwisko) — a family name like Kowalski, Nowak, Krzywdziński
 - pesel: exactly 11 consecutive digits — the PESEL number
 - documentNumber: 3 letters followed by 6 digits (e.g. ABC123456)
+- issuedBy: the issuing authority (organ wydający) — e.g. "Prezydent Miasta Bydgoszczy", "Starosta Poznański". Found after label ORGAN WYDAJĄCY/AUTHORITY.
+- expiryDate: the expiry date (data ważności) in ISO format YYYY-MM-DD — found after label WAŻNY DO/EXPIRY DATE or DATA WAŻNOŚCI/DATE OF EXPIRY. Convert DD.MM.YYYY to YYYY-MM-DD.
 
 CRITICAL RULES:
 1. "POLSKIE" / "POLSKIEEOO" / "POLSKA" / "POLAND" / "POLISH" = nationality/country label, NEVER a person's name
@@ -163,7 +169,7 @@ CRITICAL RULES:
 9. If you cannot determine a field with reasonable confidence, return null
 
 Respond ONLY with a raw JSON object, no markdown fences, no explanation:
-{"firstName": "...", "lastName": "...", "pesel": "...", "documentNumber": "..."}
+{"firstName": "...", "lastName": "...", "pesel": "...", "documentNumber": "...", "issuedBy": "...", "expiryDate": "..."}
 
 OCR text blocks:
 ${texts.map((t, i) => `[${i}] ${t}`).join('\n')}`;
@@ -175,6 +181,8 @@ ${texts.map((t, i) => `[${i}] ${t}`).join('\n')}`;
       lastName: null,
       pesel: null,
       documentNumber: null,
+      issuedBy: null,
+      expiryDate: null,
     });
   }
 
@@ -279,11 +287,51 @@ ${texts.map((t, i) => `[${i}] ${t}`).join('\n')}`;
       if (!firstName && candidates[1]) firstName = candidates[1];
     }
 
+    // Issuing authority: after "ORGAN WYDAJĄCY" or "AUTHORITY" label
+    let issuedBy: string | null = null;
+    for (let i = 0; i < lines.length; i++) {
+      if (/ORGAN\s*WYDAJ|AUTHORITY/i.test(lines[i])) {
+        // Value is on the next non-empty, non-label line(s)
+        for (let j = i + 1; j < Math.min(i + 3, lines.length); j++) {
+          const candidate = lines[j];
+          if (
+            candidate.length >= 3 &&
+            !/ORGAN|WYDAJ|AUTHORITY|WA[ZŻ]N|EXPIRY|DATA/i.test(candidate) &&
+            !/^\d+$/.test(candidate)
+          ) {
+            issuedBy = candidate;
+            break;
+          }
+        }
+        break;
+      }
+    }
+
+    // Expiry date: after "WAŻNY DO" / "EXPIRY DATE" / "DATA WAŻNOŚCI" label
+    let expiryDate: string | null = null;
+    const dateMatches = fullText.match(/(?<!\d[/])\b\d{2}[./]\d{2}[./]\d{4}\b/g) ?? [];
+    let latestTs = -Infinity;
+
+    for (const raw of dateMatches) {
+      const parts = raw.split(/[./]/);
+      if (parts.length !== 3) continue;
+      const [dd, mm, yyyy] = parts;
+      const d = new Date(`${yyyy}-${mm}-${dd}T00:00:00`);
+      if (isNaN(d.getTime())) continue;
+      if (d.getDate() !== Number(dd) || d.getMonth() + 1 !== Number(mm)) continue;
+      if (d.getTime() > latestTs) {
+        latestTs = d.getTime();
+        expiryDate = `${yyyy}-${mm}-${dd}`;
+      }
+    }
+
     return {
       firstName,
       lastName,
       pesel: peselMatch?.[0] ?? null,
       documentNumber: docNumMatch?.[0]?.toUpperCase() ?? null,
+      issuedBy,
+      expiryDate,
     };
   }
 

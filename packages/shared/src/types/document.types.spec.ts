@@ -26,11 +26,15 @@ describe('Document Types', () => {
       lastName: null,
       pesel: null,
       documentNumber: null,
+      issuedBy: null,
+      expiryDate: null,
     };
     expect(fields).toHaveProperty('firstName');
     expect(fields).toHaveProperty('lastName');
     expect(fields).toHaveProperty('pesel');
     expect(fields).toHaveProperty('documentNumber');
+    expect(fields).toHaveProperty('issuedBy');
+    expect(fields).toHaveProperty('expiryDate');
   });
 
   it('DriverLicenseOcrFields interface shape', () => {
