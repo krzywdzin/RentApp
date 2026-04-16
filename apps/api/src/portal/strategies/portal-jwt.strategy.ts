@@ -10,6 +10,7 @@ export class PortalJwtStrategy extends PassportStrategy(Strategy, 'portal-jwt') 
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: config.get<string>('PORTAL_JWT_SECRET')!,
+      algorithms: ['HS256'],
     });
   }
 

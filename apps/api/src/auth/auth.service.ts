@@ -59,9 +59,7 @@ export class AuthService {
     }
     if (lockout) {
       this.logger.warn(`Login rejected: account locked for ${login}`);
-      throw new UnauthorizedException(
-        'Account locked. Try again in 15 minutes.',
-      );
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     const user = await this.prisma.user.findFirst({
@@ -142,7 +140,7 @@ export class AuthService {
 
     const payload = { sub: userId, role: user.role, aud: context };
     const secret = context === 'mobile'
-      ? (this.config.get<string>('JWT_MOBILE_SECRET') ?? this.config.get<string>('JWT_ACCESS_SECRET'))
+      ? this.config.getOrThrow<string>('JWT_MOBILE_SECRET')
       : this.config.get<string>('JWT_ACCESS_SECRET');
     const accessToken = this.jwtService.sign(payload, {
       secret,

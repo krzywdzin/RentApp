@@ -14,7 +14,8 @@ export class MobileJwtStrategy extends PassportStrategy(Strategy, 'jwt-mobile') 
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: config.get<string>('JWT_MOBILE_SECRET') ?? config.get<string>('JWT_ACCESS_SECRET')!,
+      secretOrKey: config.getOrThrow<string>('JWT_MOBILE_SECRET'),
+      algorithms: ['HS256'],
     });
   }
 
