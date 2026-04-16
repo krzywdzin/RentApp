@@ -228,7 +228,7 @@ export function TermsWebView({ html, onHtmlChange, editable = false }: TermsWebV
       <WebView
         ref={webViewRef}
         source={source}
-        originWhitelist={['*']}
+        originWhitelist={['about:blank']}
         onMessage={handleMessage}
         scrollEnabled={false}
         nestedScrollEnabled={false}

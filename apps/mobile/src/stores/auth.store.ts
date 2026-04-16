@@ -87,7 +87,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         set({ user: null, isAuthenticated: false, isLoading: false });
       } else {
         // Network error, timeout, 500, etc. -- keep session alive with stale data
-        console.warn('Auth initialize failed (non-401), keeping session:', error);
+        if (__DEV__) console.warn('Auth initialize failed (non-401), keeping session:', error);
         set({ isLoading: false });
       }
     }
