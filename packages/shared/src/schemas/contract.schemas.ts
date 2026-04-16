@@ -19,7 +19,7 @@ export const signContractSchema = z.object({
     'second_customer_page2',
   ]),
   signatureBase64: z.string().regex(
-    /^iVBOR|^data:image\/png;base64,/,
+    /^(iVBOR|data:image\/png;base64,)/,
     'Must be a base64-encoded PNG',
   ),
   deviceInfo: z.string().optional(),

@@ -28,7 +28,9 @@ export const CreateCustomerSchema = z.object({
 export const UpdateCustomerSchema = CreateCustomerSchema.partial();
 
 export const SearchCustomerSchema = z.object({
-  query: z.string().min(1).max(200),
+  lastName: z.string().min(1).max(200).optional(),
+  phone: z.string().min(1).max(20).optional(),
+  pesel: z.string().length(11).optional(),
 });
 
 export type CreateCustomerInput = z.infer<typeof CreateCustomerSchema>;
