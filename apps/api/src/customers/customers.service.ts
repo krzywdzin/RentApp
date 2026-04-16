@@ -59,6 +59,9 @@ export class CustomersService {
         idIssuedDate: dto.idIssuedDate ? new Date(dto.idIssuedDate) : null,
         licenseCategory: dto.licenseCategory ?? null,
         licenseIssuedBy: dto.licenseIssuedBy ?? null,
+        licenseIssuedDate: dto.licenseIssuedDate ? new Date(dto.licenseIssuedDate) : null,
+        licenseBookletNumber: dto.licenseBookletNumber ?? null,
+        idExpiryDate: dto.idExpiryDate ? new Date(dto.idExpiryDate) : null,
         retentionExpiresAt,
       },
     });
@@ -119,6 +122,7 @@ export class CustomersService {
       'idIssuedBy',
       'licenseCategory',
       'licenseIssuedBy',
+      'licenseBookletNumber',
     ] as const;
 
     for (const field of plainFields) {
@@ -133,7 +137,23 @@ export class CustomersService {
         old: existing.idIssuedDate?.toISOString() ?? null,
         new: dto.idIssuedDate,
       };
-      data['idIssuedDate'] = new Date(dto.idIssuedDate);
+      data['idIssuedDate'] = dto.idIssuedDate ? new Date(dto.idIssuedDate) : null;
+    }
+
+    if (dto.idExpiryDate !== undefined) {
+      oldValues['idExpiryDate'] = {
+        old: existing.idExpiryDate?.toISOString() ?? null,
+        new: dto.idExpiryDate,
+      };
+      data['idExpiryDate'] = dto.idExpiryDate ? new Date(dto.idExpiryDate) : null;
+    }
+
+    if (dto.licenseIssuedDate !== undefined) {
+      oldValues['licenseIssuedDate'] = {
+        old: existing.licenseIssuedDate?.toISOString() ?? null,
+        new: dto.licenseIssuedDate,
+      };
+      data['licenseIssuedDate'] = dto.licenseIssuedDate ? new Date(dto.licenseIssuedDate) : null;
     }
 
     // Sensitive fields -- mask values as "[ENCRYPTED]" in audit
@@ -229,6 +249,7 @@ export class CustomersService {
       idIssuedDate: customer.idIssuedDate?.toISOString() ?? null,
       licenseCategory: customer.licenseCategory ?? null,
       licenseIssuedBy: customer.licenseIssuedBy ?? null,
+      licenseIssuedDate: customer.licenseIssuedDate?.toISOString() ?? null,
       idExpiryDate: customer.idExpiryDate?.toISOString() ?? null,
       licenseBookletNumber: customer.licenseBookletNumber ?? null,
       isArchived: customer.isArchived,

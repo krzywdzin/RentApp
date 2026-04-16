@@ -604,6 +604,12 @@ export class ContractsService {
             )
             .then(() => {
               this.logger.log(`Contract email sent for ${contractNumber}`);
+              this.prisma.contract
+                .update({
+                  where: { id: contractId },
+                  data: { emailSentAt: new Date(), emailSentTo: customerEmail },
+                })
+                .catch(() => {});
             })
             .catch((error: unknown) => {
               this.logger.error(
