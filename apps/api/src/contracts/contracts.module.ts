@@ -1,4 +1,5 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import { json } from 'express';
 import { RentalsModule } from '../rentals/rentals.module';
 import { CustomersModule } from '../customers/customers.module';
 import { MailModule } from '../mail/mail.module';
@@ -18,4 +19,11 @@ import { RentalExtendedListener } from './listeners/rental-extended.listener';
   providers: [ContractsService, PdfService, PdfEncryptionService, RentalExtendedListener],
   exports: [ContractsService, PdfService],
 })
-export class ContractsModule {}
+export class ContractsModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    // Allow larger body for signature PNG base64 uploads on the sign endpoint
+    consumer
+      .apply(json({ limit: '10mb' }))
+      .forRoutes({ path: 'contracts/:id/sign', method: RequestMethod.POST });
+  }
+}

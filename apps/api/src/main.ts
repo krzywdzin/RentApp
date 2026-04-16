@@ -17,9 +17,10 @@ async function bootstrap() {
   app.enableShutdownHooks();
   logger.log('Shutdown hooks enabled — will shut down gracefully on SIGTERM/SIGINT');
 
-  // Increase body size limit for signature PNG base64 uploads
-  app.use(json({ limit: '10mb' }));
-  app.use(urlencoded({ extended: true, limit: '10mb' }));
+  // Default body size limit — kept small to prevent abuse
+  // Routes needing larger payloads (e.g., signature base64) use route-level overrides
+  app.use(json({ limit: '1mb' }));
+  app.use(urlencoded({ extended: true, limit: '1mb' }));
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -31,7 +32,10 @@ async function bootstrap() {
 
   app.useGlobalFilters(new AllExceptionsFilter());
 
-  app.use(helmet({ contentSecurityPolicy: false }));
+  app.use(helmet({
+    contentSecurityPolicy: { directives: { defaultSrc: ["'none'"] } },
+    hsts: { maxAge: 31536000, includeSubDomains: true },
+  }));
 
   const corsOrigins = (process.env.CORS_ORIGINS || 'http://localhost:3001')
     .split(',')
