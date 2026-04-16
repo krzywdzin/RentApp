@@ -28,7 +28,7 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
     setSelectedFile(null);
     setResult(null);
     importVehicles.reset();
-  }, [importVehicles]);
+  }, [importVehicles.reset]);
 
   const handleOpenChange = useCallback(
     (nextOpen: boolean) => {

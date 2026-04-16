@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { Button } from '@/components/ui/button';
@@ -28,6 +29,13 @@ export function TipTapEditor({ content, onChange, editable = true, className }: 
       onChange(editor.getHTML());
     },
   });
+
+  // Sync editor content when the content prop changes (e.g., async data load)
+  useEffect(() => {
+    if (editor && content !== editor.getHTML()) {
+      editor.commands.setContent(content, false);
+    }
+  }, [content, editor]);
 
   if (!editor) {
     return null;

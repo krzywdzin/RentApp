@@ -69,6 +69,9 @@ export async function apiClient<T>(path: string, options: RequestInit = {}): Pro
       throw new ApiError(retryRes.status, data);
     }
 
+    if (retryRes.status === 204 || retryRes.headers.get('content-length') === '0') {
+      return undefined as T;
+    }
     return retryRes.json();
   }
 
@@ -77,5 +80,8 @@ export async function apiClient<T>(path: string, options: RequestInit = {}): Pro
     throw new ApiError(res.status, data);
   }
 
+  if (res.status === 204 || res.headers.get('content-length') === '0') {
+    return undefined as T;
+  }
   return res.json();
 }
