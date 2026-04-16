@@ -30,7 +30,7 @@ export function validateEnvironment(): void {
     S3_ACCESS_KEY: 'minioadmin',
     S3_SECRET_KEY: 'minioadmin',
     CORS_ORIGINS: 'http://localhost:3001',
-    FIELD_ENCRYPTION_KEY: '0'.repeat(64), // dev fallback — warning logged at runtime
+    FIELD_ENCRYPTION_KEY: '0'.repeat(64), // dev-only fallback — blocked in production
   };
 
   for (const [key, defaultValue] of Object.entries(optionalDefaults)) {
@@ -42,11 +42,21 @@ export function validateEnvironment(): void {
   // --- Production-only requirements ---
   const nodeEnv = process.env.NODE_ENV;
   if (nodeEnv === 'production') {
-    const prodRequired = ['MAIL_HOST', 'MAIL_USER', 'MAIL_PASS', 'S3_ACCESS_KEY', 'S3_SECRET_KEY'];
+    const prodRequired = [
+      'MAIL_HOST', 'MAIL_USER', 'MAIL_PASS',
+      'S3_ACCESS_KEY', 'S3_SECRET_KEY',
+      'FIELD_ENCRYPTION_KEY', 'CORS_ORIGINS',
+      'JWT_MOBILE_SECRET',
+    ];
     for (const key of prodRequired) {
       if (!process.env[key]) {
         missing.push(key);
       }
+    }
+
+    // Block startup if encryption key is the dev fallback
+    if (process.env.FIELD_ENCRYPTION_KEY === '0'.repeat(64)) {
+      missing.push('FIELD_ENCRYPTION_KEY (cannot use dev fallback in production)');
     }
 
     // SMSAPI_TOKEN: warn only, do not block startup
