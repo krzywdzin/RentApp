@@ -1,7 +1,10 @@
 import { Controller, Get, Query } from '@nestjs/common';
+import { Roles } from '../common/decorators/roles.decorator';
+import { UserRole } from '@rentapp/shared';
 import { PlacesService } from './places.service';
 
 @Controller('places')
+@Roles(UserRole.ADMIN, UserRole.EMPLOYEE)
 export class PlacesController {
   constructor(private readonly placesService: PlacesService) {}
 

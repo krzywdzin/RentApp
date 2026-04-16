@@ -69,6 +69,9 @@ export class VehiclesController {
     }),
   )
   async importFleet(@UploadedFile() file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('File is required. Accepted formats: CSV, XLS, XLSX');
+    }
     return this.vehiclesService.importFleet(file);
   }
 

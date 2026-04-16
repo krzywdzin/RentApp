@@ -7,10 +7,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { Roles } from '../common/decorators/roles.decorator';
+import { UserRole } from '@rentapp/shared';
 import { ReturnProtocolsService } from './return-protocols.service';
 import { CreateReturnProtocolDto } from './dto/create-return-protocol.dto';
 
 @Controller('return-protocols')
+@Roles(UserRole.ADMIN, UserRole.EMPLOYEE)
 export class ReturnProtocolsController {
   constructor(private readonly service: ReturnProtocolsService) {}
 

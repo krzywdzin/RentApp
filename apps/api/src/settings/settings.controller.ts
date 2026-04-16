@@ -16,6 +16,7 @@ export class SettingsController {
   constructor(private readonly settingsService: SettingsService) {}
 
   @Get(':key')
+  @Roles(UserRole.ADMIN, UserRole.EMPLOYEE)
   async get(@Param('key') key: string) {
     const value = await this.settingsService.get(key);
     if (value === null) {
