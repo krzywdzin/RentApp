@@ -41,14 +41,20 @@ export class SmsService {
     return normalized;
   }
 
+  private maskPhone(phone: string): string {
+    if (phone.length <= 3) return '***';
+    return '***' + phone.slice(-3);
+  }
+
   async send(to: string, message: string): Promise<string> {
     const client = this.getClient();
     if (!client) {
-      this.logger.warn(`SMS not sent to ${to}: SMSAPI client not available`);
+      this.logger.warn(`SMS not sent to ${this.maskPhone(to)}: SMSAPI client not available`);
       return 'skipped';
     }
 
     const normalized = this.normalizePhone(to);
+    const masked = this.maskPhone(normalized);
     try {
       const result = await client.sms.sendSms(normalized, message, {
         from: this.senderName,
@@ -56,12 +62,12 @@ export class SmsService {
       } as Record<string, unknown>);
       const messageId = result?.list?.[0]?.id ?? 'unknown';
       this.logger.log(
-        `SMS sent to ${normalized} (messageId: ${messageId}, testMode: ${this.testMode})`,
+        `SMS sent to ${masked} (messageId: ${messageId}, testMode: ${this.testMode})`,
       );
       return String(messageId);
     } catch (error) {
       this.logger.error(
-        `Failed to send SMS to ${normalized}: ${(error as Error).message}`,
+        `Failed to send SMS to ${masked}: ${(error as Error).message}`,
       );
       throw error;
     }

@@ -10,6 +10,19 @@ import { AuditService } from './audit.service';
 
 const MUTATION_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
+const PII_FIELDS = new Set([
+  'pesel', 'idNumber', 'licenseNumber', 'password',
+  'phone', 'email', 'street', 'houseNumber', 'postalCode',
+]);
+
+function sanitizeBody(body: Record<string, unknown>): Record<string, unknown> {
+  const sanitized: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(body)) {
+    sanitized[key] = PII_FIELDS.has(key) ? '[REDACTED]' : value;
+  }
+  return sanitized;
+}
+
 @Injectable()
 export class AuditInterceptor implements NestInterceptor {
   private readonly logger = new Logger(AuditInterceptor.name);
@@ -71,7 +84,7 @@ export class AuditInterceptor implements NestInterceptor {
               action: `${controller.toLowerCase()}.${method.toLowerCase()}`,
               entityType: controller,
               entityId: String(responseBody.id),
-              changes: { body: { old: null, new: request.body } },
+              changes: { body: { old: null, new: sanitizeBody(request.body ?? {}) } },
               ipAddress,
             })
             .catch((err) => {
