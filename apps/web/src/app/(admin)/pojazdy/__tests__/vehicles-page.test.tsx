@@ -15,7 +15,12 @@ vi.mock('@/hooks/queries/use-vehicles', () => ({
   useArchiveVehicle: (...args: unknown[]) => mockUseArchiveVehicle(...args),
   useDeleteVehicle: (...args: unknown[]) => mockUseDeleteVehicle(...args),
   useUnarchiveVehicle: () => ({ mutate: vi.fn(), isPending: false }),
-  useImportVehicles: () => ({ mutate: vi.fn(), mutateAsync: vi.fn(), isPending: false, reset: vi.fn() }),
+  useImportVehicles: () => ({
+    mutate: vi.fn(),
+    mutateAsync: vi.fn(),
+    isPending: false,
+    reset: vi.fn(),
+  }),
   useBulkUpdateVehicles: (...args: unknown[]) => mockUseBulkUpdateVehicles(...args),
 }));
 
