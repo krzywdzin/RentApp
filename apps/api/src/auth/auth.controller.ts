@@ -79,8 +79,8 @@ export class AuthController {
     }
     const token = authHeader.replace('Bearer ', '');
     try {
-      // Decode without verification -- token may be expired
-      const decoded = this.jwtService.decode(token) as { sub?: string; aud?: 'admin' | 'mobile' };
+      // Verify signature but allow expired tokens
+      const decoded = this.jwtService.verify(token, { ignoreExpiration: true }) as { sub?: string; aud?: 'admin' | 'mobile' };
       if (!decoded?.sub) {
         throw new UnauthorizedException('Invalid token');
       }
