@@ -25,17 +25,17 @@ export function StatCard({
         <div className="flex items-start justify-between">
           <div className="space-y-1">
             <p className="font-body text-xs text-warm-gray">{title}</p>
-          <p
-            className={cn(
-              'font-display font-semibold text-3xl leading-tight',
-              variant === 'destructive' && Number(value) > 0
-                ? 'text-terracotta'
-                : 'text-forest-green',
-            )}
-          >
-            {value}
-          </p>
-          <p className="font-body text-xs text-warm-gray">{subtitle}</p>
+            <p
+              className={cn(
+                'font-display font-semibold text-3xl leading-tight',
+                variant === 'destructive' && Number(value) > 0
+                  ? 'text-terracotta'
+                  : 'text-forest-green',
+              )}
+            >
+              {value}
+            </p>
+            <p className="font-body text-xs text-warm-gray">{subtitle}</p>
           </div>
           <Icon className="h-5 w-5 text-warm-gray" />
         </div>

@@ -33,7 +33,7 @@ export function TipTapEditor({ content, onChange, editable = true, className }: 
   // Sync editor content when the content prop changes (e.g., async data load)
   useEffect(() => {
     if (editor && content !== editor.getHTML()) {
-      editor.commands.setContent(content, false);
+      editor.commands.setContent(content, { emitUpdate: false });
     }
   }, [content, editor]);
 

@@ -4,9 +4,18 @@ import RentalsPage from '../page';
 
 // Mock hooks
 const mockUseRentals = vi.fn();
+const mockUseArchivedRentals = vi.fn();
+const mockUseArchiveRental = vi.fn();
+const mockUseUnarchiveRental = vi.fn();
+const mockUseDeleteRental = vi.fn();
 
 vi.mock('@/hooks/queries/use-rentals', () => ({
   useRentals: (...args: unknown[]) => mockUseRentals(...args),
+  useArchivedRentals: (...args: unknown[]) => mockUseArchivedRentals(...args),
+  useArchiveRental: (...args: unknown[]) => mockUseArchiveRental(...args),
+  useUnarchiveRental: (...args: unknown[]) => mockUseUnarchiveRental(...args),
+  useDeleteRental: (...args: unknown[]) => mockUseDeleteRental(...args),
+  useSettlementRentals: () => ({ data: [], isLoading: false }),
 }));
 
 // Mock @rentapp/shared enums
@@ -17,11 +26,34 @@ vi.mock('@rentapp/shared', () => ({
     EXTENDED: 'EXTENDED',
     RETURNED: 'RETURNED',
   },
+  SettlementStatus: {
+    NIEROZLICZONY: 'NIEROZLICZONY',
+    CZESCIOWO_ROZLICZONY: 'CZESCIOWO_ROZLICZONY',
+    ROZLICZONY: 'ROZLICZONY',
+    ANULOWANY: 'ANULOWANY',
+  },
 }));
 
 // Mock sub-components that have complex dependencies
 vi.mock('../columns', () => ({
-  rentalColumns: [
+  getRentalColumns: () => [
+    {
+      id: 'customer',
+      accessorFn: (row: Record<string, unknown>) => {
+        const customer = row.customer as Record<string, string> | undefined;
+        return customer ? `${customer.firstName} ${customer.lastName}` : '';
+      },
+      header: 'Klient',
+      cell: ({ getValue }: { getValue: () => string }) => getValue(),
+    },
+    {
+      id: 'status',
+      accessorKey: 'status',
+      header: 'Status',
+      cell: ({ getValue }: { getValue: () => string }) => getValue(),
+    },
+  ],
+  getArchivedRentalColumns: () => [
     {
       id: 'customer',
       accessorFn: (row: Record<string, unknown>) => {
@@ -48,9 +80,25 @@ vi.mock('../calendar-view', () => ({
   CalendarView: () => <div data-testid="calendar-view">Calendar</div>,
 }));
 
+vi.mock('../settlement-summary-bar', () => ({
+  SettlementSummaryBar: () => <div data-testid="settlement-summary-bar">Summary</div>,
+}));
+
+vi.mock('../settlement-filter-bar', () => ({
+  SettlementFilterBar: () => <div data-testid="settlement-filter-bar">Settlement Filters</div>,
+}));
+
+vi.mock('../settlement-columns', () => ({
+  getSettlementColumns: () => [],
+}));
+
 describe('RentalsPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockUseArchivedRentals.mockReturnValue({ data: [], isLoading: false });
+    mockUseArchiveRental.mockReturnValue({ mutate: vi.fn(), isPending: false });
+    mockUseUnarchiveRental.mockReturnValue({ mutate: vi.fn(), isPending: false });
+    mockUseDeleteRental.mockReturnValue({ mutate: vi.fn(), isPending: false });
   });
 
   it('renders loading state', () => {
