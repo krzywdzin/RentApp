@@ -55,7 +55,7 @@ import { OcrModule } from './ocr/ocr.module';
         const isTls = redisUrl.startsWith('rediss://');
         return {
           url: redisUrl,
-          redis: isTls ? { tls: { rejectUnauthorized: false } } : undefined,
+          redis: isTls ? { tls: { rejectUnauthorized: true } } : undefined,
         };
       },
       inject: [ConfigService],
