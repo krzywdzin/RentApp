@@ -2,8 +2,35 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const API_URL = process.env.API_URL ?? 'http://localhost:3000';
 
+const ALLOWED_PATH_PREFIXES = [
+  '/vehicles',
+  '/customers',
+  '/rentals',
+  '/contracts',
+  '/users',
+  '/photos',
+  '/walkthroughs',
+  '/notifications',
+  '/alert-config',
+  '/audit',
+  '/cepik',
+  '/settings',
+  '/vehicle-classes',
+  '/rental-drivers',
+  '/places',
+  '/documents',
+  '/return-protocols',
+  '/ocr',
+  '/health',
+];
+
 async function proxyRequest(request: NextRequest) {
   const path = request.nextUrl.pathname.replace(/^\/api/, '');
+
+  // Block access to paths not in the allowlist
+  if (!ALLOWED_PATH_PREFIXES.some((prefix) => path.startsWith(prefix))) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  }
   const token = request.cookies.get('access_token')?.value;
 
   const incomingContentType = request.headers.get('content-type') ?? '';
