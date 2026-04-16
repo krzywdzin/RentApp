@@ -33,10 +33,10 @@ export class ReturnProtocolsService {
       throw new BadRequestException('Rental not found');
     }
 
-    // 2. Check rental is ACTIVE
-    if (rental.status !== 'ACTIVE') {
+    // 2. Check rental is ACTIVE or EXTENDED
+    if (rental.status !== 'ACTIVE' && rental.status !== 'EXTENDED') {
       throw new BadRequestException(
-        'Protocol can only be created for active rentals',
+        'Protocol can only be created for active or extended rentals',
       );
     }
 

@@ -107,7 +107,7 @@ export class RentalsService {
         SELECT id, "startDate", "endDate", status
         FROM rentals
         WHERE "vehicleId" = ${dto.vehicleId}
-          AND status NOT IN ('RETURNED')
+          AND status NOT IN ('RETURNED', 'DRAFT')
           AND tstzrange("startDate", "endDate", '[)') && tstzrange(${startDate}::timestamptz, ${endDate}::timestamptz, '[)')
       `;
 
@@ -142,6 +142,17 @@ export class RentalsService {
           returnLocation: dto.returnLocation
             ? (dto.returnLocation as unknown as Prisma.InputJsonValue)
             : undefined,
+          dailyKmLimit: dto.dailyKmLimit ?? null,
+          excessKmRate: dto.excessKmRate ?? null,
+          deposit: dto.deposit ?? null,
+          returnDeadlineHour: dto.returnDeadlineHour ?? null,
+          lateReturnPenalty: dto.lateReturnPenalty ?? null,
+          fuelLevelRequired: dto.fuelLevelRequired ?? null,
+          fuelCharge: dto.fuelCharge ?? null,
+          crossBorderAllowed: dto.crossBorderAllowed ?? false,
+          dirtyReturnFee: dto.dirtyReturnFee ?? null,
+          deductible: dto.deductible ?? null,
+          deductibleWaiverFee: dto.deductibleWaiverFee ?? null,
           overrodeConflict: conflicts.length > 0,
         },
         include: RENTAL_INCLUDE,
@@ -158,8 +169,10 @@ export class RentalsService {
       return created;
     });
 
-    // 8. Emit event
-    this.eventEmitter.emit('rental.created', { rental: result });
+    // 8. Emit event only when a rental was actually created (not a conflict response)
+    if (!('conflicts' in result)) {
+      this.eventEmitter.emit('rental.created', { rental: result });
+    }
 
     // 9. Return
     return result as RentalWithRelations | { rental: null; conflicts: OverlapConflict[] };
@@ -556,11 +569,12 @@ export class RentalsService {
       orderBy: { registration: 'asc' },
     });
 
-    // 2. Find all rentals in the date range
+    // 2. Find all rentals in the date range (exclude DRAFTs — they are uncommitted)
     const rentals = await this.prisma.rental.findMany({
       where: {
         startDate: { lte: to },
         endDate: { gte: from },
+        status: { not: RentalStatus.DRAFT },
       },
       include: { customer: true },
       orderBy: { startDate: 'asc' },
@@ -650,6 +664,11 @@ export class RentalsService {
 
       // Delete CEPIK verifications
       await tx.cepikVerification.deleteMany({
+        where: { rentalId: id },
+      });
+
+      // Delete return protocol
+      await tx.returnProtocol.deleteMany({
         where: { rentalId: id },
       });
 
@@ -754,7 +773,7 @@ export class RentalsService {
       SELECT id, "startDate", "endDate", status
       FROM rentals
       WHERE "vehicleId" = ${vehicleId}
-        AND status NOT IN ('RETURNED')
+        AND status NOT IN ('RETURNED', 'DRAFT')
         AND tstzrange("startDate", "endDate", '[)') && tstzrange(${startDate}::timestamptz, ${endDate}::timestamptz, '[)')
         AND (${excludeRentalId}::text IS NULL OR id::text != ${excludeRentalId}::text)
     `;
