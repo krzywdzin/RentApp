@@ -94,7 +94,13 @@ export class StorageService implements OnModuleInit {
         }),
       );
     } else {
-      const filePath = path.join(this.localStoragePath, key);
+      // Sanitize key to prevent path traversal in local storage fallback
+      const safeKey = key.replace(/\.\./g, '').replace(/^\/+/, '');
+      const filePath = path.join(this.localStoragePath, safeKey);
+      // Ensure resolved path stays within local storage directory
+      if (!filePath.startsWith(path.resolve(this.localStoragePath))) {
+        throw new Error('Invalid storage key: path traversal detected');
+      }
       await fs.mkdir(path.dirname(filePath), { recursive: true });
       await fs.writeFile(filePath, body);
     }

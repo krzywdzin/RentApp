@@ -5,6 +5,7 @@ import {
   Param,
   Body,
   NotFoundException,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { ReturnProtocolsService } from './return-protocols.service';
@@ -23,7 +24,7 @@ export class ReturnProtocolsController {
   }
 
   @Get(':rentalId')
-  async findByRentalId(@Param('rentalId') rentalId: string) {
+  async findByRentalId(@Param('rentalId', ParseUUIDPipe) rentalId: string) {
     const protocol = await this.service.findByRentalId(rentalId);
     if (!protocol) {
       throw new NotFoundException('Protocol not found for this rental');
@@ -32,7 +33,7 @@ export class ReturnProtocolsController {
   }
 
   @Get(':rentalId/download')
-  async getDownloadUrl(@Param('rentalId') rentalId: string) {
+  async getDownloadUrl(@Param('rentalId', ParseUUIDPipe) rentalId: string) {
     const url = await this.service.getDownloadUrl(rentalId);
     return { url };
   }

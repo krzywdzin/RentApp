@@ -161,6 +161,14 @@ export class VehiclesController {
     FileInterceptor('file', {
       storage: memoryStorage(),
       limits: { fileSize: 10 * 1024 * 1024 },
+      fileFilter: (_req, file, cb) => {
+        const allowed = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
+        if (allowed.includes(file.mimetype)) {
+          cb(null, true);
+        } else {
+          cb(new BadRequestException('Only PDF and image files (JPEG, PNG, WebP) are allowed'), false);
+        }
+      },
     }),
   )
   async uploadDocument(
@@ -183,10 +191,11 @@ export class VehiclesController {
       storage: memoryStorage(),
       limits: { fileSize: 5 * 1024 * 1024 },
       fileFilter: (_req, file, cb) => {
-        if (file.mimetype.startsWith('image/')) {
+        const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+        if (allowed.includes(file.mimetype)) {
           cb(null, true);
         } else {
-          cb(new BadRequestException('Only image files are allowed'), false);
+          cb(new BadRequestException('Only image files (JPEG, PNG, WebP) are allowed'), false);
         }
       },
     }),

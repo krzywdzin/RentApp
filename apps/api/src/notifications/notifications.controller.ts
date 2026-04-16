@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, Post, Param, Query } from '@nestjs/common';
+import { Controller, Get, Patch, Post, Param, ParseUUIDPipe, Query } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { AlertScannerService } from './cron/alert-scanner.service';
 import { NotificationQueryDto } from './dto/notification-query.dto';
@@ -38,7 +38,7 @@ export class NotificationsController {
   @Patch('in-app/:id/read')
   @Roles(UserRole.ADMIN, UserRole.EMPLOYEE)
   async markAsRead(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @CurrentUser() user: { id: string },
   ) {
     return this.notificationsService.markAsRead(id, user.id);
