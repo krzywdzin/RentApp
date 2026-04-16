@@ -13,6 +13,8 @@ export function AppInput({
   error,
   leftIcon,
   containerStyle,
+  onFocus,
+  onBlur,
   ...rest
 }: AppInputProps) {
   const [isFocused, setIsFocused] = useState(false);
@@ -36,15 +38,15 @@ export function AppInput({
           accessibilityLabel={label}
           accessibilityLabelledBy={inputId + '-label'}
           {...(error ? { accessibilityHint: error } : {})}
+          {...rest}
           onFocus={(e) => {
             setIsFocused(true);
-            rest.onFocus?.(e);
+            onFocus?.(e);
           }}
           onBlur={(e) => {
             setIsFocused(false);
-            rest.onBlur?.(e);
+            onBlur?.(e);
           }}
-          {...rest}
         />
       </View>
       {error && <Text style={styles.error}>{error}</Text>}

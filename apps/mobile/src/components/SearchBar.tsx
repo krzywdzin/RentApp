@@ -19,6 +19,15 @@ export function SearchBar({ value, onChangeText, placeholder, accessibilityLabel
     setLocalValue(value);
   }, [value]);
 
+  // Clear debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
+
   const handleChange = useCallback(
     (text: string) => {
       setLocalValue(text);

@@ -54,6 +54,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
         }
         setBiometricChecked(true);
         setIsReady(true);
+      }).catch(() => {
+        // Biometric hardware unavailable or unexpected error — proceed without biometric
+        setBiometricChecked(true);
+        setIsReady(true);
       });
     } else {
       setBiometricChecked(true);
