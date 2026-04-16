@@ -72,10 +72,13 @@ export class PortalService {
       throw new UnauthorizedException();
     }
 
-    // Sign portal JWT
+    // Sign portal JWT with portal-specific secret
     const accessToken = this.jwtService.sign(
       { sub: customerId, type: 'portal' },
-      { expiresIn: '24h' },
+      {
+        expiresIn: '24h',
+        secret: this.config.get<string>('PORTAL_JWT_SECRET'),
+      },
     );
 
     return { accessToken };

@@ -60,7 +60,7 @@ export function useCreateReturnProtocol() {
       otherNotes?: string;
       customerSignatureBase64: string;
       workerSignatureBase64: string;
-    }) => apiClient.post('/return-protocols', data),
+    }) => apiClient.post('/return-protocols', data).then((res) => res.data),
   });
 }
 

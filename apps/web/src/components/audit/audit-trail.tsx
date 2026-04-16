@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import {
@@ -55,6 +55,11 @@ export function AuditTrail({ entityType, entityId, actorId, dateFrom, dateTo }: 
   const [limit, setLimit] = useState(25);
   const [offset, setOffset] = useState(0);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+
+  // Reset pagination when filters change
+  useEffect(() => {
+    setOffset(0);
+  }, [entityType, entityId, actorId, dateFrom, dateTo]);
 
   const {
     data: response,

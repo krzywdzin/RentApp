@@ -4,12 +4,23 @@ import { VehiclesPage } from '../vehicles-page';
 
 // Mock hooks
 const mockUseVehicles = vi.fn();
+const mockUseArchivedVehicles = vi.fn();
 const mockUseArchiveVehicle = vi.fn();
+const mockUseDeleteVehicle = vi.fn();
 const mockUseBulkUpdateVehicles = vi.fn();
 
 vi.mock('@/hooks/queries/use-vehicles', () => ({
   useVehicles: (...args: unknown[]) => mockUseVehicles(...args),
+  useArchivedVehicles: (...args: unknown[]) => mockUseArchivedVehicles(...args),
   useArchiveVehicle: (...args: unknown[]) => mockUseArchiveVehicle(...args),
+  useDeleteVehicle: (...args: unknown[]) => mockUseDeleteVehicle(...args),
+  useUnarchiveVehicle: () => ({ mutate: vi.fn(), isPending: false }),
+  useImportVehicles: () => ({
+    mutate: vi.fn(),
+    mutateAsync: vi.fn(),
+    isPending: false,
+    reset: vi.fn(),
+  }),
   useBulkUpdateVehicles: (...args: unknown[]) => mockUseBulkUpdateVehicles(...args),
 }));
 
@@ -18,6 +29,14 @@ vi.mock('@rentapp/shared', () => ({}));
 
 // Mock sub-components
 vi.mock('../columns', () => ({
+  getArchivedVehicleColumns: () => [
+    {
+      id: 'registration',
+      accessorKey: 'registration',
+      header: 'Rejestracja',
+      cell: ({ getValue }: { getValue: () => string }) => getValue(),
+    },
+  ],
   getVehicleColumns: () => [
     {
       id: 'registration',
@@ -53,7 +72,9 @@ vi.mock('@/lib/csv-export', () => ({
 describe('VehiclesPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockUseArchivedVehicles.mockReturnValue({ data: [], isLoading: false });
     mockUseArchiveVehicle.mockReturnValue({ mutate: vi.fn(), isPending: false });
+    mockUseDeleteVehicle.mockReturnValue({ mutate: vi.fn(), isPending: false });
     mockUseBulkUpdateVehicles.mockReturnValue({ mutate: vi.fn(), isPending: false });
   });
 

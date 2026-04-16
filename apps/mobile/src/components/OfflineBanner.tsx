@@ -24,7 +24,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.amberGlow + '26',
     paddingHorizontal: 16,
     paddingBottom: 4,
-    height: 28,
     justifyContent: 'flex-end',
   },
   text: {

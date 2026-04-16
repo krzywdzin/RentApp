@@ -9,6 +9,7 @@ import {
   Min,
   MinLength,
   MaxLength,
+  Max,
   ValidateNested,
   ValidateIf,
   IsNumber,
@@ -85,6 +86,7 @@ export class CreateRentalDto {
   @IsOptional()
   @IsInt()
   @Min(0)
+  @Max(100)
   vatRate?: number;
 
   @IsOptional()

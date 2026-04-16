@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       secure: isProduction,
       sameSite: 'lax',
       maxAge: 86400,
-      path: '/',
+      path: '/api/auth',
     });
   }
 

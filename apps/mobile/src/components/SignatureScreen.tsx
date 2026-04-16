@@ -60,7 +60,7 @@ export function SignatureScreen({
       mounted = false;
       ScreenOrientation.lockAsync(
         ScreenOrientation.OrientationLock.PORTRAIT_UP,
-      );
+      ).catch(() => {});
     };
   }, []);
 
