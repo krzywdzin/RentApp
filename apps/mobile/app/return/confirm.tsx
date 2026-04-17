@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -8,13 +8,17 @@ import Toast from 'react-native-toast-message';
 import { DAMAGE_TYPE_LABELS, CLEANLINESS_LABELS } from '@rentapp/shared';
 
 import { useRental, useReturnRental, useCreateReturnProtocol } from '@/hooks/use-rentals';
-import { useReturnDraftStore, useReturnDraftHasHydrated, RETURN_WIZARD_TOTAL_STEPS } from '@/stores/return-draft.store';
+import {
+  useReturnDraftStore,
+  useReturnDraftHasHydrated,
+  RETURN_WIZARD_TOTAL_STEPS,
+} from '@/stores/return-draft.store';
 import { formatMileage } from '@/lib/format';
 import { WizardStepper } from '@/components/WizardStepper';
 import { LoadingSkeleton } from '@/components/LoadingSkeleton';
 import { AppCard } from '@/components/AppCard';
 import { AppButton } from '@/components/AppButton';
-import { colors, fonts, spacing } from '@/lib/theme';
+import { colors, fonts, radii, spacing } from '@/lib/theme';
 
 export default function ReturnConfirmScreen() {
   const { t } = useTranslation();
@@ -36,6 +40,7 @@ export default function ReturnConfirmScreen() {
   const clearDraft = useReturnDraftStore((s) => s.clearDraft);
 
   const { data: rental, isLoading } = useRental(rentalId ?? '');
+  const [showVatModal, setShowVatModal] = useState(false);
 
   useEffect(() => {
     if (hasHydrated && !rentalId) {
@@ -59,10 +64,24 @@ export default function ReturnConfirmScreen() {
   }
 
   const handoverMileage = rental?.vehicle?.mileage ?? 0;
-  const distanceDriven =
-    returnMileage != null ? returnMileage - handoverMileage : 0;
+  const distanceDriven = returnMileage != null ? returnMileage - handoverMileage : 0;
+
+  const requiresVatReminder =
+    rental?.vatPayerStatus === 'FULL_100' || rental?.vatPayerStatus === 'HALF_50';
 
   const handleSubmit = async () => {
+    if (!rentalId || returnMileage == null) return;
+    if (!protocolCleanliness || !protocolCustomerSignature || !protocolWorkerSignature) return;
+
+    if (requiresVatReminder) {
+      setShowVatModal(true);
+      return;
+    }
+
+    await doSubmit();
+  };
+
+  const doSubmit = async () => {
     if (!rentalId || returnMileage == null) return;
     if (!protocolCleanliness || !protocolCustomerSignature || !protocolWorkerSignature) return;
 
@@ -87,14 +106,11 @@ export default function ReturnConfirmScreen() {
     // Step 2: Return the rental (existing logic)
     const damageSummary = damagePins
       .map(
-        (p) =>
-          `#${p.pinNumber} ${DAMAGE_TYPE_LABELS[p.damageType]}${p.note ? ': ' + p.note : ''}`,
+        (p) => `#${p.pinNumber} ${DAMAGE_TYPE_LABELS[p.damageType]}${p.note ? ': ' + p.note : ''}`,
       )
       .join('; ');
 
-    const generalNotes = [damageSummary, notes]
-      .filter(Boolean)
-      .join('\n\n');
+    const generalNotes = [damageSummary, notes].filter(Boolean).join('\n\n');
 
     returnMutation.mutate(
       {
@@ -149,8 +165,7 @@ export default function ReturnConfirmScreen() {
               {rental.customer.firstName} {rental.customer.lastName}
             </Text>
             <Text style={s.subText}>
-              {rental.vehicle.registration} - {rental.vehicle.make}{' '}
-              {rental.vehicle.model}
+              {rental.vehicle.registration} - {rental.vehicle.make} {rental.vehicle.model}
             </Text>
           </AppCard>
         )}
@@ -188,9 +203,7 @@ export default function ReturnConfirmScreen() {
                   <Text style={s.checkItemLabel}>
                     #{pin.pinNumber} {DAMAGE_TYPE_LABELS[pin.damageType]}
                   </Text>
-                  {pin.note ? (
-                    <Text style={s.checkItemNotes}>{pin.note}</Text>
-                  ) : null}
+                  {pin.note ? <Text style={s.checkItemNotes}>{pin.note}</Text> : null}
                 </View>
               </View>
             ))
@@ -243,6 +256,28 @@ export default function ReturnConfirmScreen() {
           onPress={handleSubmit}
         />
       </View>
+
+      {/* VAT documentation reminder */}
+      <Modal visible={showVatModal} transparent animationType="fade" statusBarTranslucent>
+        <View style={s.vatOverlay}>
+          <View style={s.vatDialog}>
+            <Text style={s.vatTitle}>Dokumentacja VAT</Text>
+            <Text style={s.vatBody}>Pamiętaj o pobraniu dokumentacji VAT od klienta!</Text>
+            <AppButton
+              title="Potwierdzam, dokumenty pobrane"
+              fullWidth
+              containerStyle={s.vatButtonWrap}
+              onPress={() => {
+                setShowVatModal(false);
+                doSubmit();
+              }}
+            />
+            <Pressable style={s.vatCancelWrap} onPress={() => setShowVatModal(false)}>
+              <Text style={s.vatCancelText}>Anuluj</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -252,9 +287,21 @@ const s = StyleSheet.create({
   flex1: { flex: 1 },
   padWrap: { paddingHorizontal: spacing.base, paddingTop: 8 },
   scrollContent: { paddingHorizontal: spacing.base, paddingTop: spacing.base, paddingBottom: 128 },
-  stepTitle: { marginBottom: spacing.base, fontFamily: fonts.display, fontSize: 20, fontWeight: '600', color: colors.charcoal },
+  stepTitle: {
+    marginBottom: spacing.base,
+    fontFamily: fonts.display,
+    fontSize: 20,
+    fontWeight: '600',
+    color: colors.charcoal,
+  },
   mb12: { marginBottom: spacing.md },
-  sectionLabel: { marginBottom: 8, fontFamily: fonts.body, fontSize: 13, fontWeight: '500', color: colors.warmGray },
+  sectionLabel: {
+    marginBottom: 8,
+    fontFamily: fonts.body,
+    fontSize: 13,
+    fontWeight: '500',
+    color: colors.warmGray,
+  },
   mainText: { fontFamily: fonts.body, fontSize: 16, fontWeight: '600', color: colors.charcoal },
   subText: { marginTop: 4, fontFamily: fonts.body, fontSize: 13, color: colors.warmGray },
   smallLabel: { fontFamily: fonts.body, fontSize: 13, color: colors.warmGray },
@@ -263,8 +310,21 @@ const s = StyleSheet.create({
   distanceWrap: { marginTop: 8, borderTopWidth: 1, borderTopColor: colors.sand, paddingTop: 8 },
   distanceValue: { fontFamily: fonts.data, fontSize: 16, color: colors.charcoal },
   damageRow: { marginBottom: 8, flexDirection: 'row', alignItems: 'flex-start' },
-  redDot: { marginRight: 8, marginTop: 6, height: 12, width: 12, borderRadius: 6, backgroundColor: colors.terracotta },
-  greenDot: { marginRight: 8, height: 12, width: 12, borderRadius: 6, backgroundColor: colors.forestGreen },
+  redDot: {
+    marginRight: 8,
+    marginTop: 6,
+    height: 12,
+    width: 12,
+    borderRadius: 6,
+    backgroundColor: colors.terracotta,
+  },
+  greenDot: {
+    marginRight: 8,
+    height: 12,
+    width: 12,
+    borderRadius: 6,
+    backgroundColor: colors.forestGreen,
+  },
   okRow: { marginBottom: 4, flexDirection: 'row', alignItems: 'center' },
   checkItemLabel: { fontFamily: fonts.body, fontSize: 16, color: colors.charcoal },
   checkItemNotes: { marginTop: 2, fontFamily: fonts.body, fontSize: 13, color: colors.warmGray },
@@ -279,5 +339,45 @@ const s = StyleSheet.create({
     backgroundColor: colors.cream,
     paddingHorizontal: spacing.base,
     paddingTop: spacing.base,
+  },
+  vatOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(44,44,44,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+  },
+  vatDialog: {
+    backgroundColor: colors.warmStone,
+    borderRadius: radii.lg,
+    padding: 24,
+    width: '100%',
+    maxWidth: 400,
+  },
+  vatTitle: {
+    fontFamily: fonts.display,
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.charcoal,
+  },
+  vatBody: {
+    fontFamily: fonts.body,
+    fontSize: 16,
+    color: colors.warmGray,
+    marginTop: 8,
+    lineHeight: 24,
+  },
+  vatButtonWrap: {
+    marginTop: 24,
+  },
+  vatCancelWrap: {
+    marginTop: 12,
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  vatCancelText: {
+    fontFamily: fonts.body,
+    fontSize: 15,
+    color: colors.warmGray,
   },
 });
