@@ -54,6 +54,8 @@ const DatesSchema = z
     dirtyReturnFee: z.string().optional(),
     deductible: z.string().optional(),
     deductibleWaiverFee: z.string().optional(),
+    insuranceCaseNumber: z.string().optional(),
+    termsNotes: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.isCompanyRental && (!data.companyNip || !/^\d{10}$/.test(data.companyNip))) {
@@ -108,6 +110,8 @@ export default function DatesStep() {
       dirtyReturnFee: draft.dirtyReturnFee ? String(draft.dirtyReturnFee / 100) : '',
       deductible: draft.deductible ? String(draft.deductible / 100) : '',
       deductibleWaiverFee: draft.deductibleWaiverFee ? String(draft.deductibleWaiverFee / 100) : '',
+      insuranceCaseNumber: draft.insuranceCaseNumber ?? '',
+      termsNotes: draft.termsNotes ?? '',
     },
   });
 
@@ -233,6 +237,8 @@ export default function DatesStep() {
         dirtyReturnFee: parseGrosze(data.dirtyReturnFee),
         deductible: parseGrosze(data.deductible),
         deductibleWaiverFee: parseGrosze(data.deductibleWaiverFee),
+        insuranceCaseNumber: data.insuranceCaseNumber || null,
+        termsNotes: data.termsNotes || null,
         step: 3,
       });
       router.push('/(tabs)/new-rental/contract');
@@ -336,6 +342,22 @@ export default function DatesStep() {
               <Text style={s.totalValue}>{formatCurrency(pricing.totalGrossGrosze)}</Text>
             </View>
           </View>
+
+          {/* Insurance case number */}
+          <Controller
+            control={control}
+            name="insuranceCaseNumber"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <AppInput
+                label="Nr sprawy ubezpieczeniowej (opcjonalnie)"
+                value={value ?? ''}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                placeholder="np. PZU/2024/12345"
+                containerStyle={{ marginBottom: spacing.md, marginTop: spacing.lg }}
+              />
+            )}
+          />
 
           {/* Company rental toggle */}
           <View style={s.companySection}>
@@ -574,6 +596,23 @@ export default function DatesStep() {
                   onBlur={onBlur}
                   keyboardType="decimal-pad"
                   placeholder="np. 50"
+                  containerStyle={{ marginTop: spacing.md }}
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="termsNotes"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <AppInput
+                  label="Dodatkowe uwagi do warunków najmu"
+                  value={value ?? ''}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  placeholder="np. Pojazd zostaje wydany z zadrapaniem na zderzaku tylnym"
+                  multiline
+                  numberOfLines={3}
                   containerStyle={{ marginTop: spacing.md }}
                 />
               )}

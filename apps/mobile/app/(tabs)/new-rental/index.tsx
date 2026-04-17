@@ -14,7 +14,7 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Modal, ScrollView, TouchableOpacity } from 'react-native';
+import { Modal, Pressable, ScrollView, TouchableOpacity } from 'react-native';
 import { CreateCustomerSchema, type CreateCustomerInput } from '@rentapp/shared';
 import type { IdCardOcrFields, DriverLicenseOcrFields } from '@rentapp/shared';
 import Toast from 'react-native-toast-message';
@@ -31,6 +31,7 @@ import { DocumentGuideOverlay } from '@/components/DocumentScanner/DocumentGuide
 import { BackScanPrompt } from '@/components/DocumentScanner/BackScanPrompt';
 import { DocumentConfirmation } from '@/components/DocumentScanner/DocumentConfirmation';
 import { DocumentDiffView } from '@/components/DocumentScanner/DocumentDiffView';
+import { AppSwitch } from '@/components/AppSwitch';
 import { useDocumentScan } from '@/hooks/use-document-scan';
 import { useRentalDraftStore, useRentalDraftHasHydrated } from '@/stores/rental-draft.store';
 import { useCustomerSearch, useCreateCustomer, useCustomer } from '@/hooks/use-customers';
@@ -65,6 +66,18 @@ export default function CustomerStep() {
 
   const { data: customers, isLoading, isFetching } = useCustomerSearch(searchQuery);
   const createCustomer = useCreateCustomer();
+
+  const [isCompanyRental, setIsCompanyRental] = useState(draft.isCompanyRental ?? false);
+  const [companyNip, setCompanyNip] = useState(draft.companyNip ?? '');
+  const [vatPayerStatus, setVatPayerStatus] = useState<'FULL_100' | 'HALF_50' | 'NONE' | null>(
+    (draft.vatPayerStatus as 'FULL_100' | 'HALF_50' | 'NONE' | null) ?? null,
+  );
+
+  const VAT_OPTIONS = [
+    { label: '100%', value: 'FULL_100' as const },
+    { label: '50%', value: 'HALF_50' as const },
+    { label: 'Nie', value: 'NONE' as const },
+  ];
 
   // Document scanning
   const idScan = useDocumentScan('ID_CARD');
@@ -120,10 +133,17 @@ export default function CustomerStep() {
 
   const handleSelectCustomer = useCallback(
     (id: string, name: string) => {
-      draft.updateDraft({ customerId: id, customerName: name, step: 1 });
+      draft.updateDraft({
+        customerId: id,
+        customerName: name,
+        step: 1,
+        isCompanyRental,
+        companyNip: isCompanyRental ? companyNip || null : null,
+        vatPayerStatus: isCompanyRental ? vatPayerStatus || null : null,
+      });
       router.push('/(tabs)/new-rental/vehicle');
     },
-    [draft, router],
+    [draft, router, isCompanyRental, companyNip, vatPayerStatus],
   );
 
   const handleNewCustomer = useCallback(() => {
@@ -480,6 +500,49 @@ export default function CustomerStep() {
               scanData={draft.driverLicenseScan}
               onPress={handleLicenseScanPress}
             />
+          </View>
+
+          <View style={s.companySection}>
+            <AppSwitch
+              label="Klient jest firmą"
+              value={isCompanyRental}
+              onValueChange={(val) => {
+                setIsCompanyRental(val);
+                if (!val) {
+                  setCompanyNip('');
+                  setVatPayerStatus(null);
+                }
+              }}
+            />
+            {isCompanyRental && (
+              <View style={s.companyFields}>
+                <AppInput
+                  label="NIP"
+                  value={companyNip}
+                  onChangeText={setCompanyNip}
+                  keyboardType="numeric"
+                  maxLength={10}
+                  placeholder="0000000000"
+                  containerStyle={s.mb12}
+                />
+                <Text style={s.fieldLabel}>Płatnik VAT</Text>
+                <View style={s.vatChipRow}>
+                  {VAT_OPTIONS.map((opt) => (
+                    <Pressable
+                      key={opt.value}
+                      style={[s.vatChip, vatPayerStatus === opt.value && s.vatChipActive]}
+                      onPress={() => setVatPayerStatus(opt.value)}
+                    >
+                      <Text
+                        style={[s.vatChipText, vatPayerStatus === opt.value && s.vatChipTextActive]}
+                      >
+                        {opt.label}
+                      </Text>
+                    </Pressable>
+                  ))}
+                </View>
+              </View>
+            )}
           </View>
 
           <AppButton
@@ -873,6 +936,53 @@ export default function CustomerStep() {
                 containerStyle={s.mb12}
               />
 
+              {/* Company rental section */}
+              <View style={[s.companySection, { marginTop: spacing.lg }]}>
+                <AppSwitch
+                  label="Klient jest firmą"
+                  value={isCompanyRental}
+                  onValueChange={(val) => {
+                    setIsCompanyRental(val);
+                    if (!val) {
+                      setCompanyNip('');
+                      setVatPayerStatus(null);
+                    }
+                  }}
+                />
+                {isCompanyRental && (
+                  <View style={s.companyFields}>
+                    <AppInput
+                      label="NIP"
+                      value={companyNip}
+                      onChangeText={setCompanyNip}
+                      keyboardType="numeric"
+                      maxLength={10}
+                      placeholder="0000000000"
+                      containerStyle={s.mb12}
+                    />
+                    <Text style={s.fieldLabel}>Płatnik VAT</Text>
+                    <View style={s.vatChipRow}>
+                      {VAT_OPTIONS.map((opt) => (
+                        <Pressable
+                          key={opt.value}
+                          style={[s.vatChip, vatPayerStatus === opt.value && s.vatChipActive]}
+                          onPress={() => setVatPayerStatus(opt.value)}
+                        >
+                          <Text
+                            style={[
+                              s.vatChipText,
+                              vatPayerStatus === opt.value && s.vatChipTextActive,
+                            ]}
+                          >
+                            {opt.label}
+                          </Text>
+                        </Pressable>
+                      ))}
+                    </View>
+                  </View>
+                )}
+              </View>
+
               <AppButton
                 title={t('common.save')}
                 onPress={handleSubmit(handleCreateCustomer)}
@@ -1079,4 +1189,29 @@ const s = StyleSheet.create({
     color: colors.forestGreen,
     fontWeight: '500',
   },
+  companySection: { marginTop: spacing.lg },
+  companyFields: { marginTop: spacing.md },
+  fieldLabel: {
+    marginBottom: 4,
+    fontFamily: fonts.body,
+    fontWeight: '500',
+    fontSize: 13,
+    color: colors.warmGray,
+  },
+  vatChipRow: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.xs },
+  vatChip: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.sand,
+    alignItems: 'center',
+    backgroundColor: colors.cream,
+  },
+  vatChipActive: {
+    borderColor: colors.forestGreen,
+    backgroundColor: colors.sageTint,
+  },
+  vatChipText: { fontFamily: fonts.body, fontSize: 14, color: colors.warmGray },
+  vatChipTextActive: { color: colors.forestGreen, fontWeight: '500' },
 });
