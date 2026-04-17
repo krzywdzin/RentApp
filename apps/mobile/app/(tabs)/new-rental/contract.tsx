@@ -1,5 +1,16 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -44,15 +55,16 @@ export default function ContractStep() {
         if (!cancelled) setLoadingTerms(false);
       }
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const termsHtml = draft.rentalTerms ?? defaultTermsHtml ?? '';
 
   const days = (() => {
     if (!draft.startDate || !draft.endDate) return 0;
-    const diffMs =
-      new Date(draft.endDate).getTime() - new Date(draft.startDate).getTime();
+    const diffMs = new Date(draft.endDate).getTime() - new Date(draft.startDate).getTime();
     return Math.max(Math.ceil(diffMs / ONE_DAY_MS), 0);
   })();
 
@@ -75,13 +87,19 @@ export default function ContractStep() {
     }
   }, [draft]);
 
-  const handleTermsHtmlChange = useCallback((html: string) => {
-    draft.updateDraft({ rentalTerms: html });
-  }, [draft]);
+  const handleTermsHtmlChange = useCallback(
+    (html: string) => {
+      draft.updateDraft({ rentalTerms: html });
+    },
+    [draft],
+  );
 
-  const handleTermsNotesChange = useCallback((text: string) => {
-    draft.updateDraft({ termsNotes: text });
-  }, [draft]);
+  const handleTermsNotesChange = useCallback(
+    (text: string) => {
+      draft.updateDraft({ termsNotes: text });
+    },
+    [draft],
+  );
 
   const handleNext = useCallback(() => {
     draft.updateDraft({ step: 4 });
@@ -100,15 +118,9 @@ export default function ContractStep() {
 
   return (
     <SafeAreaView style={s.safeArea} edges={['top']}>
-      <WizardStepper
-        currentStep={4}
-        totalSteps={6}
-        labels={RENTAL_WIZARD_LABELS}
-      />
+      <WizardStepper currentStep={4} totalSteps={6} labels={RENTAL_WIZARD_LABELS} />
 
-      <Text style={s.stepTitle}>
-        {t('wizard.step4')}
-      </Text>
+      <Text style={s.stepTitle}>{t('wizard.step4')}</Text>
 
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={s.flex1}>
         <ScrollView
@@ -157,12 +169,16 @@ export default function ContractStep() {
 
           {/* 2. Terms Display */}
           <View style={s.termsSection}>
-            <Pressable style={s.termsSectionHeader} onPress={() => setTermsExpanded(!termsExpanded)}>
+            <Pressable
+              style={s.termsSectionHeader}
+              onPress={() => setTermsExpanded(!termsExpanded)}
+            >
               <Text style={s.termsSectionTitle}>Warunki najmu</Text>
-              {termsExpanded
-                ? <ChevronUp size={20} color={colors.warmGray} />
-                : <ChevronDown size={20} color={colors.warmGray} />
-              }
+              {termsExpanded ? (
+                <ChevronUp size={20} color={colors.warmGray} />
+              ) : (
+                <ChevronDown size={20} color={colors.warmGray} />
+              )}
             </Pressable>
 
             {termsExpanded && (
@@ -172,10 +188,7 @@ export default function ContractStep() {
                 ) : (
                   <TermsWebView html={termsHtml} editable={false} />
                 )}
-                <Pressable
-                  style={s.editTermsBtn}
-                  onPress={() => setShowTermsEditor(true)}
-                >
+                <Pressable style={s.editTermsBtn} onPress={() => setShowTermsEditor(true)}>
                   <Edit3 size={16} color={colors.forestGreen} />
                   <Text style={s.editTermsBtnText}>Edytuj warunki</Text>
                 </Pressable>
@@ -214,9 +227,7 @@ export default function ContractStep() {
                 <Square size={24} color={colors.sand} />
               </View>
             )}
-            <Text style={s.checkboxText}>
-              Zapoznalem sie z warunkami najmu i akceptuje je
-            </Text>
+            <Text style={s.checkboxText}>Zapoznałem/am się z warunkami najmu i akceptuję je</Text>
           </Pressable>
 
           {/* 5. Second Driver Section */}
@@ -236,10 +247,7 @@ export default function ContractStep() {
                 }}
               />
             ) : (
-              <Pressable
-                style={s.addDriverBtn}
-                onPress={() => setShowSecondDriverForm(true)}
-              >
+              <Pressable style={s.addDriverBtn} onPress={() => setShowSecondDriverForm(true)}>
                 <Plus size={18} color={colors.forestGreen} />
                 <Text style={s.addDriverBtnText}>Dodaj drugiego kierowce</Text>
               </Pressable>
@@ -292,18 +300,10 @@ export default function ContractStep() {
             </Pressable>
           </View>
           <ScrollView style={s.flex1} contentContainerStyle={{ paddingBottom: 40 }}>
-            <TermsWebView
-              html={termsHtml}
-              onHtmlChange={handleTermsHtmlChange}
-              editable
-            />
+            <TermsWebView html={termsHtml} onHtmlChange={handleTermsHtmlChange} editable />
           </ScrollView>
           <View style={s.modalFooter}>
-            <AppButton
-              title="Zapisz zmiany"
-              onPress={() => setShowTermsEditor(false)}
-              fullWidth
-            />
+            <AppButton title="Zapisz zmiany" onPress={() => setShowTermsEditor(false)} fullWidth />
           </View>
         </SafeAreaView>
       </Modal>
@@ -314,14 +314,28 @@ export default function ContractStep() {
 const s = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.cream },
   flex1: { flex: 1 },
-  stepTitle: { marginTop: spacing.base, paddingHorizontal: spacing.base, fontFamily: fonts.display, fontSize: 20, fontWeight: '600', color: colors.charcoal },
+  stepTitle: {
+    marginTop: spacing.base,
+    paddingHorizontal: spacing.base,
+    fontFamily: fonts.display,
+    fontSize: 20,
+    fontWeight: '600',
+    color: colors.charcoal,
+  },
   scrollBody: { flex: 1, paddingHorizontal: spacing.base, paddingTop: spacing.base },
   previewBox: {
     borderRadius: 8,
     backgroundColor: colors.warmStone,
     padding: spacing.base,
   },
-  sectionHeader: { fontFamily: fonts.body, fontSize: 13, fontWeight: '500', textTransform: 'uppercase', letterSpacing: 1, color: colors.warmGray },
+  sectionHeader: {
+    fontFamily: fonts.body,
+    fontSize: 13,
+    fontWeight: '500',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    color: colors.warmGray,
+  },
   sectionValue: { marginTop: 4, fontFamily: fonts.data, fontSize: 16, color: colors.charcoal },
   mt16: { marginTop: spacing.base },
   mt4: { marginTop: 4 },
@@ -329,7 +343,12 @@ const s = StyleSheet.create({
   dash: { color: colors.warmGray },
   daysText: { marginTop: 4, fontFamily: fonts.body, fontSize: 13, color: colors.warmGray },
   priceRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  priceRowMt: { marginTop: 4, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  priceRowMt: {
+    marginTop: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
   priceLabel: { fontFamily: fonts.body, fontSize: 13, color: colors.warmGray },
   priceValue: { fontFamily: fonts.data, fontSize: 16, color: colors.charcoal },
   totalRow: {
@@ -342,7 +361,12 @@ const s = StyleSheet.create({
     justifyContent: 'space-between',
   },
   totalLabel: { fontFamily: fonts.body, fontSize: 16, fontWeight: '500', color: colors.charcoal },
-  totalValue: { fontFamily: fonts.display, fontWeight: '500', fontSize: 18, color: colors.forestGreen },
+  totalValue: {
+    fontFamily: fonts.display,
+    fontWeight: '500',
+    fontSize: 18,
+    color: colors.forestGreen,
+  },
 
   // Terms section
   termsSection: {
@@ -409,7 +433,13 @@ const s = StyleSheet.create({
     backgroundColor: colors.forestGreen,
   },
   checkboxUnchecked: { marginTop: 2 },
-  checkboxText: { flex: 1, fontFamily: fonts.body, fontSize: 16, lineHeight: 24, color: colors.charcoal },
+  checkboxText: {
+    flex: 1,
+    fontFamily: fonts.body,
+    fontSize: 16,
+    lineHeight: 24,
+    color: colors.charcoal,
+  },
 
   // Second driver
   secondDriverSection: {
