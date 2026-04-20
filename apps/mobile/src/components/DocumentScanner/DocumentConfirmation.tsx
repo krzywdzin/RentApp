@@ -32,7 +32,9 @@ const LICENSE_FIELD_KEYS: Array<{
 }> = [
   { key: 'licenseNumber', label: 'Nr prawa jazdy' },
   { key: 'categories', label: 'Kategorie' },
-  { key: 'expiryDate', label: 'Data waznosci' },
+  { key: 'expiryDate', label: 'Data waznosci', placeholder: 'RRRR-MM-DD' },
+  { key: 'bookletNumber', label: 'Nr blankietu', placeholder: 'np. MC 1234567' },
+  { key: 'issuedBy', label: 'Organ wydajacy', placeholder: 'np. Starosta Torunski' },
 ];
 
 const ADDRESS_FIELDS = [

@@ -49,6 +49,7 @@ export default function EditCustomerPage() {
         idIssuedDate: customer.idIssuedDate?.slice(0, 10) ?? '',
         licenseCategory: customer.licenseCategory,
         licenseIssuedBy: customer.licenseIssuedBy,
+        licenseBookletNumber: customer.licenseBookletNumber,
       });
     }
   }, [customer, form]);
@@ -167,6 +168,82 @@ export default function EditCustomerPage() {
                 />
               </div>
 
+              <CardTitle className="text-base pt-4">Adres zamieszkania</CardTitle>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="street"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Ulica</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value ?? ''} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="houseNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nr domu</FormLabel>
+                        <FormControl>
+                          <Input {...field} value={field.value ?? ''} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="apartmentNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nr lokalu</FormLabel>
+                        <FormControl>
+                          <Input {...field} value={field.value ?? ''} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="postalCode"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Kod pocztowy</FormLabel>
+                      <FormControl>
+                        <Input placeholder="XX-XXX" {...field} value={field.value ?? ''} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="city"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Miasto</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value ?? ''} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
               <CardTitle className="text-base pt-4">Dokumenty tozsamosci</CardTitle>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -266,6 +343,20 @@ export default function EditCustomerPage() {
                       <FormLabel>Organ wydajacy prawo jazdy</FormLabel>
                       <FormControl>
                         <Input {...field} value={field.value ?? ''} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="licenseBookletNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nr blankietu prawa jazdy</FormLabel>
+                      <FormControl>
+                        <Input placeholder="np. MC 1234567" {...field} value={field.value ?? ''} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

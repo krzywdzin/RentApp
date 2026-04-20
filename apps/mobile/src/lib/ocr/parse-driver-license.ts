@@ -11,9 +11,11 @@ export function parseDriverLicense(
   ocrTexts: string[],
 ): DriverLicenseOcrFields {
   const fullText = ocrTexts.join('\n');
+  const lines = ocrTexts.map((l) => l.trim()).filter((l) => l.length > 0);
 
   // License number: Polish format like "12345/67/8901" or "12345 / 67 / 8901" — tolerate spaces around slashes
   const licenseNumMatch = fullText.match(/\d{5}\s*\/\s*\d{2}\s*\/\s*\d{4}/);
+  const licenseNumber = licenseNumMatch?.[0]?.replace(/\s/g, '') ?? null;
 
   // Categories: B, B+E, A, A2, AM, C, D, etc.
   // Word boundaries prevent matching single letters inside words (e.g., "A" in "JAZDY")
@@ -46,9 +48,34 @@ export function parseDriverLicense(
     }
   }
 
+  // Booklet number: 2 letters + optional space + 7 digits (e.g. "MC 1234567").
+  // Skip if its digits appear inside the personal license number.
+  let bookletNumber: string | null = null;
+  const bookletMatch = fullText.match(/\b([A-Z]{2})\s?(\d{7})\b/);
+  if (bookletMatch) {
+    const digits = bookletMatch[2];
+    const overlaps =
+      licenseNumber != null && licenseNumber.replace(/\D/g, '').includes(digits);
+    if (!overlaps) {
+      bookletNumber = `${bookletMatch[1]} ${digits}`;
+    }
+  }
+
+  // Issuing authority: typical prefixes on Polish licenses.
+  let issuedBy: string | null = null;
+  const authorityPrefix = /^(Starosta|Prezydent|Marszałek|Marszalek|Wojewoda)\b/i;
+  for (const line of lines) {
+    if (authorityPrefix.test(line)) {
+      issuedBy = line.replace(/^[\s:]+|[\s:]+$/g, '');
+      break;
+    }
+  }
+
   return {
-    licenseNumber: licenseNumMatch?.[0]?.replace(/\s/g, '') ?? null,
+    licenseNumber,
     categories: categoryMatch?.[0]?.replace(/\s+/g, ', ') ?? null,
     expiryDate,
+    bookletNumber,
+    issuedBy,
   };
 }

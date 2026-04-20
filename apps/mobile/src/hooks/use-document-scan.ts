@@ -229,7 +229,7 @@ export function useDocumentScan(documentType: DocumentType) {
         const photoUri = state.frontUri ?? uri;
         ocrResult = photoUri
           ? await parseDriverLicenseVisionFirst(photoUri)
-          : { licenseNumber: null, categories: null, expiryDate: null };
+          : { licenseNumber: null, categories: null, expiryDate: null, bookletNumber: null, issuedBy: null };
       }
 
       dispatch({ type: 'REVIEW', ocrResult });
@@ -262,7 +262,7 @@ export function useDocumentScan(documentType: DocumentType) {
                 issuedBy: null,
                 expiryDate: null,
               }
-            : { licenseNumber: null, categories: null, expiryDate: null };
+            : { licenseNumber: null, categories: null, expiryDate: null, bookletNumber: null, issuedBy: null };
       } else if (documentType === 'ID_CARD') {
         ocrResult = await parseIdCardVisionFirst(state.frontUri);
       } else {

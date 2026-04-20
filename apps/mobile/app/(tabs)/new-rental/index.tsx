@@ -337,6 +337,8 @@ export default function CustomerStep() {
     (fields: Record<string, string>) => {
       if (fields.licenseNumber) setValue('licenseNumber', fields.licenseNumber);
       if (fields.categories) setValue('licenseCategory', fields.categories);
+      if (fields.bookletNumber) setValue('licenseBookletNumber', fields.bookletNumber);
+      if (fields.issuedBy) setValue('licenseIssuedBy', fields.issuedBy);
 
       draft.updateDraft({
         driverLicenseScan: {
@@ -433,11 +435,20 @@ export default function CustomerStep() {
   }, [existingCustomerData]);
 
   const existingLicenseFields = useMemo((): Record<string, string | null> => {
-    if (!existingCustomerData) return { licenseNumber: null, categories: null, expiryDate: null };
+    if (!existingCustomerData)
+      return {
+        licenseNumber: null,
+        categories: null,
+        expiryDate: null,
+        bookletNumber: null,
+        issuedBy: null,
+      };
     return {
       licenseNumber: existingCustomerData.licenseNumber ?? null,
       categories: existingCustomerData.licenseCategory ?? null,
       expiryDate: null,
+      bookletNumber: existingCustomerData.licenseBookletNumber ?? null,
+      issuedBy: existingCustomerData.licenseIssuedBy ?? null,
     };
   }, [existingCustomerData]);
 

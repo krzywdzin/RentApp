@@ -84,13 +84,21 @@ If a field is not visible on this side of the card, use null.`,
             },
           },
           `You are reading a Polish driver license (prawo jazdy) from a photo.
-Extract EXACTLY these fields from what you SEE on the card:
-- licenseNumber: the license number in format XXXXX/XX/XXXX (e.g. 12345/67/8901)
-- categories: driving categories separated by comma+space (e.g. "B", "B, B+E", "A2, B")
-- expiryDate: expiry date in ISO format YYYY-MM-DD
+Extract EXACTLY these fields from what you SEE on the card. Polish licenses use numbered labels (5.), (4b.), (4c.) etc.
 
-Return ONLY raw JSON: {"licenseNumber": "...", "categories": "...", "expiryDate": "..."}
-If a field is unreadable, use null.`,
+FIELDS:
+- licenseNumber: the personal license number next to label "5." — format XXXXX/XX/XXXX (e.g. 12345/67/8901). This is the main license number, NOT the booklet/blank number.
+- categories: driving categories (labels "9." or table on the back). Separate with comma+space (e.g. "B", "B, B+E", "AM, A1, B"). Extract ONLY categories that have a valid issue/expiry date (not blank rows).
+- expiryDate: license expiry date in ISO format YYYY-MM-DD. On Polish licenses this is usually the latest date next to label "4b." or the category table column (data ważności). Convert DD.MM.YYYY to YYYY-MM-DD. If multiple categories have different expiry dates, pick the LATEST one.
+- bookletNumber: the blank/booklet document number (numer blankietu) — usually printed small on the front, format like "MC 1234567" or "AA 1234567" (2 letters + space + 7 digits). Sometimes called "document number" / "nr dokumentu". This is DIFFERENT from licenseNumber. If you cannot clearly distinguish it from the license number, return null.
+- issuedBy: issuing authority (organ wydający) next to label "4c." — e.g. "Starosta Toruński", "Prezydent Miasta Torunia", "Marszałek Województwa Kujawsko-Pomorskiego". Keep Polish diacritics and Title Case. Do NOT include labels like "4c." or "issuing authority".
+
+EXAMPLES of valid extractions:
+{"licenseNumber":"12345/67/8901","categories":"B","expiryDate":"2030-06-15","bookletNumber":"MC 1234567","issuedBy":"Starosta Toruński"}
+{"licenseNumber":"00123/45/6789","categories":"AM, A1, B","expiryDate":"2035-01-20","bookletNumber":null,"issuedBy":"Prezydent Miasta Bydgoszczy"}
+
+Return ONLY raw JSON with exactly these keys: {"licenseNumber":"...","categories":"...","expiryDate":"...","bookletNumber":"...","issuedBy":"..."}
+If a field is unreadable or unclear, use null. Do NOT guess.`,
         ]);
 
         const text = result.response.text().trim();
@@ -98,6 +106,8 @@ If a field is unreadable, use null.`,
           licenseNumber: null,
           categories: null,
           expiryDate: null,
+          bookletNumber: null,
+          issuedBy: null,
         });
       } catch (err) {
         this.logger.warn(`Gemini Vision license attempt ${attempt + 1}/3 failed: ${err}`);
@@ -196,16 +206,18 @@ ${texts.map((t, i) => `[${i}] ${t}`).join('\n')}`;
     });
 
     const prompt = `You are an OCR post-processor for Polish driver licenses (prawo jazdy).
-Given the following raw OCR text blocks extracted from a photo of a Polish driver license, extract these fields:
-- licenseNumber: the license number in format XXXXX/XX/XXXX (e.g. 12345/67/8901)
-- categories: driving categories separated by comma+space (e.g. "B", "B, B+E", "A2, B")
-- expiryDate: expiry date in ISO format YYYY-MM-DD
+Given raw OCR text blocks from a Polish driver license photo, extract these fields:
 
-The OCR text may contain noise, misspellings, or formatting artifacts — do your best to extract the correct values.
-If a field cannot be determined, use null.
+- licenseNumber: personal license number in format XXXXX/XX/XXXX (e.g. 12345/67/8901). Label "5." on the card.
+- categories: driving categories separated by comma+space (e.g. "B", "B, B+E", "AM, A1, B").
+- expiryDate: expiry date in ISO format YYYY-MM-DD (label "4b." — data ważności). If multiple dates, pick the LATEST valid one.
+- bookletNumber: blank/booklet number (numer blankietu) — typically 2 letters + space + 7 digits (e.g. "MC 1234567"). This is PRINTED on the document itself and is DIFFERENT from licenseNumber. If not clearly visible, return null — do not guess.
+- issuedBy: issuing authority (organ wydający, label "4c.") — e.g. "Starosta Toruński", "Prezydent Miasta Bydgoszczy". Keep Polish diacritics, Title Case.
 
-Respond ONLY with a JSON object, no markdown, no explanation:
-{"licenseNumber": "...", "categories": "...", "expiryDate": "..."}
+The OCR text may contain noise, misspellings, or formatting artifacts — do your best, but if a field cannot be determined with reasonable confidence, use null.
+
+Respond ONLY with a raw JSON object, no markdown, no explanation:
+{"licenseNumber":"...","categories":"...","expiryDate":"...","bookletNumber":"...","issuedBy":"..."}
 
 OCR text blocks:
 ${texts.map((t, i) => `[${i}] ${t}`).join('\n')}`;
@@ -216,6 +228,8 @@ ${texts.map((t, i) => `[${i}] ${t}`).join('\n')}`;
       licenseNumber: null,
       categories: null,
       expiryDate: null,
+      bookletNumber: null,
+      issuedBy: null,
     });
   }
 
@@ -341,8 +355,11 @@ ${texts.map((t, i) => `[${i}] ${t}`).join('\n')}`;
 
   private parseDriverLicenseRegex(ocrTexts: string[]): DriverLicenseOcrFields {
     const fullText = ocrTexts.join('\n');
+    const lines = ocrTexts.map((l) => l.trim()).filter((l) => l.length > 0);
 
     const licenseNumMatch = fullText.match(/\d{5}\s*\/\s*\d{2}\s*\/\s*\d{4}/);
+    const licenseNumber = licenseNumMatch?.[0]?.replace(/\s/g, '') ?? null;
+
     const categoryMatch = fullText.match(
       /(?<![A-Za-z])(?:AM|A1|A2|A|B1|B\+E|BE|B|C1\+E|C1|C\+E|CE|C|D1\+E|D1|D\+E|DE|D|T)(?:\s*[,]?\s*(?:AM|A1|A2|A|B1|B\+E|BE|B|C1\+E|C1|C\+E|CE|C|D1\+E|D1|D\+E|DE|D|T))*(?![A-Za-z])/,
     );
@@ -364,10 +381,45 @@ ${texts.map((t, i) => `[${i}] ${t}`).join('\n')}`;
       }
     }
 
+    // Booklet number: 2 letters + optional space + 7 digits (e.g. "MC 1234567" / "MC1234567").
+    // Must NOT overlap with the personal license number sequence.
+    let bookletNumber: string | null = null;
+    const bookletMatch = fullText.match(/\b([A-Z]{2})\s?(\d{7})\b/);
+    if (bookletMatch) {
+      const candidate = `${bookletMatch[1]} ${bookletMatch[2]}`;
+      const digitsOnly = bookletMatch[2];
+      const overlaps =
+        licenseNumber != null && licenseNumber.replace(/\D/g, '').includes(digitsOnly);
+      if (!overlaps) {
+        bookletNumber = candidate;
+      }
+    }
+
+    // Issuing authority: Polish driver licenses use label "4c." or "ORGAN WYDAJĄCY".
+    // Prefer line starting with "Starosta", "Prezydent", "Marszałek", "Wojewoda".
+    let issuedBy: string | null = null;
+    const authorityPrefix = /^(Starosta|Prezydent|Marszałek|Marszalek|Wojewoda)\b/i;
+    for (const line of lines) {
+      if (authorityPrefix.test(line)) {
+        issuedBy = line.replace(/^[\s:]+|[\s:]+$/g, '');
+        break;
+      }
+    }
+    if (!issuedBy) {
+      // Fallback: look for value after "4c." label
+      const m = fullText.match(/4c\.?\s*([^\n\r]{3,80})/i);
+      if (m) {
+        const candidate = m[1].trim();
+        if (authorityPrefix.test(candidate)) issuedBy = candidate;
+      }
+    }
+
     return {
-      licenseNumber: licenseNumMatch?.[0]?.replace(/\s/g, '') ?? null,
+      licenseNumber,
       categories: categoryMatch?.[0]?.replace(/\s+/g, ', ') ?? null,
       expiryDate,
+      bookletNumber,
+      issuedBy,
     };
   }
 

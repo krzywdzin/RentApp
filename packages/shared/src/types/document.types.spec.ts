@@ -42,9 +42,13 @@ describe('Document Types', () => {
       licenseNumber: null,
       categories: null,
       expiryDate: null,
+      bookletNumber: null,
+      issuedBy: null,
     };
     expect(fields).toHaveProperty('licenseNumber');
     expect(fields).toHaveProperty('categories');
     expect(fields).toHaveProperty('expiryDate');
+    expect(fields).toHaveProperty('bookletNumber');
+    expect(fields).toHaveProperty('issuedBy');
   });
 });

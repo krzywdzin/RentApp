@@ -29,6 +29,11 @@ export default function NewCustomerPage() {
       lastName: '',
       phone: '',
       email: '',
+      street: '',
+      houseNumber: '',
+      apartmentNumber: '',
+      postalCode: '',
+      city: '',
       pesel: '',
       idNumber: '',
       licenseNumber: '',
@@ -36,6 +41,7 @@ export default function NewCustomerPage() {
       idIssuedDate: '',
       licenseCategory: '',
       licenseIssuedBy: '',
+      licenseBookletNumber: '',
     },
   });
 
@@ -132,6 +138,82 @@ export default function NewCustomerPage() {
                           {...field}
                           value={field.value ?? ''}
                         />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <CardTitle className="text-base pt-4">Adres zamieszkania</CardTitle>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="street"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Ulica</FormLabel>
+                      <FormControl>
+                        <Input placeholder="np. Sieradzka" {...field} value={field.value ?? ''} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="houseNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nr domu</FormLabel>
+                        <FormControl>
+                          <Input placeholder="np. 18" {...field} value={field.value ?? ''} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="apartmentNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nr lokalu</FormLabel>
+                        <FormControl>
+                          <Input placeholder="np. 5" {...field} value={field.value ?? ''} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="postalCode"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Kod pocztowy</FormLabel>
+                      <FormControl>
+                        <Input placeholder="XX-XXX" {...field} value={field.value ?? ''} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="city"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Miasto</FormLabel>
+                      <FormControl>
+                        <Input placeholder="np. Torun" {...field} value={field.value ?? ''} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

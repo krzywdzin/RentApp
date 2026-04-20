@@ -17,6 +17,8 @@ export interface DriverLicenseOcrFields {
   licenseNumber: string | null;
   categories: string | null;
   expiryDate: string | null;
+  bookletNumber: string | null;
+  issuedBy: string | null;
 }
 
 export interface DocumentPhotoDto {
