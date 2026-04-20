@@ -1,18 +1,18 @@
-import { IsIn, IsOptional, IsString, IsUUID, Matches, MinLength } from 'class-validator';
+import { IsIn, IsOptional, IsString, MinLength } from 'class-validator';
 
 export class LoginDto {
   @IsString()
   @MinLength(1)
   login!: string;
 
+  // Login must accept any existing password; complexity rules belong only to setup/reset/change password flows.
   @IsString()
-  @MinLength(8)
-  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,}$/, {
-    message: 'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character',
-  })
+  @MinLength(1)
   password!: string;
 
-  @IsUUID()
+  // Mobile/web clients may send legacy or non-UUID device ids; do not block login on format.
+  @IsString()
+  @MinLength(1)
   deviceId!: string;
 
   @IsOptional()
