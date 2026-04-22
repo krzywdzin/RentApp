@@ -85,6 +85,27 @@ export default function SignaturesStep() {
     };
   }, []);
 
+  // Pre-flight: szybka walidacja wymaganych pól draftu przed wywołaniem API.
+  // Eliminuje 500 spowodowane `undefined` wysyłanymi do walidatora DTO w NestJS.
+  const assertDraftReady = useCallback((): string | null => {
+    if (!draft.customerId) return 'Brak wybranego klienta (krok 1).';
+    if (!draft.vehicleId) return 'Brak wybranego pojazdu (krok 2).';
+    if (!draft.startDate || !draft.endDate) return 'Brak dat najmu (krok 3).';
+    if (draft.dailyRateNet === null || draft.dailyRateNet === undefined)
+      return 'Brak stawki dziennej (krok 3).';
+    if (!draft.rodoConsent || !draft.rodoTimestamp)
+      return 'Brak zgody RODO (krok 4).';
+    return null;
+  }, [
+    draft.customerId,
+    draft.vehicleId,
+    draft.startDate,
+    draft.endDate,
+    draft.dailyRateNet,
+    draft.rodoConsent,
+    draft.rodoTimestamp,
+  ]);
+
   const doCreateRentalAndContract = useCallback(
     async (override: boolean) => {
       if (rentalId && contractId) return { rentalId, contractId };
@@ -169,8 +190,11 @@ export default function SignaturesStep() {
 
         return { rentalId: activeRentalId, contractId: contract.id };
       } catch (err) {
-        isCreatingRef.current = false;
         throw err;
+      } finally {
+        // Zawsze zwolnij lock — inaczej po sukcesie/błędzie kolejne retry
+        // short-circuituje na niepełnych referencjach i nie udaje się wysłać.
+        isCreatingRef.current = false;
       }
     },
     [createRental, createContract, draft, rentalId, contractId],
@@ -206,20 +230,46 @@ export default function SignaturesStep() {
         let activeContractId = contractId;
 
         if (currentIndex === 0 && !activeContractId) {
+          // Pre-flight guard — nie wysyłaj POST jeśli brakuje wymaganych danych
+          const missing = assertDraftReady();
+          if (missing) {
+            Toast.show({
+              type: 'error',
+              text1: 'Uzupelnij dane najmu',
+              text2: missing,
+              visibilityTime: 8000,
+            });
+            setIsUploading(false);
+            return;
+          }
+
           try {
             const result = await handleCreateRentalAndContract();
             activeRentalId = result.rentalId;
             activeContractId = result.contractId;
           } catch (err: any) {
-            console.error(
-              'Rental creation error:',
-              JSON.stringify(err?.response?.data ?? err?.message ?? err),
-            );
-            const errMsg = JSON.stringify(err?.response?.data ?? err?.message ?? 'Unknown');
+            // Zbuduj czytelny komunikat z response.data (string/message/errors)
+            const data = err?.response?.data;
+            let humanMsg: string;
+            if (typeof data === 'string') {
+              humanMsg = data;
+            } else if (typeof data?.message === 'string') {
+              humanMsg = data.message;
+            } else if (Array.isArray(data?.message)) {
+              humanMsg = data.message.join('; ');
+            } else if (data?.error) {
+              humanMsg = String(data.error);
+            } else if (typeof err?.message === 'string') {
+              humanMsg = err.message;
+            } else {
+              humanMsg = 'Nieznany blad';
+            }
+            const status = err?.response?.status;
+            console.error('Rental creation error:', status, JSON.stringify(data ?? err?.message ?? err));
             Toast.show({
               type: 'error',
-              text1: 'Blad tworzenia najmu',
-              text2: errMsg.slice(0, 200),
+              text1: status ? `Blad tworzenia najmu (${status})` : 'Blad tworzenia najmu',
+              text2: humanMsg.slice(0, 240),
               visibilityTime: 15000,
             });
             setIsUploading(false);
@@ -309,6 +359,7 @@ export default function SignaturesStep() {
       handleCreateRentalAndContract,
       router,
       t,
+      assertDraftReady,
     ],
   );
 

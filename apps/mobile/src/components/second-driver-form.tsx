@@ -1,9 +1,16 @@
 import React, { useCallback, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
+import type { IdCardOcrFields, DriverLicenseOcrFields } from '@rentapp/shared';
 
 import { AppInput } from '@/components/AppInput';
 import { AppButton } from '@/components/AppButton';
+import { ConfirmationDialog } from '@/components/ConfirmationDialog';
+import { DocumentScanButton } from '@/components/DocumentScanner/DocumentScanButton';
+import { DocumentGuideOverlay } from '@/components/DocumentScanner/DocumentGuideOverlay';
+import { BackScanPrompt } from '@/components/DocumentScanner/BackScanPrompt';
+import { DocumentConfirmation } from '@/components/DocumentScanner/DocumentConfirmation';
+import { useDocumentScan } from '@/hooks/use-document-scan';
 import { useRentalDraftStore, type SecondDriverData } from '@/stores/rental-draft.store';
 import apiClient from '@/api/client';
 import { colors, fonts, spacing } from '@/lib/theme';
@@ -35,6 +42,15 @@ export function SecondDriverForm({ rentalId, onDriverCreated, onDriverRemoved }:
   const [isVerifying, setIsVerifying] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // OCR convenience (RODO: zdjęcia zostają lokalnie, serwer tylko wyciąga dane)
+  const idScan = useDocumentScan('ID_CARD');
+  const licenseScan = useDocumentScan('DRIVER_LICENSE');
+  const [idScanDone, setIdScanDone] = useState(false);
+  const [licenseScanDone, setLicenseScanDone] = useState(false);
+  const [showRescanConfirm, setShowRescanConfirm] = useState<'ID_CARD' | 'DRIVER_LICENSE' | null>(
+    null,
+  );
+
   const driverId = draft.secondDriverId;
   const hasSavedDriver = !!driverId || !!draft.secondDriver;
   const cepikStatus = draft.secondDriverCepikStatus;
@@ -42,6 +58,76 @@ export function SecondDriverForm({ rentalId, onDriverCreated, onDriverRemoved }:
   const updateField = useCallback((field: keyof SecondDriverData, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   }, []);
+
+  const handleIdScanPress = useCallback(() => {
+    if (idScanDone) {
+      setShowRescanConfirm('ID_CARD');
+    } else {
+      idScan.startScan();
+    }
+  }, [idScanDone, idScan]);
+
+  const handleLicenseScanPress = useCallback(() => {
+    if (licenseScanDone) {
+      setShowRescanConfirm('DRIVER_LICENSE');
+    } else {
+      licenseScan.startScan();
+    }
+  }, [licenseScanDone, licenseScan]);
+
+  const handleRescanConfirm = useCallback(() => {
+    const type = showRescanConfirm;
+    setShowRescanConfirm(null);
+    if (type === 'ID_CARD') {
+      setIdScanDone(false);
+      idScan.reset();
+      idScan.startScan();
+    } else if (type === 'DRIVER_LICENSE') {
+      setLicenseScanDone(false);
+      licenseScan.reset();
+      licenseScan.startScan();
+    }
+  }, [showRescanConfirm, idScan, licenseScan]);
+
+  const handleIdConfirm = useCallback(
+    (fields: Record<string, string>) => {
+      setForm((prev) => ({
+        ...prev,
+        firstName: fields.firstName || prev.firstName,
+        lastName: fields.lastName || prev.lastName,
+        pesel: fields.pesel || prev.pesel,
+        idNumber: fields.documentNumber || prev.idNumber,
+        street: fields.street || prev.street,
+        houseNumber: fields.houseNumber || prev.houseNumber,
+        postalCode: fields.postalCode || prev.postalCode,
+        city: fields.city || prev.city,
+      }));
+      setIdScanDone(true);
+      idScan.reset();
+    },
+    [idScan],
+  );
+
+  const handleLicenseConfirm = useCallback(
+    (fields: Record<string, string>) => {
+      setForm((prev) => ({
+        ...prev,
+        licenseNumber: fields.licenseNumber || prev.licenseNumber,
+        licenseCategory: fields.categories || prev.licenseCategory,
+      }));
+      setLicenseScanDone(true);
+      licenseScan.reset();
+    },
+    [licenseScan],
+  );
+
+  const handleIdDiscard = useCallback(() => {
+    idScan.reset();
+  }, [idScan]);
+
+  const handleLicenseDiscard = useCallback(() => {
+    licenseScan.reset();
+  }, [licenseScan]);
 
   const handleSaveDriver = useCallback(async () => {
     if (!form.firstName || !form.lastName || !form.pesel) {
@@ -185,6 +271,23 @@ export function SecondDriverForm({ rentalId, onDriverCreated, onDriverRemoved }:
       ) : (
         /* Driver form */
         <View style={styles.form}>
+          <View style={styles.scanButtons}>
+            <DocumentScanButton
+              documentType="ID_CARD"
+              label="Skanuj dowod osobisty"
+              scanData={idScanDone && idScan.frontUri ? { frontUri: idScan.frontUri } : null}
+              onPress={handleIdScanPress}
+            />
+            <DocumentScanButton
+              documentType="DRIVER_LICENSE"
+              label="Skanuj prawo jazdy"
+              scanData={
+                licenseScanDone && licenseScan.frontUri ? { frontUri: licenseScan.frontUri } : null
+              }
+              onPress={handleLicenseScanPress}
+            />
+          </View>
+
           <View style={styles.row}>
             <AppInput
               label="Imie *"
@@ -278,6 +381,67 @@ export function SecondDriverForm({ rentalId, onDriverCreated, onDriverRemoved }:
           />
         </View>
       )}
+
+      {/* OCR overlays + confirmation modals (RODO: zdjęcia nie opuszczają urządzenia) */}
+      <ConfirmationDialog
+        visible={showRescanConfirm !== null}
+        title="Skanuj ponownie?"
+        body="Poprzednie zdjecia i dane ze skanu zostana zastapione."
+        confirmLabel="Skanuj ponownie"
+        cancelLabel="Nie, zachowaj"
+        onConfirm={handleRescanConfirm}
+        onCancel={() => setShowRescanConfirm(null)}
+      />
+
+      <DocumentGuideOverlay
+        visible={idScan.phase === 'front_guide'}
+        instruction="Umiesc przod dowodu w ramce"
+        step="Przod (1/2)"
+        onCapture={idScan.capturePhoto}
+        onClose={idScan.reset}
+      />
+      <BackScanPrompt
+        visible={idScan.phase === 'front_captured'}
+        onScanBack={idScan.captureBackPhoto}
+        onSkip={idScan.skipBack}
+        onClose={idScan.reset}
+      />
+
+      <DocumentGuideOverlay
+        visible={licenseScan.phase === 'front_guide'}
+        instruction="Umiesc przod prawa jazdy w ramce"
+        step="Przod (1/2)"
+        onCapture={licenseScan.capturePhoto}
+        onClose={licenseScan.reset}
+      />
+      <BackScanPrompt
+        visible={licenseScan.phase === 'front_captured'}
+        onScanBack={licenseScan.captureBackPhoto}
+        onSkip={licenseScan.skipBack}
+        onClose={licenseScan.reset}
+      />
+
+      {idScan.phase === 'review' && idScan.ocrResult && idScan.frontUri && (
+        <DocumentConfirmation
+          visible
+          documentType="ID_CARD"
+          frontUri={idScan.frontUri}
+          ocrFields={idScan.ocrResult as IdCardOcrFields}
+          onConfirm={handleIdConfirm}
+          onDiscard={handleIdDiscard}
+        />
+      )}
+
+      {licenseScan.phase === 'review' && licenseScan.ocrResult && licenseScan.frontUri && (
+        <DocumentConfirmation
+          visible
+          documentType="DRIVER_LICENSE"
+          frontUri={licenseScan.frontUri}
+          ocrFields={licenseScan.ocrResult as DriverLicenseOcrFields}
+          onConfirm={handleLicenseConfirm}
+          onDiscard={handleLicenseDiscard}
+        />
+      )}
     </View>
   );
 }
@@ -295,6 +459,10 @@ const styles = StyleSheet.create({
   },
   form: {
     gap: spacing.sm,
+  },
+  scanButtons: {
+    gap: spacing.sm,
+    marginBottom: spacing.sm,
   },
   row: {
     flexDirection: 'row',
