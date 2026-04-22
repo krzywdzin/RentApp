@@ -10,7 +10,7 @@ import { colors, fonts, spacing } from '@/lib/theme';
 
 interface SecondDriverFormProps {
   rentalId: string;
-  onDriverCreated: (driverId: string) => void;
+  onDriverCreated: (driverId: string | null) => void;
   onDriverRemoved: () => void;
 }
 
@@ -36,6 +36,7 @@ export function SecondDriverForm({ rentalId, onDriverCreated, onDriverRemoved }:
   const [isDeleting, setIsDeleting] = useState(false);
 
   const driverId = draft.secondDriverId;
+  const hasSavedDriver = !!driverId || !!draft.secondDriver;
   const cepikStatus = draft.secondDriverCepikStatus;
 
   const updateField = useCallback((field: keyof SecondDriverData, value: string) => {
@@ -50,6 +51,17 @@ export function SecondDriverForm({ rentalId, onDriverCreated, onDriverRemoved }:
 
     setIsSaving(true);
     try {
+      if (!rentalId) {
+        draft.updateDraft({
+          secondDriver: form,
+          secondDriverId: null,
+          secondDriverCepikStatus: null,
+        });
+        onDriverCreated(null);
+        Toast.show({ type: 'success', text1: 'Kierowca zapisany w szkicu' });
+        return;
+      }
+
       const { data } = await apiClient.post(`/rentals/${rentalId}/driver`, {
         firstName: form.firstName,
         lastName: form.lastName,
@@ -107,11 +119,11 @@ export function SecondDriverForm({ rentalId, onDriverCreated, onDriverRemoved }:
   }, [driverId, rentalId, draft]);
 
   const handleDeleteDriver = useCallback(async () => {
-    if (!rentalId) return;
-
     setIsDeleting(true);
     try {
-      await apiClient.delete(`/rentals/${rentalId}/driver`);
+      if (rentalId && driverId) {
+        await apiClient.delete(`/rentals/${rentalId}/driver`);
+      }
       draft.updateDraft({
         secondDriver: null,
         secondDriverId: null,
@@ -125,7 +137,7 @@ export function SecondDriverForm({ rentalId, onDriverCreated, onDriverRemoved }:
     } finally {
       setIsDeleting(false);
     }
-  }, [rentalId, draft, onDriverRemoved]);
+  }, [rentalId, driverId, draft, onDriverRemoved]);
 
   const cepikColor =
     cepikStatus === 'PASSED' ? colors.forestGreen :
@@ -139,7 +151,7 @@ export function SecondDriverForm({ rentalId, onDriverCreated, onDriverRemoved }:
       <Text style={styles.title}>Drugi kierowca</Text>
 
       {/* If driver saved, show summary */}
-      {driverId ? (
+      {hasSavedDriver ? (
         <View style={styles.summaryCard}>
           <Text style={styles.driverName}>
             {draft.secondDriver?.firstName} {draft.secondDriver?.lastName}
@@ -153,7 +165,7 @@ export function SecondDriverForm({ rentalId, onDriverCreated, onDriverRemoved }:
           )}
 
           <View style={styles.actionRow}>
-            {(!cepikStatus || cepikStatus === 'ERROR') && (
+            {driverId && (!cepikStatus || cepikStatus === 'ERROR') && (
               <AppButton
                 title={isVerifying ? 'Sprawdzanie...' : 'Sprawdz CEPiK'}
                 onPress={handleVerifyCepik}

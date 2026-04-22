@@ -106,7 +106,7 @@ export default function ContractStep() {
     router.push('/(tabs)/new-rental/photos');
   }, [draft, router]);
 
-  const handleDriverCreated = useCallback((driverId: string) => {
+  const handleDriverCreated = useCallback((_driverId: string | null) => {
     // Driver saved, form will show summary card automatically via store
   }, []);
 

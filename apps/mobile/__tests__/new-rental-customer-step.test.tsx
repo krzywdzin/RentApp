@@ -8,6 +8,9 @@ jest.mock('@/hooks/use-customers', () => ({
     isLoading: false,
     isFetching: false,
   }),
+  useCustomer: () => ({
+    data: null,
+  }),
   useCreateCustomer: () => ({
     mutate: jest.fn(),
     mutateAsync: jest.fn(),
@@ -32,6 +35,7 @@ jest.mock('@/stores/rental-draft.store', () => ({
     updateDraft: jest.fn(),
     clearDraft: jest.fn(),
   }),
+  useRentalDraftHasHydrated: () => true,
 }));
 
 describe('CustomerStep', () => {

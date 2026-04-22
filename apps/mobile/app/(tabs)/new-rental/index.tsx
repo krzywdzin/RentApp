@@ -35,7 +35,6 @@ import { AppSwitch } from '@/components/AppSwitch';
 import { useDocumentScan } from '@/hooks/use-document-scan';
 import { useRentalDraftStore, useRentalDraftHasHydrated } from '@/stores/rental-draft.store';
 import { useCustomerSearch, useCreateCustomer, useCustomer } from '@/hooks/use-customers';
-import apiClient from '@/api/client';
 import { RENTAL_WIZARD_LABELS } from '@/lib/constants';
 import { colors, fonts, spacing } from '@/lib/theme';
 
@@ -124,15 +123,24 @@ export default function CustomerStep() {
     },
   });
 
-  // Check for existing draft on mount (wait for store hydration)
+  // Check for existing draft after hydration, but never interrupt active create/select flow.
   useEffect(() => {
-    if (hydrated && draft.customerId) {
+    if (!hydrated) return;
+
+    const isBusyInCustomerStep = showNewCustomer || pendingExistingCustomer !== null;
+    if (isBusyInCustomerStep) {
+      setShowDraftResume(false);
+      return;
+    }
+
+    if (draft.customerId) {
       setShowDraftResume(true);
     }
-  }, [hydrated]);
+  }, [hydrated, draft.customerId, showNewCustomer, pendingExistingCustomer]);
 
   const handleSelectCustomer = useCallback(
     (id: string, name: string) => {
+      setShowDraftResume(false);
       draft.updateDraft({
         customerId: id,
         customerName: name,
@@ -150,95 +158,15 @@ export default function CustomerStep() {
     setShowNewCustomer(true);
   }, []);
 
-  // ---------- Document photo upload helper ----------
-
-  const uploadDocumentPhotos = useCallback(
-    async (customerId: string): Promise<boolean> => {
-      const scans: Array<{
-        type: 'id-card' | 'driver-license';
-        frontUri: string | undefined;
-        backUri: string | null | undefined;
-      }> = [];
-
-      if (draft.idCardScan?.confirmed) {
-        scans.push({
-          type: 'id-card',
-          frontUri: draft.idCardScan.frontUri,
-          backUri: draft.idCardScan.backUri,
-        });
-      }
-      if (draft.driverLicenseScan?.confirmed) {
-        scans.push({
-          type: 'driver-license',
-          frontUri: draft.driverLicenseScan.frontUri,
-          backUri: draft.driverLicenseScan.backUri,
-        });
-      }
-
-      let failed = false;
-
-      for (const scan of scans) {
-        if (scan.frontUri) {
-          try {
-            const formData = new FormData();
-            formData.append('file', {
-              uri: scan.frontUri,
-              name: 'front.jpg',
-              type: 'image/jpeg',
-            } as any);
-            await apiClient.post(
-              `/customers/${customerId}/documents/${scan.type}/front`,
-              formData,
-              {
-                headers: { 'Content-Type': 'multipart/form-data' },
-                transformRequest: (data: any) => data,
-              },
-            );
-          } catch (err) {
-            console.warn(`Document photo upload failed (${scan.type}/front):`, err);
-            failed = true;
-          }
-        }
-        if (scan.backUri) {
-          try {
-            const formData = new FormData();
-            formData.append('file', {
-              uri: scan.backUri,
-              name: 'back.jpg',
-              type: 'image/jpeg',
-            } as any);
-            await apiClient.post(`/customers/${customerId}/documents/${scan.type}/back`, formData, {
-              headers: { 'Content-Type': 'multipart/form-data' },
-              transformRequest: (data: any) => data,
-            });
-          } catch (err) {
-            console.warn(`Document photo upload failed (${scan.type}/back):`, err);
-            failed = true;
-          }
-        }
-      }
-
-      if (failed) {
-        Toast.show({
-          type: 'error',
-          text1: 'Blad przesylania dokumentow',
-          text2: 'Nie udalo sie wyslac zdjec dokumentow. Sprobuj ponownie.',
-        });
-      }
-
-      return !failed;
-    },
-    [draft.idCardScan, draft.driverLicenseScan],
-  );
+  // NOTE: We intentionally do NOT upload document photos to the backend.
+  // OCR should only prefill fields for the worker; raw ID/license photos must stay off the server (RODO).
 
   const handleCreateCustomer = useCallback(
     async (data: CreateCustomerInput) => {
       try {
         const customer = await createCustomer.mutateAsync(data);
         const name = `${customer.firstName} ${customer.lastName}`;
-        // Upload document photos to R2
-        const uploaded = await uploadDocumentPhotos(customer.id);
-        if (!uploaded) return;
+        setShowDraftResume(false);
         setShowNewCustomer(false);
         reset();
         handleSelectCustomer(customer.id, name);
@@ -249,7 +177,7 @@ export default function CustomerStep() {
         });
       }
     },
-    [createCustomer, handleSelectCustomer, reset, t, uploadDocumentPhotos],
+    [createCustomer, handleSelectCustomer, reset, t],
   );
 
   const handleDraftResume = useCallback(() => {
@@ -362,12 +290,11 @@ export default function CustomerStep() {
 
   // ---------- Existing customer diff view handlers ----------
 
-  const handleProceedWithExisting = useCallback(async () => {
+  const handleProceedWithExisting = useCallback(() => {
     if (!pendingExistingCustomer) return;
-    await uploadDocumentPhotos(pendingExistingCustomer.id);
     handleSelectCustomer(pendingExistingCustomer.id, pendingExistingCustomer.name);
     setPendingExistingCustomer(null);
-  }, [pendingExistingCustomer, handleSelectCustomer, uploadDocumentPhotos]);
+  }, [pendingExistingCustomer, handleSelectCustomer]);
 
   // Show diff views when OCR scan completes for existing customer
   useEffect(() => {
@@ -1014,6 +941,7 @@ export default function CustomerStep() {
         cancelLabel={t('wizard.draftResumeReset')}
         onConfirm={handleDraftResume}
         onCancel={handleDraftReset}
+        onRequestClose={() => setShowDraftResume(false)}
       />
 
       {/* Re-scan confirmation dialog */}

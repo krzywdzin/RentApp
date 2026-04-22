@@ -11,6 +11,7 @@ interface ConfirmationDialogProps {
   cancelLabel: string;
   onConfirm: () => void;
   onCancel: () => void;
+  onRequestClose?: () => void;
   variant?: 'destructive' | 'default';
 }
 
@@ -22,6 +23,7 @@ export function ConfirmationDialog({
   cancelLabel,
   onConfirm,
   onCancel,
+  onRequestClose,
   variant = 'default',
 }: ConfirmationDialogProps) {
   return (
@@ -30,7 +32,7 @@ export function ConfirmationDialog({
       transparent
       animationType="fade"
       statusBarTranslucent
-      onRequestClose={onCancel}
+      onRequestClose={onRequestClose ?? onCancel}
     >
       <View style={styles.overlay}>
         <View style={styles.dialog}>

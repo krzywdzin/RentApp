@@ -1,0 +1,802 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8" />
+<title>RentApp — Brief do prezentacji klientowi</title>
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 18mm 20mm 18mm;
+  }
+
+  @page :first {
+    margin-top: 28mm;
+  }
+
+  :root {
+    --ink: #14181f;
+    --ink-soft: #3a4150;
+    --muted: #6b7280;
+    --line: #dfe3ea;
+    --line-soft: #eef1f6;
+    --accent: #1f4d8a;
+    --accent-soft: #eaf0f9;
+    --danger: #a63434;
+    --danger-soft: #fbeaea;
+    --good: #1f6b4a;
+    --good-soft: #e7f3ed;
+    --highlight: #fff8db;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    color: var(--ink);
+    background: #fff;
+    font-family:
+      -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue",
+      "Segoe UI", "Arial", sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .page-wrap {
+    max-width: 100%;
+  }
+
+  /* Cover */
+  .cover {
+    page-break-after: always;
+    padding-top: 2mm;
+  }
+  .cover .eyebrow {
+    font-size: 10pt;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12mm;
+  }
+  .cover h1 {
+    font-size: 30pt;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin: 0 0 6mm 0;
+    color: var(--ink);
+  }
+  .cover .subtitle {
+    font-size: 13pt;
+    color: var(--ink-soft);
+    max-width: 140mm;
+    line-height: 1.45;
+    margin-bottom: 18mm;
+  }
+  .cover .meta {
+    display: grid;
+    grid-template-columns: 40mm 1fr;
+    row-gap: 3mm;
+    font-size: 10pt;
+    color: var(--ink-soft);
+    border-top: 1px solid var(--line);
+    padding-top: 6mm;
+  }
+  .cover .meta dt { color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; font-size: 8.5pt; padding-top: 1px; }
+  .cover .meta dd { margin: 0; color: var(--ink); }
+
+  .toc {
+    margin-top: 14mm;
+    border-top: 1px solid var(--line);
+    padding-top: 6mm;
+  }
+  .toc h2 {
+    font-size: 10pt;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--muted);
+    font-weight: 600;
+    margin: 0 0 4mm 0;
+  }
+  .toc ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    columns: 2;
+    column-gap: 10mm;
+    font-size: 10pt;
+    color: var(--ink-soft);
+  }
+  .toc li {
+    padding: 1.6mm 0;
+    break-inside: avoid;
+  }
+  .toc li .num {
+    display: inline-block;
+    width: 6mm;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Sections */
+  section {
+    margin-top: 10mm;
+  }
+  section.first { margin-top: 0; }
+
+  h1.section-title {
+    font-size: 18pt;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    margin: 0 0 1mm 0;
+    padding-bottom: 2.5mm;
+    border-bottom: 2px solid var(--accent);
+    page-break-after: avoid;
+  }
+  h1.section-title .pre {
+    display: block;
+    font-size: 9pt;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.5mm;
+  }
+
+  h2 {
+    font-size: 13pt;
+    font-weight: 600;
+    margin: 8mm 0 2.5mm 0;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+    page-break-after: avoid;
+  }
+
+  h3 {
+    font-size: 11pt;
+    font-weight: 600;
+    margin: 5.5mm 0 1.8mm 0;
+    color: var(--ink);
+    page-break-after: avoid;
+  }
+
+  p { margin: 0 0 3mm 0; }
+
+  p.lead {
+    color: var(--ink-soft);
+    font-size: 10.5pt;
+    font-style: italic;
+    margin-bottom: 5mm;
+  }
+
+  ul, ol { margin: 0 0 3mm 0; padding-left: 5.5mm; }
+  li { margin: 1mm 0; }
+  li > ul, li > ol { margin-top: 1mm; margin-bottom: 1mm; }
+
+  strong { color: var(--ink); font-weight: 600; }
+  em { color: var(--ink-soft); }
+
+  hr {
+    border: 0;
+    border-top: 1px solid var(--line);
+    margin: 9mm 0;
+  }
+
+  /* Checklist */
+  ul.checklist {
+    list-style: none;
+    padding-left: 0;
+  }
+  ul.checklist li {
+    position: relative;
+    padding-left: 7mm;
+    margin: 1.6mm 0;
+  }
+  ul.checklist li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 1.2mm;
+    width: 3.8mm;
+    height: 3.8mm;
+    border: 1.2px solid var(--ink-soft);
+    border-radius: 0.8mm;
+    background: #fff;
+  }
+
+  /* Callout boxes */
+  .callout {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    padding: 4mm 5mm 3mm 5mm;
+    border-radius: 0 1.5mm 1.5mm 0;
+    margin: 4mm 0 5mm 0;
+    page-break-inside: avoid;
+  }
+  .callout.say::before {
+    content: "Powiedz to";
+    display: block;
+    font-size: 8.5pt;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 2mm;
+  }
+  .callout.dont {
+    border-left-color: var(--danger);
+    background: var(--danger-soft);
+  }
+  .callout.dont::before {
+    content: "Tego nie mów";
+    color: var(--danger);
+    display: block;
+    font-size: 8.5pt;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 2mm;
+  }
+  .callout.tip {
+    border-left-color: var(--good);
+    background: var(--good-soft);
+  }
+  .callout.tip::before {
+    content: "Pro tip";
+    color: var(--good);
+    display: block;
+    font-size: 8.5pt;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 2mm;
+  }
+
+  .callout p:last-child, .callout ul:last-child, .callout ol:last-child { margin-bottom: 0; }
+
+  blockquote {
+    margin: 3mm 0 4mm 0;
+    padding: 2.5mm 4mm;
+    border-left: 2.5px solid var(--ink-soft);
+    background: var(--line-soft);
+    color: var(--ink);
+    font-style: normal;
+    border-radius: 0 1mm 1mm 0;
+    page-break-inside: avoid;
+  }
+  blockquote p { margin: 0; }
+
+  /* Table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2mm 0 5mm 0;
+    font-size: 10pt;
+  }
+  thead th {
+    text-align: left;
+    background: var(--line-soft);
+    font-weight: 600;
+    padding: 2.5mm 3mm;
+    border-bottom: 1.5px solid var(--line);
+    color: var(--ink);
+    font-size: 9.5pt;
+    letter-spacing: 0.02em;
+  }
+  tbody td {
+    padding: 2.5mm 3mm;
+    border-bottom: 1px solid var(--line-soft);
+    vertical-align: top;
+  }
+  tbody tr:last-child td { border-bottom: 1px solid var(--line); }
+
+  /* Numbered steps */
+  ol.steps {
+    counter-reset: step;
+    list-style: none;
+    padding-left: 0;
+  }
+  ol.steps > li {
+    counter-increment: step;
+    position: relative;
+    padding-left: 10mm;
+    margin: 2.5mm 0;
+  }
+  ol.steps > li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 7mm;
+    height: 7mm;
+    line-height: 7mm;
+    background: var(--ink);
+    color: #fff;
+    border-radius: 50%;
+    text-align: center;
+    font-weight: 600;
+    font-size: 9pt;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* 10 points grid */
+  .cheatsheet {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3.5mm 5mm;
+    margin-top: 2mm;
+  }
+  .cheatsheet .card {
+    border: 1px solid var(--line);
+    border-radius: 2mm;
+    padding: 3.5mm 4mm;
+    background: #fff;
+    page-break-inside: avoid;
+  }
+  .cheatsheet .card .num {
+    display: inline-block;
+    font-size: 8.5pt;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    font-weight: 700;
+    margin-bottom: 1mm;
+  }
+  .cheatsheet .card .text {
+    font-size: 10pt;
+    color: var(--ink);
+    line-height: 1.45;
+  }
+  .cheatsheet .card .text strong { color: var(--ink); }
+
+  /* Mini scripts */
+  .mini-script {
+    border-top: 1px solid var(--line-soft);
+    padding-top: 3mm;
+    margin-top: 4mm;
+  }
+  .mini-script:first-of-type {
+    border-top: 0;
+    margin-top: 0;
+  }
+  .mini-script .q {
+    font-size: 9.5pt;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    margin-bottom: 1mm;
+  }
+  .mini-script .a {
+    font-size: 10.5pt;
+    color: var(--ink);
+    line-height: 1.5;
+    padding-left: 3mm;
+    border-left: 2px solid var(--accent);
+  }
+
+  /* Don't lists */
+  ul.dont-list {
+    list-style: none;
+    padding-left: 0;
+  }
+  ul.dont-list li {
+    position: relative;
+    padding-left: 6.5mm;
+    margin: 1.4mm 0;
+  }
+  ul.dont-list li::before {
+    content: "×";
+    position: absolute;
+    left: 0;
+    top: -0.3mm;
+    color: var(--danger);
+    font-weight: 700;
+    font-size: 12pt;
+    line-height: 1;
+  }
+
+  /* Footer mark */
+  .footer-note {
+    margin-top: 8mm;
+    font-size: 9pt;
+    color: var(--muted);
+    font-style: italic;
+    border-top: 1px solid var(--line-soft);
+    padding-top: 3mm;
+  }
+
+  /* Page break helpers */
+  .page-break { page-break-before: always; }
+  .avoid-break { page-break-inside: avoid; }
+
+  /* Print tweaks */
+  @media print {
+    a { color: inherit; text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+<!-- COVER -->
+<div class="cover">
+  <div class="eyebrow">Brief · Prezentacja klientowi</div>
+  <h1>RentApp<br/>Notatki do spotkania</h1>
+  <div class="subtitle">
+    Praktyczna ściąga dla Antoniego na rozmowę z klientem KITEK. Około godziny, ton koleżeński, konkretny — nie folder marketingowy, tylko to, o czym warto pamiętać w trakcie.
+  </div>
+  <dl class="meta">
+    <dt>Dla</dt><dd>Antoni</dd>
+    <dt>Spotkanie</dt><dd>KITEK — prezentacja gotowej aplikacji (~1h)</dd>
+    <dt>Status</dt><dd>Aplikacja gotowa do uruchomienia</dd>
+    <dt>Data</dt><dd>Kwiecień 2026</dd>
+  </dl>
+
+  <nav class="toc">
+    <h2>Spis treści</h2>
+    <ol>
+      <li><span class="num">01</span>Zanim zaczniesz (5 min przed)</li>
+      <li><span class="num">02</span>Pierwsze 5 minut — co powiedzieć</li>
+      <li><span class="num">03</span>Plan na godzinę</li>
+      <li><span class="num">04</span>Web — biuro</li>
+      <li><span class="num">05</span>Mobile — punkt wydania</li>
+      <li><span class="num">06</span>Dokumenty i komunikacja</li>
+      <li><span class="num">07</span>Zwrot</li>
+      <li><span class="num">08</span>Jak mówić o OCR</li>
+      <li><span class="num">09</span>Jak mówić o CEPiK</li>
+      <li><span class="num">10</span>PDF, mail, SMS, hasło</li>
+      <li><span class="num">11</span>Najmocniejsze argumenty</li>
+      <li><span class="num">12</span>Czego NIE mówić / nie robić</li>
+      <li><span class="num">13</span>Mini-skrypty</li>
+      <li><span class="num">14</span>Pytania, których się spodziewać</li>
+      <li><span class="num">15</span>Zamknięcie spotkania</li>
+      <li><span class="num">16</span>10 punktów do zapamiętania</li>
+    </ol>
+  </nav>
+</div>
+
+<!-- 01 -->
+<section class="first">
+  <h1 class="section-title"><span class="pre">01 · Przygotowanie</span>Zanim zaczniesz (5 min przed)</h1>
+  <ul class="checklist">
+    <li>Telefon naładowany, mobilka zalogowana, dane testowe w bazie</li>
+    <li>Web panel otwarty na drugiej zakładce, zalogowany jako admin</li>
+    <li>Przykładowy klient + pojazd + wolny termin — gotowa ścieżka „od zera do umowy”</li>
+    <li>Karta SIM / dostęp do telefonu, żeby pokazać, że SMS faktycznie przychodzi</li>
+    <li>Mail testowy do pokazania gotowej wiadomości z PDF</li>
+    <li>Szklanka wody obok</li>
+  </ul>
+
+  <div class="callout tip">
+    Klient to rodzina — ale spotkanie to spotkanie. Chcesz wyjść z jedną konkretną decyzją (najlepiej: <em>kiedy ruszamy produkcyjnie</em>).
+  </div>
+</section>
+
+<!-- 02 -->
+<section>
+  <h1 class="section-title"><span class="pre">02 · Otwarcie</span>Pierwsze 5 minut — co powiedzieć</h1>
+  <p>Prosty otwieracz, nie przemowa:</p>
+  <blockquote>
+    „Pokażę Wam, co już działa i w jaki sposób pracownik będzie z tego korzystał na co dzień. Podzielę to na cztery części: najpierw web — tam siedzi właściciel i biuro, potem telefon pracownika na punkcie wydania, potem jak wygląda umowa i komunikacja z klientem, a na końcu zwrot. Jak coś będzie niejasne — przerywajcie od razu, nie zbieramy pytań na koniec.”
+  </blockquote>
+
+  <p>Trzy rzeczy, które warto rzucić <em>zanim</em> zaczniesz klikać:</p>
+  <ol class="steps">
+    <li><strong>To jest gotowe do uruchomienia</strong> — nie prototyp, nie demo, działający system.</li>
+    <li><strong>Jedna baza, dwa interfejsy</strong> — web dla biura, mobile dla punktu wydania. Ten sam login, te same dane.</li>
+    <li><strong>Świadomie zostawiliśmy kilka rzeczy ręcznych</strong> — tam, gdzie automat byłby tylko pozorem bezpieczeństwa. Wytłumaczę przy okazji.</li>
+  </ol>
+</section>
+
+<!-- 03 -->
+<section>
+  <h1 class="section-title"><span class="pre">03 · Timing</span>Plan na godzinę (ramowo)</h1>
+  <table>
+    <thead><tr><th style="width:18mm">Minuty</th><th style="width:42mm">Część</th><th>Cel</th></tr></thead>
+    <tbody>
+      <tr><td>0–5</td><td>Wstęp + co zobaczą</td><td>Ustawienie oczekiwań</td></tr>
+      <tr><td>5–20</td><td><strong>Web</strong> — klienci, pojazdy, kalendarz, wynajmy, rozliczenia</td><td>Pokazać „biuro”</td></tr>
+      <tr><td>20–40</td><td><strong>Mobile</strong> — nowy najem od zera: OCR, zdjęcia, podpisy</td><td>Pokazać punkt wydania</td></tr>
+      <tr><td>40–50</td><td><strong>Dokumenty</strong> — PDF, hasło, SMS, mail, portal klienta</td><td>Pokazać efekt dla klienta</td></tr>
+      <tr><td>50–55</td><td><strong>Zwrot</strong> — protokół, VAT reminder</td><td>Domknąć cykl</td></tr>
+      <tr><td>55–60</td><td>Pytania / dalsze kroki</td><td>Wyjść z decyzją</td></tr>
+    </tbody>
+  </table>
+  <p class="lead">Gdy klient zboczy na bok — nie blokuj, to są płatne pytania. Wróć miękko: „dokładnie do tego dojdziemy za chwilę”.</p>
+</section>
+
+<!-- 04 -->
+<section class="page-break">
+  <h1 class="section-title"><span class="pre">04 · Część 1</span>Web — biuro</h1>
+
+  <h3>Kolejność klikania</h3>
+  <ol class="steps">
+    <li><strong>Klienci</strong> — dodawanie, pola firmowe (NIP, VAT, adres), szukanie po nazwisku/PESEL</li>
+    <li><strong>Pojazdy i klasy pojazdów</strong> — jeden pojazd, potem pokaż że klasa grupuje (np. „kompakt”, „SUV”)</li>
+    <li><strong>Kalendarz</strong> — widok miesiąc/tydzień, konflikty, wolne terminy</li>
+    <li><strong>Nowy wynajem z poziomu web</strong> — krótko, główny przepływ jest na mobile</li>
+    <li><strong>Lista wynajmów</strong> — statusy, filtrowanie, szczegóły jednego wynajmu</li>
+    <li><strong>Rozliczenia</strong> — co się liczy, jak wygląda podsumowanie</li>
+    <li><strong>Użytkownicy</strong> — „dodajecie pracowników sami, admin to Wy”</li>
+  </ol>
+
+  <div class="callout say">
+    <ul>
+      <li>Jedno konto admina = właściciel firmy. Pracowników dodaje admin z poziomu web.</li>
+      <li>Kalendarz jest „mózgiem” — po nim najwygodniej planować.</li>
+      <li>Rozliczenia widać od razu, bez eksportu do Excela, żeby zobaczyć co kto oddał.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 05 -->
+<section>
+  <h1 class="section-title"><span class="pre">05 · Część 2</span>Mobile — punkt wydania</h1>
+  <p class="lead">Opowieść, nie funkcje. Pokazujesz historyjkę: przychodzi klient, pracownik robi z nim umowę w 5 minut.</p>
+
+  <h3>Kolejność</h3>
+  <ol class="steps">
+    <li>Logowanie pracownika</li>
+    <li>„Nowy najem” — wybór klienta albo dodanie nowego</li>
+    <li><strong>OCR dowodu osobistego</strong> — klikasz, skanujesz, pola się wypełniają</li>
+    <li><strong>OCR prawa jazdy</strong> — to samo; pokaż że łapie datę ważności, kategorię, nr blankietu, organ wydający</li>
+    <li><strong>Zdjęcia pojazdu przed wydaniem</strong> — 4–6 zdjęć, wszystkie trafiają do PDF</li>
+    <li><strong>Drugi kierowca</strong> (opcjonalnie) — pokaż jednym kliknięciem</li>
+    <li><strong>Podpisy</strong> — klienta + pracownika, na ekranie</li>
+    <li>Zatwierdzenie → „właśnie wystartowała umowa”</li>
+  </ol>
+
+  <div class="callout say">
+    <ul>
+      <li>„To cały proces wydania — od wejścia klienta do wyjścia z autem robi się w 5 minut.”</li>
+      <li>„Pracownik nic nie przepisuje ręcznie z dowodu — OCR zrobił robotę.”</li>
+      <li>„Podpisy są na ekranie, umowa nie wymaga drukarki.”</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 06 -->
+<section>
+  <h1 class="section-title"><span class="pre">06 · Część 3</span>Dokumenty i komunikacja</h1>
+  <p class="lead">Pokazujesz efekt końcowy — jak to wygląda dla klienta końcowego.</p>
+
+  <h3>Kolejność</h3>
+  <ol class="steps">
+    <li>Otwórz świeżo wygenerowany PDF umowy → pokaż, że jest <strong>zaszyfrowany hasłem</strong></li>
+    <li>Powiedz: „hasłem jest numer rejestracyjny pojazdu — klient ma go na umowie, na kluczach i w SMS-ie”</li>
+    <li>Pokaż wysłany <strong>mail</strong> — temat: <code>Umowa [NR-SPRAWY] — [NR-REJ]</code>, w załączniku PDF</li>
+    <li>Pokaż <strong>SMS</strong> z hasłem (numer rejestracyjny)</li>
+    <li><strong>Portal klienta</strong> — link ważny 30 dni, bez logowania hasłem</li>
+  </ol>
+
+  <div class="callout say">
+    <ul>
+      <li>PDF jest zaszyfrowany — jak ktoś przechwyci mail, nie otworzy bez hasła.</li>
+      <li>Hasło idzie <strong>innym kanałem</strong> (SMS-em), nie w tym samym mailu.</li>
+      <li>Temat maila od razu identyfikuje sprawę — biuro nie musi szukać.</li>
+      <li>Klient nie musi zakładać konta, żeby pobrać umowę — ma link w mailu.</li>
+    </ul>
+  </div>
+
+  <p>Przy okazji SMS-a o przedłużeniu — wspomnij że system potrafi przypomnieć klientowi o terminie zwrotu. Nie demoj, tylko zasygnalizuj: „wysyłamy też przypomnienia SMS-em, pokażę jak chcecie”.</p>
+</section>
+
+<!-- 07 -->
+<section>
+  <h1 class="section-title"><span class="pre">07 · Część 4</span>Zwrot</h1>
+  <p>Domykasz pętlę. Krótko:</p>
+  <ol class="steps">
+    <li>Lista aktywnych wynajmów → wybierasz ten do zwrotu</li>
+    <li>Zdjęcia po zwrocie</li>
+    <li><strong>Modal przypomnienia o VAT</strong> — „zanim zatwierdzisz, pamiętaj o fakturze VAT jeśli klient firmowy”</li>
+    <li>Protokół zwrotu — PDF, podpis, zamknięcie sprawy</li>
+  </ol>
+
+  <div class="callout say">
+    „Ten modal o VAT to nie gadżet — to zabezpieczenie przed zapomnieniem, bo najczęstszy błąd księgowy to właśnie brak faktury przy zwrocie firmowym. System pilnuje pracownika.”
+  </div>
+</section>
+
+<!-- 08 -->
+<section class="page-break">
+  <h1 class="section-title"><span class="pre">08 · Narracja</span>Jak mówić o OCR</h1>
+  <p><strong>Nie obiecuj 100%.</strong> OCR jest świetny, ale nie magia — lepiej powiedzieć prawdę.</p>
+
+  <div class="callout say">
+    „OCR rozpoznaje dane z dowodu i prawa jazdy — w 90%+ przypadków pracownik tylko zatwierdza, nic nie przepisuje. Gdy zdjęcie jest krzywe albo dokument zniszczony, pracownik poprawia ręcznie te 1–2 pola. To dalej jest dużo szybsze niż przepisywanie wszystkiego od zera.”
+  </div>
+
+  <div class="callout dont">
+    <ul class="dont-list">
+      <li>„Zawsze rozpoznaje” — nie zawsze. Będą edge case'y, nie ma sensu kłamać.</li>
+      <li>„To jest AI najnowszej generacji” — klient tego nie ogarnie, podniesie oczekiwania.</li>
+    </ul>
+  </div>
+
+  <p><strong>Co dodać, jeśli zapytają o dokładność:</strong></p>
+  <blockquote>
+    „Mamy trzy poziomy — najpierw model AI (Gemini od Google), potem uproszczony odczyt tekstowy, a na końcu lokalny parser. System sam przechodzi na niższy poziom jak wyższy nie działa. Pracownik widzi wynik i może poprawić przed zatwierdzeniem.”
+  </blockquote>
+</section>
+
+<!-- 09 -->
+<section>
+  <h1 class="section-title"><span class="pre">09 · Narracja</span>Jak mówić o CEPiK</h1>
+  <p><strong>To jest kluczowy moment — nie ściemniaj.</strong> Klient może myśleć, że macie pełną integrację państwową. Nie macie — i to jest OK, trzeba to po prostu dobrze wytłumaczyć.</p>
+
+  <div class="callout say">
+    „CEPiK u nas to na dzień dzisiejszy <strong>checkpoint operacyjny, nie integracja z bazą państwową</strong>. Dostęp do prawdziwego API CEPiK dla przewoźników wymaga oficjalnego wniosku do Ministerstwa Cyfryzacji — to osobny proces po Waszej stronie. Do czasu jego uzyskania system zapisuje fakt, że pracownik zweryfikował dokument — jest ślad audytowy, kto i kiedy sprawdził. Gdy uzyskacie dostęp CEPiK Carriers API, podepniemy prawdziwe sprawdzenie bez zmiany interfejsu dla pracownika.”
+  </div>
+
+  <h3>Kluczowe punkty</h3>
+  <ul>
+    <li>Mówisz <strong>„shortcut operacyjny”</strong> albo <strong>„manualny checkpoint”</strong> — nie „integracja”.</li>
+    <li>Nie kłamiesz, że to państwowa weryfikacja.</li>
+    <li>Pokazujesz ścieżkę w przód (można podłączyć później bez zmian w UI).</li>
+    <li>Wspominasz audyt — admin widzi, kto i kiedy sprawdził.</li>
+  </ul>
+
+  <h3>Jeśli klient zapyta „czy to bezpieczne”</h3>
+  <blockquote>
+    „Tak samo jak dzisiaj, gdy pracownik patrzy na prawo jazdy klienta przy ladzie. Różnica jest taka, że u nas to jest zapisane w systemie z imieniem pracownika, datą i godziną.”
+  </blockquote>
+</section>
+
+<!-- 10 -->
+<section>
+  <h1 class="section-title"><span class="pre">10 · Narracja</span>PDF, mail, SMS i hasło</h1>
+  <p>Trzy zdania, które warto zapamiętać i wpleść w demo:</p>
+
+  <ol class="steps">
+    <li>„PDF umowy jest zaszyfrowany — klient dostaje go mailem, ale hasło osobnym SMS-em.”</li>
+    <li>„Hasłem jest numer rejestracyjny auta — proste do zapamiętania, nie wymaga menedżera haseł.”</li>
+    <li>„Temat maila to numer sprawy i numer rejestracyjny — księgowa nie szuka po klientach, tylko po sprawie.”</li>
+  </ol>
+
+  <h3>„Dlaczego tak, a nie inaczej”</h3>
+  <ul>
+    <li><strong>Dlaczego SMS-em a nie mailem?</strong> — gdyby ktoś przechwycił skrzynkę klienta, miałby i PDF i hasło. Rozdzielamy kanały.</li>
+    <li><strong>Dlaczego numer rejestracyjny?</strong> — klient go widzi za każdym razem, nie zapomni. Menedżer haseł dla jednej umowy byłby nadmiarowy.</li>
+    <li><strong>Dlaczego portal klienta?</strong> — żeby klient nie musiał kopać w mailach za 3 miesiące, gdy potrzebuje umowy do ubezpieczyciela.</li>
+  </ul>
+</section>
+
+<!-- 11 -->
+<section class="page-break">
+  <h1 class="section-title"><span class="pre">11 · Sprzedaż</span>Najmocniejsze argumenty biznesowe</h1>
+  <p class="lead">Jeśli klient zapyta „co to nam daje” — te cztery rzeczy są najtwardsze.</p>
+
+  <h3>1. Skrócenie obsługi na punkcie</h3>
+  <p>Z 20–30 minut (papier + przepisywanie) na <strong>5–7 minut</strong> (OCR + podpisy na ekranie). Przy kilku wydaniach dziennie to oszczędność godzin pracy w tygodniu.</p>
+
+  <h3>2. Koniec drukarki na punkcie</h3>
+  <p>Umowy są elektroniczne, podpisy na ekranie, PDF leci mailem. Punkt wydania nie potrzebuje papieru, tonera ani archiwum segregatorów.</p>
+
+  <h3>3. Ślad audytowy zamiast karteczek</h3>
+  <p>Kto wydał auto, kiedy, komu, z jakimi zdjęciami. Gdy klient zwróci auto porysowane i będzie się spierał — macie zdjęcia z dnia wydania z podpisem obu stron.</p>
+
+  <h3>4. Klient końcowy dostaje dokumenty od razu</h3>
+  <p>Mail z umową w ciągu minuty od podpisania. Brak „odezwę się jutro z umową”. Dla klientów B2B to wygląda po prostu profesjonalnie.</p>
+</section>
+
+<!-- 12 -->
+<section>
+  <h1 class="section-title"><span class="pre">12 · Dyscyplina</span>Czego NIE mówić / czego nie robić</h1>
+
+  <h3>Nie mów</h3>
+  <div class="callout dont">
+    <ul class="dont-list">
+      <li>„CEPiK jest zintegrowany” — nie jest. To checkpoint operacyjny.</li>
+      <li>„OCR działa w 100%” — nie działa. Około 90–95% na dobrych zdjęciach.</li>
+      <li>„Wszystko się dzieje automatycznie” — niektóre rzeczy są świadomie ręczne.</li>
+      <li>„To jest najlepszy system na rynku” — nie wiesz, klient nie lubi pustych superlatyw.</li>
+      <li>„Dodamy wszystko co chcecie” — nie obiecuj poza zakresem.</li>
+    </ul>
+  </div>
+
+  <h3>Nie rób</h3>
+  <div class="callout dont">
+    <ul class="dont-list">
+      <li>Nie demonstruj funkcji, których sam dziś rano nie sprawdziłeś.</li>
+      <li>Nie pokazuj bazy danych ani kodu — nawet jak klient prosi.</li>
+      <li>Nie otwieraj konsoli deweloperskiej na oczach klienta.</li>
+      <li>Nie mów o bugach, które akurat naprawiasz.</li>
+      <li>Nie wchodź w technologię głębiej niż „Gemini od Google robi OCR, reszta to standardowe technologie webowe”.</li>
+    </ul>
+  </div>
+
+  <h3>Gdy klient drąży technicznie</h3>
+  <blockquote>
+    „Wolę nie wchodzić w szczegóły techniczne tu przy kawie, bo to jest kilka godzin dyskusji. Dla Was ważne jest, że to działa, jest utrzymywalne i można rozwijać. Jak chcecie, robimy osobne spotkanie z dokumentacją techniczną.”
+  </blockquote>
+</section>
+
+<!-- 13 -->
+<section class="page-break">
+  <h1 class="section-title"><span class="pre">13 · Rękaw</span>Mini-skrypty — gotowe zdania</h1>
+
+  <div class="mini-script">
+    <div class="q">Gdy klient pyta „co jeśli nie mamy zasięgu na punkcie”</div>
+    <div class="a">„System wymaga internetu w momencie podpisania i wysyłki. Zasięg LTE wystarczy — nie potrzeba światłowodu. Na kompletny offline byśmy musieli wrócić do rozmowy, bo to inny projekt.”</div>
+  </div>
+
+  <div class="mini-script">
+    <div class="q">Gdy klient pyta „czy dane są bezpieczne”</div>
+    <div class="a">„PESEL i dane z dowodu są szyfrowane w bazie — nawet gdyby ktoś wykradł bazę, bez klucza to są śmieci. PDF-y umów są zaszyfrowane hasłem. Hasła do kont admina i pracowników — argon2, standard dla banków.”</div>
+  </div>
+
+  <div class="mini-script">
+    <div class="q">Gdy klient pyta „co jeśli zginie Wam wsparcie”</div>
+    <div class="a">„Kod jest Wasz, dokumentacja jest w repozytorium, infrastruktura (baza, storage) jest na standardowych dostawcach. Każdy kompetentny deweloper Node/React to przejmie — to nie jest egzotyczny stack.”</div>
+  </div>
+
+  <div class="mini-script">
+    <div class="q">Gdy klient pyta „ile to kosztuje utrzymania miesięcznie”</div>
+    <div class="a">„Zależy od obciążenia, ale przy normalnym ruchu wypożyczalni to rząd kilkuset złotych miesięcznie za infrastrukturę — hosting, baza, SMS-y, OCR. Konkretny rachunek zrobimy po pierwszym miesiącu produkcyjnym.”</div>
+  </div>
+
+  <div class="mini-script">
+    <div class="q">Gdy klient mówi „to nie tak miało wyglądać”</div>
+    <div class="a">„Dobra, powiedzcie co konkretnie byście zmienili — zapiszę i wracam z konkretną wyceną zmiany. Nie ma co dyskutować na sucho.”</div>
+  </div>
+
+  <div class="mini-script">
+    <div class="q">Gdy klient chce „jeszcze jedną rzecz za darmo”</div>
+    <div class="a">„Rozumiem że to się wydaje małe, ale każda taka rzecz to 2–5 dni roboczych. Dopisuję na listę i wrócę z wyceną — wtedy zdecydujecie.”</div>
+  </div>
+
+  <div class="mini-script">
+    <div class="q">Gdy klient chwali</div>
+    <div class="a">„Dzięki. To była robota kilku miesięcy, cieszę się że widać. Co by Wam się teraz najbardziej przydało w następnym kroku?”</div>
+  </div>
+</section>
+
+<!-- 14 -->
+<section>
+  <h1 class="section-title"><span class="pre">14 · Obrona</span>Pytania, których się spodziewać</h1>
+  <ul>
+    <li><strong>„Co z fakturami?”</strong> — rozliczenia są w systemie, ale pełny moduł fakturowy to osobny temat. Dzisiaj: VAT reminder + dane firmy na umowie.</li>
+    <li><strong>„Czy działa na telefonie szefa?”</strong> — web panel działa na każdej przeglądarce. Mobile jest natywną apką (Expo).</li>
+    <li><strong>„Czy dodacie integrację z [X]?”</strong> — „zapiszę, wrócę z wyceną”. Nigdy od razu „tak”.</li>
+    <li><strong>„Kiedy dostaniemy apkę w sklepie?”</strong> — osobny temat deploymentu, wrócimy po akceptacji UX.</li>
+    <li><strong>„Czy klient może sobie sam zarezerwować?”</strong> — nie w tej wersji. Portal klienta jest tylko do pobrania dokumentów. Samoobsługa to osobny projekt.</li>
+    <li><strong>„Co z prawem jazdy kategorii C, motocyklami, przyczepami?”</strong> — OCR czyta kategorię, reszta to konfiguracja klas pojazdów. Pokażemy jak będziecie dodawać.</li>
+  </ul>
+</section>
+
+<!-- 15 -->
+<section>
+  <h1 class="section-title"><span class="pre">15 · Domknięcie</span>Zamknięcie spotkania</h1>
+  <p>Prosta formuła:</p>
+  <blockquote>
+    „To co pokazałem, jest gotowe do uruchomienia. Następne kroki z mojej strony to [konkret 1–2 rzeczy]. Z Waszej strony potrzebuję [konkret — np. decyzja o domenie, dostęp do CEPiK, dane firmy do umowy]. Dajmy sobie tydzień i spotykamy się podsumować. OK?”
+  </blockquote>
+  <p>Poproś o jedną decyzję do końca spotkania — najlepiej „kiedy ruszamy produkcyjnie”. Nawet miękkie „w ciągu 2 tygodni” wystarczy — ma być ruch.</p>
+</section>
+
+<!-- 16 -->
+<section class="page-break">
+  <h1 class="section-title"><span class="pre">16 · Ściąga</span>10 punktów do zapamiętania</h1>
+
+  <div class="cheatsheet">
+    <div class="card"><div class="num">01</div><div class="text"><strong>Mów prosto.</strong> Klient to rodzina, nie zarząd funduszu. Bez buzzwordów.</div></div>
+    <div class="card"><div class="num">02</div><div class="text"><strong>Web to biuro, mobile to punkt wydania.</strong> Jedna baza, dwa interfejsy.</div></div>
+    <div class="card"><div class="num">03</div><div class="text"><strong>OCR nie jest magią</strong> — 90%+, pracownik dokleja brakujące. Nie obiecuj 100%.</div></div>
+    <div class="card"><div class="num">04</div><div class="text"><strong>CEPiK to checkpoint operacyjny</strong>, nie integracja państwowa. Mów prawdę.</div></div>
+    <div class="card"><div class="num">05</div><div class="text"><strong>PDF zaszyfrowany, hasło SMS-em</strong> osobnym kanałem. Hasło = numer rejestracyjny.</div></div>
+    <div class="card"><div class="num">06</div><div class="text"><strong>Temat maila = nr sprawy + nr rej.</strong> Biuro nie szuka, otwiera.</div></div>
+    <div class="card"><div class="num">07</div><div class="text"><strong>Portal klienta</strong> — bez hasła, link 30 dni, do pobrania dokumentów.</div></div>
+    <div class="card"><div class="num">08</div><div class="text"><strong>VAT reminder przy zwrocie</strong> — zabezpieczenie przed pomyłką księgową.</div></div>
+    <div class="card"><div class="num">09</div><div class="text"><strong>Nie pokazuj kodu, konsoli, bazy.</strong> Nie odpowiadaj technicznie głębiej niż musisz.</div></div>
+    <div class="card"><div class="num">10</div><div class="text"><strong>Wyjdź z jedną decyzją.</strong> Najlepiej: „kiedy ruszamy produkcyjnie”.</div></div>
+  </div>
+
+  <p class="footer-note">
+    Ton: spokojny, konkretny. Demonstracja na przygotowanych danych. Klient to rodzina — ale spotkanie to spotkanie, chcesz wyjść z decyzją.
+  </p>
+</section>
+
+</div>
+</body>
+</html>

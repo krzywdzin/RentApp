@@ -57,7 +57,6 @@ export default function SignaturesStep() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConflict, setShowConflict] = useState(false);
   const [conflictCallback, setConflictCallback] = useState<(() => void) | null>(null);
-  const [failedPhotos, setFailedPhotos] = useState<Record<string, string>>({});
 
   const createRental = useCreateRental();
   const createContract = useCreateContract();
@@ -70,7 +69,7 @@ export default function SignaturesStep() {
   const currentIndex = draft.currentSignatureIndex;
 
   // Build signature steps dynamically based on second driver
-  const hasSecondDriver = draft.secondDriverId !== null;
+  const hasSecondDriver = draft.secondDriverId !== null || draft.secondDriver !== null;
   const signatureSteps = useMemo<SignatureStep[]>(() => {
     if (hasSecondDriver) {
       return [BASE_SIGNATURE_STEPS[0], SECOND_DRIVER_STEP, BASE_SIGNATURE_STEPS[1]];
@@ -88,43 +87,68 @@ export default function SignaturesStep() {
 
   const doCreateRentalAndContract = useCallback(
     async (override: boolean) => {
+      if (rentalId && contractId) return { rentalId, contractId };
       if (isCreatingRef.current) return { rentalId: rentalId!, contractId: contractId! };
       isCreatingRef.current = true;
 
       try {
-        // Create rental first
-        const rental = await createRental.mutateAsync({
-          vehicleId: draft.vehicleId!,
-          customerId: draft.customerId!,
-          startDate: draft.startDate!,
-          endDate: draft.endDate!,
-          dailyRateNet: draft.dailyRateNet!,
-          vatRate: DEFAULT_VAT_RATE,
-          overrideConflict: override,
-          status: 'DRAFT',
-          isCompanyRental: draft.isCompanyRental ?? false,
-          companyNip: draft.companyNip ?? undefined,
-          vatPayerStatus:
-            (draft.vatPayerStatus as 'FULL_100' | 'HALF_50' | 'NONE' | null) ?? undefined,
-          insuranceCaseNumber: draft.insuranceCaseNumber ?? undefined,
-          dailyKmLimit: draft.dailyKmLimit ?? undefined,
-          excessKmRate: draft.excessKmRate ?? undefined,
-          deposit: draft.deposit ?? undefined,
-          returnDeadlineHour: draft.returnDeadlineHour ?? undefined,
-          lateReturnPenalty: draft.lateReturnPenalty ?? undefined,
-          fuelLevelRequired: draft.fuelLevelRequired ?? undefined,
-          fuelCharge: draft.fuelCharge ?? undefined,
-          crossBorderAllowed: draft.crossBorderAllowed,
-          dirtyReturnFee: draft.dirtyReturnFee ?? undefined,
-          deductible: draft.deductible ?? undefined,
-          deductibleWaiverFee: draft.deductibleWaiverFee ?? undefined,
-        });
-        draft.updateDraft({ rentalId: rental.id });
+        let activeRentalId = rentalId;
+
+        if (!activeRentalId) {
+          // Create rental first
+          const rental = await createRental.mutateAsync({
+            vehicleId: draft.vehicleId!,
+            customerId: draft.customerId!,
+            startDate: draft.startDate!,
+            endDate: draft.endDate!,
+            dailyRateNet: draft.dailyRateNet!,
+            vatRate: DEFAULT_VAT_RATE,
+            overrideConflict: override,
+            status: 'DRAFT',
+            isCompanyRental: draft.isCompanyRental ?? false,
+            companyNip: draft.companyNip ?? undefined,
+            vatPayerStatus:
+              (draft.vatPayerStatus as 'FULL_100' | 'HALF_50' | 'NONE' | null) ?? undefined,
+            insuranceCaseNumber: draft.insuranceCaseNumber ?? undefined,
+            pickupLocation: draft.pickupLocation ?? undefined,
+            returnLocation: draft.returnLocation ?? undefined,
+            dailyKmLimit: draft.dailyKmLimit ?? undefined,
+            excessKmRate: draft.excessKmRate ?? undefined,
+            deposit: draft.deposit ?? undefined,
+            returnDeadlineHour: draft.returnDeadlineHour ?? undefined,
+            lateReturnPenalty: draft.lateReturnPenalty ?? undefined,
+            fuelLevelRequired: draft.fuelLevelRequired ?? undefined,
+            fuelCharge: draft.fuelCharge ?? undefined,
+            crossBorderAllowed: draft.crossBorderAllowed,
+            dirtyReturnFee: draft.dirtyReturnFee ?? undefined,
+            deductible: draft.deductible ?? undefined,
+            deductibleWaiverFee: draft.deductibleWaiverFee ?? undefined,
+          });
+          activeRentalId = rental.id;
+          draft.updateDraft({ rentalId: rental.id });
+        }
+
+        if (draft.secondDriver && !draft.secondDriverId) {
+          const { data } = await apiClient.post(`/rentals/${activeRentalId}/driver`, {
+            firstName: draft.secondDriver.firstName,
+            lastName: draft.secondDriver.lastName,
+            pesel: draft.secondDriver.pesel,
+            idNumber: draft.secondDriver.idNumber,
+            licenseNumber: draft.secondDriver.licenseNumber,
+            licenseCategory: draft.secondDriver.licenseCategory || 'B',
+            street: draft.secondDriver.street,
+            houseNumber: draft.secondDriver.houseNumber,
+            postalCode: draft.secondDriver.postalCode,
+            city: draft.secondDriver.city,
+            phone: draft.secondDriver.phone,
+          });
+          draft.updateDraft({ secondDriverId: data.id });
+        }
 
         // PATCH rental terms if worker customized them or added notes
         if (draft.rentalTerms || draft.termsNotes) {
           try {
-            await apiClient.patch(`/rentals/${rental.id}/terms`, {
+            await apiClient.patch(`/rentals/${activeRentalId}/terms`, {
               rentalTerms: draft.rentalTerms ?? undefined,
               termsNotes: draft.termsNotes ?? undefined,
             });
@@ -136,13 +160,14 @@ export default function SignaturesStep() {
 
         // Create contract linked to rental, including termsAcceptedAt
         const contract = await createContract.mutateAsync({
-          rentalId: rental.id,
+          rentalId: activeRentalId,
           rodoConsentAt: draft.rodoTimestamp!,
           termsAcceptedAt: draft.termsAcceptedAt ?? undefined,
         });
         draft.updateDraft({ contractId: contract.id });
+        isCreatingRef.current = false;
 
-        return { rentalId: rental.id, contractId: contract.id };
+        return { rentalId: activeRentalId, contractId: contract.id };
       } catch (err) {
         isCreatingRef.current = false;
         throw err;
@@ -175,8 +200,6 @@ export default function SignaturesStep() {
   const handleSignatureConfirm = useCallback(
     async (base64Png: string) => {
       setIsUploading(true);
-
-      const snapshotPhotoUris = { ...draft.photoUris };
 
       try {
         let activeRentalId = rentalId;
@@ -255,56 +278,6 @@ export default function SignaturesStep() {
         } else {
           // All signatures done -- finalize
           setIsSubmitting(true);
-
-          // Upload walkthrough photos
-          if (activeRentalId && Object.keys(snapshotPhotoUris).length > 0) {
-            try {
-              const walkthrough = await apiClient.post('/walkthroughs', {
-                rentalId: activeRentalId,
-                type: 'HANDOVER',
-              });
-              const photoFailures: Record<string, string> = {};
-              for (const [position, uri] of Object.entries(snapshotPhotoUris)) {
-                try {
-                  const formData = new FormData();
-                  formData.append('file', {
-                    uri,
-                    name: `${position}.jpg`,
-                    type: 'image/jpeg',
-                  } as any);
-                  formData.append('position', position);
-                  formData.append('capturedAt', new Date().toISOString());
-                  await apiClient.post(`/walkthroughs/${walkthrough.data.id}/photos`, formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' },
-                    transformRequest: (data) => data,
-                  });
-                } catch (photoError) {
-                  console.warn(`Photo upload failed for ${position}:`, photoError);
-                  photoFailures[position] = uri;
-                }
-              }
-              setFailedPhotos(photoFailures);
-              if (Object.keys(photoFailures).length > 0) {
-                Toast.show({
-                  type: 'info',
-                  text1: `${Object.keys(photoFailures).length} zdjec nie zostalo wyslanych. Mozesz dodac je pozniej.`,
-                });
-              } else {
-                await apiClient.post(`/walkthroughs/${walkthrough.data.id}/submit`);
-                Toast.show({
-                  type: 'success',
-                  text1: t('toasts.photosUploaded'),
-                });
-              }
-            } catch (walkthroughError) {
-              console.warn('Walkthrough creation failed:', walkthroughError);
-              Toast.show({
-                type: 'info',
-                text1: 'Zdjecia nie zostaly wyslane',
-                text2: 'Mozesz dodac je pozniej',
-              });
-            }
-          }
 
           draft.clearDraft();
           Toast.show({

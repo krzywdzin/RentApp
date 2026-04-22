@@ -1,3 +1,11 @@
+jest.mock(
+  '@pdfsmaller/pdf-encrypt-lite',
+  () => ({
+    encryptPDF: jest.fn(),
+  }),
+  { virtual: true },
+);
+
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
@@ -703,7 +711,7 @@ describe('ContractsService', () => {
       );
     });
 
-    it('does NOT send SMS if encryption fails for contract', async () => {
+    it('sends SMS independently if encryption fails for contract email', async () => {
       setupFullySignedContract();
       pdfEncryptionService.encrypt.mockRejectedValue(new Error('encryption failed'));
 
@@ -711,10 +719,13 @@ describe('ContractsService', () => {
       await flushSetImmediate();
 
       expect(mailService.sendContractEmail).not.toHaveBeenCalled();
-      expect(smsService.send).not.toHaveBeenCalled();
+      expect(smsService.send).toHaveBeenCalledWith(
+        '+48123456789',
+        'Haslo do PDF umowy: TO 12345. KITEK',
+      );
     });
 
-    it('does NOT send SMS if contract email fails', async () => {
+    it('sends SMS independently if contract email fails', async () => {
       setupFullySignedContract();
       mailService.sendContractEmail.mockRejectedValue(new Error('email failed'));
 
@@ -722,7 +733,10 @@ describe('ContractsService', () => {
       await flushSetImmediate();
 
       expect(pdfEncryptionService.encrypt).toHaveBeenCalled();
-      expect(smsService.send).not.toHaveBeenCalled();
+      expect(smsService.send).toHaveBeenCalledWith(
+        '+48123456789',
+        'Haslo do PDF umowy: TO 12345. KITEK',
+      );
     });
 
     it('encrypts PDF before sending annex email', async () => {

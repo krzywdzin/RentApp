@@ -71,17 +71,17 @@ interface RentalForContract {
   insuranceCaseNumber: string | null;
   rentalTerms: string | null;
   termsNotes: string | null;
-  dailyKmLimit: number | null;
-  excessKmRate: number | null;
-  deposit: number | null;
-  returnDeadlineHour: string | null;
-  lateReturnPenalty: number | null;
-  fuelLevelRequired: string | null;
-  fuelCharge: number | null;
-  crossBorderAllowed: boolean;
-  dirtyReturnFee: number | null;
-  deductible: number | null;
-  deductibleWaiverFee: number | null;
+  dailyKmLimit?: number | null;
+  excessKmRate?: number | null;
+  deposit?: number | null;
+  returnDeadlineHour?: string | null;
+  lateReturnPenalty?: number | null;
+  fuelLevelRequired?: string | null;
+  fuelCharge?: number | null;
+  crossBorderAllowed?: boolean;
+  dirtyReturnFee?: number | null;
+  deductible?: number | null;
+  deductibleWaiverFee?: number | null;
 }
 
 interface VehicleForContract {
@@ -253,7 +253,7 @@ export class ContractsService {
         lateReturnPenalty: rental.lateReturnPenalty ?? null,
         fuelLevelRequired: rental.fuelLevelRequired ?? null,
         fuelCharge: rental.fuelCharge ?? null,
-        crossBorderAllowed: rental.crossBorderAllowed,
+        crossBorderAllowed: rental.crossBorderAllowed ?? false,
         dirtyReturnFee: rental.dirtyReturnFee ?? null,
         deductible: rental.deductible ?? null,
         deductibleWaiverFee: rental.deductibleWaiverFee ?? null,
