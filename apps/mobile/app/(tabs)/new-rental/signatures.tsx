@@ -186,7 +186,6 @@ export default function SignaturesStep() {
           termsAcceptedAt: draft.termsAcceptedAt ?? undefined,
         });
         draft.updateDraft({ contractId: contract.id });
-        isCreatingRef.current = false;
 
         return { rentalId: activeRentalId, contractId: contract.id };
       } catch (err) {
