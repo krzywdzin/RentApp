@@ -3,77 +3,36 @@ import {
   Post,
   Get,
   Param,
-  UploadedFile,
-  UseInterceptors,
   ParseUUIDPipe,
-  BadRequestException,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { memoryStorage } from 'multer';
-import { UserRole, DocumentType, DocumentSide, DOCUMENT_TYPES, DOCUMENT_SIDES } from '@rentapp/shared';
+import { UserRole } from '@rentapp/shared';
 import { Roles } from '../common/decorators/roles.decorator';
-import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { DocumentsService } from './documents.service';
-
-const TYPE_MAP: Record<string, DocumentType> = {
-  'id-card': 'ID_CARD',
-  'driver-license': 'DRIVER_LICENSE',
-};
 
 @Controller('customers')
 export class DocumentsController {
   constructor(private readonly documentsService: DocumentsService) {}
 
+  // RODO: zdjęcia dokumentów klienta nie są przechowywane na backendzie.
+  // Endpoint pozostaje zgłaszając 410 Gone dla defensive-coding — gdyby
+  // jakikolwiek klient (starsza apka, web) próbował przesłać zdjęcie,
+  // otrzyma deterministyczną odmowę zamiast niecichego zapisu.
   @Post(':customerId/documents/:type/:side')
   @Roles(UserRole.ADMIN, UserRole.EMPLOYEE)
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: memoryStorage(),
-      limits: { fileSize: 20 * 1024 * 1024 },
-      fileFilter: (_req, file, cb) => {
-        const allowed = ['image/jpeg', 'image/png', 'image/heic', 'image/heif'];
-        cb(null, allowed.includes(file.mimetype.toLowerCase()));
-      },
-    }),
-  )
-  async uploadDocumentPhoto(
-    @Param('customerId', ParseUUIDPipe) customerId: string,
-    @Param('type') type: string,
-    @Param('side') side: string,
-    @UploadedFile() file: Express.Multer.File,
-    @CurrentUser('id') userId: string,
-  ) {
-    const documentType = TYPE_MAP[type];
-    if (!documentType) {
-      throw new BadRequestException(
-        `Invalid document type "${type}". Expected: ${Object.keys(TYPE_MAP).join(', ')}`,
-      );
-    }
-
-    if (!DOCUMENT_SIDES.includes(side as DocumentSide)) {
-      throw new BadRequestException(
-        `Invalid side "${side}". Expected: ${DOCUMENT_SIDES.join(', ')}`,
-      );
-    }
-
-    if (!file) {
-      throw new BadRequestException('File is required');
-    }
-
-    return this.documentsService.uploadPhoto(
-      customerId,
-      documentType,
-      side as DocumentSide,
-      file,
-      userId,
+  async uploadDocumentPhoto() {
+    throw new HttpException(
+      'Document photos are not stored server-side (RODO / GDPR). OCR data is extracted on-device and images stay on the device.',
+      HttpStatus.GONE,
     );
   }
 
+  // Read-only access pozostaje tylko dla ADMIN, aby można było przejrzeć
+  // i wyczyścić ewentualne legacy dane wgrane przed zmianą.
   @Get(':customerId/documents')
   @Roles(UserRole.ADMIN)
-  async getDocuments(
-    @Param('customerId', ParseUUIDPipe) customerId: string,
-  ) {
+  async getDocuments(@Param('customerId', ParseUUIDPipe) customerId: string) {
     return this.documentsService.getDocuments(customerId);
   }
 }
