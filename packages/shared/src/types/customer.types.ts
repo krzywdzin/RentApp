@@ -4,6 +4,7 @@ export interface CustomerDto {
   lastName: string;
   phone: string;
   email: string | null;
+  invoiceEmail: string | null;
   street: string | null;
   houseNumber: string | null;
   apartmentNumber: string | null;

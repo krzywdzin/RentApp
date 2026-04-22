@@ -222,6 +222,7 @@ model Customer {
   lastName              String
   phone                 String
   email                 String?
+  invoiceEmail          String?
   street                String?
   houseNumber           String?
   apartmentNumber       String?

@@ -27,6 +27,10 @@ export class CreateCustomerDto {
   email?: string;
 
   @IsOptional()
+  @IsEmail()
+  invoiceEmail?: string;
+
+  @IsOptional()
   @IsString()
   @MaxLength(200)
   street?: string;
