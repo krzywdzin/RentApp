@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { Stack, useRouter } from 'expo-router';
 import { useRentalDraftStore } from '@/stores/rental-draft.store';
 import { ConfirmationDialog } from '@/components/ConfirmationDialog';
@@ -10,18 +10,39 @@ export default function NewRentalLayout() {
   const router = useRouter();
   const draft = useRentalDraftStore();
   const [showDiscard, setShowDiscard] = useState(false);
+  const pendingAction = useRef<unknown>(null);
 
   const hasDraftData =
     !!draft.customerId || !!draft.vehicleId || !!draft.startDate;
 
-  const handleBeforeRemove = useCallback(
-    (e: { preventDefault: () => void; data: { action: unknown } }) => {
+  // Confirm discard tylko gdy użytkownik opuszcza WIZARDA w całości (pop z
+  // ekranu startowego `index` z aktywnym szkicem). Nawigacja wstecz pomiędzy
+  // krokami (vehicle → index, dates → vehicle, itd.) nie wyzwala dialogu,
+  // dzięki czemu można swobodnie poprawić dane bez resetu szkicu.
+  const handleRootBeforeRemove = useCallback(
+    (e: {
+      preventDefault: () => void;
+      data: { action: unknown };
+    }) => {
       if (!hasDraftData) return;
       e.preventDefault();
+      pendingAction.current = e.data.action;
       setShowDiscard(true);
     },
     [hasDraftData],
   );
+
+  const handleDiscardConfirm = useCallback(() => {
+    setShowDiscard(false);
+    draft.clearDraft();
+    pendingAction.current = null;
+    router.back();
+  }, [draft, router]);
+
+  const handleDiscardCancel = useCallback(() => {
+    setShowDiscard(false);
+    pendingAction.current = null;
+  }, []);
 
   return (
     <>
@@ -38,39 +59,14 @@ export default function NewRentalLayout() {
         <Stack.Screen
           name="index"
           listeners={{
-            beforeRemove: handleBeforeRemove,
+            beforeRemove: handleRootBeforeRemove,
           }}
         />
-        <Stack.Screen
-          name="vehicle"
-          listeners={{
-            beforeRemove: handleBeforeRemove,
-          }}
-        />
-        <Stack.Screen
-          name="dates"
-          listeners={{
-            beforeRemove: handleBeforeRemove,
-          }}
-        />
-        <Stack.Screen
-          name="contract"
-          listeners={{
-            beforeRemove: handleBeforeRemove,
-          }}
-        />
-        <Stack.Screen
-          name="photos"
-          listeners={{
-            beforeRemove: handleBeforeRemove,
-          }}
-        />
-        <Stack.Screen
-          name="signatures"
-          listeners={{
-            beforeRemove: handleBeforeRemove,
-          }}
-        />
+        <Stack.Screen name="vehicle" />
+        <Stack.Screen name="dates" />
+        <Stack.Screen name="contract" />
+        <Stack.Screen name="photos" />
+        <Stack.Screen name="signatures" />
         <Stack.Screen
           name="success"
           options={{
@@ -86,12 +82,8 @@ export default function NewRentalLayout() {
         confirmLabel={t('confirm.discard')}
         cancelLabel={t('confirm.continue')}
         variant="destructive"
-        onConfirm={() => {
-          setShowDiscard(false);
-          draft.clearDraft();
-          router.back();
-        }}
-        onCancel={() => setShowDiscard(false)}
+        onConfirm={handleDiscardConfirm}
+        onCancel={handleDiscardCancel}
       />
     </>
   );

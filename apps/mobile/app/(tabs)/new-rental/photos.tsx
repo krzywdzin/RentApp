@@ -78,6 +78,7 @@ export default function PhotosStep() {
         currentStep={5}
         totalSteps={6}
         labels={RENTAL_WIZARD_LABELS}
+        onBack={router.canGoBack() ? router.back : undefined}
       />
 
       <Text style={s.stepTitle}>Zdjecia pojazdu</Text>

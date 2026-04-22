@@ -86,7 +86,7 @@ export default function VehicleStep() {
   if (isLoading) {
     return (
       <SafeAreaView style={s.safeArea} edges={['top']}>
-        <WizardStepper currentStep={2} totalSteps={6} labels={RENTAL_WIZARD_LABELS} />
+        <WizardStepper currentStep={2} totalSteps={6} labels={RENTAL_WIZARD_LABELS} onBack={router.canGoBack() ? router.back : undefined} />
         <Text style={s.stepTitle}>{t('wizard.step2')}</Text>
         <View style={s.loadingWrap}>
           <LoadingSkeleton variant="list-item" count={6} />
@@ -101,6 +101,7 @@ export default function VehicleStep() {
         currentStep={2}
         totalSteps={6}
         labels={RENTAL_WIZARD_LABELS}
+        onBack={router.canGoBack() ? router.back : undefined}
       />
 
       <Text style={s.stepTitle}>

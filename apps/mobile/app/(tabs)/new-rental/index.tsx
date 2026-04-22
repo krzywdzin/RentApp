@@ -38,6 +38,11 @@ import { useCustomerSearch, useCreateCustomer, useCustomer } from '@/hooks/use-c
 import { RENTAL_WIZARD_LABELS } from '@/lib/constants';
 import { colors, fonts, spacing } from '@/lib/theme';
 
+// Session-scoped flag — draft resume modal appears raz po starcie sesji
+// (np. po cold starcie aplikacji), nie przy każdym powrocie z kolejnego kroku
+// wizarda przez back button.
+let hasShownResumeThisSession = false;
+
 // Field label mapping for diff view
 const ID_FIELD_LABELS: Record<string, string> = {
   firstName: 'Imie',
@@ -107,6 +112,7 @@ export default function CustomerStep() {
       lastName: '',
       phone: '',
       email: '',
+      invoiceEmail: '',
       pesel: '',
       idNumber: '',
       idIssuedBy: '',
@@ -123,7 +129,9 @@ export default function CustomerStep() {
     },
   });
 
-  // Check for existing draft after hydration, but never interrupt active create/select flow.
+  // Modal "wznów szkic" pokazujemy tylko raz na sesję i tylko gdy szkic ma
+  // realny postęp poza samym klientem. Dodatkowo nigdy nie przerywamy aktywnego
+  // flow tworzenia/wyboru klienta.
   useEffect(() => {
     if (!hydrated) return;
 
@@ -133,10 +141,35 @@ export default function CustomerStep() {
       return;
     }
 
-    if (draft.customerId) {
+    if (hasShownResumeThisSession) return;
+
+    const hasRealProgress =
+      !!draft.vehicleId || !!draft.startDate || !!draft.rentalId || (draft.step ?? 0) >= 1;
+
+    if (hasRealProgress && draft.customerId) {
+      hasShownResumeThisSession = true;
       setShowDraftResume(true);
     }
-  }, [hydrated, draft.customerId, showNewCustomer, pendingExistingCustomer]);
+  }, [
+    hydrated,
+    draft.customerId,
+    draft.vehicleId,
+    draft.startDate,
+    draft.rentalId,
+    draft.step,
+    showNewCustomer,
+    pendingExistingCustomer,
+  ]);
+
+  // Gdy użytkownik wraca do tego kroku z kolejnego (back-navigation) i ma już
+  // wybranego klienta, przywróć panel "wybranego klienta", żeby mógł kontynuować
+  // do pojazdu bez ponownego wyszukiwania.
+  useEffect(() => {
+    if (!hydrated) return;
+    if (draft.customerId && draft.customerName && !pendingExistingCustomer && !showNewCustomer) {
+      setPendingExistingCustomer({ id: draft.customerId, name: draft.customerName });
+    }
+  }, [hydrated, draft.customerId, draft.customerName, pendingExistingCustomer, showNewCustomer]);
 
   const handleSelectCustomer = useCallback(
     (id: string, name: string) => {
@@ -158,8 +191,8 @@ export default function CustomerStep() {
     setShowNewCustomer(true);
   }, []);
 
-  // NOTE: We intentionally do NOT upload document photos to the backend.
-  // OCR should only prefill fields for the worker; raw ID/license photos must stay off the server (RODO).
+  // RODO: zdjęcia dokumentów nie opuszczają urządzenia. OCR wyciąga dane z obrazu,
+  // same obrazy pozostają lokalnie w draftcie i są czyszczone wraz z szkicem najmu.
 
   const handleCreateCustomer = useCallback(
     async (data: CreateCustomerInput) => {
@@ -201,6 +234,7 @@ export default function CustomerStep() {
 
   const handleDraftReset = useCallback(() => {
     setShowDraftResume(false);
+    hasShownResumeThisSession = true;
     draft.clearDraft();
   }, [draft]);
 
@@ -418,7 +452,14 @@ export default function CustomerStep() {
           <AppCard cardStyle={s.mb12}>
             <View style={s.existingCustomerHeader}>
               <Text style={s.custName}>{pendingExistingCustomer.name}</Text>
-              <TouchableOpacity onPress={() => setPendingExistingCustomer(null)}>
+              <TouchableOpacity
+                onPress={() => {
+                  setPendingExistingCustomer(null);
+                  // Clear linked draft fields too, żeby useEffect nie
+                  // przywrócił automatycznie panelu wybranego klienta.
+                  draft.updateDraft({ customerId: null, customerName: null });
+                }}
+              >
                 <Text style={s.changeButton}>Zmien</Text>
               </TouchableOpacity>
             </View>
@@ -897,6 +938,25 @@ export default function CustomerStep() {
                       maxLength={10}
                       placeholder="0000000000"
                       containerStyle={s.mb12}
+                    />
+                    <Controller
+                      control={control}
+                      name="invoiceEmail"
+                      render={({ field: { onChange, onBlur, value } }) => (
+                        <AppInput
+                          label="Email do faktury"
+                          value={value ?? ''}
+                          onChangeText={onChange}
+                          onBlur={onBlur}
+                          keyboardType="email-address"
+                          autoCapitalize="none"
+                          placeholder="faktury@firma.pl"
+                          error={
+                            (errors as Record<string, { message?: string }>).invoiceEmail?.message
+                          }
+                          containerStyle={s.mb12}
+                        />
+                      )}
                     />
                     <Text style={s.fieldLabel}>Płatnik VAT</Text>
                     <View style={s.vatChipRow}>

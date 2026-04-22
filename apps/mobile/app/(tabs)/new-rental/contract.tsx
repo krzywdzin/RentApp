@@ -118,7 +118,12 @@ export default function ContractStep() {
 
   return (
     <SafeAreaView style={s.safeArea} edges={['top']}>
-      <WizardStepper currentStep={4} totalSteps={6} labels={RENTAL_WIZARD_LABELS} />
+      <WizardStepper
+        currentStep={4}
+        totalSteps={6}
+        labels={RENTAL_WIZARD_LABELS}
+        onBack={router.canGoBack() ? router.back : undefined}
+      />
 
       <Text style={s.stepTitle}>{t('wizard.step4')}</Text>
 
