@@ -42,6 +42,8 @@ interface RentalDraft {
   rentalTerms: string | null;
   termsNotes: string | null;
   termsAcceptedAt: string | null;
+  consentConfirmedAt: string | null;
+  consentConfirmationMethod: 'CUSTOMER_LONG_PRESS' | null;
   dailyKmLimit: number | null;
   excessKmRate: number | null;
   deposit: number | null;
@@ -94,6 +96,8 @@ const initialDraft: RentalDraft = {
   rentalTerms: null,
   termsNotes: null,
   termsAcceptedAt: null,
+  consentConfirmedAt: null,
+  consentConfirmationMethod: null,
   dailyKmLimit: null,
   excessKmRate: null,
   deposit: null,

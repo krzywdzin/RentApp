@@ -1,8 +1,7 @@
 import React, { useCallback } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { useTranslation } from 'react-i18next';
 import * as ImagePicker from 'expo-image-picker';
 import { Camera } from 'lucide-react-native';
 import Toast from 'react-native-toast-message';
@@ -19,14 +18,19 @@ interface PhotoPosition {
 }
 
 const PHOTO_POSITIONS: PhotoPosition[] = [
-  { key: 'front', label: 'Przod' },
-  { key: 'rear', label: 'Tyl' },
-  { key: 'left_side', label: 'Lewa strona' },
-  { key: 'right_side', label: 'Prawa strona' },
+  { key: 'front_left_diagonal', label: 'Przod lewy skos' },
+  { key: 'front_right_diagonal', label: 'Przod prawy skos' },
+  { key: 'rear_left_diagonal', label: 'Tyl lewy skos' },
+  { key: 'rear_right_diagonal', label: 'Tyl prawy skos' },
+  { key: 'underside', label: 'Dol pojazdu' },
+  { key: 'bumper', label: 'Zderzak' },
+  { key: 'interior', label: 'Srodek' },
+  { key: 'wheels', label: 'Kola' },
 ];
 
+const REQUIRED_PHOTO_COUNT = PHOTO_POSITIONS.length;
+
 export default function PhotosStep() {
-  const { t } = useTranslation();
   const router = useRouter();
   const draft = useRentalDraftStore();
   const insets = useSafeAreaInsets();
@@ -61,67 +65,75 @@ export default function PhotosStep() {
   );
 
   const handleNext = useCallback(() => {
+    const missing = PHOTO_POSITIONS.filter((pos) => !draft.photoUris[pos.key]);
+    if (missing.length > 0) {
+      Toast.show({
+        type: 'error',
+        text1: `Brakuje ${missing.length} wymaganych zdjec`,
+        text2: missing
+          .slice(0, 2)
+          .map((pos) => pos.label)
+          .join(', '),
+      });
+      return;
+    }
     draft.updateDraft({ step: 5 });
     router.push('/(tabs)/new-rental/signatures');
   }, [draft, router]);
 
-  const handleSkip = useCallback(() => {
-    draft.updateDraft({ step: 5 });
-    router.push('/(tabs)/new-rental/signatures');
-  }, [draft, router]);
-
-  const photoCount = Object.keys(draft.photoUris).length;
+  const photoCount = PHOTO_POSITIONS.filter((pos) => !!draft.photoUris[pos.key]).length;
 
   return (
     <SafeAreaView style={s.safeArea} edges={['top']}>
-      <WizardStepper
-        currentStep={5}
-        totalSteps={6}
-        labels={RENTAL_WIZARD_LABELS}
-        onBack={router.canGoBack() ? router.back : undefined}
-      />
+      <WizardStepper currentStep={5} totalSteps={6} labels={RENTAL_WIZARD_LABELS} />
 
       <Text style={s.stepTitle}>Zdjecia pojazdu</Text>
       <Text style={s.stepSubtitle}>
-        Zrob zdjecia pojazdu przed wydaniem. Mozesz pominac ten krok.
+        Wymagane ujecia zostaja lokalnie na urzadzeniu i nie sa wysylane do serwera.
       </Text>
 
-      <View style={s.grid}>
-        {PHOTO_POSITIONS.map((pos) => {
-          const uri = draft.photoUris[pos.key];
-          return (
-            <Pressable
-              key={pos.key}
-              style={s.photoCard}
-              onPress={() => handleCapture(pos.key)}
-              accessibilityRole="button"
-              accessibilityLabel={`Zrob zdjecie: ${pos.label}`}
-            >
-              {uri ? (
-                <Image source={{ uri }} style={s.thumbnail} />
-              ) : (
-                <View style={s.placeholder}>
-                  <Camera size={32} color={colors.warmGray} />
-                </View>
-              )}
-              <Text style={s.photoLabel}>{pos.label}</Text>
-              {uri && <View style={s.doneBadge}><Text style={s.doneBadgeText}>OK</Text></View>}
-            </Pressable>
-          );
-        })}
-      </View>
+      <ScrollView
+        style={s.scroll}
+        contentContainerStyle={{ paddingBottom: 120 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={s.grid}>
+          {PHOTO_POSITIONS.map((pos) => {
+            const uri = draft.photoUris[pos.key];
+            return (
+              <Pressable
+                key={pos.key}
+                style={s.photoCard}
+                onPress={() => handleCapture(pos.key)}
+                accessibilityRole="button"
+                accessibilityLabel={`Zrob zdjecie: ${pos.label}`}
+              >
+                {uri ? (
+                  <Image source={{ uri }} style={s.thumbnail} />
+                ) : (
+                  <View style={s.placeholder}>
+                    <Camera size={32} color={colors.warmGray} />
+                  </View>
+                )}
+                <Text style={s.photoLabel}>{pos.label}</Text>
+                {uri && (
+                  <View style={s.doneBadge}>
+                    <Text style={s.doneBadgeText}>OK</Text>
+                  </View>
+                )}
+              </Pressable>
+            );
+          })}
+        </View>
+      </ScrollView>
 
       <View style={[s.bottomBar, { paddingBottom: Math.max(insets.bottom, 16) }]}>
         <AppButton
-          title={`Dalej${photoCount > 0 ? ` (${photoCount}/4)` : ''}`}
+          title={`Dalej (${photoCount}/${REQUIRED_PHOTO_COUNT})`}
           onPress={handleNext}
+          disabled={photoCount < REQUIRED_PHOTO_COUNT}
           fullWidth
         />
-        {photoCount === 0 && (
-          <Pressable style={s.skipButton} onPress={handleSkip}>
-            <Text style={s.skipText}>Pomin zdjecia</Text>
-          </Pressable>
-        )}
       </View>
     </SafeAreaView>
   );
@@ -145,8 +157,8 @@ const s = StyleSheet.create({
     color: colors.warmGray,
     lineHeight: 20,
   },
+  scroll: { flex: 1 },
   grid: {
-    flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
     paddingHorizontal: 12,
@@ -209,15 +221,5 @@ const s = StyleSheet.create({
     paddingHorizontal: spacing.base,
     paddingTop: 12,
     alignItems: 'center',
-  },
-  skipButton: {
-    marginTop: 12,
-    paddingVertical: 8,
-  },
-  skipText: {
-    fontFamily: fonts.body,
-    fontSize: 15,
-    color: colors.forestGreen,
-    fontWeight: '500',
   },
 });

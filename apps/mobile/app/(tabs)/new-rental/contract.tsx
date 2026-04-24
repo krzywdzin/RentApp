@@ -14,7 +14,7 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Check, ChevronDown, ChevronUp, Edit3, Plus, Square, X } from 'lucide-react-native';
+import { Check, ChevronDown, ChevronUp, Edit3, Plus, X } from 'lucide-react-native';
 
 import { WizardStepper } from '@/components/WizardStepper';
 import { AppButton } from '@/components/AppButton';
@@ -36,6 +36,7 @@ export default function ContractStep() {
   const [loadingTerms, setLoadingTerms] = useState(true);
   const [showTermsEditor, setShowTermsEditor] = useState(false);
   const [showSecondDriverForm, setShowSecondDriverForm] = useState(false);
+  const [showConsentModal, setShowConsentModal] = useState(false);
   const [termsExpanded, setTermsExpanded] = useState(true);
 
   // Fetch default terms on mount
@@ -71,20 +72,16 @@ export default function ContractStep() {
   const totalNetGrosze = (draft.dailyRateNet ?? 0) * days;
   const totalGrossGrosze = Math.round(totalNetGrosze * VAT_MULTIPLIER);
 
-  const handleToggleRodo = useCallback(() => {
-    if (draft.rodoConsent) {
-      draft.updateDraft({ rodoConsent: false, rodoTimestamp: null });
-    } else {
-      draft.updateDraft({ rodoConsent: true, rodoTimestamp: new Date().toISOString() });
-    }
-  }, [draft]);
-
-  const handleToggleTermsAccepted = useCallback(() => {
-    if (draft.termsAcceptedAt) {
-      draft.updateDraft({ termsAcceptedAt: null });
-    } else {
-      draft.updateDraft({ termsAcceptedAt: new Date().toISOString() });
-    }
+  const handleCustomerConsentConfirm = useCallback(() => {
+    const now = new Date().toISOString();
+    draft.updateDraft({
+      rodoConsent: true,
+      rodoTimestamp: now,
+      termsAcceptedAt: now,
+      consentConfirmedAt: now,
+      consentConfirmationMethod: 'CUSTOMER_LONG_PRESS',
+    });
+    setShowConsentModal(false);
   }, [draft]);
 
   const handleTermsHtmlChange = useCallback(
@@ -106,7 +103,7 @@ export default function ContractStep() {
     router.push('/(tabs)/new-rental/photos');
   }, [draft, router]);
 
-  const handleDriverCreated = useCallback((_driverId: string | null) => {
+  const handleDriverCreated = useCallback((driverId: string) => {
     // Driver saved, form will show summary card automatically via store
   }, []);
 
@@ -114,16 +111,15 @@ export default function ContractStep() {
     setShowSecondDriverForm(false);
   }, []);
 
-  const canProceed = draft.rodoConsent && !!draft.termsAcceptedAt;
+  const hasStrongConsent =
+    draft.rodoConsent &&
+    !!draft.termsAcceptedAt &&
+    draft.consentConfirmationMethod === 'CUSTOMER_LONG_PRESS';
+  const canProceed = hasStrongConsent;
 
   return (
     <SafeAreaView style={s.safeArea} edges={['top']}>
-      <WizardStepper
-        currentStep={4}
-        totalSteps={6}
-        labels={RENTAL_WIZARD_LABELS}
-        onBack={router.canGoBack() ? router.back : undefined}
-      />
+      <WizardStepper currentStep={4} totalSteps={6} labels={RENTAL_WIZARD_LABELS} />
 
       <Text style={s.stepTitle}>{t('wizard.step4')}</Text>
 
@@ -216,24 +212,25 @@ export default function ContractStep() {
             />
           </View>
 
-          {/* 4. Terms Acceptance Checkbox */}
-          <Pressable
-            style={s.checkboxRow}
-            onPress={handleToggleTermsAccepted}
-            accessibilityRole="checkbox"
-            accessibilityState={{ checked: !!draft.termsAcceptedAt }}
-          >
-            {draft.termsAcceptedAt ? (
-              <View style={s.checkboxChecked}>
-                <Check size={16} color={colors.cream} />
-              </View>
-            ) : (
-              <View style={s.checkboxUnchecked}>
-                <Square size={24} color={colors.sand} />
-              </View>
-            )}
-            <Text style={s.checkboxText}>Zapoznałem/am się z warunkami najmu i akceptuję je</Text>
-          </Pressable>
+          {/* 4. Customer consent */}
+          <View style={s.consentPanel}>
+            <View style={hasStrongConsent ? s.checkboxChecked : s.checkboxPending}>
+              {hasStrongConsent && <Check size={16} color={colors.cream} />}
+            </View>
+            <View style={s.consentTextWrap}>
+              <Text style={s.checkboxText}>Potwierdzenie klienta: warunki najmu i RODO</Text>
+              <Text style={s.consentMeta}>
+                {hasStrongConsent
+                  ? `Potwierdzono: ${formatDateTime(draft.consentConfirmedAt!)}`
+                  : 'Przekaz telefon klientowi do osobnego potwierdzenia.'}
+              </Text>
+              <Pressable style={s.consentButton} onPress={() => setShowConsentModal(true)}>
+                <Text style={s.consentButtonText}>
+                  {hasStrongConsent ? 'Potwierdz ponownie' : 'Potwierdz jako klient'}
+                </Text>
+              </Pressable>
+            </View>
+          </View>
 
           {/* 5. Second Driver Section */}
           <View style={s.secondDriverSection}>
@@ -258,25 +255,6 @@ export default function ContractStep() {
               </Pressable>
             )}
           </View>
-
-          {/* 6. RODO Consent */}
-          <Pressable
-            style={s.checkboxRow}
-            onPress={handleToggleRodo}
-            accessibilityRole="checkbox"
-            accessibilityState={{ checked: draft.rodoConsent }}
-          >
-            {draft.rodoConsent ? (
-              <View style={s.checkboxChecked}>
-                <Check size={16} color={colors.cream} />
-              </View>
-            ) : (
-              <View style={s.checkboxUnchecked}>
-                <Square size={24} color={colors.sand} />
-              </View>
-            )}
-            <Text style={s.checkboxText}>{t('wizard.rodoConsent')}</Text>
-          </Pressable>
         </ScrollView>
       </KeyboardAvoidingView>
 
@@ -426,8 +404,18 @@ const s = StyleSheet.create({
     backgroundColor: '#fff',
   },
 
-  // Checkboxes
-  checkboxRow: { marginTop: spacing.xl, flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
+  // Customer consent
+  consentPanel: {
+    marginTop: spacing.xl,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+    borderWidth: 1,
+    borderColor: colors.sand,
+    borderRadius: 8,
+    backgroundColor: colors.warmStone,
+    padding: spacing.base,
+  },
   checkboxChecked: {
     marginTop: 2,
     height: 24,
@@ -437,13 +425,39 @@ const s = StyleSheet.create({
     borderRadius: 4,
     backgroundColor: colors.forestGreen,
   },
-  checkboxUnchecked: { marginTop: 2 },
+  checkboxPending: {
+    marginTop: 2,
+    height: 24,
+    width: 24,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: colors.sand,
+    backgroundColor: colors.cream,
+  },
+  consentTextWrap: { flex: 1 },
   checkboxText: {
-    flex: 1,
     fontFamily: fonts.body,
     fontSize: 16,
     lineHeight: 24,
     color: colors.charcoal,
+  },
+  consentMeta: {
+    marginTop: 4,
+    fontFamily: fonts.body,
+    fontSize: 13,
+    lineHeight: 18,
+    color: colors.warmGray,
+  },
+  consentButton: {
+    marginTop: spacing.sm,
+    alignSelf: 'flex-start',
+    paddingVertical: 8,
+  },
+  consentButtonText: {
+    fontFamily: fonts.body,
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.forestGreen,
   },
 
   // Second driver
