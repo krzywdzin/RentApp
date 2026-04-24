@@ -24,10 +24,10 @@ describe('DocumentsController', () => {
 
   describe('uploadDocumentPhoto (RODO guard)', () => {
     it('rejects uploads with 410 Gone so document photos never reach the backend', async () => {
-      await expect(controller.uploadDocumentPhoto()).rejects.toBeInstanceOf(HttpException);
+      await expect(controller.uploadDocumentPhoto('00000000-0000-0000-0000-000000000001', 'ID_CARD' as any, 'front' as any, {} as any, 'user-1')).rejects.toBeInstanceOf(HttpException);
 
       try {
-        await controller.uploadDocumentPhoto();
+        await controller.uploadDocumentPhoto('00000000-0000-0000-0000-000000000001', 'ID_CARD' as any, 'front' as any, {} as any, 'user-1');
       } catch (err) {
         expect((err as HttpException).getStatus()).toBe(HttpStatus.GONE);
       }

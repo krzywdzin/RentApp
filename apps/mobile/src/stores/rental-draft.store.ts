@@ -35,6 +35,7 @@ interface RentalDraft {
   currentSignatureIndex: number;
   isCompanyRental: boolean;
   companyNip: string | null;
+  companyInvoiceEmail: string | null;
   vatPayerStatus: string | null; // 'FULL_100' | 'HALF_50' | 'NONE'
   isInsuranceRental: boolean;
   insuranceCaseNumber: string | null;
@@ -52,6 +53,7 @@ interface RentalDraft {
   dirtyReturnFee: number | null;
   deductible: number | null;
   deductibleWaiverFee: number | null;
+  deductibleWaiverPaymentMethod: 'CASH' | 'CARD' | 'BANK_TRANSFER' | null;
   secondDriver: SecondDriverData | null;
   secondDriverId: string | null;
   secondDriverCepikStatus: string | null;
@@ -85,6 +87,7 @@ const initialDraft: RentalDraft = {
   currentSignatureIndex: 0,
   isCompanyRental: false,
   companyNip: null,
+  companyInvoiceEmail: null,
   vatPayerStatus: null,
   isInsuranceRental: false,
   insuranceCaseNumber: null,
@@ -102,6 +105,7 @@ const initialDraft: RentalDraft = {
   dirtyReturnFee: null,
   deductible: null,
   deductibleWaiverFee: null,
+  deductibleWaiverPaymentMethod: null,
   secondDriver: null,
   secondDriverId: null,
   secondDriverCepikStatus: null,

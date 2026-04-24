@@ -6,6 +6,7 @@ import {
   IsInt,
   IsEnum,
   IsBoolean,
+  IsEmail,
   Min,
   MinLength,
   MaxLength,
@@ -18,7 +19,7 @@ import {
 import { DateAfterValidator } from '../../common/validators/date-after.validator';
 import { IsValidNip } from '../../common/validators/nip.validator';
 import { Type } from 'class-transformer';
-import { RentalStatus, VatPayerStatus, FuelLevelRequired } from '@rentapp/shared';
+import { RentalStatus, VatPayerStatus, FuelLevelRequired, PaymentMethod } from '@rentapp/shared';
 
 class PlaceLocationDto {
   @IsString()
@@ -118,6 +119,11 @@ export class CreateRentalDto {
   companyNip?: string;
 
   @IsOptional()
+  @IsEmail()
+  @ValidateIf((o) => o.isCompanyRental === true)
+  companyInvoiceEmail?: string;
+
+  @IsOptional()
   @IsEnum(VatPayerStatus)
   @ValidateIf((o) => o.isCompanyRental === true)
   vatPayerStatus?: VatPayerStatus;
@@ -189,4 +195,8 @@ export class CreateRentalDto {
   @IsInt()
   @Min(0)
   deductibleWaiverFee?: number;
+
+  @ValidateIf((o) => o.deductibleWaiverFee != null && o.deductibleWaiverFee > 0)
+  @IsEnum(PaymentMethod)
+  deductibleWaiverPaymentMethod?: PaymentMethod;
 }

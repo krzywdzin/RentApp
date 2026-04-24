@@ -46,6 +46,7 @@ export const CreateRentalSchema = z
     overrideConflict: z.boolean().default(false),
     isCompanyRental: z.boolean().default(false),
     companyNip: z.string().length(10).nullable().optional(),
+    companyInvoiceEmail: z.string().email().nullable().optional(),
     vatPayerStatus: z.enum(['FULL_100', 'HALF_50', 'NONE']).nullable().optional(),
     insuranceCaseNumber: z.string().max(100).nullable().optional(),
     pickupLocation: PlaceLocationSchema.nullable().optional(),
@@ -61,6 +62,7 @@ export const CreateRentalSchema = z
     dirtyReturnFee: z.number().int().min(0).nullable().optional(),
     deductible: z.number().int().min(0).nullable().optional(),
     deductibleWaiverFee: z.number().int().min(0).nullable().optional(),
+    deductibleWaiverPaymentMethod: z.enum(['CASH', 'CARD', 'BANK_TRANSFER']).nullable().optional(),
   })
   .refine((data) => data.dailyRateNet != null || data.totalPriceNet != null, {
     message: 'Either dailyRateNet or totalPriceNet must be provided',
@@ -75,6 +77,10 @@ export const CreateRentalSchema = z
   .refine((data) => !data.companyNip || isValidNip(data.companyNip), {
     message: 'Nieprawidlowy NIP',
     path: ['companyNip'],
+  })
+  .refine((data) => !data.deductibleWaiverFee || !!data.deductibleWaiverPaymentMethod, {
+    message: 'Wybierz sposob platnosci',
+    path: ['deductibleWaiverPaymentMethod'],
   });
 
 export const ExtendRentalSchema = z.object({
@@ -98,3 +104,5 @@ export type CreateRentalInput = z.infer<typeof CreateRentalSchema>;
 export type ExtendRentalInput = z.infer<typeof ExtendRentalSchema>;
 export type ReturnRentalInput = z.infer<typeof ReturnRentalSchema>;
 export type CalendarQueryInput = z.infer<typeof CalendarQuerySchema>;
+
+// Require payment method only when deductible waiver fee is charged

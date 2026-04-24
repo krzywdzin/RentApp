@@ -2,7 +2,18 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.service';
 import sharp from 'sharp';
-import type { DocumentType, DocumentSide, CustomerDocumentDto, DocumentPhotoDto } from '@rentapp/shared';
+import type {
+  CustomerDocumentDto,
+  CustomerFileDto,
+  CustomerFileType,
+  DocumentPhotoDto,
+  DocumentSide,
+  DocumentType,
+} from '@rentapp/shared';
+
+function safeFileName(name: string): string {
+  return name.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 120) || 'report.pdf';
+}
 
 @Injectable()
 export class DocumentsService {
@@ -32,14 +43,18 @@ export class DocumentsService {
       const oldPhotoKey = side === 'front' ? existing.frontPhotoKey : existing.backPhotoKey;
       const oldThumbKey = side === 'front' ? existing.frontThumbKey : existing.backThumbKey;
       if (oldPhotoKey) {
-        await this.storage.delete(oldPhotoKey).catch((err) =>
-          this.logger.warn(`Failed to delete old photo key ${oldPhotoKey}: ${err.message}`),
-        );
+        await this.storage
+          .delete(oldPhotoKey)
+          .catch((err) =>
+            this.logger.warn(`Failed to delete old photo key ${oldPhotoKey}: ${err.message}`),
+          );
       }
       if (oldThumbKey) {
-        await this.storage.delete(oldThumbKey).catch((err) =>
-          this.logger.warn(`Failed to delete old thumb key ${oldThumbKey}: ${err.message}`),
-        );
+        await this.storage
+          .delete(oldThumbKey)
+          .catch((err) =>
+            this.logger.warn(`Failed to delete old thumb key ${oldThumbKey}: ${err.message}`),
+          );
       }
     }
 
@@ -134,6 +149,61 @@ export class DocumentsService {
     return result;
   }
 
+  async uploadCustomerFile(
+    customerId: string,
+    type: CustomerFileType,
+    file: Express.Multer.File,
+    uploadedById: string,
+  ): Promise<CustomerFileDto> {
+    const fileName = safeFileName(file.originalname || 'kierowca-gov-report.pdf');
+    const fileKey = `documents/${customerId}/${type}/${Date.now()}-${fileName}`;
+
+    const record = await this.prisma.customerFile.create({
+      data: {
+        customerId,
+        type,
+        fileKey,
+        fileName,
+        mimeType: file.mimetype,
+        size: file.size,
+        uploadedById,
+      },
+    });
+
+    try {
+      await this.storage.upload(fileKey, file.buffer, file.mimetype);
+    } catch (uploadError) {
+      await this.prisma.customerFile.delete({ where: { id: record.id } }).catch(() => {});
+      throw uploadError;
+    }
+
+    return this.toCustomerFileDto(record);
+  }
+
+  async getCustomerFiles(customerId: string): Promise<CustomerFileDto[]> {
+    const files = await this.prisma.customerFile.findMany({
+      where: { customerId },
+      orderBy: { uploadedAt: 'desc' },
+    });
+
+    return Promise.all(files.map((file: any) => this.toCustomerFileDto(file)));
+  }
+
+  private async toCustomerFileDto(file: any): Promise<CustomerFileDto> {
+    const url = await this.storage.getPresignedDownloadUrl(file.fileKey);
+    return {
+      id: file.id,
+      customerId: file.customerId,
+      type: file.type as CustomerFileType,
+      fileName: file.fileName,
+      mimeType: file.mimeType,
+      size: file.size,
+      uploadedAt: file.uploadedAt.toISOString(),
+      uploadedById: file.uploadedById,
+      url,
+    };
+  }
+
   async deleteDocumentsByCustomerId(customerId: string): Promise<void> {
     const documents = await this.prisma.customerDocument.findMany({
       where: { customerId },
@@ -150,6 +220,17 @@ export class DocumentsService {
     await Promise.allSettled(deletePromises);
 
     await this.prisma.customerDocument.deleteMany({
+      where: { customerId },
+    });
+  }
+
+  async deleteCustomerFilesByCustomerId(customerId: string): Promise<void> {
+    const files = await this.prisma.customerFile.findMany({
+      where: { customerId },
+    });
+
+    await Promise.allSettled(files.map((file: any) => this.storage.delete(file.fileKey)));
+    await this.prisma.customerFile.deleteMany({
       where: { customerId },
     });
   }

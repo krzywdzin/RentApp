@@ -41,6 +41,18 @@ describe('DocumentsService', () => {
     updatedAt: new Date('2026-01-01'),
   };
 
+  const mockCustomerFile = {
+    id: 'file-1',
+    customerId: 'cust-1',
+    type: 'DRIVER_GOV_REPORT',
+    fileKey: 'documents/cust-1/DRIVER_GOV_REPORT/report.pdf',
+    fileName: 'report.pdf',
+    mimeType: 'application/pdf',
+    size: 2048,
+    uploadedAt: new Date('2026-01-02'),
+    uploadedById: 'user-1',
+  };
+
   beforeEach(async () => {
     jest.clearAllMocks();
 
@@ -49,6 +61,12 @@ describe('DocumentsService', () => {
         findUnique: jest.fn(),
         findMany: jest.fn(),
         upsert: jest.fn(),
+        deleteMany: jest.fn(),
+      },
+      customerFile: {
+        create: jest.fn(),
+        findMany: jest.fn(),
+        delete: jest.fn(),
         deleteMany: jest.fn(),
       },
     };
@@ -68,6 +86,36 @@ describe('DocumentsService', () => {
     }).compile();
 
     service = module.get<DocumentsService>(DocumentsService);
+  });
+
+  describe('uploadCustomerFile', () => {
+    it('stores kierowca.gov.pl report as customer profile file', async () => {
+      const pdf = {
+        buffer: Buffer.from('pdf'),
+        mimetype: 'application/pdf',
+        originalname: 'raport.pdf',
+        size: 2048,
+      } as Express.Multer.File;
+      prisma.customerFile.create.mockResolvedValue(mockCustomerFile);
+
+      const result = await service.uploadCustomerFile('cust-1', 'DRIVER_GOV_REPORT', pdf, 'user-1');
+
+      expect(storage.upload).toHaveBeenCalledWith(
+        expect.stringContaining('documents/cust-1/DRIVER_GOV_REPORT/'),
+        pdf.buffer,
+        'application/pdf',
+      );
+      expect(prisma.customerFile.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          customerId: 'cust-1',
+          type: 'DRIVER_GOV_REPORT',
+          fileName: 'raport.pdf',
+          uploadedById: 'user-1',
+        }),
+      });
+      expect(result.type).toBe('DRIVER_GOV_REPORT');
+      expect(result.url).toBe('https://presigned-url');
+    });
   });
 
   describe('uploadPhoto', () => {

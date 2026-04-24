@@ -37,6 +37,12 @@ export enum FuelLevelRequired {
   ANY = 'ANY',
 }
 
+export enum PaymentMethod {
+  CASH = 'CASH',
+  CARD = 'CARD',
+  BANK_TRANSFER = 'BANK_TRANSFER',
+}
+
 export type ConditionRating = 'good' | 'minor_damage' | 'major_damage' | 'missing';
 
 export const INSPECTION_AREAS = [
@@ -83,6 +89,7 @@ export interface RentalDto {
   overrodeConflict: boolean;
   isCompanyRental: boolean;
   companyNip: string | null;
+  companyInvoiceEmail: string | null;
   vatPayerStatus: VatPayerStatus | null;
   insuranceCaseNumber: string | null;
   pickupLocation: PlaceLocation | null;
@@ -102,6 +109,7 @@ export interface RentalDto {
   dirtyReturnFee: number | null;
   deductible: number | null;
   deductibleWaiverFee: number | null;
+  deductibleWaiverPaymentMethod: PaymentMethod | null;
   createdAt: string;
   updatedAt: string;
 }

@@ -42,6 +42,7 @@ const DatesSchema = z
       .regex(/^\d+([.,]\d{1,2})?$/, 'Nieprawidlowy format stawki (np. 150 lub 150.00)'),
     isCompanyRental: z.boolean(),
     companyNip: z.string().nullable().optional(),
+    companyInvoiceEmail: z.string().email('Nieprawidlowy email').or(z.literal('')).optional(),
     vatPayerStatus: z.enum(['FULL_100', 'HALF_50', 'NONE']).nullable().optional(),
     dailyKmLimit: z.string().optional(),
     excessKmRate: z.string().optional(),
@@ -54,6 +55,7 @@ const DatesSchema = z
     dirtyReturnFee: z.string().optional(),
     deductible: z.string().optional(),
     deductibleWaiverFee: z.string().optional(),
+    deductibleWaiverPaymentMethod: z.enum(['CASH', 'CARD', 'BANK_TRANSFER']).nullable().optional(),
     insuranceCaseNumber: z.string().optional(),
     termsNotes: z.string().optional(),
   })
@@ -98,6 +100,7 @@ export default function DatesStep() {
       dailyRateNet: draft.dailyRateNet ? String(draft.dailyRateNet / 100) : '',
       isCompanyRental: draft.isCompanyRental ?? false,
       companyNip: draft.companyNip ?? '',
+      companyInvoiceEmail: draft.companyInvoiceEmail ?? '',
       vatPayerStatus: (draft.vatPayerStatus as 'FULL_100' | 'HALF_50' | 'NONE' | null) ?? null,
       dailyKmLimit: draft.dailyKmLimit ? String(draft.dailyKmLimit) : '',
       excessKmRate: draft.excessKmRate ? String(draft.excessKmRate / 100) : '',
@@ -110,6 +113,7 @@ export default function DatesStep() {
       dirtyReturnFee: draft.dirtyReturnFee ? String(draft.dirtyReturnFee / 100) : '',
       deductible: draft.deductible ? String(draft.deductible / 100) : '',
       deductibleWaiverFee: draft.deductibleWaiverFee ? String(draft.deductibleWaiverFee / 100) : '',
+      deductibleWaiverPaymentMethod: draft.deductibleWaiverPaymentMethod ?? null,
       insuranceCaseNumber: draft.insuranceCaseNumber ?? '',
       termsNotes: draft.termsNotes ?? '',
     },
@@ -125,6 +129,9 @@ export default function DatesStep() {
   const [returnLocation, setReturnLocation] = useState(draft.returnLocation);
   const dailyRateStr = watch('dailyRateNet');
   const isCompanyRental = watch('isCompanyRental');
+  const deductibleWaiverFee = watch('deductibleWaiverFee');
+  const hasDeductibleWaiverFee =
+    (parseFloat((deductibleWaiverFee ?? '').replace(',', '.')) || 0) > 0;
 
   const VAT_OPTIONS = [
     { label: '100%', value: 'FULL_100' as const },
@@ -223,6 +230,7 @@ export default function DatesStep() {
         dailyRateNet: rateGrosze,
         isCompanyRental: data.isCompanyRental,
         companyNip: data.isCompanyRental ? data.companyNip || null : null,
+        companyInvoiceEmail: data.isCompanyRental ? data.companyInvoiceEmail || null : null,
         vatPayerStatus: data.isCompanyRental ? data.vatPayerStatus || null : null,
         pickupLocation,
         returnLocation,
@@ -377,6 +385,7 @@ export default function DatesStep() {
                     onChange(val);
                     if (!val) {
                       setValue('companyNip', null);
+                      setValue('companyInvoiceEmail', '');
                       setValue('vatPayerStatus', null);
                     }
                   }}
@@ -399,6 +408,24 @@ export default function DatesStep() {
                       maxLength={10}
                       placeholder="0000000000"
                       error={errors.companyNip?.message}
+                      containerStyle={s.mb12}
+                    />
+                  )}
+                />
+
+                <Controller
+                  control={control}
+                  name="companyInvoiceEmail"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <AppInput
+                      label="Email do faktury"
+                      value={value ?? ''}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                      placeholder="faktury@firma.pl"
+                      error={errors.companyInvoiceEmail?.message}
                       containerStyle={s.mb12}
                     />
                   )}
@@ -606,6 +633,36 @@ export default function DatesStep() {
               )}
             />
 
+            {hasDeductibleWaiverFee && (
+              <>
+                <Text style={[s.fieldLabel, { marginTop: spacing.md }]}>
+                  Platnosc za zniesienie udzialu wlasnego
+                </Text>
+                <Controller
+                  control={control}
+                  name="deductibleWaiverPaymentMethod"
+                  render={({ field: { value } }) => (
+                    <View style={s.vatChipRow}>
+                      {PAYMENT_METHOD_OPTIONS.map((opt) => (
+                        <Pressable
+                          key={opt.value}
+                          style={[s.vatChip, value === opt.value && s.vatChipActive]}
+                          onPress={() => setValue('deductibleWaiverPaymentMethod', opt.value)}
+                        >
+                          <Text style={[s.vatChipText, value === opt.value && s.vatChipTextActive]}>
+                            {opt.label}
+                          </Text>
+                        </Pressable>
+                      ))}
+                    </View>
+                  )}
+                />
+                {errors.deductibleWaiverPaymentMethod?.message && (
+                  <Text style={s.errorText}>{errors.deductibleWaiverPaymentMethod.message}</Text>
+                )}
+              </>
+            )}
+
             <Controller
               control={control}
               name="termsNotes"
@@ -698,6 +755,7 @@ const s = StyleSheet.create({
     flex: 1,
   },
   dateFieldText: { flex: 1, fontFamily: fonts.data, fontSize: 16, color: colors.charcoal },
+  errorText: { marginTop: 4, fontFamily: fonts.body, fontSize: 13, color: colors.terracotta },
   mb12: { marginBottom: spacing.md },
   mb16: { marginBottom: spacing.base },
   summaryBox: {

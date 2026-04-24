@@ -93,8 +93,7 @@ export default function SignaturesStep() {
     if (!draft.startDate || !draft.endDate) return 'Brak dat najmu (krok 3).';
     if (draft.dailyRateNet === null || draft.dailyRateNet === undefined)
       return 'Brak stawki dziennej (krok 3).';
-    if (!draft.rodoConsent || !draft.rodoTimestamp)
-      return 'Brak zgody RODO (krok 4).';
+    if (!draft.rodoConsent || !draft.rodoTimestamp) return 'Brak zgody RODO (krok 4).';
     return null;
   }, [
     draft.customerId,
@@ -128,6 +127,7 @@ export default function SignaturesStep() {
             status: 'DRAFT',
             isCompanyRental: draft.isCompanyRental ?? false,
             companyNip: draft.companyNip ?? undefined,
+            companyInvoiceEmail: draft.companyInvoiceEmail ?? undefined,
             vatPayerStatus:
               (draft.vatPayerStatus as 'FULL_100' | 'HALF_50' | 'NONE' | null) ?? undefined,
             insuranceCaseNumber: draft.insuranceCaseNumber ?? undefined,
@@ -144,6 +144,7 @@ export default function SignaturesStep() {
             dirtyReturnFee: draft.dirtyReturnFee ?? undefined,
             deductible: draft.deductible ?? undefined,
             deductibleWaiverFee: draft.deductibleWaiverFee ?? undefined,
+            deductibleWaiverPaymentMethod: draft.deductibleWaiverPaymentMethod ?? undefined,
           });
           activeRentalId = rental.id;
           draft.updateDraft({ rentalId: rental.id });
@@ -264,7 +265,11 @@ export default function SignaturesStep() {
               humanMsg = 'Nieznany blad';
             }
             const status = err?.response?.status;
-            console.error('Rental creation error:', status, JSON.stringify(data ?? err?.message ?? err));
+            console.error(
+              'Rental creation error:',
+              status,
+              JSON.stringify(data ?? err?.message ?? err),
+            );
             Toast.show({
               type: 'error',
               text1: status ? `Blad tworzenia najmu (${status})` : 'Blad tworzenia najmu',

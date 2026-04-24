@@ -35,3 +35,18 @@ export interface CustomerDocumentDto {
   scannedAt: string;
   scannedById: string;
 }
+
+export const CUSTOMER_FILE_TYPES = ['DRIVER_GOV_REPORT'] as const;
+export type CustomerFileType = (typeof CUSTOMER_FILE_TYPES)[number];
+
+export interface CustomerFileDto {
+  id: string;
+  customerId: string;
+  type: CustomerFileType;
+  fileName: string;
+  mimeType: string;
+  size: number;
+  uploadedAt: string;
+  uploadedById: string;
+  url: string;
+}

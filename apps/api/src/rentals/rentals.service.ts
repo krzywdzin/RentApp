@@ -134,6 +134,7 @@ export class RentalsService {
           notes: dto.notes,
           isCompanyRental: dto.isCompanyRental ?? false,
           companyNip: dto.companyNip ?? null,
+          companyInvoiceEmail: dto.isCompanyRental ? (dto.companyInvoiceEmail ?? null) : null,
           vatPayerStatus: dto.vatPayerStatus ?? null,
           insuranceCaseNumber: dto.insuranceCaseNumber ?? null,
           pickupLocation: dto.pickupLocation
@@ -153,6 +154,7 @@ export class RentalsService {
           dirtyReturnFee: dto.dirtyReturnFee ?? null,
           deductible: dto.deductible ?? null,
           deductibleWaiverFee: dto.deductibleWaiverFee ?? null,
+          deductibleWaiverPaymentMethod: dto.deductibleWaiverPaymentMethod ?? null,
           overrodeConflict: conflicts.length > 0,
         },
         include: RENTAL_INCLUDE,

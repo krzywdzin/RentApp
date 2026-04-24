@@ -5,6 +5,7 @@ import type {
   CustomerDto,
   CustomerSearchResultDto,
   CustomerDocumentDto,
+  CustomerFileDto,
   CreateCustomerInput,
   UpdateCustomerInput,
 } from '@rentapp/shared';
@@ -97,6 +98,35 @@ export function useCustomerDocuments(customerId: string) {
     queryKey: ['customers', customerId, 'documents'],
     queryFn: () => apiClient<CustomerDocumentDto[]>(`/customers/${customerId}/documents`),
     enabled: !!customerId,
+  });
+}
+
+export function useCustomerFiles(customerId: string) {
+  return useQuery({
+    queryKey: ['customers', customerId, 'files'],
+    queryFn: () => apiClient<CustomerFileDto[]>(`/customers/${customerId}/files`),
+    enabled: !!customerId,
+  });
+}
+
+export function useUploadDriverGovReport(customerId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (file: File) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      return apiClient<CustomerFileDto>(`/customers/${customerId}/files/driver-gov-report`, {
+        method: 'POST',
+        body: formData,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['customers', customerId, 'files'] });
+      toast.success('Raport kierowca.gov.pl zapisany');
+    },
+    onError: () => {
+      toast.error('Nie udalo sie zapisac raportu PDF');
+    },
   });
 }
 

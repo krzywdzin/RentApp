@@ -85,6 +85,12 @@ enum SettlementStatus {
   ANULOWANY
 }
 
+enum PaymentMethod {
+  CASH
+  CARD
+  BANK_TRANSFER
+}
+
 model User {
   id               String    @id @default(uuid())
   email            String?   @unique
@@ -111,6 +117,7 @@ model User {
   cepikChecks           CepikVerification[] @relation("CepikCheckedBy")
   cepikOverrides        CepikVerification[] @relation("CepikOverriddenBy")
   scannedDocuments      CustomerDocument[]  @relation("DocumentScannedBy")
+  uploadedCustomerFiles CustomerFile[]      @relation("CustomerFileUploadedBy")
   createdProtocols      ReturnProtocol[]   @relation("ProtocolCreatedBy")
 
   @@map("users")
@@ -253,6 +260,7 @@ model Customer {
   rentals               Rental[]
   cepikVerifications    CepikVerification[]
   documents             CustomerDocument[]
+  files                 CustomerFile[]
 
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
@@ -282,6 +290,7 @@ model Rental {
   overrodeConflict Boolean      @default(false)
   isCompanyRental      Boolean          @default(false)
   companyNip           String?
+  companyInvoiceEmail  String?
   vatPayerStatus       VatPayerStatus?
   insuranceCaseNumber  String?
   rentalTerms          String?          @db.Text
@@ -297,6 +306,7 @@ model Rental {
   dirtyReturnFee       Int?
   deductible           Int?
   deductibleWaiverFee  Int?
+  deductibleWaiverPaymentMethod PaymentMethod?
   pickupLocation       Json?
   returnLocation       Json?
   settlementStatus   SettlementStatus @default(NIEROZLICZONY)
@@ -600,6 +610,24 @@ model CustomerDocument {
   @@unique([customerId, type])
   @@index([customerId])
   @@map("customer_documents")
+}
+
+model CustomerFile {
+  id            String   @id @default(uuid())
+  customerId    String
+  customer      Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  type          String
+  fileKey       String
+  fileName      String
+  mimeType      String
+  size          Int
+  uploadedAt    DateTime @default(now())
+  uploadedById  String
+  uploadedBy    User     @relation("CustomerFileUploadedBy", fields: [uploadedById], references: [id])
+
+  @@index([customerId])
+  @@index([type])
+  @@map("customer_files")
 }
 
 model ReturnProtocol {
